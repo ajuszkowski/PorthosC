@@ -12,119 +12,119 @@ import dartagnan.utils.Pair;
 
 public class Read extends MemEvent {
 
-	private Register reg;
-	private String atomic;
-	
-	public Read(Register reg, Location loc, String atomic) {
-		this.reg = reg;
-		this.loc = loc;
-		this.atomic = atomic;
-		this.condLevel = 0;
-	}
-	
-	public Register getReg() {
-		return reg;
-	}
-	
-	public String toString() {
-		return String.format("%s%s = %s.load(%s)", String.join("", Collections.nCopies(condLevel, "  ")), reg, loc, atomic);
-	}
+    private Register reg;
+    private String atomic;
 
-	public LastModMap setLastModMap(LastModMap map) {
-		this.lastModMap = map;
-		LastModMap retMap = map.clone();
-		Set<Event> set = new HashSet<Event>();
-		set.add(this);
-		retMap.put(reg, set);
-		return retMap;
-	}
-	
-	public Read clone() {
-		return this;
-	}
+    public Read(Register reg, Location loc, String atomic) {
+        this.reg = reg;
+        this.loc = loc;
+        this.atomic = atomic;
+        this.condLevel = 0;
+    }
 
-	public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) throws Z3Exception {
-		System.out.println(String.format("Check encodeDF for %s", this));
-		return null;
-	}
+    public Register getReg() {
+        return reg;
+    }
 
-	public Thread compile(String target, boolean ctrl, boolean leading) {
-		Load ld = new Load(reg, loc);
-		ld.setHLId(hashCode());
-		ld.condLevel = this.condLevel;
+    public String toString() {
+        return String.format("%s%s = %s.load(%s)", String.join("", Collections.nCopies(condLevel, "  ")), reg, loc, atomic);
+    }
 
-		Sync sync = new Sync();
-		sync.condLevel = this.condLevel;
-		Lwsync lwsync = new Lwsync();
-		lwsync.condLevel = this.condLevel;
-		Ish ish = new Ish();
-		ish.condLevel = this.condLevel;
-		
-		if(!target.equals("power") && !target.equals("arm")) {
-			return ld;
-		}
-		if(atomic.equals("_rx") || atomic.equals("_na")) {
-			return ld;
-		}
-		if(target.equals("power")) {
-			if(atomic.equals("_sc")) {
-				if(leading) {
-					return new Seq(sync, new Seq(ld, lwsync));	
-				}
-				else {
-					return new Seq(ld, lwsync);
-				}
-			}
-			if(atomic.equals("_con") || atomic.equals("_acq")) {
-				return new Seq(ld, lwsync);
-			}			
-		}
-		if(target.equals("arm")) {
-			if(atomic.equals("_con") || atomic.equals("_acq") || atomic.equals("_sc")) {
-				return new Seq(ld, ish);
-			}			
-		}
-		
-		else System.out.println(String.format("Error in the atomic operation type of %s", this));
-		return null;
-	}
-	
-	public Thread optCompile(boolean ctrl, boolean leading) {
-		Load ld = new Load(reg, loc);
-		ld.setHLId(hashCode());
-		ld.condLevel = this.condLevel;
+    public LastModMap setLastModMap(LastModMap map) {
+        this.lastModMap = map;
+        LastModMap retMap = map.clone();
+        Set<Event> set = new HashSet<Event>();
+        set.add(this);
+        retMap.put(reg, set);
+        return retMap;
+    }
 
-		Sync sync = new OptSync();
-		sync.condLevel = this.condLevel;
-		Lwsync lwsync = new OptLwsync();
-		lwsync.condLevel = this.condLevel;
-		
-		if(atomic.equals("_sc")) {
-			if(leading) {
-				return new Seq(sync, new Seq(ld, lwsync));	
-			}
-			else {
-				return new Seq(ld, lwsync);
-			}
-		}
-		if(atomic.equals("_rx") || atomic.equals("_na")) {
-			return ld;
-		}
-		if(atomic.equals("_con") || atomic.equals("_acq")) {
-			return new Seq(ld, lwsync);
-		}
-		else System.out.println(String.format("Error in the atomic operation type of %s", this));
-		return null;
-	}
-	
-	public Thread allCompile() {
-		Load ld = new Load(reg, loc);
-		ld.setHLId(hashCode());
-		ld.condLevel = this.condLevel;
-		OptSync os = new OptSync();
-		os.condLevel = condLevel;
-		OptLwsync olws = new OptLwsync();
-		olws.condLevel = condLevel;
-		return new Seq(os, new Seq(olws, ld));
-	}
+    public Read clone() {
+        return this;
+    }
+
+    public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) throws Z3Exception {
+        System.out.println(String.format("Check encodeDF for %s", this));
+        return null;
+    }
+
+    public Thread compile(String target, boolean ctrl, boolean leading) {
+        Load ld = new Load(reg, loc);
+        ld.setHLId(hashCode());
+        ld.condLevel = this.condLevel;
+
+        Sync sync = new Sync();
+        sync.condLevel = this.condLevel;
+        Lwsync lwsync = new Lwsync();
+        lwsync.condLevel = this.condLevel;
+        Ish ish = new Ish();
+        ish.condLevel = this.condLevel;
+
+        if(!target.equals("power") && !target.equals("arm")) {
+            return ld;
+        }
+        if(atomic.equals("_rx") || atomic.equals("_na")) {
+            return ld;
+        }
+        if(target.equals("power")) {
+            if(atomic.equals("_sc")) {
+                if(leading) {
+                    return new Seq(sync, new Seq(ld, lwsync));
+                }
+                else {
+                    return new Seq(ld, lwsync);
+                }
+            }
+            if(atomic.equals("_con") || atomic.equals("_acq")) {
+                return new Seq(ld, lwsync);
+            }
+        }
+        if(target.equals("arm")) {
+            if(atomic.equals("_con") || atomic.equals("_acq") || atomic.equals("_sc")) {
+                return new Seq(ld, ish);
+            }
+        }
+
+        else System.out.println(String.format("Error in the atomic operation type of %s", this));
+        return null;
+    }
+
+    public Thread optCompile(boolean ctrl, boolean leading) {
+        Load ld = new Load(reg, loc);
+        ld.setHLId(hashCode());
+        ld.condLevel = this.condLevel;
+
+        Sync sync = new OptSync();
+        sync.condLevel = this.condLevel;
+        Lwsync lwsync = new OptLwsync();
+        lwsync.condLevel = this.condLevel;
+
+        if(atomic.equals("_sc")) {
+            if(leading) {
+                return new Seq(sync, new Seq(ld, lwsync));
+            }
+            else {
+                return new Seq(ld, lwsync);
+            }
+        }
+        if(atomic.equals("_rx") || atomic.equals("_na")) {
+            return ld;
+        }
+        if(atomic.equals("_con") || atomic.equals("_acq")) {
+            return new Seq(ld, lwsync);
+        }
+        else System.out.println(String.format("Error in the atomic operation type of %s", this));
+        return null;
+    }
+
+    public Thread allCompile() {
+        Load ld = new Load(reg, loc);
+        ld.setHLId(hashCode());
+        ld.condLevel = this.condLevel;
+        OptSync os = new OptSync();
+        os.condLevel = condLevel;
+        OptLwsync olws = new OptLwsync();
+        olws.condLevel = condLevel;
+        return new Seq(os, new Seq(olws, ld));
+    }
 }

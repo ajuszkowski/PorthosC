@@ -49,16 +49,16 @@ public class RelUnion extends Relation{
             enc=ctx.mkAnd(enc, r2.encode(program, ctx));
             Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
             for(Event e1 : events) {
-			for(Event e2 : events) {
+            for(Event e2 : events) {
                             BoolExpr opt1=Utils.edge(r1.getName(), e1, e2, ctx);
                             if(r1.containsRec) opt1=ctx.mkAnd(opt1, ctx.mkGt(Utils.intCount(this.getName(),e1,e2, ctx), Utils.intCount(r1.getName(),e1,e2, ctx)));
                             BoolExpr opt2=Utils.edge(r2.getName(), e1, e2, ctx);
                             if(r2.containsRec) opt2=ctx.mkAnd(opt2, ctx.mkGt(Utils.intCount(this.getName(),e1,e2, ctx), Utils.intCount(r2.getName(),e1,e2, ctx)));            
                             enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(name, e1, e2, ctx), ctx.mkOr(opt1,opt2)));
                                 
-			}
-		}
-		return enc;
+            }
+        }
+        return enc;
     }
     
 }

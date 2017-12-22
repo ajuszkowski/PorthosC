@@ -8,11 +8,11 @@ import com.microsoft.z3.Z3Exception;
 
 public class OptLwsync extends Lwsync {
 
-	public String toString() {
-		return String.format("%slwsync?", String.join("", Collections.nCopies(condLevel, "  ")));
-	}
-	
-	public BoolExpr encodeCF(Context ctx) throws Z3Exception {
-		return ctx.mkBoolConst(cfVar());
-	}
+    public String toString() {
+        return String.format("%slwsync?", String.join("", Collections.nCopies(condLevel, "  ")));
+    }
+
+    public BoolExpr encodeCF(Context ctx) throws Z3Exception {
+        return ctx.mkBoolConst(cfVar());
+    }
 }

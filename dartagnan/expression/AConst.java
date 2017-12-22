@@ -10,25 +10,25 @@ import dartagnan.utils.MapSSA;
 
 public class AConst extends AExpr {
 
-	private Integer value;
-	
-	public AConst(Integer value) {
-		this.value = value;
-	}
-	
-	public String toString() {
-		return value.toString();
-	}
-	
-	public AConst clone() {
-		return new AConst(value);
-	}
-	
-	public ArithExpr toZ3(MapSSA map, Context ctx) throws Z3Exception {
-		return ctx.mkInt(value);
-	}
-	
-	public Set<Register> getRegs() {
-		return new HashSet<Register>();
-	}
+    private Integer value;
+
+    public AConst(Integer value) {
+        this.value = value;
+    }
+
+    public String toString() {
+        return value.toString();
+    }
+
+    public AConst clone() {
+        return new AConst(value);
+    }
+
+    public ArithExpr toZ3(MapSSA map, Context ctx) throws Z3Exception {
+        return ctx.mkInt(value);
+    }
+
+    public Set<Register> getRegs() {
+        return new HashSet<Register>();
+    }
 }

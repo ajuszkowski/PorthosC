@@ -23,15 +23,15 @@ public class Irreflexive extends Axiom{
 
     @Override
     public BoolExpr Consistent(Set<Event> events, Context ctx) throws Z3Exception {
-		return Encodings.satIrref(rel.getName(), events, ctx);    }
+        return Encodings.satIrref(rel.getName(), events, ctx);    }
 
     @Override
     public BoolExpr Inconsistent(Set<Event> events, Context ctx) throws Z3Exception {
-	    BoolExpr enc = ctx.mkTrue();
-	    for(Event e : events){
-	    	enc = ctx.mkOr(enc, Utils.edge(rel.getName(), e, e, ctx));
-	    }
-	    return enc;    
+        BoolExpr enc = ctx.mkTrue();
+        for(Event e : events){
+            enc = ctx.mkOr(enc, Utils.edge(rel.getName(), e, e, ctx));
+        }
+        return enc;
     }
 
 

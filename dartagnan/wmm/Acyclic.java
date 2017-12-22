@@ -22,11 +22,11 @@ public class Acyclic extends Axiom{
 
     @Override
     public BoolExpr Consistent(Set<Event> events, Context ctx) throws Z3Exception {
-		return Encodings.satAcyclic(rel.getName(), events, ctx);    }
+        return Encodings.satAcyclic(rel.getName(), events, ctx);    }
 
     @Override
     public BoolExpr Inconsistent(Set<Event> events, Context ctx) throws Z3Exception {
-		return ctx.mkAnd(Encodings.satCycleDef(rel.getName(), events, ctx), Encodings.satCycle(rel.getName(), events, ctx));
+        return ctx.mkAnd(Encodings.satCycleDef(rel.getName(), events, ctx), Encodings.satCycle(rel.getName(), events, ctx));
     }
 
 
