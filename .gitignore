@@ -3,7 +3,7 @@
 /build/
 
 # Generated files:
-src/main/java/mousquetaires/languages/generated/
+src/generated/*
 
 # Intellij IDEA:
 .idea/
