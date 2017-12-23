@@ -6,9 +6,16 @@
 src/generated/*
 
 # Intellij IDEA:
-.idea/
-bin/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/*.iml
+.idea/dictionaries/
+.idea/inspectionProfiles/
+.idea/libraries/
+.idea/gradle.xml
 
-# Vim
-# ---
+# output:
+build/
+
+# Vim:
 *.sw[op]
