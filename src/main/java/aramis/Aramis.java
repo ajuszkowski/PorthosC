@@ -241,11 +241,11 @@ public class Aramis {
         log.info("Starting...");
         Options options = new Options();
 
-        Option pos = new Option("p", "positive", true, "Directory of program files that should pass the reachability tests");
+        Option pos = new Option("p", "positive", true, "Directory of program files that should pass the reachability src.mousquetaires.tests");
         pos.setRequired(true);
         options.addOption(pos);
 
-        Option neg = new Option("n", "negative", true, "Directory of program files that should fail the reachability tests");
+        Option neg = new Option("n", "negative", true, "Directory of program files that should fail the reachability src.mousquetaires.tests");
         neg.setRequired(true);
         options.addOption(neg);
 

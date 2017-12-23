@@ -16,7 +16,7 @@ import java.util.HashMap;
 public class CandidateAxiom extends Acyclic {
 
     /**
-     * Creates an acyclic Axiom that has additional information regarding its behaviour towards the reachability tests.
+     * Creates an acyclic Axiom that has additional information regarding its behaviour towards the reachability src.mousquetaires.tests.
      * @param rel
      */
     public CandidateAxiom(Relation rel) {

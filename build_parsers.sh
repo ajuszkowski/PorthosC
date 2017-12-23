@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-ANTLR_JAR=`pwd`/"common/include/antlr-4.7-complete.jar"
-OUTPUT_BASE_DIR=`pwd`/"common/languages"
-OUTPUT_DIR=$OUTPUT_BASE_DIR/"generated"
-GRAMMARS_DIR=$OUTPUT_BASE_DIR/"grammars"
+ANTLR_JAR=`pwd`/"lib/antlr-4.7-complete.jar"
+BASE_DIR=`pwd`/"src/main/java/mousquetaires"
+OUTPUT_DIR=$BASE_DIR/"languages/generated"
+GRAMMARS_DIR=$BASE_DIR/"languages/grammars"
 OUTPUT_PACKAGE="mousquetaires.languages.generated"
 
 current_dir=`pwd`
