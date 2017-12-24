@@ -1,6 +1,6 @@
 package mousquetaires.starters;
 
-import mousquetaires.options.CommandLineOptions;
+import mousquetaires.app.options.CommandLineOptions;
 
 
 public abstract class AppModule {

@@ -1,4 +1,4 @@
-package mousquetaires.options.validators;
+package mousquetaires.app.options.validators;
 
 import com.beust.jcommander.IValueValidator;
 import com.beust.jcommander.ParameterException;

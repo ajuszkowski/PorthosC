@@ -1,7 +1,7 @@
 package mousquetaires;
 
 import com.beust.jcommander.ParameterException;
-import mousquetaires.options.CommandLineOptions;
+import mousquetaires.app.options.CommandLineOptions;
 import mousquetaires.starters.AppModule;
 import mousquetaires.starters.AppModuleFactory;
 

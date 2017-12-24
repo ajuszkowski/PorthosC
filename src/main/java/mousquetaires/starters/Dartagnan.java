@@ -6,7 +6,7 @@ import com.microsoft.z3.Status;
 import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 import mousquetaires.languages.parsers.PorthosLexer;
 import mousquetaires.languages.parsers.PorthosParser;
-import mousquetaires.options.CommandLineOptions;
+import mousquetaires.app.options.CommandLineOptions;
 import mousquetaires.program.Program;
 import mousquetaires.utils.io.FileUtils;
 import mousquetaires.wmm.Domain;

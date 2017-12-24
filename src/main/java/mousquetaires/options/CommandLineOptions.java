@@ -1,12 +1,16 @@
-package mousquetaires.options;
+package mousquetaires.app.options;
 
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.converters.FileConverter;
-import mousquetaires.starters.AppModuleName;
+import mousquetaires.app.options.converters.AppModuleConverter;
+import mousquetaires.app.options.converters.LogLevelConverter;
+import mousquetaires.app.options.converters.MemoryModelNameConverter;
+import mousquetaires.app.options.validators.*;
 import mousquetaires.models.MemoryModelName;
+import mousquetaires.starters.AppModuleName;
 import mousquetaires.utils.logging.LogLevel;
 
 import java.io.File;
@@ -48,6 +52,7 @@ public class CommandLineOptions {
             validateValueWith = {FileValidator.class, InputProgramExtensionValidator.class})
     public File inputProgramFile;
 
+
     @Parameter(names = {"-sm", "--source-model"},
             required = true,
             arity = 1,
@@ -70,9 +75,15 @@ public class CommandLineOptions {
             validateValueWith = MemoryModelNameValidator.class)
     public MemoryModelName targetModel;
 
+
     @Parameter(names = {"-log", "--log"},
             required = false,
             converter = LogLevelConverter.class,
             validateValueWith = LogLevelValidator.class)
     public LogLevel logLevel;
+
+    @Parameter(names = { "-h", "-?", "--help" },
+            descriptionKey = "Print help message",
+            help = true)
+    private boolean help;
 }
