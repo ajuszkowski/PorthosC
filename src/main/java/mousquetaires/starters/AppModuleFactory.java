@@ -5,7 +5,6 @@ import mousquetaires.app.options.CommandLineOptions;
 
 
 public class AppModuleFactory {
-
     public static AppModule newAppModule(CommandLineOptions options) {
         AppModuleName moduleName = options.moduleName;
         switch (moduleName) {

@@ -9,21 +9,19 @@ import mousquetaires.starters.AppModuleFactory;
 public class App {
 
     public static void main(String[] args) {
-        CommandLineOptions options = null;
-
+        CommandLineOptions options;
+        AppModule module = null;
         try {
             options = CommandLineOptions.parse(args);
+            module = AppModuleFactory.newAppModule(options);
         }
         catch (ParameterException e) {
             // TODO: log
-            System.err.println(e.getMessage());
-            System.err.println(e.getStackTrace());
-
+            System.out.println(e.getMessage() + "\n");
             System.out.println(CommandLineOptions.getUsageString());
             System.exit(1);
         }
 
-        AppModule module = AppModuleFactory.newAppModule(options);
         module.start();
     }
 }
