@@ -5,7 +5,7 @@ import com.beust.jcommander.ParameterException;
 import java.io.File;
 
 
-public abstract class FileValidator implements IValueValidator<File> {
+public class FileValidator implements IValueValidator<File> {
 
     @Override
     public void validate(String name, File value) throws ParameterException {

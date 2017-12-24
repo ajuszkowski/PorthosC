@@ -1,5 +1,7 @@
 package mousquetaires.languages;
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.util.HashMap;
 
 
@@ -20,7 +22,7 @@ public class InputProgramExtensions {
 
     // result is null if not valid extension
     public static InputProgramLanguage tryParseInputProgramExtension(String fileName) {
-        return inputProgramExtensionsMap.get(fileName);
+        return inputProgramExtensionsMap.get(FilenameUtils.getExtension(fileName));
     }
 
     // Uncomment when being implementing the cat file parser

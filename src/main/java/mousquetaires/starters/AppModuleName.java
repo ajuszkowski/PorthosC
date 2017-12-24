@@ -1,19 +1,19 @@
-package mousquetaires;
+package mousquetaires.starters;
 
-public enum AppModule {
+public enum AppModuleName {
     Porthos,   // Portability analysis
     Dartagnan, // Reachability analysis
     Aramis,    // Memory model generation
     ;
 
-    public static AppModule parse(String value) {
+    public static AppModuleName parse(String value) {
         switch (value.toLowerCase()) {
             case "porthos":
-                return AppModule.Porthos;
+                return AppModuleName.Porthos;
             case "dartagnan":
-                return AppModule.Dartagnan;
+                return AppModuleName.Dartagnan;
             case "aramis":
-                return AppModule.Aramis;
+                return AppModuleName.Aramis;
             default:
                 return null;
         }

@@ -3,18 +3,18 @@ package mousquetaires.options;
 
 import com.beust.jcommander.IValueValidator;
 import com.beust.jcommander.ParameterException;
-import mousquetaires.AppModule;
+import mousquetaires.starters.AppModuleName;
 
 import java.util.Arrays;
 
 
-public class AppModuleValidator implements IValueValidator<AppModule> {
+public class AppModuleValidator implements IValueValidator<AppModuleName> {
 
     @Override
-    public void validate(String name, AppModule value) throws ParameterException {
+    public void validate(String name, AppModuleName value) throws ParameterException {
         if (value == null) {
-            throw new ParameterException("invalid format of application module. Available options: " +
-                    Arrays.toString(AppModule.values()).toLowerCase());
+            throw new ParameterException("invalid format of application moduleName. Available options: " +
+                    Arrays.toString(AppModuleName.values()).toLowerCase());
         }
     }
 }

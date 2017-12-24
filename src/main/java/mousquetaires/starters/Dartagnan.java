@@ -1,4 +1,4 @@
-package mousquetaires;
+package mousquetaires.starters;
 
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
@@ -19,11 +19,15 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 
-public class Dartagnan {
+public class Dartagnan extends AppModule {
 
     private static final Logger log = Logger.getLogger(Dartagnan.class.getName());
 
-    public static void start(CommandLineOptions options) throws /*Z3Exception,*/ IOException {
+    Dartagnan(CommandLineOptions options) {
+        super(options);
+    }
+
+    public void start() { // throws /*Z3Exception,*/ IOException {
 
         //if (inputFilePath.endsWith("litmus")) {
         //    LitmusLexer lexer = new LitmusLexer(input);
@@ -39,9 +43,14 @@ public class Dartagnan {
         //    p = parser.program(inputFilePath).p;
         //}
 
-        MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.targetModel);
+        MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
 
-        CharStream charStream = FileUtils.getFileCharStream(options.inputProgramFile);
+        CharStream charStream = null;
+        try {
+            charStream = FileUtils.getFileCharStream(options.inputProgramFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         PorthosLexer lexer = new PorthosLexer(charStream);
         CommonTokenStream tokenStream = new CommonTokenStream(lexer);
         PorthosParser parser = new PorthosParser(tokenStream);        //InputProgramParserFactory.getParser(options.inputProgramFile);
@@ -74,7 +83,7 @@ public class Dartagnan {
         //
         //}
 
-        String target = options.targetModel.toString();
+        String target = options.sourceModel.toString();
         p.initialize();
         p.compile(target, false, true);
 
