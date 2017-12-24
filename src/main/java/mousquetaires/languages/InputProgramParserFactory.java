@@ -1,7 +1,6 @@
 package mousquetaires.languages;
 
-import mousquetaires.PorthosLexer;
-import mousquetaires.PorthosParser;
+import mousquetaires.languages.parsers.*;
 import mousquetaires.utils.io.FileUtils;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;

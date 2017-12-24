@@ -11,5 +11,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Gradle: org.antlr:antlr4-runtime:4.7" level="project" />
+    <orderEntry type="module" module-name="mousquetaires_main" />
   </component>
 </module>

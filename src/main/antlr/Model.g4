@@ -7,7 +7,7 @@ import mousquetaires.wmm.*;
 {
 String test="test";
 }
-mcm returns [Wmm value]: {$value =  new Wmm();}  
+mcm returns [MemoryModel value]: {$value =  new MemoryModel();}
 (ax1=axiom {$value.addAxiom($ax1.value);} | r1=reldef {$value.addRel($r1.value);})+ 
 ;
 
