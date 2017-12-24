@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'antlr'
-//apply plugin: 'idea'
+apply plugin: 'idea'
 
 repositories {
     flatDir {
@@ -24,31 +24,54 @@ dependencies {
     compile name: "com.microsoft.z3"
 }
 
-ext.antlr = [
-    generatedSourceDir: "src/generated/java/",
-    grammarsDir: "src/main/antlr/",
+idea {
+    module {
+        name = "mousquetaires"
+        contentRoot         =  file(".")
+        outputDir           =  file("${project.projectDir}/build")
+        sourceDirs          = [file("${project.projectDir}/src/main/java")] // src/main/resources ?
+        sourceDirs          += file("${project.projectDir}/src/generated/java")  // after 'generatedSourceDirs' will become not incubaging, set it here
+        testSourceDirs      = [file("${project.projectDir}/src/test/java")]
+        excludeDirs         += file("${project.projectDir}/.idea")
+        excludeDirs         += file("${project.projectDir}/.gradle")
+        testOutputDir       = file("${outputDir}/test")
+    }
+}
+
+
+//https://stackoverflow.com/questions/37018567/why-my-gradle-projects-creates-separated-modules-for-main-and-test-in-intellij-i
+//sourceSets {
+//    main {
+//        compileClasspath += configurations.provided
+//    }
+//    test {
+//        resources {
+//            srcDir 'src/test/data'
+//        }
+//
+//        compileClasspath += configurations.provided
+//    }
+//}
+
+
+ext.antlr4 = [
+    generatedSourceDir: "${project.projectDir}/src/generated/java/",
+    grammarsDir: "${project.projectDir}/src/main/antlr/",
     resultPackage: "mousquetaires.languages.parsers",
 ]
 
-
 generateGrammarSource {
-    arguments = (["-visitor", "-listener", "-package", antlr.resultPackage] + arguments)
-    outputDirectory = file("${project.projectDir}/${antlr.generatedSourceDir}/${antlr.resultPackage.replaceAll("\\.", "/")}")
+    arguments = (["-visitor", "-listener", "-package", antlr4.resultPackage] + arguments)
+    outputDirectory = file("${antlr4.generatedSourceDir}/${antlr4.resultPackage.replaceAll("\\.", "/")}")
 }
 
 compileJava {
     dependsOn generateGrammarSource
-    source "${project.projectDir}/${antlr.generatedSourceDir}"
+    source antlr4.generatedSourceDir
 }
 
 clean {
-    delete += fileTree(antlr.generatedSourceDir).include('**/*')
+    delete += fileTree(antlr4.generatedSourceDir).include('**/*')
 }
 
-task getHomeDir {
-    println gradle.gradleHomeDir
-}
-
-mainClassName = 'mousquetaires.Program'
-
-
+mainClassName = 'mousquetaires.App'
