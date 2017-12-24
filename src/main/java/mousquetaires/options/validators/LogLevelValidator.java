@@ -1,4 +1,4 @@
-package mousquetaires.options;
+package mousquetaires.options.validators;
 
 
 import com.beust.jcommander.IValueValidator;

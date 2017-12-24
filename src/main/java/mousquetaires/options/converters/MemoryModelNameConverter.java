@@ -1,4 +1,4 @@
-package mousquetaires.options;
+package mousquetaires.options.converters;
 
 import com.beust.jcommander.IStringConverter;
 import mousquetaires.models.MemoryModelName;
