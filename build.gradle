@@ -14,7 +14,10 @@ repositories {
 dependencies {
     testCompile 'junit:junit:4.12'
     antlr "org.antlr:antlr4:4.7"
-    compile "commons-cli:commons-cli:1.4"
+
+    // command-line options https://mvnrepository.com/artifact/com.beust/jcommander
+    compile "com.beust:jcommander:1.71"
+
     compile "commons-io:commons-io:2.5"
 
     // local dependencies:
