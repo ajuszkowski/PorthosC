@@ -28,7 +28,7 @@ import dartagnan.PorthosLexer;
 import dartagnan.PorthosParser;
 import dartagnan.program.Init;
 import dartagnan.program.Program;
-import dartagnan.utils.Utils;
+import mousquetaires.utils.Utils;
 import dartagnan.wmm.Domain;
 import dartagnan.wmm.Encodings;
 

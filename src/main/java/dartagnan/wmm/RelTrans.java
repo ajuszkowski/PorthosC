@@ -11,8 +11,8 @@ import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Event;
 import dartagnan.program.MemEvent;
 import dartagnan.program.Program;
-import dartagnan.utils.Utils;
-import static dartagnan.wmm.Encodings.satTransIDL;
+import mousquetaires.utils.Utils;
+
 import static dartagnan.wmm.Encodings.satUnion;
 import java.util.Set;
 import java.util.stream.Collectors;

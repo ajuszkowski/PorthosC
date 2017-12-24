@@ -7,10 +7,10 @@ import java.util.Set;
 import com.microsoft.z3.*;
 
 import dartagnan.expression.BExpr;
-import dartagnan.utils.LastModMap;
-import dartagnan.utils.MapSSA;
-import dartagnan.utils.Pair;
-import dartagnan.utils.Utils;
+import mousquetaires.utils.LastModMap;
+import mousquetaires.utils.MapSSA;
+import mousquetaires.utils.Pair;
+import mousquetaires.utils.Utils;
 
 public class If extends Thread {
 
