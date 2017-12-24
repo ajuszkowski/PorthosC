@@ -1,4 +1,4 @@
-package dartagnan.program;
+package mousquetaires.program;
 
 import java.util.Set;
 import java.util.stream.IntStream;

@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dartagnan.wmm;
+package mousquetaires.wmm;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
-import dartagnan.program.Event;
-import dartagnan.program.MemEvent;
-import dartagnan.program.Program;
+import mousquetaires.program.Event;
+import mousquetaires.program.MemEvent;
+import mousquetaires.program.Program;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
@@ -20,40 +20,8 @@ import java.util.stream.Collectors;
  *
  * @author Florian Furbach
  */
-public class Wmm {
-    
-    public static Wmm getWmm(String model){
-        Wmm temp=new Wmm();
-        Relation co=new BasicRelation("co");
-        Relation po=new BasicRelation("po");
-        Relation fr=new BasicRelation("fr");
-        Relation rf=new BasicRelation("rf");
-        Relation com=new RelUnion(new RelUnion(co, fr), rf, "com");
-        Relation ghbsc=new RelUnion(po, com, "ghb-sc");
-        
-        if(model.contentEquals("sc")){
-            temp.addAxiom(new Acyclic(ghbsc));
-            return temp;
-        }  
-        
-        Relation poloc=new BasicRelation("poloc");
-        Relation rfe=new BasicRelation("rfe");
-        Relation comtso=new RelUnion(new RelUnion(co,fr), rfe, "com-tso");
-        Relation WR=new BasicRelation("WR");
-        Relation mfence=new BasicRelation("mfence");
-        Relation potso=new RelUnion(new RelMinus(po, WR), mfence, "po-tso");
-        Relation ghbtso=new RelUnion(potso, comtso, "ghb-tso");
-    
-        if(model.contentEquals("tso")) {
-            temp.addAxiom(new Acyclic(ghbtso));
-            temp.addAxiom(new Acyclic(new RelUnion(poloc, com)));
-            return temp;
-        };        
-            
-        return null;
-    }
-       
-    
+public class MemoryModel {
+
     private Vector<Axiom> axioms=new Vector<>();
     private Vector<Relation> namedrels=new Vector<>();
     

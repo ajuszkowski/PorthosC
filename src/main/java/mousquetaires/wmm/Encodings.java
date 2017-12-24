@@ -1,4 +1,4 @@
-package dartagnan.wmm;
+package mousquetaires.wmm;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,15 +7,15 @@ import java.util.stream.IntStream;
 
 import com.microsoft.z3.*;
 
-import dartagnan.program.Event;
-import dartagnan.program.Init;
-import dartagnan.program.Load;
-import dartagnan.program.Local;
-import dartagnan.program.Location;
-import dartagnan.program.MemEvent;
-import dartagnan.program.Program;
-import dartagnan.program.Register;
-import dartagnan.program.Store;
+import mousquetaires.program.Event;
+import mousquetaires.program.Init;
+import mousquetaires.program.Load;
+import mousquetaires.program.Local;
+import mousquetaires.program.Location;
+import mousquetaires.program.MemEvent;
+import mousquetaires.program.Program;
+import mousquetaires.program.Register;
+import mousquetaires.program.Store;
 import mousquetaires.utils.Utils;
 import static mousquetaires.utils.Utils.lastValueLoc;
 import static mousquetaires.utils.Utils.lastValueReg;

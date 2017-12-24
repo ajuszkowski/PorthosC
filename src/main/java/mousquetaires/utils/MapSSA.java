@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import dartagnan.program.Location;
-import dartagnan.program.Register;
+import mousquetaires.program.Location;
+import mousquetaires.program.Register;
 
 public class MapSSA {
 

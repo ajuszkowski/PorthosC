@@ -1,9 +1,9 @@
 grammar Porthos;
 
 @header{
-import dartagnan.program.*;
-import dartagnan.expression.*;
-import dartagnan.program.Thread;
+import mousquetaires.program.*;
+import mousquetaires.expression.*;
+import mousquetaires.program.Thread;
 import java.util.HashMap;
 import java.util.Map;
 }
@@ -158,7 +158,7 @@ program [String name] returns [Program p]:
 	{
 		Program p = new Program(name);
 		p.ass = new Assert();
-	} 
+	}
 	LCBRA l = location {
 		mapLocs.put($l.loc.getName(), $l.loc);
 	} 

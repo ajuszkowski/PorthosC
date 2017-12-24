@@ -1,4 +1,4 @@
-package dartagnan.program;
+package mousquetaires.program;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 
 import com.microsoft.z3.*;
 
-import dartagnan.expression.Assert;
+import mousquetaires.expression.Assert;
 import mousquetaires.utils.*;
-import dartagnan.wmm.*;
+import mousquetaires.wmm.*;
 
 public class Program {
 

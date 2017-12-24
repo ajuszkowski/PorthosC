@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dartagnan.wmm;
+package mousquetaires.wmm;
 
-import dartagnan.program.Program;
+import mousquetaires.program.Program;
 import java.util.ArrayList;
 import java.util.HashMap;
 

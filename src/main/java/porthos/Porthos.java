@@ -22,15 +22,15 @@ import com.microsoft.z3.Status;
 import com.microsoft.z3.Z3Exception;
 import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 
-import dartagnan.LitmusLexer;
-import dartagnan.LitmusParser;
-import dartagnan.PorthosLexer;
-import dartagnan.PorthosParser;
-import dartagnan.program.Init;
-import dartagnan.program.Program;
+import mousquetaires.LitmusLexer;
+import mousquetaires.LitmusParser;
+import mousquetaires.PorthosLexer;
+import mousquetaires.PorthosParser;
+import mousquetaires.program.Init;
+import mousquetaires.program.Program;
 import mousquetaires.utils.Utils;
-import dartagnan.wmm.Domain;
-import dartagnan.wmm.Encodings;
+import mousquetaires.wmm.Domain;
+import mousquetaires.wmm.Encodings;
 
 import org.apache.commons.cli.*;
 

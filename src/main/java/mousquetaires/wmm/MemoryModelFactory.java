@@ -1,4 +1,4 @@
-package dartagnan.wmm;
+package mousquetaires.wmm;
 
 import mousquetaires.models.MemoryModelName;
 

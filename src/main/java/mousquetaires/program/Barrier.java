@@ -1,4 +1,4 @@
-package dartagnan.program;
+package mousquetaires.program;
 
 public class Barrier extends Event {
 

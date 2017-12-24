@@ -24,22 +24,22 @@ import com.microsoft.z3.Status;
 import com.microsoft.z3.Z3Exception;
 import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 
-import dartagnan.LitmusLexer;
-import dartagnan.LitmusParser;
-import dartagnan.PorthosLexer;
-import dartagnan.PorthosParser;
-import dartagnan.program.Program;
-import dartagnan.wmm.Domain;
-import dartagnan.wmm.Wmm;
-import dartagnan.wmm.BasicRelation;
-import dartagnan.wmm.CandidateAxiom;
-import dartagnan.wmm.RelComposition;
-import dartagnan.wmm.RelInterSect;
-import dartagnan.wmm.RelMinus;
-import dartagnan.wmm.RelTrans;
-import dartagnan.wmm.RelTransRef;
-import dartagnan.wmm.RelUnion;
-import dartagnan.wmm.Relation;
+import mousquetaires.LitmusLexer;
+import mousquetaires.LitmusParser;
+import mousquetaires.PorthosLexer;
+import mousquetaires.PorthosParser;
+import mousquetaires.program.Program;
+import mousquetaires.wmm.Domain;
+import mousquetaires.wmm.MemoryModel;
+import mousquetaires.wmm.BasicRelation;
+import mousquetaires.wmm.CandidateAxiom;
+import mousquetaires.wmm.RelComposition;
+import mousquetaires.wmm.RelInterSect;
+import mousquetaires.wmm.RelMinus;
+import mousquetaires.wmm.RelTrans;
+import mousquetaires.wmm.RelTransRef;
+import mousquetaires.wmm.RelUnion;
+import mousquetaires.wmm.Relation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -91,7 +91,7 @@ public class Aramis {
     private static HashMap<Program, Solver> solvers = new HashMap<>();
     private static final Context ctx = new Context();
     private static int[] current;
-    private static Wmm currentCandidate;
+    private static MemoryModel currentCandidate;
 
     /**
      *
@@ -372,7 +372,7 @@ public class Aramis {
     }
 
     private static boolean checkCandidate(CandidateAxiom ax, Program p) {
-        Wmm tempmodel = new Wmm();
+        MemoryModel tempmodel = new MemoryModel();
         tempmodel.addAxiom(ax);
         Solver s = solvers.get(p);
         s.push();
@@ -384,7 +384,7 @@ public class Aramis {
     }
 
     private static boolean checkCurrent() {
-        currentCandidate = new Wmm();
+        currentCandidate = new MemoryModel();
         for (int i : current) {
             currentCandidate.addAxiom(candidates.get(i));
         }

@@ -1,11 +1,11 @@
-package dartagnan.wmm;
+package mousquetaires.wmm;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.microsoft.z3.*;
 
-import dartagnan.program.*;
+import mousquetaires.program.*;
 
 public class PSO {
 

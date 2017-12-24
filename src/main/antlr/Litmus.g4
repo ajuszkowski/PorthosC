@@ -1,9 +1,9 @@
 grammar Litmus;
 
 @header{
-import dartagnan.program.*;
-import dartagnan.expression.*;
-import dartagnan.program.Thread;
+import mousquetaires.program.*;
+import mousquetaires.expression.*;
+import mousquetaires.program.Thread;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
