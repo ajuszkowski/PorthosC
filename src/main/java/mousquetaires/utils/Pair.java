@@ -1,4 +1,4 @@
-package dartagnan.utils;
+package mousquetaires.utils;
 
 public class Pair<A, B> {
     private A first;

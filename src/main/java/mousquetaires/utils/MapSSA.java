@@ -1,4 +1,4 @@
-package dartagnan.utils;
+package mousquetaires.utils;
 
 import java.text.NumberFormat;
 import java.util.HashSet;
