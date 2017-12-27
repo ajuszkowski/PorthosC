@@ -1,10 +1,10 @@
-package mousquetaires.starters;
+package mousquetaires.app.modules.dartagnan;
 
-import com.beust.jcommander.ParameterException;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 import com.microsoft.z3.enumerations.Z3_ast_print_mode;
+import mousquetaires.app.modules.AppModule;
 import mousquetaires.languages.parsers.PorthosLexer;
 import mousquetaires.languages.parsers.PorthosParser;
 import mousquetaires.app.options.CommandLineOptions;
@@ -24,12 +24,14 @@ public class Dartagnan extends AppModule {
 
     private static final Logger log = Logger.getLogger(Dartagnan.class.getName());
 
-    Dartagnan(CommandLineOptions options) {
+    public Dartagnan(CommandLineOptions options) {
         super(options);
     }
 
     @Override
-    public void start() { // throws /*Z3Exception,*/ IOException {
+    public DartagnanVerdict run() { // throws /*Z3Exception,*/ IOException {
+
+        DartagnanVerdict verdict = new DartagnanVerdict();
 
         //if (inputFilePath.endsWith("litmus")) {
         //    LitmusLexer lexer = new LitmusLexer(input);
@@ -108,15 +110,17 @@ public class Dartagnan extends AppModule {
             s.add(p.encodeConsistent(ctx, target));
         }
 
-
         ctx.setPrintMode(Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL);
 
+
         if (s.check() == Status.SATISFIABLE) {
-            System.out.println("       0");
+            verdict.result = DartagnanVerdict.ReachabilityStatus.NotReachable;
         } else {
-            System.out.println("       1");
+            verdict.result = DartagnanVerdict.ReachabilityStatus.Reachable;
         }
 
+
+        return verdict;
     }
 
 }

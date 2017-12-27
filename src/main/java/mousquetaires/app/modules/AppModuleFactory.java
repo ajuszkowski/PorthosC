@@ -1,6 +1,7 @@
-package mousquetaires.starters;
+package mousquetaires.app.modules;
 
 
+import mousquetaires.app.modules.dartagnan.Dartagnan;
 import mousquetaires.app.options.CommandLineOptions;
 
 

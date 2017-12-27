@@ -1,4 +1,4 @@
-package mousquetaires.starters;
+package mousquetaires.app.modules;
 
 public enum AppModuleName {
     Porthos,   // Portability analysis

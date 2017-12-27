@@ -2,7 +2,7 @@ package mousquetaires.app.options;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import mousquetaires.starters.AppModule;
+import mousquetaires.app.modules.AppModule;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

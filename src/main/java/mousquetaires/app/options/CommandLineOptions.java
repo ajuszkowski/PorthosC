@@ -11,8 +11,8 @@ import mousquetaires.app.options.converters.LogLevelConverter;
 import mousquetaires.app.options.converters.MemoryModelNameConverter;
 import mousquetaires.app.options.validators.*;
 import mousquetaires.models.MemoryModelName;
-import mousquetaires.starters.AppModuleName;
-import mousquetaires.starters.Dartagnan;
+import mousquetaires.app.modules.AppModuleName;
+import mousquetaires.app.modules.dartagnan.Dartagnan;
 import mousquetaires.utils.logging.LogLevel;
 
 import java.io.File;

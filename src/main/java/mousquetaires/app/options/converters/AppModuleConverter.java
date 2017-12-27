@@ -1,7 +1,7 @@
 package mousquetaires.app.options.converters;
 
 import com.beust.jcommander.IStringConverter;
-import mousquetaires.starters.AppModuleName;
+import mousquetaires.app.modules.AppModuleName;
 
 
 public class AppModuleConverter implements IStringConverter<AppModuleName> {

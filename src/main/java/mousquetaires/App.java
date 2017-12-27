@@ -1,9 +1,8 @@
 package mousquetaires;
 
 import com.beust.jcommander.ParameterException;
+import mousquetaires.app.modules.*;
 import mousquetaires.app.options.CommandLineOptions;
-import mousquetaires.starters.AppModule;
-import mousquetaires.starters.AppModuleFactory;
 
 
 public class App {
@@ -22,6 +21,9 @@ public class App {
             System.exit(1);
         }
 
-        module.start();
+        IAppVerdictStringifier stringifier = new JsonVerdictStringifier();
+        AppVerdict verdict = module.run();
+
+        System.out.println(stringifier.stringify(verdict));
     }
 }

@@ -3,7 +3,7 @@ package mousquetaires.app.options.validators;
 
 import com.beust.jcommander.IValueValidator;
 import com.beust.jcommander.ParameterException;
-import mousquetaires.starters.AppModuleName;
+import mousquetaires.app.modules.AppModuleName;
 
 import java.util.Arrays;
 

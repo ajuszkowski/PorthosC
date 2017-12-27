@@ -1,6 +1,6 @@
 package mousquetaires.app.options;
 
-import mousquetaires.starters.AppModule;
+import mousquetaires.app.modules.AppModule;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
