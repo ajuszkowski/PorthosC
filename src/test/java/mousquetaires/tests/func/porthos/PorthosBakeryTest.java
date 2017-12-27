@@ -15,60 +15,60 @@ import static org.junit.Assert.assertEquals;
 public class PorthosBakeryTest extends BasePorthosFuncTest {
 
     private final String bakery_pts_rx    = targetsDirectory + "/all_rx/bakery.pts";
-    private final String bakery_litmus_rx = targetsDirectory + "/all_rx/bakery.litmus";
-    private final String bakery_pts_sc    = targetsDirectory + "/all_sc/bakery.pts";
+    //private final String bakery_litmus_rx = targetsDirectory + "/all_rx/bakery.litmus";
+    //private final String bakery_pts_sc    = targetsDirectory + "/all_sc/bakery.pts";
 
     // == Relaxed operations: ==
 
     @TestWith({
-            //bakery_pts_rx + ", " + "SC,    TSO,   StateInclusion, NonStatePortable",  // ~5 sec
+            bakery_pts_rx + ", " + "SC,    TSO,   StateInclusion, NonStatePortable",  // ~5 sec
             //bakery_pts_rx + ", " + "SC,    PSO,   StateInclusion, NonStatePortable",  // ~4 sec
             //bakery_pts_rx + ", " + "SC,    RMO,   StateInclusion, NonStatePortable",  // ~11 sec
             //bakery_pts_rx + ", " + "SC,    Alpha, StateInclusion, NonStatePortable",  // ~6 sec
-            //bakery_pts_rx + ", " + "SC,    Power, StateInclusion, NonStatePortable",  // ~50 sec !
-            //bakery_pts_rx + ", " + "SC,    ARM,   StateInclusion, NonStatePortable",  // ~1 m 33 sec !
+            //bakery_pts_rx + ", " + "SC,    Power, StateInclusion, NonStatePortable",  // ~50 sec
+            //bakery_pts_rx + ", " + "SC,    ARM,   StateInclusion, NonStatePortable",  // ~1 m 33 sec
             //
-            //bakery_pts_rx + ", " + "TSO,   SC,    StateInclusion, StatePortable",  // ~2 sec
+            bakery_pts_rx + ", " + "TSO,   SC,    StateInclusion, StatePortable",  // ~2 sec
             //bakery_pts_rx + ", " + "TSO,   PSO,   StateInclusion, StatePortable",  // ~3 sec
             //bakery_pts_rx + ", " + "TSO,   RMO,   StateInclusion, StatePortable",  // ~11 sec
-            //bakery_pts_rx + ", " + "TSO,   Alpha, StateInclusion, StatePortable",  // ~11 sec !
-            //bakery_pts_rx + ", " + "TSO,   Power, StateInclusion, StatePortable",  // ~1 m !
-            bakery_pts_rx + ", " + "TSO,   ARM,   StateInclusion, StatePortable",  // ?
-
-            bakery_pts_rx + ", " + "PSO,   SC,    StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "PSO,   TSO,   StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "PSO,   RMO,   StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "PSO,   Alpha, StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "PSO,   Power, StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "PSO,   ARM,   StateInclusion, StatePortable",  // ?
-
-            bakery_pts_rx + ", " + "RMO,   SC,    StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "RMO,   TSO,   StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "RMO,   PSO,   StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "RMO,   Alpha, StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "RMO,   Power, StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "RMO,   ARM,   StateInclusion, StatePortable",  // ?
-
-            bakery_pts_rx + ", " + "Alpha, SC,    StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "Alpha, TSO,   StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "Alpha, PSO,   StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "Alpha, RMO,   StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "Alpha, Power, StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "Alpha, ARM,   StateInclusion, StatePortable",  // ?
-
-            bakery_pts_rx + ", " + "Power, SC,    StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "Power, TSO,   StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "Power, PSO,   StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "Power, RMO,   StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "Power, Alpha, StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "Power, ARM,   StateInclusion, StatePortable",  // ?
-
-            bakery_pts_rx + ", " + "ARM,   SC,    StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "ARM,   TSO,   StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "ARM,   PSO,   StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "ARM,   RMO,   StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "ARM,   Alpha, StateInclusion, StatePortable",  // ?
-            bakery_pts_rx + ", " + "ARM,   Power, StateInclusion, StatePortable",  // ?
+            //bakery_pts_rx + ", " + "TSO,   Alpha, StateInclusion, StatePortable",  // ~11 sec
+            //bakery_pts_rx + ", " + "TSO,   Power, StateInclusion, StatePortable",  // ~1 min
+            //bakery_pts_rx + ", " + "TSO,   ARM,   StateInclusion, StatePortable",  // ~1m 37s
+            //
+            bakery_pts_rx + ", " + "PSO,   SC,    StateInclusion, StatePortable",  // ~2 sec
+            //bakery_pts_rx + ", " + "PSO,   TSO,   StateInclusion, StatePortable",  // ~2 sec
+            //bakery_pts_rx + ", " + "PSO,   RMO,   StateInclusion, StatePortable",  // ~11 sec
+            //bakery_pts_rx + ", " + "PSO,   Alpha, StateInclusion, StatePortable",  // ~11 sec
+            //bakery_pts_rx + ", " + "PSO,   Power, StateInclusion, StatePortable",  // ~47 sec
+            //bakery_pts_rx + ", " + "PSO,   ARM,   StateInclusion, StatePortable",  // ~1 min 32 sec
+            //
+            bakery_pts_rx + ", " + "RMO,   SC,    StateInclusion, StatePortable",  // ~5 sec
+            //bakery_pts_rx + ", " + "RMO,   TSO,   StateInclusion, StatePortable",  // ~5 sec
+            //bakery_pts_rx + ", " + "RMO,   PSO,   StateInclusion, StatePortable",  // ~5 sec
+            //bakery_pts_rx + ", " + "RMO,   Alpha, StateInclusion, StatePortable",  // ~39 sec
+            //bakery_pts_rx + ", " + "RMO,   Power, StateInclusion, StatePortable",  // ~17 sec
+            //bakery_pts_rx + ", " + "RMO,   ARM,   StateInclusion, StatePortable",  // ~2m
+            //
+            bakery_pts_rx + ", " + "Alpha, SC,    StateInclusion, StatePortable",  // ~5s
+            //bakery_pts_rx + ", " + "Alpha, TSO,   StateInclusion, StatePortable",  // ~5s
+            //bakery_pts_rx + ", " + "Alpha, PSO,   StateInclusion, StatePortable",  // ~5s
+            //bakery_pts_rx + ", " + "Alpha, RMO,   StateInclusion, StatePortable",  // ~30s
+            //bakery_pts_rx + ", " + "Alpha, Power, StateInclusion, StatePortable",  // ~15s
+            //bakery_pts_rx + ", " + "Alpha, ARM,   StateInclusion, StatePortable",  // ~20s
+            //
+            bakery_pts_rx + ", " + "Power, SC,    StateInclusion, StatePortable",  // ~10s
+            //bakery_pts_rx + ", " + "Power, TSO,   StateInclusion, StatePortable",  // ~20s
+            //bakery_pts_rx + ", " + "Power, PSO,   StateInclusion, StatePortable",  // ~10s
+            //bakery_pts_rx + ", " + "Power, RMO,   StateInclusion, StatePortable",  // ~1.3m
+            //bakery_pts_rx + ", " + "Power, Alpha, StateInclusion, StatePortable",  // ~1.5m
+            //bakery_pts_rx + ", " + "Power, ARM,   StateInclusion, StatePortable",  // ~10s
+            //
+            //bakery_pts_rx + ", " + "ARM,   SC,    StateInclusion, StatePortable",  // ~35s
+            bakery_pts_rx + ", " + "ARM,   TSO,   StateInclusion, StatePortable",  // ~5m
+            //bakery_pts_rx + ", " + "ARM,   PSO,   StateInclusion, StatePortable",  // ~35s
+            //bakery_pts_rx + ", " + "ARM,   RMO,   StateInclusion, StatePortable",  // ~2m 45s
+            //bakery_pts_rx + ", " + "ARM,   Alpha, StateInclusion, StatePortable",  // ~30s
+            //bakery_pts_rx + ", " + "ARM,   Power, StateInclusion, StatePortable",  // ~40s
     })
     public void test_bakery_pts_rx(String inputProgramFile,
                                    MemoryModelName sourceModel,
