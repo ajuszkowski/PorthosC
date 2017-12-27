@@ -1,59 +1,35 @@
 package mousquetaires.tests.func;
 
-import mousquetaires.app.modules.AppModule;
-import mousquetaires.app.modules.AppModuleName;
-import mousquetaires.app.modules.AppVerdict;
-import mousquetaires.app.modules.dartagnan.Dartagnan;
+import mousquetaires.app.modules.dartagnan.DartagnanModule;
+import mousquetaires.app.modules.dartagnan.DartagnanOptions;
 import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
-import mousquetaires.app.options.AppOptions;
 import mousquetaires.models.MemoryModelName;
-import mousquetaires.utils.logging.LogLevel;
 
 import java.io.File;
 import java.io.IOException;
 
 
 public abstract class FuncTestsBase {
+
     protected final String targetsDirectory = "src/test/resources/targets";
 
 
     protected DartagnanVerdict runDartagnan(String inputProgramFile, MemoryModelName sourceModel) {
-        return (DartagnanVerdict) run(AppModuleName.Dartagnan, inputProgramFile, sourceModel, null);
-    }
+        DartagnanOptions options = new DartagnanOptions();
+        options.inputProgramFile = new File(inputProgramFile);
+        options.sourceModel = sourceModel;
 
-    protected AppVerdict run(AppModuleName moduleName,
-                             String inputProgramFile,
-                             MemoryModelName sourceModel,
-                             MemoryModelName targetModel) {
-        AppModule module = createModule(moduleName, inputProgramFile, sourceModel, targetModel);
+        DartagnanModule module = new DartagnanModule(options);
         try {
             return module.run();
         } catch (IOException e) {
-            // todo: log
-            e.printStackTrace();
+            logError(e);
             return null;
         }
     }
 
-    private AppModule createModule(AppModuleName moduleName,
-                                   String inputProgramFile,
-                                   MemoryModelName sourceModel,
-                                   MemoryModelName targetModel) {
-        AppOptions options = new AppOptions();
-        options.inputProgramFile = new File(inputProgramFile);
-        options.sourceModel = sourceModel;
-        options.targetModel = targetModel;
-        options.logLevel = LogLevel.Info;
-
-        switch (moduleName) {
-            case Porthos:
-                throw new IllegalArgumentException(); // TODO
-            case Dartagnan:
-                return new Dartagnan(options);
-            case Aramis:
-                throw new IllegalArgumentException();  // TODO
-            default:
-                throw new IllegalArgumentException(moduleName.toString());
-        }
+    private void logError(Exception e) {
+        // todo: log
+        e.printStackTrace();
     }
 }

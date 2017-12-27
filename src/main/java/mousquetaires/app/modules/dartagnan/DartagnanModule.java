@@ -3,7 +3,7 @@ package mousquetaires.app.modules.dartagnan;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.enumerations.Z3_ast_print_mode;
-import mousquetaires.app.modules.AppModule;
+import mousquetaires.app.modules.IAppModule;
 import mousquetaires.app.options.AppOptions;
 import mousquetaires.languages.parsers.ProgramParserFactory;
 import mousquetaires.program.Program;
@@ -15,12 +15,14 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 
-public class Dartagnan extends AppModule {
+public class DartagnanModule implements IAppModule {
 
-    private static final Logger log = Logger.getLogger(Dartagnan.class.getName());
+    private static final Logger log = Logger.getLogger(DartagnanModule.class.getName());
 
-    public Dartagnan(AppOptions options) {
-        super(options);
+    private final DartagnanOptions options;
+
+    public DartagnanModule(DartagnanOptions options) {
+        this.options = options;
     }
 
     @Override
