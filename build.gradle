@@ -31,12 +31,12 @@ idea {
     module {
         name = "mousquetaires"
         contentRoot         =  file(".")
-        outputDir           =  file("${project.projectDir}/build")
-        sourceDirs          = [file("${project.projectDir}/src/main/java")] // src/main/resources ?
-        sourceDirs          += file("${project.projectDir}/src/generated/java")  // after 'generatedSourceDirs' will become not incubaging, set it here
-        testSourceDirs      = [file("${project.projectDir}/src/test/java")]
-        excludeDirs         += file("${project.projectDir}/.idea")
-        excludeDirs         += file("${project.projectDir}/.gradle")
+        outputDir           =  file("build")
+        sourceDirs          = [file("src/main/java")] // + src/main/resources ?
+        sourceDirs          += file("src/generated/java")  // after 'generatedSourceDirs' will become not incubaging, set it here
+        testSourceDirs      = [file("src/test/java")]
+        excludeDirs         += file(".idea")
+        excludeDirs         += file(".gradle")
         testOutputDir       = file("${outputDir}/test")
     }
 }
@@ -58,8 +58,8 @@ idea {
 
 
 ext.antlr4 = [
-    generatedSourceDir: "${project.projectDir}/src/generated/java/",
-    grammarsDir: "${project.projectDir}/src/main/antlr/",
+    generatedSourceDir: "src/generated/java/",
+    grammarsDir: "src/main/antlr/",
     resultPackage: "mousquetaires.languages.parsers",
 ]
 
