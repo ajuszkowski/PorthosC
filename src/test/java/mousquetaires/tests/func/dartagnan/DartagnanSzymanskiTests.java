@@ -13,8 +13,11 @@ import static org.junit.Assert.assertEquals;
 @RunWith(ZohhakRunner.class)
 public class DartagnanSzymanskiTests extends FuncTestsBase {
 
-    private final String szymanski_pts_rx = targetsDirectory + "/all_rx/szymanski.pts";
-    private final String szymanski_pts_sc = targetsDirectory + "/all_sc/szymanski.pts";
+    private final String szymanski_pts_rx    = targetsDirectory + "/all_rx/szymanski.pts";
+    private final String szymanski_litmus_rx = targetsDirectory + "/all_rx/szymanski.litmus";
+    private final String szymanski_pts_sc    = targetsDirectory + "/all_sc/szymanski.pts";
+
+    // == Relaxed operations: ==
 
     @TestWith({
             szymanski_pts_rx + ", " + "SC,    Reachable",
@@ -26,9 +29,25 @@ public class DartagnanSzymanskiTests extends FuncTestsBase {
             szymanski_pts_rx + ", " + "ARM,   NonReachable",
     })
     public void test_szymanski_pts_rx(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
-        DartagnanVerdict verdict = createDartagnanModule(inputProgramFile, sourceModel).run();
-        assertEquals(verdict.result, expected);
+        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        assertEquals(expected, verdict.result);
     }
+
+    @TestWith({
+            szymanski_litmus_rx + ", " + "SC,    NonReachable",
+            szymanski_litmus_rx + ", " + "TSO,   NonReachable",
+            szymanski_litmus_rx + ", " + "PSO,   NonReachable",
+            szymanski_litmus_rx + ", " + "RMO,   NonReachable",
+            szymanski_litmus_rx + ", " + "Alpha, NonReachable",
+            szymanski_litmus_rx + ", " + "Power, NonReachable",
+            szymanski_litmus_rx + ", " + "ARM,   NonReachable",
+    })
+    public void test_szymanski_litmus_rx(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
+        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        assertEquals(expected, verdict.result);
+    }
+
+    // == Sequentially consistent operations: ==
 
     @TestWith({
             szymanski_pts_sc + ", " + "SC,    NonReachable",
@@ -40,8 +59,8 @@ public class DartagnanSzymanskiTests extends FuncTestsBase {
             szymanski_pts_sc + ", " + "ARM,   NonReachable",
     })
     public void test_szymanski_pts_sc(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
-        DartagnanVerdict verdict = createDartagnanModule(inputProgramFile, sourceModel).run();
-        assertEquals(verdict.result, expected);
+        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        assertEquals(expected, verdict.result);
     }
 
 

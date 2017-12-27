@@ -2,20 +2,37 @@ package mousquetaires.tests.func;
 
 import mousquetaires.app.modules.AppModule;
 import mousquetaires.app.modules.AppModuleName;
+import mousquetaires.app.modules.AppVerdict;
 import mousquetaires.app.modules.dartagnan.Dartagnan;
+import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
 import mousquetaires.app.options.AppOptions;
 import mousquetaires.models.MemoryModelName;
 import mousquetaires.utils.logging.LogLevel;
 
 import java.io.File;
+import java.io.IOException;
 
 
 public abstract class FuncTestsBase {
-
     protected final String targetsDirectory = "src/test/resources/targets";
 
-    protected Dartagnan createDartagnanModule(String inputProgramFile, MemoryModelName sourceModel) {
-        return (Dartagnan) createModule(AppModuleName.Dartagnan, inputProgramFile, sourceModel, null);
+
+    protected DartagnanVerdict runDartagnan(String inputProgramFile, MemoryModelName sourceModel) {
+        return (DartagnanVerdict) run(AppModuleName.Dartagnan, inputProgramFile, sourceModel, null);
+    }
+
+    protected AppVerdict run(AppModuleName moduleName,
+                             String inputProgramFile,
+                             MemoryModelName sourceModel,
+                             MemoryModelName targetModel) {
+        AppModule module = createModule(moduleName, inputProgramFile, sourceModel, targetModel);
+        try {
+            return module.run();
+        } catch (IOException e) {
+            // todo: log
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private AppModule createModule(AppModuleName moduleName,

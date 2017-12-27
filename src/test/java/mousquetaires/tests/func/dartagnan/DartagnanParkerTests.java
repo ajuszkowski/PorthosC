@@ -13,8 +13,11 @@ import static org.junit.Assert.assertEquals;
 @RunWith(ZohhakRunner.class)
 public class DartagnanParkerTests extends FuncTestsBase {
 
-    private final String parker_pts_rx = targetsDirectory + "/all_rx/parker.pts";
-    private final String parker_pts_sc = targetsDirectory + "/all_sc/parker.pts";
+    private final String parker_pts_rx    = targetsDirectory + "/all_rx/parker.pts";
+    private final String parker_litmus_rx = targetsDirectory + "/all_rx/parker.litmus";
+    private final String parker_pts_sc    = targetsDirectory + "/all_sc/parker.pts";
+
+    // == Relaxed operations: ==
 
     @TestWith({
             parker_pts_rx + ", " + "SC,    Reachable",
@@ -26,9 +29,25 @@ public class DartagnanParkerTests extends FuncTestsBase {
             parker_pts_rx + ", " + "ARM,   Reachable",
     })
     public void test_parker_pts_rx(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
-        DartagnanVerdict verdict = createDartagnanModule(inputProgramFile, sourceModel).run();
-        assertEquals(verdict.result, expected);
+        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        assertEquals(expected, verdict.result);
     }
+
+    @TestWith({
+            parker_litmus_rx + ", " + "SC,    NonReachable",
+            parker_litmus_rx + ", " + "TSO,   NonReachable",
+            parker_litmus_rx + ", " + "PSO,   NonReachable",
+            parker_litmus_rx + ", " + "RMO,   NonReachable",
+            parker_litmus_rx + ", " + "Alpha, NonReachable",
+            parker_litmus_rx + ", " + "Power, NonReachable",
+            parker_litmus_rx + ", " + "ARM,   NonReachable",
+    })
+    public void test_parker_litmus_rx(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
+        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        assertEquals(expected, verdict.result);
+    }
+
+    // == Sequentially consistent operations: ==
 
     @TestWith({
             parker_pts_sc + ", " + "SC,    NonReachable",
@@ -40,8 +59,8 @@ public class DartagnanParkerTests extends FuncTestsBase {
             parker_pts_sc + ", " + "ARM,   NonReachable",
     })
     public void test_parker_pts_sc(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
-        DartagnanVerdict verdict = createDartagnanModule(inputProgramFile, sourceModel).run();
-        assertEquals(verdict.result, expected);
+        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        assertEquals(expected, verdict.result);
     }
 
 

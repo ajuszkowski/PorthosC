@@ -13,8 +13,11 @@ import static org.junit.Assert.assertEquals;
 @RunWith(ZohhakRunner.class)
 public class DartagnanBakeryTests extends FuncTestsBase {
 
-    private final String bakery_pts_rx = targetsDirectory + "/all_rx/bakery.pts";
-    private final String bakery_pts_sc = targetsDirectory + "/all_sc/bakery.pts";
+    private final String bakery_pts_rx    = targetsDirectory + "/all_rx/bakery.pts";
+    private final String bakery_litmus_rx = targetsDirectory + "/all_rx/bakery.litmus";
+    private final String bakery_pts_sc    = targetsDirectory + "/all_sc/bakery.pts";
+
+    // == Relaxed operations: ==
 
     @TestWith({
             bakery_pts_rx + ", " + "SC,    Reachable",
@@ -26,9 +29,25 @@ public class DartagnanBakeryTests extends FuncTestsBase {
             bakery_pts_rx + ", " + "ARM,   NonReachable",
     })
     public void test_bakery_pts_rx(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
-        DartagnanVerdict verdict = createDartagnanModule(inputProgramFile, sourceModel).run();
-        assertEquals(verdict.result, expected);
+        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        assertEquals(expected, verdict.result);
     }
+
+    @TestWith({
+            bakery_litmus_rx + ", " + "SC,    NonReachable",
+            bakery_litmus_rx + ", " + "TSO,   NonReachable",
+            bakery_litmus_rx + ", " + "PSO,   NonReachable",
+            bakery_litmus_rx + ", " + "RMO,   NonReachable",
+            bakery_litmus_rx + ", " + "Alpha, NonReachable",
+            bakery_litmus_rx + ", " + "Power, NonReachable",
+            bakery_litmus_rx + ", " + "ARM,   NonReachable",
+    })
+    public void test_bakery_litmus_rx(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
+        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        assertEquals(expected, verdict.result);
+    }
+
+    // == Sequentially consistent operations: ==
 
     @TestWith({
             bakery_pts_sc + ", " + "SC,    NonReachable",
@@ -40,9 +59,8 @@ public class DartagnanBakeryTests extends FuncTestsBase {
             bakery_pts_sc + ", " + "ARM,   NonReachable",
     })
     public void test_bakery_pts_sc(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
-        DartagnanVerdict verdict = createDartagnanModule(inputProgramFile, sourceModel).run();
-        assertEquals(verdict.result, expected);
+        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        assertEquals(expected, verdict.result);
     }
-
 
 }

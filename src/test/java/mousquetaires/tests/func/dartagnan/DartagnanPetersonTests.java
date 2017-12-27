@@ -13,8 +13,11 @@ import static org.junit.Assert.assertEquals;
 @RunWith(ZohhakRunner.class)
 public class DartagnanPetersonTests extends FuncTestsBase {
 
-    private final String peterson_pts_rx = targetsDirectory + "/all_rx/peterson.pts";
-    private final String peterson_pts_sc = targetsDirectory + "/all_sc/peterson.pts";
+    private final String peterson_pts_rx    = targetsDirectory + "/all_rx/peterson.pts";
+    private final String peterson_litmus_rx = targetsDirectory + "/all_rx/peterson.litmus";
+    private final String peterson_pts_sc    = targetsDirectory + "/all_sc/peterson.pts";
+
+    // == Relaxed operations: ==
 
     @TestWith({
             peterson_pts_rx + ", " + "SC,    Reachable",
@@ -26,9 +29,25 @@ public class DartagnanPetersonTests extends FuncTestsBase {
             peterson_pts_rx + ", " + "ARM,   NonReachable",
     })
     public void test_peterson_pts_rx(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
-        DartagnanVerdict verdict = createDartagnanModule(inputProgramFile, sourceModel).run();
-        assertEquals(verdict.result, expected);
+        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        assertEquals(expected, verdict.result);
     }
+
+    @TestWith({
+            peterson_litmus_rx + ", " + "SC,    NonReachable",
+            peterson_litmus_rx + ", " + "TSO,   NonReachable",
+            peterson_litmus_rx + ", " + "PSO,   NonReachable",
+            peterson_litmus_rx + ", " + "RMO,   NonReachable",
+            peterson_litmus_rx + ", " + "Alpha, NonReachable",
+            peterson_litmus_rx + ", " + "Power, NonReachable",
+            peterson_litmus_rx + ", " + "ARM,   NonReachable",
+    })
+    public void test_peterson_litmus_rx(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
+        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        assertEquals(expected, verdict.result);
+    }
+
+    // == Sequentially consistent operations: ==
 
     @TestWith({
             peterson_pts_sc + ", " + "SC,    NonReachable",
@@ -40,8 +59,8 @@ public class DartagnanPetersonTests extends FuncTestsBase {
             peterson_pts_sc + ", " + "ARM,   NonReachable",
     })
     public void test_peterson_pts_sc(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
-        DartagnanVerdict verdict = createDartagnanModule(inputProgramFile, sourceModel).run();
-        assertEquals(verdict.result, expected);
+        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        assertEquals(expected, verdict.result);
     }
 
 

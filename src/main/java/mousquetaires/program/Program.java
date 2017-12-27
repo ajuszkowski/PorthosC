@@ -66,6 +66,7 @@ public class Program {
         ListIterator<Thread> iter = threads.listIterator();
         while (iter.hasNext()) {
             Thread t = iter.next();
+            // TODO: find out why the null thread appears here, see tests DartagnanBurnsTests.test_burns_litmus_rx and DartagnanLamportTests.test_lamport_litmus_rx
             t = t.unroll(steps);
             unrolledThreads.add(t);
         }

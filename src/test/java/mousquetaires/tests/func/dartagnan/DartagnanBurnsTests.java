@@ -5,6 +5,7 @@ import com.googlecode.zohhak.api.runners.ZohhakRunner;
 import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
 import mousquetaires.tests.func.FuncTestsBase;
 import mousquetaires.models.MemoryModelName;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
@@ -13,8 +14,11 @@ import static org.junit.Assert.assertEquals;
 @RunWith(ZohhakRunner.class)
 public class DartagnanBurnsTests extends FuncTestsBase {
 
-    private final String burns_pts_rx = targetsDirectory + "/all_rx/burns.pts";
-    private final String burns_pts_sc = targetsDirectory + "/all_sc/burns.pts";
+    private final String burns_pts_rx    = targetsDirectory + "/all_rx/burns.pts";
+    private final String burns_litmus_rx = targetsDirectory + "/all_rx/burns.litmus";
+    private final String burns_pts_sc    = targetsDirectory + "/all_sc/burns.pts";
+
+    // == Relaxed operations: ==
 
     @TestWith({
             burns_pts_rx + ", " + "SC,    Reachable",
@@ -26,10 +30,27 @@ public class DartagnanBurnsTests extends FuncTestsBase {
             burns_pts_rx + ", " + "ARM,   NonReachable",
     })
     public void test_burns_pts_rx(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
-        DartagnanVerdict verdict = createDartagnanModule(inputProgramFile, sourceModel).run();
-        assertEquals(verdict.result, expected);
+        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        assertEquals(expected, verdict.result);
     }
 
+    @Ignore("For now (as well as in original version) the NullPointerException is thrown at Atom.getRegs(Atom.java:51)")
+    @TestWith({
+            burns_litmus_rx + ", " + "SC,    Reachable",
+            burns_litmus_rx + ", " + "TSO,   Reachable",
+            burns_litmus_rx + ", " + "PSO,   NonReachable",
+            burns_litmus_rx + ", " + "RMO,   NonReachable",
+            burns_litmus_rx + ", " + "Alpha, NonReachable",
+            burns_litmus_rx + ", " + "Power, NonReachable",
+            burns_litmus_rx + ", " + "ARM,   NonReachable",
+    })
+    public void test_burns_litmus_rx(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
+        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        assertEquals(expected, verdict.result);
+    }
+
+    // == Sequentially consistent operations: ==
+    
     @TestWith({
             burns_pts_sc + ", " + "SC,    NonReachable",
             burns_pts_sc + ", " + "TSO,   NonReachable",
@@ -40,8 +61,8 @@ public class DartagnanBurnsTests extends FuncTestsBase {
             burns_pts_sc + ", " + "ARM,   NonReachable",
     })
     public void test_burns_pts_sc(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
-        DartagnanVerdict verdict = createDartagnanModule(inputProgramFile, sourceModel).run();
-        assertEquals(verdict.result, expected);
+        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        assertEquals(expected, verdict.result);
     }
 
 
