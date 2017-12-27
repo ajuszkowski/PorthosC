@@ -1,6 +1,5 @@
 package mousquetaires.tests.func.dartagnan;
 
-import mousquetaires.tests.func.FuncTestsBase;
 import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
 import mousquetaires.models.MemoryModelName;
 import com.googlecode.zohhak.api.runners.ZohhakRunner;
@@ -11,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 
 @RunWith(ZohhakRunner.class)
-public class DartagnanBakeryTests extends FuncTestsBase {
+public class DartagnanBakeryTest extends BaseDartagnanFuncTest {
 
     private final String bakery_pts_rx    = targetsDirectory + "/all_rx/bakery.pts";
     private final String bakery_litmus_rx = targetsDirectory + "/all_rx/bakery.litmus";
@@ -29,7 +28,7 @@ public class DartagnanBakeryTests extends FuncTestsBase {
             bakery_pts_rx + ", " + "ARM,   NonReachable",
     })
     public void test_bakery_pts_rx(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
-        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        DartagnanVerdict verdict = runTest(inputProgramFile, sourceModel);
         assertEquals(expected, verdict.result);
     }
 
@@ -43,7 +42,7 @@ public class DartagnanBakeryTests extends FuncTestsBase {
             bakery_litmus_rx + ", " + "ARM,   NonReachable",
     })
     public void test_bakery_litmus_rx(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
-        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        DartagnanVerdict verdict = runTest(inputProgramFile, sourceModel);
         assertEquals(expected, verdict.result);
     }
 
@@ -59,7 +58,7 @@ public class DartagnanBakeryTests extends FuncTestsBase {
             bakery_pts_sc + ", " + "ARM,   NonReachable",
     })
     public void test_bakery_pts_sc(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
-        DartagnanVerdict verdict = runDartagnan(inputProgramFile, sourceModel);
+        DartagnanVerdict verdict = runTest(inputProgramFile, sourceModel);
         assertEquals(expected, verdict.result);
     }
 
