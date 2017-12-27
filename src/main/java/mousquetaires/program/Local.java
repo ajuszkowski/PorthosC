@@ -54,7 +54,7 @@ public class Local extends Event {
         return newLocal;
     }
 
-    public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) throws Z3Exception {
+    public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) {
         if(mainThread == null){
             System.out.println(String.format("Check encodeDF for %s", this));
             return null;

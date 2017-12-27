@@ -89,7 +89,7 @@ public class Seq extends Thread {
         return newSeq;
     }
 
-    public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) throws Z3Exception {
+    public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) {
         if(mainThread == null){
             System.out.println(String.format("Check encodeDF for %s", this));
             return null;
@@ -128,7 +128,7 @@ public class Seq extends Thread {
         return ret;
     }
 
-    public BoolExpr encodeCF(Context ctx) throws Z3Exception {
+    public BoolExpr encodeCF(Context ctx) {
         return ctx.mkAnd(
                 ctx.mkImplies(ctx.mkOr(ctx.mkBoolConst(t1.cfVar()), ctx.mkBoolConst(t2.cfVar())), ctx.mkBoolConst(cfVar())),
                 ctx.mkImplies(ctx.mkBoolConst(cfVar()), ctx.mkAnd(ctx.mkBoolConst(t1.cfVar()), ctx.mkBoolConst(t2.cfVar()))),
@@ -136,7 +136,7 @@ public class Seq extends Thread {
                 t2.encodeCF(ctx));
     }
 
-    public BoolExpr allExecute(Context ctx) throws Z3Exception {
+    public BoolExpr allExecute(Context ctx) {
         return ctx.mkAnd(
                 ctx.mkEq(ctx.mkAnd(ctx.mkBoolConst(t1.cfVar()), ctx.mkBoolConst(t2.cfVar())), ctx.mkBoolConst(cfVar())),
                 t1.allExecute(ctx),

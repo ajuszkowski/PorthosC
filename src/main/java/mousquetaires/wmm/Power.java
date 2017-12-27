@@ -15,7 +15,7 @@ import mousquetaires.utils.Utils;
 
 public class Power {
 
-    public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
+    public static BoolExpr encode(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
         Set<Event> eventsL = program.getEvents().stream().filter(e -> e instanceof MemEvent || e instanceof Local).collect(Collectors.toSet());
 
@@ -73,7 +73,7 @@ public class Power {
         return enc;
     }
 
-    public static BoolExpr Consistent(Program program, Context ctx) throws Z3Exception {
+    public static BoolExpr Consistent(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
         return ctx.mkAnd(Encodings.satAcyclic("hb-power", events, ctx),
                         Encodings.satIrref("((fre;prop);(hb-power)*)", events, ctx),
@@ -81,7 +81,7 @@ public class Power {
                         Encodings.satAcyclic("(poloc+com)", events, ctx));
     }
 
-    public static BoolExpr Inconsistent(Program program, Context ctx) throws Z3Exception {
+    public static BoolExpr Inconsistent(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
         BoolExpr enc = ctx.mkAnd(Encodings.satCycleDef("hb-power", events, ctx),
                                 Encodings.satCycleDef("(co+prop)", events, ctx),
@@ -93,7 +93,7 @@ public class Power {
         return enc;
     }
 
-    private static BoolExpr satPowerPPO(Set<Event> events, Context ctx) throws Z3Exception {
+    private static BoolExpr satPowerPPO(Set<Event> events, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         for(Event e1 : events) {
             for(Event e2 : events) {

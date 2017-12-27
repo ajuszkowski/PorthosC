@@ -59,5 +59,5 @@ public abstract class Relation {
     
     
     
-    public abstract BoolExpr encode(Program program, Context ctx) throws Z3Exception;
+    public abstract BoolExpr encode(Program program, Context ctx);
 }

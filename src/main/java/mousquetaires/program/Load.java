@@ -49,7 +49,7 @@ public class Load extends MemEvent {
         return newLoad;
     }
 
-    public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) throws Z3Exception {
+    public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) {
         if(mainThread == null){
             System.out.println(String.format("Check encodeDF for %s", this));
             return null;

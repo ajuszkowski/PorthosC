@@ -31,7 +31,7 @@ import static mousquetaires.utils.Utils.ssaReg;
 
 public class Domain {
 
-    public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
+    public static BoolExpr encode(Program program, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
 
         Set<Event> mEvents = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());

@@ -9,7 +9,7 @@ import mousquetaires.program.*;
 
 public class PSO {
 
-    public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
+    public static BoolExpr encode(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
 
         BoolExpr enc = Encodings.satUnion("co", "fr", events, ctx);
@@ -22,12 +22,12 @@ public class PSO {
         return enc;
     }
 
-    public static BoolExpr Consistent(Program program, Context ctx) throws Z3Exception {
+    public static BoolExpr Consistent(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
         return ctx.mkAnd(Encodings.satAcyclic("(poloc+com)", events, ctx), Encodings.satAcyclic("ghb-pso", events, ctx));
     }
 
-    public static BoolExpr Inconsistent(Program program, Context ctx) throws Z3Exception {
+    public static BoolExpr Inconsistent(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
         BoolExpr enc = ctx.mkAnd(Encodings.satCycleDef("(poloc+com)", events, ctx), Encodings.satCycleDef("ghb-pso", events, ctx));
         enc = ctx.mkAnd(enc, ctx.mkOr(Encodings.satCycle("(poloc+com)", events, ctx), Encodings.satCycle("ghb-pso", events, ctx)));

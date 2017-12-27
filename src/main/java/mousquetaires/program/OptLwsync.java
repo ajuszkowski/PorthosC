@@ -12,7 +12,7 @@ public class OptLwsync extends Lwsync {
         return String.format("%slwsync?", String.join("", Collections.nCopies(condLevel, "  ")));
     }
 
-    public BoolExpr encodeCF(Context ctx) throws Z3Exception {
+    public BoolExpr encodeCF(Context ctx) {
         return ctx.mkBoolConst(cfVar());
     }
 }

@@ -43,7 +43,7 @@ public class Write extends MemEvent {
         return this;
     }
 
-    public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) throws Z3Exception {
+    public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) {
         System.out.println(String.format("Check encodeDF for %s", this));
         return null;
     }

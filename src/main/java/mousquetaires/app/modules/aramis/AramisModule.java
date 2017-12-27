@@ -227,7 +227,7 @@
 //
 //    }
 //
-//    public static void main(String[] args) throws Z3Exception, IOException {
+//    public static void main(String[] args), IOException {
 //        log.setLevel(Level.FINEST);
 //        ConsoleHandler handler = new ConsoleHandler();
 //        ctx.setPrintMode(Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL);

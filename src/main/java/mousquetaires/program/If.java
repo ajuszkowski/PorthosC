@@ -141,7 +141,7 @@ public class If extends Thread {
         return ret;
     }
 
-    public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) throws Z3Exception {
+    public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) {
         if(mainThread == null){
             System.out.println(String.format("Check encodeDF for %s", this));
             return null;
@@ -161,14 +161,14 @@ public class If extends Thread {
         }
     }
 
-    public BoolExpr encodeCF(Context ctx) throws Z3Exception {
+    public BoolExpr encodeCF(Context ctx) {
         return ctx.mkAnd(
                 ctx.mkEq(ctx.mkBoolConst(cfVar()), ctx.mkXor(ctx.mkBoolConst(t1.cfVar()), ctx.mkBoolConst(t2.cfVar()))),
                 t1.encodeCF(ctx),
                 t2.encodeCF(ctx));
     }
 
-    public BoolExpr allExecute(Context ctx) throws Z3Exception {
+    public BoolExpr allExecute(Context ctx) {
         return ctx.mkAnd(
                 ctx.mkEq(ctx.mkAnd(ctx.mkBoolConst(t1.cfVar()), ctx.mkBoolConst(t2.cfVar())), ctx.mkBoolConst(cfVar())),                t1.allExecute(ctx),
                 t2.allExecute(ctx));

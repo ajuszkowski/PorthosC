@@ -206,7 +206,7 @@ public class Utils {
         return edge.split("\\(")[1].split(",")[1].split("\\)")[0];
     }
 
-    public static BoolExpr encodeMissingIndexes(If t, MapSSA map1, MapSSA map2, Context ctx) throws Z3Exception {
+    public static BoolExpr encodeMissingIndexes(If t, MapSSA map1, MapSSA map2, Context ctx) {
 
         BoolExpr ret = ctx.mkTrue();
         BoolExpr index = ctx.mkTrue();
@@ -294,47 +294,47 @@ public class Utils {
         return retMap;
     }
 
-    public static BoolExpr edge(String relName, Event e1, Event e2, Context ctx) throws Z3Exception {
+    public static BoolExpr edge(String relName, Event e1, Event e2, Context ctx) {
         return (BoolExpr) ctx.mkConst(String.format("%s(%s,%s)", relName, e1.repr(), e2.repr()), ctx.mkBoolSort());
     }
 
-    public static BoolExpr edge(String relName, String program, Event e1, Event e2, Context ctx) throws Z3Exception {
+    public static BoolExpr edge(String relName, String program, Event e1, Event e2, Context ctx) {
         return (BoolExpr) ctx.mkConst(String.format("%s@%s(%s,%s)", relName, program, e1.repr(), e2.repr()), ctx.mkBoolSort());
     }
 
-    public static IntExpr intVar(String relName, Event e, Context ctx) throws Z3Exception {
+    public static IntExpr intVar(String relName, Event e, Context ctx) {
         return ctx.mkIntConst(String.format("%s(%s)", relName, e.repr()));
     }
 
-    public static IntExpr lastValueLoc(Location loc, Context ctx) throws Z3Exception {
+    public static IntExpr lastValueLoc(Location loc, Context ctx) {
         return ctx.mkIntConst(loc.getName() + "_final");
     }
 
-    public static IntExpr lastValueReg(Register reg, Context ctx) throws Z3Exception {
+    public static IntExpr lastValueReg(Register reg, Context ctx) {
         return ctx.mkIntConst(reg.getName() + "_" + reg.getMainThread() + "_final");
     }
 
-    public static IntExpr ssaLoc(Location loc, Integer mainThread, Integer ssaIndex, Context ctx) throws Z3Exception {
+    public static IntExpr ssaLoc(Location loc, Integer mainThread, Integer ssaIndex, Context ctx) {
         return ctx.mkIntConst(String.format("T%s_%s_%s", mainThread, loc.getName(), ssaIndex));
     }
 
-    public static IntExpr ssaReg(Register reg, Integer ssaIndex, Context ctx) throws Z3Exception {
+    public static IntExpr ssaReg(Register reg, Integer ssaIndex, Context ctx) {
         return ctx.mkIntConst(String.format("T%s_%s_%s", reg.getMainThread(), reg.getName(), ssaIndex));
     }
 
-    public static BoolExpr lastCoOrder(Event e, Context ctx) throws Z3Exception {
+    public static BoolExpr lastCoOrder(Event e, Context ctx) {
         return ctx.mkBoolConst(String.format("last_%s(%s)", ((MemEvent) e).getLoc(), e.repr()));
     }
 
-    public static IntExpr intCount(String relName, Event e1, Event e2, Context ctx) throws Z3Exception {
+    public static IntExpr intCount(String relName, Event e1, Event e2, Context ctx) {
         return ctx.mkIntConst(String.format("%s(%s,%s)", relName, e1.repr(), e2.repr()));
     }
 
-    public static BoolExpr cycleVar(String relName, Event e, Context ctx) throws Z3Exception {
+    public static BoolExpr cycleVar(String relName, Event e, Context ctx) {
         return ctx.mkBoolConst(String.format("Cycle(%s)(%s)", e.repr(), relName));
     }
 
-    public static BoolExpr cycleEdge(String relName, Event e1, Event e2, Context ctx) throws Z3Exception {
+    public static BoolExpr cycleEdge(String relName, Event e1, Event e2, Context ctx) {
         return ctx.mkBoolConst(String.format("Cycle:%s(%s,%s)", relName, e1.repr(), e2.repr()));
     }
 }

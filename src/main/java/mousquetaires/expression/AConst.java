@@ -24,7 +24,7 @@ public class AConst extends AExpr {
         return new AConst(value);
     }
 
-    public ArithExpr toZ3(MapSSA map, Context ctx) throws Z3Exception {
+    public ArithExpr toZ3(MapSSA map, Context ctx) {
         return ctx.mkInt(value);
     }
 

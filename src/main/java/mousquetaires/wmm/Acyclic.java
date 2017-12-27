@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
 public class Acyclic extends Axiom{
 
     @Override
-    public BoolExpr Consistent(Set<Event> events, Context ctx) throws Z3Exception {
+    public BoolExpr Consistent(Set<Event> events, Context ctx) {
         return Encodings.satAcyclic(rel.getName(), events, ctx);    }
 
     @Override
-    public BoolExpr Inconsistent(Set<Event> events, Context ctx) throws Z3Exception {
+    public BoolExpr Inconsistent(Set<Event> events, Context ctx) {
         return ctx.mkAnd(Encodings.satCycleDef(rel.getName(), events, ctx), Encodings.satCycle(rel.getName(), events, ctx));
     }
 

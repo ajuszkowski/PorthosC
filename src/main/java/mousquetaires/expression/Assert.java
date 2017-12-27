@@ -26,7 +26,7 @@ public class Assert {
         locValue.put(loc, value);
     }
 
-    public BoolExpr encode(Context ctx) throws Z3Exception {
+    public BoolExpr encode(Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         for(Register reg: regValue.keySet()) {
             enc = ctx.mkAnd(enc, ctx.mkEq(lastValueReg(reg, ctx), ctx.mkInt(regValue.get(reg))));

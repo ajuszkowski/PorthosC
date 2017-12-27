@@ -39,7 +39,7 @@ public class RelTransRef extends Relation {
     }
 
     @Override
-    public BoolExpr encode(Program program, Context ctx) throws Z3Exception {
+    public BoolExpr encode(Program program, Context ctx) {
         BoolExpr enc = r1.encode(program, ctx);
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
         //copied from satTansIDL

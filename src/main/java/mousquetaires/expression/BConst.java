@@ -27,7 +27,7 @@ public class BConst extends BExpr {
         return new BConst(value);
     }
 
-    public BoolExpr toZ3(MapSSA map, Context ctx) throws Z3Exception {
+    public BoolExpr toZ3(MapSSA map, Context ctx) {
         if(value) {
             return ctx.mkTrue();
         }

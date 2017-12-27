@@ -9,7 +9,7 @@ import mousquetaires.program.*;
 
 public class TSO {
 
-    public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
+    public static BoolExpr encode(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
         BoolExpr enc = Encodings.satUnion("co", "fr", events, ctx);
         enc = ctx.mkAnd(enc, Encodings.satUnion("com", "(co+fr)", "rf", events, ctx));
@@ -21,12 +21,12 @@ public class TSO {
         return enc;
     }
 
-    public static BoolExpr Consistent(Program program, Context ctx) throws Z3Exception {
+    public static BoolExpr Consistent(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
         return ctx.mkAnd(Encodings.satAcyclic("(poloc+com)", events, ctx), Encodings.satAcyclic("ghb-tso", events, ctx));
     }
 
-    public static BoolExpr Inconsistent(Program program, Context ctx) throws Z3Exception {
+    public static BoolExpr Inconsistent(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
         BoolExpr enc = ctx.mkAnd(Encodings.satCycleDef("(poloc+com)", events, ctx), Encodings.satCycleDef("ghb-tso", events, ctx));
         enc = ctx.mkAnd(enc, ctx.mkOr(Encodings.satCycle("(poloc+com)", events, ctx), Encodings.satCycle("ghb-tso", events, ctx)));

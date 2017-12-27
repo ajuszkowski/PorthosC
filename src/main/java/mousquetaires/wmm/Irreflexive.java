@@ -19,11 +19,11 @@ import java.util.Set;
 public class Irreflexive extends Axiom{
 
     @Override
-    public BoolExpr Consistent(Set<Event> events, Context ctx) throws Z3Exception {
+    public BoolExpr Consistent(Set<Event> events, Context ctx) {
         return Encodings.satIrref(rel.getName(), events, ctx);    }
 
     @Override
-    public BoolExpr Inconsistent(Set<Event> events, Context ctx) throws Z3Exception {
+    public BoolExpr Inconsistent(Set<Event> events, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         for(Event e : events){
             enc = ctx.mkOr(enc, Utils.edge(rel.getName(), e, e, ctx));

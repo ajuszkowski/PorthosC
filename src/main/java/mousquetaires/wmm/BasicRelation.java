@@ -24,7 +24,7 @@ public class BasicRelation extends Relation{
     }
 
     @Override
-    public BoolExpr encode(Program program, Context ctx) throws Z3Exception {
+    public BoolExpr encode(Program program, Context ctx) {
         return ctx.mkTrue();
     }
     

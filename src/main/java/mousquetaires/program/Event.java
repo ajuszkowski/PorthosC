@@ -69,11 +69,11 @@ public class Event extends Thread {
         return String.format("E%s", eid);
     }
 
-    public BoolExpr executes(Context ctx) throws Z3Exception {
+    public BoolExpr executes(Context ctx) {
         return ctx.mkBoolConst(String.format("ex(%s)", repr()));
     }
 
-    public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) throws Z3Exception {
+    public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) {
         return new Pair<BoolExpr, MapSSA>(ctx.mkTrue(), map);
     }
 
@@ -97,11 +97,11 @@ public class Event extends Thread {
         return ret;
     }
 
-    public BoolExpr encodeCF(Context ctx) throws Z3Exception {
+    public BoolExpr encodeCF(Context ctx) {
         return ctx.mkEq(ctx.mkBoolConst(cfVar()), executes(ctx));
     }
 
-    public BoolExpr allExecute(Context ctx) throws Z3Exception {
+    public BoolExpr allExecute(Context ctx) {
         return ctx.mkEq(ctx.mkBoolConst(cfVar()), executes(ctx));
     }
 

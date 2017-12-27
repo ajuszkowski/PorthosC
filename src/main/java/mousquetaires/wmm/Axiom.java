@@ -27,8 +27,8 @@ public abstract class Axiom {
     }
     
     public abstract String write();
-        public abstract BoolExpr Consistent(Set<Event> events, Context ctx) throws Z3Exception;
-        public abstract BoolExpr Inconsistent(Set<Event> events, Context ctx) throws Z3Exception;
+        public abstract BoolExpr Consistent(Set<Event> events, Context ctx);
+        public abstract BoolExpr Inconsistent(Set<Event> events, Context ctx);
 
 
 }

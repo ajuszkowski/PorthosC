@@ -31,7 +31,7 @@ public class MemoryModel {
     public void addRel(Relation rel){
         namedrels.add(rel);
     }   
-    public BoolExpr encode(Program program, Context ctx) throws Z3Exception {
+    public BoolExpr encode(Program program, Context ctx) {
         BoolExpr expr = ctx.mkTrue();
         for (Axiom ax : axioms) {
             expr=ctx.mkAnd(expr,ax.getRel().encode(program, ctx));
@@ -39,7 +39,7 @@ public class MemoryModel {
         return expr;
     }
     
-    public BoolExpr Consistent(Program program, Context ctx) throws Z3Exception {
+    public BoolExpr Consistent(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
         BoolExpr expr = ctx.mkTrue();
         for (Relation namedrel : namedrels) {
@@ -51,7 +51,7 @@ public class MemoryModel {
         return expr;
     }
     
-        public BoolExpr Inconsistent(Program program, Context ctx) throws Z3Exception {
+        public BoolExpr Inconsistent(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
         BoolExpr expr = ctx.mkFalse();
         for (Axiom ax : axioms) {

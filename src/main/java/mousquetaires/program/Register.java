@@ -34,7 +34,7 @@ public class Register extends AExpr {
         this.mainThread = t;
     }
 
-    public ArithExpr toZ3(MapSSA map, Context ctx) throws Z3Exception {
+    public ArithExpr toZ3(MapSSA map, Context ctx) {
         if(getMainThread() == null) {
             System.out.println(String.format("Check toZ3() for %s: null pointer!", this));
         }

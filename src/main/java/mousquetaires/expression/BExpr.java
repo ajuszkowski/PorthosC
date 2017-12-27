@@ -32,7 +32,7 @@ public class BExpr {
         return new BExpr(newB1, op, newB2);
     }
 
-    public BoolExpr toZ3(MapSSA map, Context ctx) throws Z3Exception {
+    public BoolExpr toZ3(MapSSA map, Context ctx) {
         switch(op) {
         case "and": return ctx.mkAnd(b1.toZ3(map, ctx), b2.toZ3(map, ctx));
         case "or": return ctx.mkOr(b1.toZ3(map, ctx), b2.toZ3(map, ctx));

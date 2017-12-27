@@ -12,7 +12,7 @@ public class OptSync extends Sync {
         return String.format("%ssync?", String.join("", Collections.nCopies(condLevel, "  ")));
     }
 
-    public BoolExpr encodeCF(Context ctx) throws Z3Exception {
+    public BoolExpr encodeCF(Context ctx) {
         return ctx.mkBoolConst(cfVar());
     }
 }

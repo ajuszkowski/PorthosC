@@ -198,7 +198,7 @@ public class Program {
         }
     }
 
-    public BoolExpr encodeMM(Context ctx, String mcm) throws Z3Exception {
+    public BoolExpr encodeMM(Context ctx, String mcm) {
         BoolExpr enc = ctx.mkTrue();
         switch (mcm){
         case "sc":
@@ -229,7 +229,7 @@ public class Program {
         return enc;
     }
 
-    public BoolExpr encodeConsistent(Context ctx, String mcm) throws Z3Exception {
+    public BoolExpr encodeConsistent(Context ctx, String mcm) {
         BoolExpr enc = ctx.mkTrue();
         switch (mcm){
         case "sc":
@@ -260,7 +260,7 @@ public class Program {
         return enc;
     }
 
-    public BoolExpr encodeInconsistent(Context ctx, String mcm) throws Z3Exception {
+    public BoolExpr encodeInconsistent(Context ctx, String mcm) {
         BoolExpr enc = ctx.mkTrue();
         switch (mcm) {
         case "sc":
@@ -334,7 +334,7 @@ public class Program {
         }
     }
 
-    public BoolExpr encodeDF(Context ctx) throws Z3Exception {
+    public BoolExpr encodeDF(Context ctx) {
         ListIterator<Thread> iter = threads.listIterator();
         MapSSA lastMap = new MapSSA();
         BoolExpr enc = ctx.mkTrue();
@@ -348,7 +348,7 @@ public class Program {
         return enc;
     }
 
-    public BoolExpr encodeCF(Context ctx) throws Z3Exception {
+    public BoolExpr encodeCF(Context ctx) {
         ListIterator<Thread> iter = threads.listIterator();
         BoolExpr enc = ctx.mkTrue();
         while (iter.hasNext()) {
@@ -360,7 +360,7 @@ public class Program {
         return enc;
     }
 
-    public BoolExpr allExecute(Context ctx) throws Z3Exception {
+    public BoolExpr allExecute(Context ctx) {
         ListIterator<Thread> iter = threads.listIterator();
         BoolExpr enc = ctx.mkTrue();
         while (iter.hasNext()) {
@@ -372,7 +372,7 @@ public class Program {
         return enc;
     }
 
-    public BoolExpr encodeDF_RF(Context ctx) throws Z3Exception {
+    public BoolExpr encodeDF_RF(Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         Set<Event> loadEvents = getEvents().stream().filter(e -> e instanceof Load).collect(Collectors.toSet());
         for (Event r : loadEvents) {

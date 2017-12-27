@@ -32,7 +32,7 @@ public class Atom extends BExpr {
         return new Atom(newLHS, op, newRHS);
     }
 
-    public BoolExpr toZ3(MapSSA map, Context ctx) throws Z3Exception {
+    public BoolExpr toZ3(MapSSA map, Context ctx) {
         switch(op) {
         case "==": return ctx.mkEq(lhs.toZ3(map, ctx), rhs.toZ3(map, ctx));
         case "!=": return ctx.mkNot(ctx.mkEq(lhs.toZ3(map, ctx), rhs.toZ3(map, ctx)));

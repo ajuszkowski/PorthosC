@@ -63,13 +63,13 @@ public class Thread {
         return mainThread;
     }
 
-    public BoolExpr encodeCF(Context ctx) throws Z3Exception {
+    public BoolExpr encodeCF(Context ctx) {
         System.out.println("Check encodeCF!");
         // TODO Auto-generated method stub
         return null;
     }
 
-    public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) throws Z3Exception {
+    public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) {
         // TODO Auto-generated method stub
         return null;
     }

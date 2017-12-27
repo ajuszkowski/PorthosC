@@ -32,7 +32,7 @@ public class AExpr {
         return new AExpr(newLHS, op, newRHS);
     }
 
-    public ArithExpr toZ3(MapSSA map, Context ctx) throws Z3Exception {
+    public ArithExpr toZ3(MapSSA map, Context ctx) {
         switch(op) {
         case "+": return ctx.mkAdd(lhs.toZ3(map, ctx), rhs.toZ3(map, ctx));
         case "-": return ctx.mkSub(lhs.toZ3(map, ctx), rhs.toZ3(map, ctx));
