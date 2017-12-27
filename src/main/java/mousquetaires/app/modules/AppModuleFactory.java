@@ -2,11 +2,11 @@ package mousquetaires.app.modules;
 
 
 import mousquetaires.app.modules.dartagnan.Dartagnan;
-import mousquetaires.app.options.CommandLineOptions;
+import mousquetaires.app.options.AppOptions;
 
 
 public class AppModuleFactory {
-    public static AppModule newAppModule(CommandLineOptions options) {
+    public static AppModule newAppModule(AppOptions options) {
         AppModuleName moduleName = options.moduleName;
         switch (moduleName) {
             //case Porthos:

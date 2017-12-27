@@ -19,16 +19,16 @@ import java.io.File;
 
 
 @Parameters(separators=" =")
-public class CommandLineOptions {
+public class AppOptions {
 
-    public static CommandLineOptions parse(String[] args) {
-        CommandLineOptions options = new CommandLineOptions();
+    public static AppOptions parse(String[] args) {
+        AppOptions options = new AppOptions();
         JCommander.newBuilder().addObject(options).build().parse(args);
         return options;
     }
 
     public static String getUsageString() {
-        CommandLineOptions options = new CommandLineOptions();
+        AppOptions options = new AppOptions();
         JCommander jCommander = new JCommander(options);
         jCommander.setProgramName(App.class.getName());
         StringBuilder builder = new StringBuilder();
@@ -82,5 +82,5 @@ public class CommandLineOptions {
     @Parameter(names = { "-h", "-?", "--help" },
             descriptionKey = "Print help message",
             help = true)
-    private boolean help;
+    public boolean help;
 }

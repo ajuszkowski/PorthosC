@@ -2,12 +2,11 @@ package mousquetaires.app.modules.dartagnan;
 
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
-import com.microsoft.z3.Status;
 import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 import mousquetaires.app.modules.AppModule;
 import mousquetaires.languages.parsers.PorthosLexer;
 import mousquetaires.languages.parsers.PorthosParser;
-import mousquetaires.app.options.CommandLineOptions;
+import mousquetaires.app.options.AppOptions;
 import mousquetaires.program.Program;
 import mousquetaires.utils.io.FileUtils;
 import mousquetaires.wmm.Domain;
@@ -24,7 +23,7 @@ public class Dartagnan extends AppModule {
 
     private static final Logger log = Logger.getLogger(Dartagnan.class.getName());
 
-    public Dartagnan(CommandLineOptions options) {
+    public Dartagnan(AppOptions options) {
         super(options);
     }
 
@@ -32,6 +31,7 @@ public class Dartagnan extends AppModule {
     public DartagnanVerdict run() { // throws /*Z3Exception,*/ IOException {
 
         DartagnanVerdict verdict = new DartagnanVerdict();
+        verdict.onStartExecution();
 
         //if (inputFilePath.endsWith("litmus")) {
         //    LitmusLexer lexer = new LitmusLexer(input);
@@ -57,6 +57,7 @@ public class Dartagnan extends AppModule {
         }
         PorthosLexer lexer = new PorthosLexer(charStream);
         CommonTokenStream tokenStream = new CommonTokenStream(lexer);
+
         PorthosParser parser = new PorthosParser(tokenStream);        //InputProgramParserFactory.getParser(options.inputProgramFile);
         Program p = parser.program(options.inputProgramFile.getName()).p;
 
@@ -113,12 +114,13 @@ public class Dartagnan extends AppModule {
         ctx.setPrintMode(Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL);
 
 
-        if (s.check() == Status.SATISFIABLE) {
-            verdict.result = DartagnanVerdict.ReachabilityStatus.NotReachable;
+        if (s.check() == com.microsoft.z3.Status.SATISFIABLE) {
+            verdict.result = DartagnanVerdict.Status.NonReachable;
         } else {
-            verdict.result = DartagnanVerdict.ReachabilityStatus.Reachable;
+            verdict.result = DartagnanVerdict.Status.Reachable;
         }
 
+        verdict.onFinishExecution();
 
         return verdict;
     }

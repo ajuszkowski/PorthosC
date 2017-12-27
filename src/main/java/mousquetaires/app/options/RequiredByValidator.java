@@ -11,7 +11,7 @@ import java.util.List;
 
 public class RequiredByValidator {
 
-    public static void validateOptions(AppModule module, CommandLineOptions options) {
+    public static void validateOptions(AppModule module, AppOptions options) {
         List<String> notSetFields = new ArrayList<>(8);
         boolean needThrow = false;
         for (Field field : options.getClass().getFields()) {

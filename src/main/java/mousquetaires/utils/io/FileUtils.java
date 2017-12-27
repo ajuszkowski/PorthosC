@@ -28,4 +28,8 @@ public class FileUtils {
         FileInputStream stream = getFileInputStream(file);
         return CharStreams.fromStream(stream);
     }
+
+    public static String combine(String path, String file) {
+        return new File(path, file).getPath();
+    }
 }

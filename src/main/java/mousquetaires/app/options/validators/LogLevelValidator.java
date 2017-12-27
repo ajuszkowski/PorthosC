@@ -13,7 +13,7 @@ public class LogLevelValidator implements IValueValidator<LogLevel> {
     @Override
     public void validate(String name, LogLevel value) throws ParameterException {
         if (value == null) {
-            throw new ParameterException("invalid format of log level. Available options: " +
+            throw new ParameterException("Invalid format of log level. Available options: " +
                 Arrays.toString(LogLevel.values()).toLowerCase());
         }
     }

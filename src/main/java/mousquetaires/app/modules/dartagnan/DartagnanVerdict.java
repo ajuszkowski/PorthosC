@@ -4,10 +4,10 @@ import mousquetaires.app.modules.AppVerdict;
 
 
 public class DartagnanVerdict extends AppVerdict {
-    public enum ReachabilityStatus {
+    public enum Status {
         Reachable,
-        NotReachable,
+        NonReachable,
     }
 
-    public ReachabilityStatus result;
+    public Status result;
 }

@@ -13,7 +13,7 @@ public class AppModuleValidator implements IValueValidator<AppModuleName> {
     @Override
     public void validate(String name, AppModuleName value) throws ParameterException {
         if (value == null) {
-            throw new ParameterException("invalid format of application moduleName. Available options: " +
+            throw new ParameterException("Invalid format of application moduleName. Available options: " +
                     Arrays.toString(AppModuleName.values()).toLowerCase());
         }
     }

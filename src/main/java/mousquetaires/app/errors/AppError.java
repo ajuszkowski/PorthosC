@@ -6,11 +6,29 @@ public abstract class AppError {
         NonCritical,
     }
 
-    public final Severity severity;
-    public final String message;
+    private final Severity severity;
+    private final String message;
+    private final String additionalInfo;
 
-    AppError(Severity severity, String message) {
+    AppError(Severity severity, String message, String additionalInfo) {
         this.severity = severity;
         this.message = getClass().getName() + ": " + message;
+        this.additionalInfo = additionalInfo;
+    }
+
+    AppError(Severity severity, String message) {
+        this(severity, message, "");
+    }
+
+    public Severity getSeverity() {
+        return severity;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getAdditionalInfo() {
+        return additionalInfo;
     }
 }

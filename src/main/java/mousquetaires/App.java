@@ -2,22 +2,26 @@ package mousquetaires;
 
 import com.beust.jcommander.ParameterException;
 import mousquetaires.app.modules.*;
-import mousquetaires.app.options.CommandLineOptions;
+import mousquetaires.app.options.AppOptions;
 
 
 public class App {
 
     public static void main(String[] args) {
-        CommandLineOptions options;
+        AppOptions options;
         AppModule module = null;
         try {
-            options = CommandLineOptions.parse(args);
+            options = AppOptions.parse(args);
+            if (options.help) {
+                System.out.println(AppOptions.getUsageString());
+                System.exit(0);
+            }
+
             module = AppModuleFactory.newAppModule(options);
         }
         catch (ParameterException e) {
             // TODO: log
             System.out.println(e.getMessage() + "\n");
-            System.out.println(CommandLineOptions.getUsageString());
             System.exit(1);
         }
 

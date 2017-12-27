@@ -5,7 +5,18 @@ import com.google.gson.GsonBuilder;
 
 
 public class JsonVerdictStringifier implements IAppVerdictStringifier {
-    private final Gson gson = new GsonBuilder().create();
+    private final Gson gson;
+
+    public boolean prettyPrinting = true;
+
+    public JsonVerdictStringifier() {
+        GsonBuilder builder = new GsonBuilder();
+        if (prettyPrinting) {
+            builder.setPrettyPrinting();
+        }
+
+        gson = builder.create();
+    }
 
     @Override
     public String stringify(AppVerdict verdict) {
