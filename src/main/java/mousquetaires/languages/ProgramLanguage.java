@@ -1,6 +1,6 @@
 package mousquetaires.languages;
 
-public enum InputProgramLanguage {
+public enum ProgramLanguage {
     Cmin,
     Porthos,
     Litmus,

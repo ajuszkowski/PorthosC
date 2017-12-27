@@ -4,16 +4,12 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 import mousquetaires.app.modules.AppModule;
-import mousquetaires.languages.parsers.PorthosLexer;
-import mousquetaires.languages.parsers.PorthosParser;
 import mousquetaires.app.options.AppOptions;
+import mousquetaires.languages.parsers.ProgramParserFactory;
 import mousquetaires.program.Program;
-import mousquetaires.utils.io.FileUtils;
 import mousquetaires.wmm.Domain;
 import mousquetaires.wmm.MemoryModel;
 import mousquetaires.wmm.MemoryModelFactory;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -28,7 +24,7 @@ public class Dartagnan extends AppModule {
     }
 
     @Override
-    public DartagnanVerdict run() { // throws /*Z3Exception,*/ IOException {
+    public DartagnanVerdict run() throws /*Z3Exception,//--RuntimeException, no need to declare*/ IOException {
 
         DartagnanVerdict verdict = new DartagnanVerdict();
         verdict.onStartExecution();
@@ -37,33 +33,23 @@ public class Dartagnan extends AppModule {
         //    LitmusLexer lexer = new LitmusLexer(input);
         //    CommonTokenStream tokens = new CommonTokenStream(lexer);
         //    LitmusParser parser = new LitmusParser(tokens);
-        //    p = parser.program(inputFilePath).p;
+        //    program = parser.program(inputFilePath).program;
         //}
         //
         //if (inputFilePath.endsWith("pts")) {
         //    PorthosLexer lexer = new PorthosLexer(input);
         //    CommonTokenStream tokens = new CommonTokenStream(lexer);
         //    PorthosParser parser = new PorthosParser(tokens);
-        //    p = parser.program(inputFilePath).p;
+        //    program = parser.program(inputFilePath).program;
         //}
 
         MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
 
-        CharStream charStream = null;
-        try {
-            charStream = FileUtils.getFileCharStream(options.inputProgramFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        PorthosLexer lexer = new PorthosLexer(charStream);
-        CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-
-        PorthosParser parser = new PorthosParser(tokenStream);        //InputProgramParserFactory.getParser(options.inputProgramFile);
-        Program p = parser.program(options.inputProgramFile.getName()).p;
+        Program program = ProgramParserFactory.getProgram(options.inputProgramFile);
 
         //CommonTree t = (CommonTree) .getTree();
 
-        //Program p = parser.
+        //Program program = parser.
 
 
         // TODO: cat-file parsing
@@ -89,32 +75,32 @@ public class Dartagnan extends AppModule {
         //}
 
         String target = options.sourceModel.toString();
-        p.initialize();
-        p.compile(target, false, true);
+        program.initialize();
+        program.compile(target, false, true);
 
         Context ctx = new Context();
-        Solver s = ctx.mkSolver();
+        Solver solver = ctx.mkSolver();
 
-        s.add(p.encodeDF(ctx));
-        s.add(p.ass.encode(ctx));
-        s.add(p.encodeCF(ctx));
-        s.add(p.encodeDF_RF(ctx));
-        s.add(Domain.encode(p, ctx));
+        solver.add(program.encodeDF(ctx));
+        solver.add(program.ass.encode(ctx));
+        solver.add(program.encodeCF(ctx));
+        solver.add(program.encodeDF_RF(ctx));
+        solver.add(Domain.encode(program, ctx));
         if (mcm != null) {
             log.warning(mcm.write());
 
-            s.add(mcm.encode(p, ctx));
-            s.add(mcm.Consistent(p, ctx));
+            solver.add(mcm.encode(program, ctx));
+            solver.add(mcm.Consistent(program, ctx));
         } else {
             log.info("Using static model.");
-            s.add(p.encodeMM(ctx, target));
-            s.add(p.encodeConsistent(ctx, target));
+            solver.add(program.encodeMM(ctx, target));
+            solver.add(program.encodeConsistent(ctx, target));
         }
 
         ctx.setPrintMode(Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL);
 
 
-        if (s.check() == com.microsoft.z3.Status.SATISFIABLE) {
+        if (solver.check() == com.microsoft.z3.Status.SATISFIABLE) {
             verdict.result = DartagnanVerdict.Status.NonReachable;
         } else {
             verdict.result = DartagnanVerdict.Status.Reachable;

@@ -3,6 +3,8 @@ package mousquetaires.app.modules;
 import mousquetaires.app.options.AppOptions;
 import mousquetaires.app.options.RequiredByValidator;
 
+import java.io.IOException;
+
 
 public abstract class AppModule {
 
@@ -13,5 +15,5 @@ public abstract class AppModule {
         this.options = options;
     }
 
-    public abstract AppVerdict run();
+    public abstract AppVerdict run() throws IOException;
 }

@@ -5,13 +5,12 @@ import org.apache.commons.io.FilenameUtils;
 import java.util.HashMap;
 
 
-public class InputProgramExtensions {
-
-    private static final HashMap<String, InputProgramLanguage> inputProgramExtensionsMap =
+public class ProgramExtensions {
+    private static final HashMap<String, ProgramLanguage> inputProgramExtensionsMap =
             new HashMap<>() {{
-                put("cmin", InputProgramLanguage.Cmin);
-                put("pts", InputProgramLanguage.Porthos);
-                put("litmus", InputProgramLanguage.Litmus);
+                put("cmin", ProgramLanguage.Cmin);
+                put("pts", ProgramLanguage.Porthos);
+                put("litmus", ProgramLanguage.Litmus);
             }};
 
     // Uncomment when being implementing the cat file parser
@@ -21,7 +20,7 @@ public class InputProgramExtensions {
     //        }};
 
     // result is null if not valid extension
-    public static InputProgramLanguage tryParseInputProgramExtension(String fileName) {
+    public static ProgramLanguage tryParseProgramLanguage(String fileName) {
         return inputProgramExtensionsMap.get(FilenameUtils.getExtension(fileName));
     }
 

@@ -4,6 +4,8 @@ import com.beust.jcommander.ParameterException;
 import mousquetaires.app.modules.*;
 import mousquetaires.app.options.AppOptions;
 
+import java.io.IOException;
+
 
 public class App {
 
@@ -26,7 +28,14 @@ public class App {
         }
 
         IAppVerdictStringifier stringifier = new JsonVerdictStringifier();
-        AppVerdict verdict = module.run();
+        AppVerdict verdict = null;
+        try {
+            verdict = module.run();
+        } catch (IOException e) {
+            // TODO: log
+            e.printStackTrace();
+            System.exit(1);
+        }
 
         System.out.println(stringifier.stringify(verdict));
     }
