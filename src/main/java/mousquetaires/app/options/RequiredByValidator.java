@@ -1,9 +1,7 @@
-package mousquetaires.app.options.validators;
+package mousquetaires.app.options;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import mousquetaires.app.options.CommandLineOptions;
-import mousquetaires.app.options.RequiredBy;
 import mousquetaires.starters.AppModule;
 
 import java.lang.reflect.Field;
@@ -11,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class OptionsRequiredByValidator {
+public class RequiredByValidator {
 
     public static void validateOptions(AppModule module, CommandLineOptions options) {
         List<String> notSetFields = new ArrayList<>(8);

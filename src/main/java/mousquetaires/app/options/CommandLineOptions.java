@@ -52,7 +52,6 @@ public class CommandLineOptions {
             validateValueWith = {FileValidator.class, InputProgramExtensionValidator.class})
     public File inputProgramFile;
 
-
     @RequiredBy(modules = {Dartagnan.class, })
     @Parameter(names = {"-sm", "--source-model"},
             arity = 1,
