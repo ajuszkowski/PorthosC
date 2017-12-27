@@ -15,13 +15,15 @@ import java.io.File;
 public class DartagnanOptions extends AppOptions {
 
     @Parameter(names = {"-i", "--input"},
+            required = true,
             arity = 1,
             description = "Input source-code file path",
             converter = FileConverter.class,
             validateValueWith = {FileValidator.class, InputProgramExtensionValidator.class})
     public File inputProgramFile;
 
-    @Parameter(names = {"-sm", "--source-model"},
+    @Parameter(names = {"-s", "--source-model"},
+            required = true,
             arity = 1,
             description = "Source weak memory model name",
             // uncomment when we'll be parsing .cat-files

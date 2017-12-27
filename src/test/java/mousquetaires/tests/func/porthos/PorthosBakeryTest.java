@@ -1,0 +1,121 @@
+package mousquetaires.tests.func.porthos;
+
+import com.googlecode.zohhak.api.TestWith;
+import com.googlecode.zohhak.api.runners.ZohhakRunner;
+import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
+import mousquetaires.app.modules.porthos.PorthosMode;
+import mousquetaires.app.modules.porthos.PorthosVerdict;
+import mousquetaires.models.MemoryModelName;
+import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertEquals;
+
+
+@RunWith(ZohhakRunner.class)
+public class PorthosBakeryTest extends BasePorthosFuncTest {
+
+    private final String bakery_pts_rx    = targetsDirectory + "/all_rx/bakery.pts";
+    private final String bakery_litmus_rx = targetsDirectory + "/all_rx/bakery.litmus";
+    private final String bakery_pts_sc    = targetsDirectory + "/all_sc/bakery.pts";
+
+    // == Relaxed operations: ==
+
+    @TestWith({
+            //bakery_pts_rx + ", " + "SC,    TSO,   StateInclusion, NonStatePortable",  // ~5 sec
+            //bakery_pts_rx + ", " + "SC,    PSO,   StateInclusion, NonStatePortable",  // ~4 sec
+            //bakery_pts_rx + ", " + "SC,    RMO,   StateInclusion, NonStatePortable",  // ~11 sec
+            //bakery_pts_rx + ", " + "SC,    Alpha, StateInclusion, NonStatePortable",  // ~6 sec
+            //bakery_pts_rx + ", " + "SC,    Power, StateInclusion, NonStatePortable",  // ~50 sec !
+            //bakery_pts_rx + ", " + "SC,    ARM,   StateInclusion, NonStatePortable",  // ~1 m 33 sec !
+            //
+            //bakery_pts_rx + ", " + "TSO,   SC,    StateInclusion, StatePortable",  // ~2 sec
+            //bakery_pts_rx + ", " + "TSO,   PSO,   StateInclusion, StatePortable",  // ~3 sec
+            //bakery_pts_rx + ", " + "TSO,   RMO,   StateInclusion, StatePortable",  // ~11 sec
+            //bakery_pts_rx + ", " + "TSO,   Alpha, StateInclusion, StatePortable",  // ~11 sec !
+            //bakery_pts_rx + ", " + "TSO,   Power, StateInclusion, StatePortable",  // ~1 m !
+            bakery_pts_rx + ", " + "TSO,   ARM,   StateInclusion, StatePortable",  // ?
+
+            bakery_pts_rx + ", " + "PSO,   SC,    StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "PSO,   TSO,   StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "PSO,   RMO,   StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "PSO,   Alpha, StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "PSO,   Power, StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "PSO,   ARM,   StateInclusion, StatePortable",  // ?
+
+            bakery_pts_rx + ", " + "RMO,   SC,    StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "RMO,   TSO,   StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "RMO,   PSO,   StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "RMO,   Alpha, StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "RMO,   Power, StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "RMO,   ARM,   StateInclusion, StatePortable",  // ?
+
+            bakery_pts_rx + ", " + "Alpha, SC,    StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "Alpha, TSO,   StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "Alpha, PSO,   StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "Alpha, RMO,   StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "Alpha, Power, StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "Alpha, ARM,   StateInclusion, StatePortable",  // ?
+
+            bakery_pts_rx + ", " + "Power, SC,    StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "Power, TSO,   StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "Power, PSO,   StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "Power, RMO,   StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "Power, Alpha, StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "Power, ARM,   StateInclusion, StatePortable",  // ?
+
+            bakery_pts_rx + ", " + "ARM,   SC,    StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "ARM,   TSO,   StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "ARM,   PSO,   StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "ARM,   RMO,   StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "ARM,   Alpha, StateInclusion, StatePortable",  // ?
+            bakery_pts_rx + ", " + "ARM,   Power, StateInclusion, StatePortable",  // ?
+    })
+    public void test_bakery_pts_rx(String inputProgramFile,
+                                   MemoryModelName sourceModel,
+                                   MemoryModelName targetModel,
+                                   PorthosMode mode,
+                                   PorthosVerdict.Status expected) {
+        PorthosVerdict verdict = runTest(inputProgramFile, sourceModel, targetModel, mode);
+        assertEquals(expected, verdict.result);
+    }
+
+    //@TestWith({
+    //        bakery_litmus_rx + ", " + "SC,    NonStatePortable",
+    //        bakery_litmus_rx + ", " + "TSO,   NonStatePortable",
+    //        bakery_litmus_rx + ", " + "PSO,   NonStatePortable",
+    //        bakery_litmus_rx + ", " + "RMO,   NonStatePortable",
+    //        bakery_litmus_rx + ", " + "Alpha, NonStatePortable",
+    //        bakery_litmus_rx + ", " + "Power, NonStatePortable",
+    //        bakery_litmus_rx + ", " + "ARM,   NonStatePortable",
+    //})
+    //public void test_bakery_litmus_rx(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
+    //    DartagnanVerdict verdict = runTest(inputProgramFile, sourceModel);
+    //    assertEquals(expected, verdict.result);
+    //}
+    //
+    //// == Sequentially consistent operations: ==
+    //
+    //@TestWith({
+    //        bakery_pts_sc + ", " + "SC,    NonStatePortable",
+    //        bakery_pts_sc + ", " + "TSO,   NonStatePortable",
+    //        bakery_pts_sc + ", " + "PSO,   NonStatePortable",
+    //        bakery_pts_sc + ", " + "RMO,   NonStatePortable",
+    //        bakery_pts_sc + ", " + "Alpha, NonStatePortable",
+    //        bakery_pts_sc + ", " + "Power, NonStatePortable",
+    //        bakery_pts_sc + ", " + "ARM,   NonStatePortable",
+    //})
+    //public void test_bakery_pts_sc(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
+    //    DartagnanVerdict verdict = runTest(inputProgramFile, sourceModel);
+    //    assertEquals(expected, verdict.result);
+    //}
+
+}
+
+// Code to generate tests:
+// models = ['SC', 'TSO', 'PSO', 'RMO', 'Alpha', 'Power', 'ARM',]
+//for m1 in models:
+//    for m2 in models:
+//        if m1 == m2:
+//            continue
+//        maxlen =  5# max(len(m1), len(m2))
+//        print ('bakery_pts_rx + ", " + "{}, {}, StatePortable",'.format( m1+' '*(maxlen-len(m1)), m2+' '*(maxlen-len(m2)  ) ))
