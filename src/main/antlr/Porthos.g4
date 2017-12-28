@@ -2,6 +2,7 @@ grammar Porthos;
 
 @header{
 import mousquetaires.program.*;
+import mousquetaires.program.barriers.*;
 import mousquetaires.expression.*;
 import mousquetaires.program.Thread;
 import java.util.HashMap;

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.microsoft.z3.*;
 
+import mousquetaires.program.barriers.*;
 import mousquetaires.utils.LastModMap;
 import mousquetaires.utils.MapSSA;
 import mousquetaires.utils.Pair;
@@ -53,7 +54,7 @@ public class Read extends MemEvent {
         ld.setHLId(hashCode());
         ld.condLevel = this.condLevel;
 
-        Sync sync = new Sync();
+        Mfence.Sync sync = new Mfence.Sync();
         sync.condLevel = this.condLevel;
         Lwsync lwsync = new Lwsync();
         lwsync.condLevel = this.condLevel;
@@ -94,7 +95,7 @@ public class Read extends MemEvent {
         ld.setHLId(hashCode());
         ld.condLevel = this.condLevel;
 
-        Sync sync = new OptSync();
+        Mfence.Sync sync = new OptSync();
         sync.condLevel = this.condLevel;
         Lwsync lwsync = new OptLwsync();
         lwsync.condLevel = this.condLevel;

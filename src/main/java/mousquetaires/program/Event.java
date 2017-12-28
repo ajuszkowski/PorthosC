@@ -6,6 +6,8 @@ import java.util.Set;
 import com.microsoft.z3.*;
 
 import mousquetaires.expression.AExpr;
+import mousquetaires.program.barriers.OptLwsync;
+import mousquetaires.program.barriers.OptSync;
 import mousquetaires.utils.LastModMap;
 import mousquetaires.utils.MapSSA;
 import mousquetaires.utils.Pair;

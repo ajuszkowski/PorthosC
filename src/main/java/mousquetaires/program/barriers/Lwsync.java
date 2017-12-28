@@ -1,4 +1,4 @@
-package mousquetaires.program;
+package mousquetaires.program.barriers;
 
 import java.util.Collections;
 
