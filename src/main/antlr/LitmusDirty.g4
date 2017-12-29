@@ -1,10 +1,10 @@
-grammar Litmus;
+grammar LitmusDirty;
 
 @header{
 import mousquetaires.program.*;
-import mousquetaires.program.barriers.*;
+import mousquetaires.program.events.old.barriers.*;
+import mousquetaires.program.Process;
 import mousquetaires.expression.*;
-import mousquetaires.program.Thread;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ program [String name] returns [Program p]:
 			mapThreads.get($thrd.getText()).add(new Local(regPointer, new AConst(Integer.parseInt($d.getText()))));
 		}) ';'
 	)+
-	'}' threadsList = threads
+	'}' threadsList = processes
 	{
 		for(Thread t : $threadsList.lst) {
 			p.add(t);
@@ -108,7 +108,7 @@ registerPower returns [Register reg]:
 registerX86 returns [Register reg]:
 	r = ('EAX' | 'EBX' | 'ECX' | 'EDX') {$reg = new Register($r.getText());};
 
-threads returns [List<Thread> lst]:
+processes returns [List<Thread> lst]:
 	(mainThread = word 
 	{
 		if(!mapRegs.keySet().contains($mainThread.str)) {
@@ -131,18 +131,18 @@ threads returns [List<Thread> lst]:
 	}
 	)* ';' {thread = 0;})+
 	{
-		List threads = new ArrayList<Thread>();
+		List processes = new ArrayList<Thread>();
 		for(String k : mapThreads.keySet()) {
 			If lastIf = null;
-			Thread partialThread = null;
+			Thread partialProcess = null;
 			Thread partialIfBody = null;
 			for(Thread t : mapThreads.get(k)) {
 				if(t != null) {
-					if(partialThread == null && lastIf == null) {
-						partialThread = t;
+					if(partialProcess == null && lastIf == null) {
+						partialProcess = t;
 					}
 					else if(lastIf == null){
-						partialThread = new Seq(partialThread, t);
+						partialProcess = new Seq(partialProcess, t);
 					}
 					if(partialIfBody == null) {
 						partialIfBody = t;
@@ -164,9 +164,9 @@ threads returns [List<Thread> lst]:
 				partialIfBody.setCondLevel(lastIf.getCondLevel()+1);
 				lastIf.setT1(partialIfBody);
 			}
-			threads.add(partialThread);
+			processes.add(partialProcess);
 		}
-		$lst = threads;
+		$lst = processes;
 	};
 
 inst [String mainThread] returns [Thread t]: 

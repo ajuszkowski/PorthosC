@@ -1,5 +1,3 @@
-// source: https://github.com/antlr/grammars-v4/blob/master/c/C.g4
-
 /*
  [The "BSD licence"]
  Copyright (c) 2013 Sam Harwell
@@ -27,6 +25,7 @@
 */
 
 /** C 2011 grammar built from the C11 Spec */
+/** source: https://github.com/antlr/grammars-v4/ */
 grammar C11;
 
 primaryExpression
@@ -176,6 +175,8 @@ constantExpression
     :   conditionalExpression
     ;
 
+
+// Entry point?
 declaration
     :   declarationSpecifiers initDeclaratorList ';'
 	| 	declarationSpecifiers ';'
@@ -234,13 +235,66 @@ typeSpecifier
     |   '__m128i')
     |   '__extension__' '(' ('__m128' | '__m128d' | '__m128i') ')'
     |   atomicTypeSpecifier
-    //|   structOrUnionSpecifier
-    //|   enumSpecifier
+    |   structOrUnionSpecifier
+    |   enumSpecifier
     |   typedefName
-    //|   '__typeof__' '(' constantExpression ')' // GCC extension
+    |   '__typeof__' '(' constantExpression ')' // GCC extension
     ;
 
+structOrUnionSpecifier
+    :   structOrUnion Identifier? '{' structDeclarationList '}'
+    |   structOrUnion Identifier
+    ;
 
+structOrUnion
+    :   'struct'
+    |   'union'
+    ;
+
+structDeclarationList
+    :   structDeclaration
+    |   structDeclarationList structDeclaration
+    ;
+
+structDeclaration
+    :   specifierQualifierList structDeclaratorList? ';'
+    |   staticAssertDeclaration
+    ;
+
+specifierQualifierList
+    :   typeSpecifier specifierQualifierList?
+    |   typeQualifier specifierQualifierList?
+    ;
+
+structDeclaratorList
+    :   structDeclarator
+    |   structDeclaratorList ',' structDeclarator
+    ;
+
+structDeclarator
+    :   declarator
+    |   declarator? ':' constantExpression
+    ;
+
+enumSpecifier
+    :   'enum' Identifier? '{' enumeratorList '}'
+    |   'enum' Identifier? '{' enumeratorList ',' '}'
+    |   'enum' Identifier
+    ;
+
+enumeratorList
+    :   enumerator
+    |   enumeratorList ',' enumerator
+    ;
+
+enumerator
+    :   enumerationConstant
+    |   enumerationConstant '=' constantExpression
+    ;
+
+enumerationConstant
+    :   Identifier
+    ;
 
 atomicTypeSpecifier
     :   '_Atomic' '(' typeName ')'
@@ -253,9 +307,22 @@ typeQualifier
     |   '_Atomic'
     ;
 
+functionSpecifier
+    :   ('inline'
+    |   '_Noreturn'
+    |   '__inline__' // GCC extension
+    |   '__stdcall')
+    |   gccAttributeSpecifier
+    |   '__declspec' '(' Identifier ')'
+    ;
+
+alignmentSpecifier
+    :   '_Alignas' '(' typeName ')'
+    |   '_Alignas' '(' constantExpression ')'
+    ;
 
 declarator
-    :   /* pointer? */ directDeclarator /* gccDeclaratorExtension* */
+    :   pointer? directDeclarator gccDeclaratorExtension*
     ;
 
 directDeclarator
@@ -268,6 +335,26 @@ directDeclarator
     |   directDeclarator '(' parameterTypeList ')'
     |   directDeclarator '(' identifierList? ')'
     |   Identifier ':' DigitSequence  // bit field
+    ;
+
+gccDeclaratorExtension
+    :   '__asm' '(' StringLiteral+ ')'
+    |   gccAttributeSpecifier
+    ;
+
+gccAttributeSpecifier
+    :   '__attribute__' '(' '(' gccAttributeList ')' ')'
+    ;
+
+gccAttributeList
+    :   gccAttribute (',' gccAttribute)*
+    |   // empty
+    ;
+
+gccAttribute
+    :   ~(',' | '(' | ')') // relaxed def for "identifier or reserved word"
+        ('(' argumentExpressionList? ')')?
+    |   // empty
     ;
 
 nestedParenthesesBlock

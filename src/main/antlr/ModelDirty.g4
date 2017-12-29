@@ -1,5 +1,5 @@
 // Define a grammar called model
-grammar Model;
+grammar ModelDirty;
 @header{
 import mousquetaires.wmm.*;
 }
