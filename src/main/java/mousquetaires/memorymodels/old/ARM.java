@@ -1,19 +1,18 @@
-package mousquetaires.wmm;
+package mousquetaires.memorymodels.old;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
-import com.microsoft.z3.Z3Exception;
 
-import mousquetaires.program.Event;
-import mousquetaires.program.Local;
-import mousquetaires.program.MemEvent;
+import mousquetaires.program.events.old.Event;
+import mousquetaires.program.events.old.Local;
+import mousquetaires.program.events.old.MemEvent;
 import mousquetaires.program.Program;
 import mousquetaires.utils.Utils;
 
-public class Power {
+public class ARM {
 
     public static BoolExpr encode(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
@@ -37,63 +36,59 @@ public class Power {
         enc = ctx.mkAnd(enc, Encodings.satUnion("dp", "rdw", events, ctx));
         enc = ctx.mkAnd(enc, Encodings.satUnion("ii0", "(dp+rdw)", "rfi", events, ctx));
         enc = ctx.mkAnd(enc, Encodings.satEmpty("ic0", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("ci0", "ctrlisync", "detour", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("dp", "poloc", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("(dp+poloc)", "ctrl", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satUnion("ci0", "ctrlisb", "detour", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satUnion("dp", "ctrl", events, ctx));
         enc = ctx.mkAnd(enc, Encodings.satComp("addr", "po", events, ctx));
-        enc = ctx.mkAnd(enc, satPowerPPO(events, ctx));
+        enc = ctx.mkAnd(enc, satARMPPO(events, ctx));
 
-        enc = ctx.mkAnd(enc, Encodings.satUnion("cc0", "((dp+poloc)+ctrl)", "(addr;po)", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satUnion("cc0", "(dp+ctrl)", "(addr;po)", events, ctx));
         enc = ctx.mkAnd(enc, Encodings.satIntersection("RR", "ii", events, ctx));
         enc = ctx.mkAnd(enc, Encodings.satIntersection("RW", "ic", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("po-power", "(RR&ii)", "(RW&ic)", events, ctx));
-        // Fences in Power
-        enc = ctx.mkAnd(enc, Encodings.satMinus("lwsync", "WR", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("fence-power", "sync", "(lwsync\\WR)", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satUnion("po-arm", "(RR&ii)", "(RW&ic)", events, ctx));
         // Happens before
-        enc = ctx.mkAnd(enc, Encodings.satUnion("po-power", "rfe", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("hb-power", "(po-power+rfe)", "fence-power", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satUnion("po-arm", "rfe", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satUnion("hb-arm", "(po-arm+rfe)", "ish", events, ctx));
         // Prop-base
-        enc = ctx.mkAnd(enc, Encodings.satComp("rfe", "fence-power", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("fence-power", "(rfe;fence-power)", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satTransRef("hb-power", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("prop-base", "(fence-power+(rfe;fence-power))", "(hb-power)*", events, ctx));
-        // Propagation for Power
+        enc = ctx.mkAnd(enc, Encodings.satComp("rfe", "ish", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satUnion("ish", "(rfe;ish)", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satTransRef("hb-arm", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satComp("prop-base", "(ish+(rfe;ish))", "(hb-arm)*", events, ctx));
+        // Propagation for ARM
         enc = ctx.mkAnd(enc, Encodings.satTransRef("com", events, ctx));
-
+        
         enc = ctx.mkAnd(enc, Encodings.satTransRef("prop-base", events, ctx));
         enc = ctx.mkAnd(enc, Encodings.satComp("(com)*", "(prop-base)*", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("((com)*;(prop-base)*)", "sync", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("(((com)*;(prop-base)*);sync)", "(hb-power)*", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satComp("((com)*;(prop-base)*)", "ish", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satComp("(((com)*;(prop-base)*);ish)", "(hb-arm)*", events, ctx));
         enc = ctx.mkAnd(enc, Encodings.satIntersection("WW", "prop-base", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("prop", "(WW&prop-base)", "((((com)*;(prop-base)*);sync);(hb-power)*)", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satUnion("prop", "(WW&prop-base)", "((((com)*;(prop-base)*);ish);(hb-arm)*)", events, ctx));
         enc = ctx.mkAnd(enc, Encodings.satComp("fre", "prop", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("(fre;prop)", "(hb-power)*", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satComp("(fre;prop)", "(hb-arm)*", events, ctx));
         enc = ctx.mkAnd(enc, Encodings.satUnion("co", "prop", events, ctx));
         return enc;
     }
 
     public static BoolExpr Consistent(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
-        return ctx.mkAnd(Encodings.satAcyclic("hb-power", events, ctx),
-                        Encodings.satIrref("((fre;prop);(hb-power)*)", events, ctx),
+        return ctx.mkAnd(Encodings.satAcyclic("hb-arm", events, ctx),
+                        Encodings.satIrref("((fre;prop);(hb-arm)*)", events, ctx),
                         Encodings.satAcyclic("(co+prop)", events, ctx),
                         Encodings.satAcyclic("(poloc+com)", events, ctx));
     }
 
     public static BoolExpr Inconsistent(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
-        BoolExpr enc = ctx.mkAnd(Encodings.satCycleDef("hb-power", events, ctx),
+        BoolExpr enc = ctx.mkAnd(Encodings.satCycleDef("hb-arm", events, ctx),
                                 Encodings.satCycleDef("(co+prop)", events, ctx),
                                 Encodings.satCycleDef("(poloc+com)", events, ctx));
-        enc = ctx.mkAnd(enc, ctx.mkOr(Encodings.satCycle("hb-power", events, ctx),
-                                    ctx.mkNot(Encodings.satIrref("((fre;prop);(hb-power)*)", events, ctx)),
+        enc = ctx.mkAnd(enc, ctx.mkOr(Encodings.satCycle("hb-arm", events, ctx),
+                                    ctx.mkNot(Encodings.satIrref("((fre;prop);(hb-arm)*)", events, ctx)),
                                     Encodings.satCycle("(co+prop)", events, ctx),
                                     Encodings.satCycle("(poloc+com)", events, ctx)));
         return enc;
     }
 
-    private static BoolExpr satPowerPPO(Set<Event> events, Context ctx) {
+    private static BoolExpr satARMPPO(Set<Event> events, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         for(Event e1 : events) {
             for(Event e2 : events) {
@@ -130,22 +125,22 @@ public class Power {
                 enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ci",e1,e2, ctx), ctx.mkOr(Utils.edge("ci0",e1,e2, ctx), Utils.edge("ci;ii",e1,e2, ctx), Utils.edge("cc;ci",e1,e2, ctx))));
                 enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("cc",e1,e2, ctx), ctx.mkOr(Utils.edge("cc0",e1,e2, ctx), Utils.edge("ci",e1,e2, ctx), Utils.edge("ci;ic",e1,e2, ctx), Utils.edge("cc;cc",e1,e2, ctx))));
 
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ii",e1,e2, ctx), ctx.mkOr(ctx.mkAnd(Utils.edge("ii0",e1,e2, ctx), ctx.mkGt(Utils.intCount("ii",e1,e2, ctx), Utils.intCount("ii0",e1,e2, ctx))),
-                                                                                    ctx.mkAnd(Utils.edge("ci",e1,e2, ctx), ctx.mkGt(Utils.intCount("ii",e1,e2, ctx), Utils.intCount("ci",e1,e2, ctx))),
-                                                                                    ctx.mkAnd(Utils.edge("ic;ci",e1,e2, ctx), ctx.mkGt(Utils.intCount("ii",e1,e2, ctx), Utils.intCount("ic;ci",e1,e2, ctx))),
-                                                                                    ctx.mkAnd(Utils.edge("ii;ii",e1,e2, ctx), ctx.mkGt(Utils.intCount("ii",e1,e2, ctx), Utils.intCount("ii;ii",e1,e2, ctx))))));
+                enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.edge("ii",e1,e2, ctx), ctx.mkOr(ctx.mkAnd(Utils.edge("ii0",e1,e2, ctx), ctx.mkGt(Utils.intCount("ii",e1,e2, ctx), Utils.intCount("ii0",e1,e2, ctx))),
+                                                                                     ctx.mkAnd(Utils.edge("ci",e1,e2, ctx), ctx.mkGt(Utils.intCount("ii",e1,e2, ctx), Utils.intCount("ci",e1,e2, ctx))),
+                                                                                     ctx.mkAnd(Utils.edge("ic;ci",e1,e2, ctx), ctx.mkGt(Utils.intCount("ii",e1,e2, ctx), Utils.intCount("ic;ci",e1,e2, ctx))),
+                                                                                     ctx.mkAnd(Utils.edge("ii;ii",e1,e2, ctx), ctx.mkGt(Utils.intCount("ii",e1,e2, ctx), Utils.intCount("ii;ii",e1,e2, ctx))))));
 
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ic",e1,e2, ctx), ctx.mkOr(ctx.mkAnd(Utils.edge("ic0",e1,e2, ctx), ctx.mkGt(Utils.intCount("ic",e1,e2, ctx), Utils.intCount("ic0",e1,e2, ctx))),
+                enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.edge("ic",e1,e2, ctx), ctx.mkOr(ctx.mkAnd(Utils.edge("ic0",e1,e2, ctx), ctx.mkGt(Utils.intCount("ic",e1,e2, ctx), Utils.intCount("ic0",e1,e2, ctx))),
                                                                                     ctx.mkAnd(Utils.edge("ii",e1,e2, ctx), ctx.mkGt(Utils.intCount("ic",e1,e2, ctx), Utils.intCount("ii",e1,e2, ctx))),
                                                                                     ctx.mkAnd(Utils.edge("cc",e1,e2, ctx), ctx.mkGt(Utils.intCount("ic",e1,e2, ctx), Utils.intCount("cc",e1,e2, ctx))),
                                                                                     ctx.mkAnd(Utils.edge("ic;cc",e1,e2, ctx), ctx.mkGt(Utils.intCount("ic",e1,e2, ctx), Utils.intCount("ic;cc",e1,e2, ctx))),
                                                                                     ctx.mkAnd(Utils.edge("ii;ic",e1,e2, ctx), ctx.mkGt(Utils.intCount("ic",e1,e2, ctx), Utils.intCount("ii;ic",e1,e2, ctx))))));
 
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ci",e1,e2, ctx), ctx.mkOr(ctx.mkAnd(Utils.edge("ci0",e1,e2, ctx), ctx.mkGt(Utils.intCount("ci",e1,e2, ctx), Utils.intCount("ci0",e1,e2, ctx))),
+                enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.edge("ci",e1,e2, ctx), ctx.mkOr(ctx.mkAnd(Utils.edge("ci0",e1,e2, ctx), ctx.mkGt(Utils.intCount("ci",e1,e2, ctx), Utils.intCount("ci0",e1,e2, ctx))),
                                                                                     ctx.mkAnd(Utils.edge("ci;ii",e1,e2, ctx), ctx.mkGt(Utils.intCount("ci",e1,e2, ctx), Utils.intCount("ci;ii",e1,e2, ctx))),
                                                                                     ctx.mkAnd(Utils.edge("cc;ci",e1,e2, ctx), ctx.mkGt(Utils.intCount("ci",e1,e2, ctx), Utils.intCount("cc;ci",e1,e2, ctx))))));
 
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("cc",e1,e2, ctx), ctx.mkOr(ctx.mkAnd(Utils.edge("cc0",e1,e2, ctx), ctx.mkGt(Utils.intCount("cc",e1,e2, ctx), Utils.intCount("cc0",e1,e2, ctx))),
+                enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.edge("cc",e1,e2, ctx), ctx.mkOr(ctx.mkAnd(Utils.edge("cc0",e1,e2, ctx), ctx.mkGt(Utils.intCount("cc",e1,e2, ctx), Utils.intCount("cc0",e1,e2, ctx))),
                                                                                     ctx.mkAnd(Utils.edge("ci",e1,e2, ctx), ctx.mkGt(Utils.intCount("cc",e1,e2, ctx), Utils.intCount("ci",e1,e2, ctx))),
                                                                                     ctx.mkAnd(Utils.edge("ci;ic",e1,e2, ctx), ctx.mkGt(Utils.intCount("cc",e1,e2, ctx), Utils.intCount("ci;ic",e1,e2, ctx))),
                                                                                     ctx.mkAnd(Utils.edge("cc;cc",e1,e2, ctx), ctx.mkGt(Utils.intCount("cc",e1,e2, ctx), Utils.intCount("cc;cc",e1,e2, ctx))))));

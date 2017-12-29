@@ -1,4 +1,4 @@
-package mousquetaires.wmm;
+package mousquetaires.memorymodels.old;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,15 +7,15 @@ import java.util.stream.IntStream;
 
 import com.microsoft.z3.*;
 
-import mousquetaires.program.Event;
-import mousquetaires.program.Init;
-import mousquetaires.program.Load;
-import mousquetaires.program.Local;
-import mousquetaires.program.Location;
-import mousquetaires.program.MemEvent;
+import mousquetaires.program.events.old.Event;
+import mousquetaires.program.events.old.Init;
+import mousquetaires.program.events.old.Load;
+import mousquetaires.program.events.old.Local;
+import mousquetaires.program.memory.Location;
+import mousquetaires.program.events.old.MemEvent;
 import mousquetaires.program.Program;
-import mousquetaires.program.Register;
-import mousquetaires.program.Store;
+import mousquetaires.program.events.old.Register;
+import mousquetaires.program.events.old.Store;
 import mousquetaires.utils.Utils;
 import static mousquetaires.utils.Utils.lastValueLoc;
 import static mousquetaires.utils.Utils.lastValueReg;

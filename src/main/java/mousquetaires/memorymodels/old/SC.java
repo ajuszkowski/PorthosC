@@ -1,11 +1,14 @@
-package mousquetaires.wmm;
+package mousquetaires.memorymodels.old;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.microsoft.z3.*;
 
-import mousquetaires.program.*;
+import mousquetaires.program.events.old.Event;
+import mousquetaires.program.events.old.MemEvent;
+import mousquetaires.program.Program;
+
 
 public class SC {
 

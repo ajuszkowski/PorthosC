@@ -1,4 +1,4 @@
-package mousquetaires.models;
+package mousquetaires.memorymodels;
 
 // TODO: replace abbreviations with full names
 public enum MemoryModelName {

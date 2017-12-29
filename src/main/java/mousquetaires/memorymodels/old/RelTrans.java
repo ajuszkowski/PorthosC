@@ -3,13 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mousquetaires.wmm;
+package mousquetaires.memorymodels.old;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
-import com.microsoft.z3.Z3Exception;
-import mousquetaires.program.Event;
-import mousquetaires.program.MemEvent;
+import mousquetaires.program.events.old.Event;
+import mousquetaires.program.events.old.MemEvent;
 import mousquetaires.program.Program;
 import mousquetaires.utils.Utils;
 

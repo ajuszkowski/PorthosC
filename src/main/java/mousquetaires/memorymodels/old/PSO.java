@@ -1,35 +1,39 @@
-package mousquetaires.wmm;
+package mousquetaires.memorymodels.old;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.microsoft.z3.*;
 
-import mousquetaires.program.*;
+import mousquetaires.program.events.old.Event;
+import mousquetaires.program.events.old.MemEvent;
+import mousquetaires.program.Program;
 
-public class TSO {
+
+public class PSO {
 
     public static BoolExpr encode(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+
         BoolExpr enc = Encodings.satUnion("co", "fr", events, ctx);
         enc = ctx.mkAnd(enc, Encodings.satUnion("com", "(co+fr)", "rf", events, ctx));
         enc = ctx.mkAnd(enc, Encodings.satUnion("poloc", "com", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("com-tso", "(co+fr)", "rfe", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satMinus("po", "WR", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("po-tso", "(po\\WR)", "mfence", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("ghb-tso", "po-tso", "com-tso", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satUnion("com-pso", "(co+fr)", "rfe", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satIntersection("po", "RM", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satUnion("po-pso", "(po&RM)", "mfence", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satUnion("ghb-pso", "po-pso", "com-pso", events, ctx));
         return enc;
     }
 
     public static BoolExpr Consistent(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
-        return ctx.mkAnd(Encodings.satAcyclic("(poloc+com)", events, ctx), Encodings.satAcyclic("ghb-tso", events, ctx));
+        return ctx.mkAnd(Encodings.satAcyclic("(poloc+com)", events, ctx), Encodings.satAcyclic("ghb-pso", events, ctx));
     }
 
     public static BoolExpr Inconsistent(Program program, Context ctx) {
         Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
-        BoolExpr enc = ctx.mkAnd(Encodings.satCycleDef("(poloc+com)", events, ctx), Encodings.satCycleDef("ghb-tso", events, ctx));
-        enc = ctx.mkAnd(enc, ctx.mkOr(Encodings.satCycle("(poloc+com)", events, ctx), Encodings.satCycle("ghb-tso", events, ctx)));
+        BoolExpr enc = ctx.mkAnd(Encodings.satCycleDef("(poloc+com)", events, ctx), Encodings.satCycleDef("ghb-pso", events, ctx));
+        enc = ctx.mkAnd(enc, ctx.mkOr(Encodings.satCycle("(poloc+com)", events, ctx), Encodings.satCycle("ghb-pso", events, ctx)));
         return enc;
     }
 }

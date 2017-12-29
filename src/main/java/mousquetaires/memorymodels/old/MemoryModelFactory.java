@@ -1,6 +1,6 @@
-package mousquetaires.wmm;
+package mousquetaires.memorymodels.old;
 
-import mousquetaires.models.MemoryModelName;
+import mousquetaires.memorymodels.MemoryModelName;
 
 
 public class MemoryModelFactory {

@@ -1,4 +1,4 @@
-package mousquetaires.wmm;
+package mousquetaires.memorymodels.old;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,22 +7,21 @@ import java.util.stream.Collectors;
 import com.microsoft.z3.*;
 
 import mousquetaires.expression.AConst;
-import mousquetaires.program.Barrier;
-import mousquetaires.program.Event;
-import mousquetaires.program.Init;
-import mousquetaires.program.Isb;
-import mousquetaires.program.Ish;
-import mousquetaires.program.Isync;
-import mousquetaires.program.Load;
-import mousquetaires.program.Local;
-import mousquetaires.program.Location;
-import mousquetaires.program.Lwsync;
-import mousquetaires.program.MemEvent;
-import mousquetaires.program.Mfence;
+import mousquetaires.program.events.old.barriers.Barrier;
+import mousquetaires.program.events.old.Event;
+import mousquetaires.program.events.old.Init;
+import mousquetaires.program.events.old.barriers.Isb;
+import mousquetaires.program.events.old.barriers.Ish;
+import mousquetaires.program.events.old.barriers.Isync;
+import mousquetaires.program.events.old.Load;
+import mousquetaires.program.events.old.Local;
+import mousquetaires.program.memory.Location;
+import mousquetaires.program.events.old.barriers.Lwsync;
+import mousquetaires.program.events.old.MemEvent;
+import mousquetaires.program.events.old.barriers.Mfence;
 import mousquetaires.program.Program;
-import mousquetaires.program.Register;
-import mousquetaires.program.Store;
-import mousquetaires.program.Sync;
+import mousquetaires.program.events.old.Register;
+import mousquetaires.program.events.old.Store;
 import mousquetaires.utils.Utils;
 
 import static mousquetaires.utils.Utils.lastValueLoc;
@@ -143,7 +142,7 @@ public class Domain {
                         if(b instanceof Mfence) {
                             noMfence = false;
                         }
-                        if(b instanceof Sync) {
+                        if(b instanceof Mfence.Sync) {
                             noSync = false;
                         }
                         if(b instanceof Lwsync) {
@@ -245,7 +244,7 @@ public class Domain {
                         enc = ctx.mkAnd(enc, ctx.mkImplies(ctx.mkAnd(e1.executes(ctx), ctx.mkAnd(b.executes(ctx), e2.executes(ctx))),
                                 Utils.edge("mfence", e1, e2, ctx)));
                     }
-                    if(b instanceof Sync && e1.getMainThread() == b.getMainThread() && b.getMainThread() == e2.getMainThread()
+                    if(b instanceof Mfence.Sync && e1.getMainThread() == b.getMainThread() && b.getMainThread() == e2.getMainThread()
                             && e1.getEId() < b.getEId() && b.getEId() < e2.getEId()) {
                         syncs = ctx.mkOr(syncs, b.executes(ctx));
                         enc = ctx.mkAnd(enc, ctx.mkImplies(ctx.mkAnd(e1.executes(ctx), ctx.mkAnd(b.executes(ctx), e2.executes(ctx))),
