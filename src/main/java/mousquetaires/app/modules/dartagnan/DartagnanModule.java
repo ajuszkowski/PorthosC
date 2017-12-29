@@ -4,7 +4,6 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 import mousquetaires.app.modules.IAppModule;
-import mousquetaires.app.options.AppOptions;
 import mousquetaires.languages.parsers.ProgramParserFactory;
 import mousquetaires.program.Program;
 import mousquetaires.wmm.Domain;
@@ -76,6 +75,7 @@ public class DartagnanModule implements IAppModule {
         //}
 
         String target = options.sourceModel.toString();
+        /*
         program.initialize();
         program.compile(target, false, true);
 
@@ -106,6 +106,8 @@ public class DartagnanModule implements IAppModule {
         } else {
             verdict.result = DartagnanVerdict.Status.Reachable;
         }
+
+        */
 
         verdict.onFinishExecution();
 

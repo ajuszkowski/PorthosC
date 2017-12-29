@@ -1,10 +1,6 @@
 package mousquetaires;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import mousquetaires.app.modules.IAppModule;
 import mousquetaires.app.modules.porthos.PorthosMode;
@@ -12,19 +8,8 @@ import mousquetaires.app.modules.porthos.PorthosOptions;
 import mousquetaires.app.modules.porthos.PorthosVerdict;
 import mousquetaires.languages.parsers.ProgramParserFactory;
 
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.Context;
-import com.microsoft.z3.Expr;
-import com.microsoft.z3.Model;
-import com.microsoft.z3.Solver;
-import com.microsoft.z3.Status;
-import com.microsoft.z3.enumerations.Z3_ast_print_mode;
-
-import mousquetaires.program.Init;
+//import mousquetaires.program.Init;
 import mousquetaires.program.Program;
-import mousquetaires.utils.Utils;
-import mousquetaires.wmm.Domain;
-import mousquetaires.wmm.Encodings;
 
 
 @SuppressWarnings("deprecation")
@@ -72,6 +57,7 @@ public class PorthosModule implements IAppModule {
 
         Program program = ProgramParserFactory.getProgram(options.inputProgramFile);
 
+        /*
         program.initialize();
         Program pSource = program.clone();
         Program pTarget = program.clone();
@@ -160,6 +146,7 @@ public class PorthosModule implements IAppModule {
                 return verdict;
             }
         }
+        */
 
         return verdict;
     }

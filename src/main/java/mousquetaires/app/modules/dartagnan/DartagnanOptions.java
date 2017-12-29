@@ -7,7 +7,7 @@ import mousquetaires.app.options.converters.MemoryModelNameConverter;
 import mousquetaires.app.options.validators.FileValidator;
 import mousquetaires.app.options.validators.InputProgramExtensionValidator;
 import mousquetaires.app.options.validators.MemoryModelNameValidator;
-import mousquetaires.models.MemoryModelName;
+import mousquetaires.memorymodels.MemoryModelName;
 
 import java.io.File;
 
