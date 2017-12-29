@@ -22,6 +22,7 @@ dependencies {
     compile "com.beust:jcommander:1.71"
     compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
     compile "commons-io:commons-io:2.5"
+    compile "com.google.guava:guava:23.6-jre"
 
     // local dependencies:
     compile name: "com.microsoft.z3"
@@ -59,7 +60,7 @@ idea {
 
 ext.antlr4 = [
     generatedSourceDir: "src/generated/java/",
-    grammarsDir: "src/main/antlr/",
+    grammarsDir: "src/main/antlr4/",
     resultPackage: "mousquetaires.languages.parsers",
 ]
 
