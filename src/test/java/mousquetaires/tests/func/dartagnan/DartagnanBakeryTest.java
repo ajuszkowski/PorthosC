@@ -1,7 +1,7 @@
 package mousquetaires.tests.func.dartagnan;
 
 import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
-import mousquetaires.models.MemoryModelName;
+import mousquetaires.memorymodels.MemoryModelName;
 import com.googlecode.zohhak.api.runners.ZohhakRunner;
 import com.googlecode.zohhak.api.TestWith;
 import org.junit.runner.RunWith;
@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 
 @RunWith(ZohhakRunner.class)
-public class DartagnanBakeryTest extends BaseDartagnanFuncTest {
+public class DartagnanBakeryTest extends AbstractDartagnanFuncTest {
 
     private final String bakery_pts_rx    = targetsDirectory + "/all_rx/bakery.pts";
     private final String bakery_litmus_rx = targetsDirectory + "/all_rx/bakery.litmus";

@@ -2,17 +2,16 @@ package mousquetaires.tests.func.porthos;
 
 import com.googlecode.zohhak.api.TestWith;
 import com.googlecode.zohhak.api.runners.ZohhakRunner;
-import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
 import mousquetaires.app.modules.porthos.PorthosMode;
 import mousquetaires.app.modules.porthos.PorthosVerdict;
-import mousquetaires.models.MemoryModelName;
+import mousquetaires.memorymodels.MemoryModelName;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 
 
 @RunWith(ZohhakRunner.class)
-public class PorthosBakeryTest extends BasePorthosFuncTest {
+public class PorthosBakeryTest extends AbstractPorthosFuncTest {
 
     private final String bakery_pts_rx    = targetsDirectory + "/all_rx/bakery.pts";
     //private final String bakery_litmus_rx = targetsDirectory + "/all_rx/bakery.litmus";
@@ -20,6 +19,8 @@ public class PorthosBakeryTest extends BasePorthosFuncTest {
 
     // == Relaxed operations: ==
 
+    // TODO: check results with respect to the information at p. 53 Alglave's these
+    // TODO: and create new tests that illustrate non-portability for different architectures -- will help in diploma
     @TestWith({
             bakery_pts_rx + ", " + "SC,    TSO,   StateInclusion, NonStatePortable",  // ~5 sec
             //bakery_pts_rx + ", " + "SC,    PSO,   StateInclusion, NonStatePortable",  // ~4 sec

@@ -1,7 +1,7 @@
 package mousquetaires.tests.func.dartagnan;
 
 import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
-import mousquetaires.models.MemoryModelName;
+import mousquetaires.memorymodels.MemoryModelName;
 import org.junit.runner.RunWith;
 import com.googlecode.zohhak.api.TestWith;
 import com.googlecode.zohhak.api.runners.ZohhakRunner;
@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 
 @RunWith(ZohhakRunner.class)
-public class DartagnanSzymanskiTest extends BaseDartagnanFuncTest {
+public class DartagnanSzymanskiTest extends AbstractDartagnanFuncTest {
 
     private final String szymanski_pts_rx    = targetsDirectory + "/all_rx/szymanski.pts";
     private final String szymanski_litmus_rx = targetsDirectory + "/all_rx/szymanski.litmus";

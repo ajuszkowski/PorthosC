@@ -3,14 +3,14 @@ package mousquetaires.tests.func.dartagnan;
 import com.googlecode.zohhak.api.TestWith;
 import com.googlecode.zohhak.api.runners.ZohhakRunner;
 import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
-import mousquetaires.models.MemoryModelName;
+import mousquetaires.memorymodels.MemoryModelName;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 
 
 @RunWith(ZohhakRunner.class)
-public class DartagnanPetersonTest extends BaseDartagnanFuncTest {
+public class DartagnanPetersonTest extends AbstractDartagnanFuncTest {
 
     private final String peterson_pts_rx    = targetsDirectory + "/all_rx/peterson.pts";
     private final String peterson_litmus_rx = targetsDirectory + "/all_rx/peterson.litmus";

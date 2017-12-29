@@ -6,7 +6,7 @@ import mousquetaires.app.modules.IAppModule;
 import java.io.IOException;
 
 
-public abstract class BaseFuncTest {
+public abstract class AbstractFuncTest {
 
     protected final String targetsDirectory = "src/test/resources/targets";
 

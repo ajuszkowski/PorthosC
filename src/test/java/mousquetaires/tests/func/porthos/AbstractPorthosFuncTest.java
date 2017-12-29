@@ -4,13 +4,13 @@ import mousquetaires.PorthosModule;
 import mousquetaires.app.modules.porthos.PorthosMode;
 import mousquetaires.app.modules.porthos.PorthosOptions;
 import mousquetaires.app.modules.porthos.PorthosVerdict;
-import mousquetaires.models.MemoryModelName;
-import mousquetaires.tests.func.BaseFuncTest;
+import mousquetaires.memorymodels.MemoryModelName;
+import mousquetaires.tests.func.AbstractFuncTest;
 
 import java.io.File;
 
 
-class BasePorthosFuncTest extends BaseFuncTest {
+class AbstractPorthosFuncTest extends AbstractFuncTest {
 
     protected PorthosVerdict runTest(String inputProgramFile,
                                      MemoryModelName sourceModel,
