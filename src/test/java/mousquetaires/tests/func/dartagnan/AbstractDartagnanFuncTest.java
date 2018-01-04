@@ -17,6 +17,6 @@ class AbstractDartagnanFuncTest extends AbstractFuncTest {
         options.sourceModel = sourceModel;
 
         DartagnanModule module = new DartagnanModule(options);
-        return (DartagnanVerdict) run(module);
+        return (DartagnanVerdict) runModule(module);
     }
 }

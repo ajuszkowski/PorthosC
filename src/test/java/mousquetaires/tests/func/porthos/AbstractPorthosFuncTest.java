@@ -1,7 +1,7 @@
 package mousquetaires.tests.func.porthos;
 
-import mousquetaires.PorthosModule;
 import mousquetaires.app.modules.porthos.PorthosMode;
+import mousquetaires.app.modules.porthos.PorthosModule;
 import mousquetaires.app.modules.porthos.PorthosOptions;
 import mousquetaires.app.modules.porthos.PorthosVerdict;
 import mousquetaires.memorymodels.MemoryModelName;
@@ -23,6 +23,6 @@ class AbstractPorthosFuncTest extends AbstractFuncTest {
         options.mode = mode;
 
         PorthosModule module = new PorthosModule(options);
-        return (PorthosVerdict) run(module);
+        return (PorthosVerdict) runModule(module);
     }
 }

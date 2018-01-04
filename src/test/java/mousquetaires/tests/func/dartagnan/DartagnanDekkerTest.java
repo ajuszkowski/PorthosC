@@ -1,20 +1,17 @@
 package mousquetaires.tests.func.dartagnan;
 
 import com.googlecode.zohhak.api.TestWith;
-import com.googlecode.zohhak.api.runners.ZohhakRunner;
 import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
 import mousquetaires.memorymodels.MemoryModelName;
-import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 
 
-@RunWith(ZohhakRunner.class)
 public class DartagnanDekkerTest extends AbstractDartagnanFuncTest {
 
-    private final String dekker_pts_rx    = targetsDirectory + "/all_rx/dekker.pts";
-    private final String dekker_litmus_rx = targetsDirectory + "/all_rx/dekker.litmus";
-    private final String dekker_pts_sc    = targetsDirectory + "/all_sc/dekker.pts";
+    private final String dekker_pts_rx    = targetsDirectory + "all_rx/dekker.pts";
+    private final String dekker_litmus_rx = targetsDirectory + "all_rx/dekker.litmus";
+    private final String dekker_pts_sc    = targetsDirectory + "all_sc/dekker.pts";
 
     // == Relaxed operations: ==
 

@@ -1,20 +1,17 @@
 package mousquetaires.tests.func.dartagnan;
 
+import com.googlecode.zohhak.api.TestWith;
 import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
 import mousquetaires.memorymodels.MemoryModelName;
-import org.junit.runner.RunWith;
-import com.googlecode.zohhak.api.TestWith;
-import com.googlecode.zohhak.api.runners.ZohhakRunner;
 
 import static org.junit.Assert.assertEquals;
 
 
-@RunWith(ZohhakRunner.class)
 public class DartagnanSzymanskiTest extends AbstractDartagnanFuncTest {
 
-    private final String szymanski_pts_rx    = targetsDirectory + "/all_rx/szymanski.pts";
-    private final String szymanski_litmus_rx = targetsDirectory + "/all_rx/szymanski.litmus";
-    private final String szymanski_pts_sc    = targetsDirectory + "/all_sc/szymanski.pts";
+    private final String szymanski_pts_rx    = targetsDirectory + "all_rx/szymanski.pts";
+    private final String szymanski_litmus_rx = targetsDirectory + "all_rx/szymanski.litmus";
+    private final String szymanski_pts_sc    = targetsDirectory + "all_sc/szymanski.pts";
 
     // == Relaxed operations: ==
 
@@ -61,6 +58,5 @@ public class DartagnanSzymanskiTest extends AbstractDartagnanFuncTest {
         DartagnanVerdict verdict = runTest(inputProgramFile, sourceModel);
         assertEquals(expected, verdict.result);
     }
-
 
 }

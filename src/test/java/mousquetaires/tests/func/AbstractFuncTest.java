@@ -1,26 +1,27 @@
 package mousquetaires.tests.func;
 
+import com.googlecode.zohhak.api.runners.ZohhakRunner;
+import mousquetaires.app.errors.AppError;
 import mousquetaires.app.modules.AppVerdict;
-import mousquetaires.app.modules.IAppModule;
+import mousquetaires.app.modules.AppModule;
+import mousquetaires.tests.AbstractTest;
+import mousquetaires.tests.TestFailedException;
+import org.junit.runner.RunWith;
 
-import java.io.IOException;
 
+@RunWith(ZohhakRunner.class)
+public abstract class AbstractFuncTest extends AbstractTest {
 
-public abstract class AbstractFuncTest {
+    protected final String targetsDirectory = resourcesDirectory + "targets/";
 
-    protected final String targetsDirectory = "src/test/resources/targets";
-
-    protected AppVerdict run(IAppModule module) {
-        try {
-            return module.run();
-        } catch (IOException e) {
-            logError(e);
-            return null;
+    protected AppVerdict runModule(AppModule module) {
+        AppVerdict verdict = module.run();
+        if (verdict.hasErrors()) {
+            for (AppError error : verdict.getErrors()) {
+                logError(error);
+            }
+            throw new TestFailedException(verdict);
         }
-    }
-
-    private void logError(Exception e) {
-        // todo: log
-        e.printStackTrace();
+        return verdict;
     }
 }

@@ -1,21 +1,18 @@
 package mousquetaires.tests.func.porthos;
 
 import com.googlecode.zohhak.api.TestWith;
-import com.googlecode.zohhak.api.runners.ZohhakRunner;
 import mousquetaires.app.modules.porthos.PorthosMode;
 import mousquetaires.app.modules.porthos.PorthosVerdict;
 import mousquetaires.memorymodels.MemoryModelName;
-import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 
 
-@RunWith(ZohhakRunner.class)
 public class PorthosBakeryTest extends AbstractPorthosFuncTest {
 
-    private final String bakery_pts_rx    = targetsDirectory + "/all_rx/bakery.pts";
-    //private final String bakery_litmus_rx = targetsDirectory + "/all_rx/bakery.litmus";
-    //private final String bakery_pts_sc    = targetsDirectory + "/all_sc/bakery.pts";
+    private final String bakery_pts_rx    = targetsDirectory + "all_rx/bakery.pts";
+    //private final String bakery_litmus_rx = targetsDirectory + "all_rx/bakery.litmus";
+    //private final String bakery_pts_sc    = targetsDirectory + "all_sc/bakery.pts";
 
     // == Relaxed operations: ==
 

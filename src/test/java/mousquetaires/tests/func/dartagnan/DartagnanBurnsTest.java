@@ -1,21 +1,18 @@
 package mousquetaires.tests.func.dartagnan;
 
 import com.googlecode.zohhak.api.TestWith;
-import com.googlecode.zohhak.api.runners.ZohhakRunner;
 import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
 import mousquetaires.memorymodels.MemoryModelName;
 import org.junit.Ignore;
-import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 
 
-@RunWith(ZohhakRunner.class)
 public class DartagnanBurnsTest extends AbstractDartagnanFuncTest {
 
-    private final String burns_pts_rx    = targetsDirectory + "/all_rx/burns.pts";
-    private final String burns_litmus_rx = targetsDirectory + "/all_rx/burns.litmus";
-    private final String burns_pts_sc    = targetsDirectory + "/all_sc/burns.pts";
+    private final String burns_pts_rx    = targetsDirectory + "all_rx/burns.pts";
+    private final String burns_litmus_rx = targetsDirectory + "all_rx/burns.litmus";
+    private final String burns_pts_sc    = targetsDirectory + "all_sc/burns.pts";
 
     // == Relaxed operations: ==
 
@@ -63,6 +60,5 @@ public class DartagnanBurnsTest extends AbstractDartagnanFuncTest {
         DartagnanVerdict verdict = runTest(inputProgramFile, sourceModel);
         assertEquals(expected, verdict.result);
     }
-
 
 }

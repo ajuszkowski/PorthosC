@@ -10,12 +10,11 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.assertEquals;
 
 
-@RunWith(ZohhakRunner.class)
 public class PorthosLamportTest extends BasePorthosFuncTest {
 
-    private final String lamport_pts_rx    = targetsDirectory + "/all_rx/lamport.pts";
-    private final String lamport_litmus_rx = targetsDirectory + "/all_rx/lamport.litmus";
-    private final String lamport_pts_sc    = targetsDirectory + "/all_sc/lamport.pts";
+    private final String lamport_pts_rx    = targetsDirectory + "all_rx/lamport.pts";
+    private final String lamport_litmus_rx = targetsDirectory + "all_rx/lamport.litmus";
+    private final String lamport_pts_sc    = targetsDirectory + "all_sc/lamport.pts";
 
     // == Relaxed operations: ==
 

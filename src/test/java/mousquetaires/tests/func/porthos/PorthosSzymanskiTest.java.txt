@@ -9,12 +9,11 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.assertEquals;
 
 
-@RunWith(ZohhakRunner.class)
 public class PorthosSzymanskiTest extends BasePorthosFuncTest {
 
-    private final String szymanski_pts_rx    = targetsDirectory + "/all_rx/szymanski.pts";
-    private final String szymanski_litmus_rx = targetsDirectory + "/all_rx/szymanski.litmus";
-    private final String szymanski_pts_sc    = targetsDirectory + "/all_sc/szymanski.pts";
+    private final String szymanski_pts_rx    = targetsDirectory + "all_rx/szymanski.pts";
+    private final String szymanski_litmus_rx = targetsDirectory + "all_rx/szymanski.litmus";
+    private final String szymanski_pts_sc    = targetsDirectory + "all_sc/szymanski.pts";
 
     // == Relaxed operations: ==
 
