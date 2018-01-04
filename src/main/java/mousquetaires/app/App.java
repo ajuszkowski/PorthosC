@@ -1,13 +1,13 @@
 package mousquetaires.app;
 
 import com.beust.jcommander.ParameterException;
-import mousquetaires.app.modules.IAppModule;
+import mousquetaires.app.errors.AppError;
 import mousquetaires.app.modules.AppVerdict;
+import mousquetaires.app.modules.AppModule;
 import mousquetaires.app.modules.IAppVerdictStringifier;
 import mousquetaires.app.modules.JsonVerdictStringifier;
 import mousquetaires.app.options.AppOptions;
 
-import java.io.IOException;
 import java.util.function.Supplier;
 
 
@@ -29,17 +29,19 @@ public abstract class App {
         return null;
     }
 
-    protected static void start(IAppModule module) {
+    protected static void start(AppModule module) {
         IAppVerdictStringifier stringifier = new JsonVerdictStringifier();
-        AppVerdict verdict = null;
-        try {
-            verdict = module.run();
-        } catch (IOException e) {
-            // TODO: log
-            e.printStackTrace();
+        AppVerdict verdict = module.run();
+        if (verdict.hasErrors()) {
+            for (AppError error : verdict.getErrors()) {
+                // todo: log error:
+                System.out.println(error.getMessage());
+                // todo: log info:
+                System.out.println(error.getAdditionalMessage());
+                System.out.println("");
+            }
             System.exit(1);
         }
-
         System.out.println(stringifier.stringify(verdict));
     }
 }

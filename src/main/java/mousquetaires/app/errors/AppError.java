@@ -1,5 +1,14 @@
 package mousquetaires.app.errors;
 
+import mousquetaires.utils.ExceptionUtils;
+import mousquetaires.utils.StringUtils;
+
+import java.io.BufferedOutputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+
+
 public abstract class AppError {
     public enum  Severity {
         Critical,
@@ -12,8 +21,14 @@ public abstract class AppError {
 
     AppError(Severity severity, String message, String additionalInfo) {
         this.severity = severity;
-        this.message = getClass().getName() + ": " + message;
-        this.additionalInfo = additionalInfo;
+        this.message = getClass().getName() + ": " + StringUtils.notNull(message);
+        this.additionalInfo = StringUtils.notNull(additionalInfo);
+    }
+
+    AppError(Severity severity, Exception e) {
+        this.severity = severity;
+        this.message = StringUtils.notNull(e.getMessage());
+        this.additionalInfo = ExceptionUtils.getStackTrace(e);
     }
 
     AppError(Severity severity, String message) {
@@ -28,7 +43,7 @@ public abstract class AppError {
         return message;
     }
 
-    public String getAdditionalInfo() {
+    public String getAdditionalMessage() {
         return additionalInfo;
     }
 }

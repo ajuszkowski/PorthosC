@@ -1,19 +1,19 @@
-package mousquetaires;
+package mousquetaires.app.modules.porthos;
+
+import mousquetaires.app.errors.AppError;
+import mousquetaires.app.errors.IOError;
+import mousquetaires.app.errors.UnrecognisedError;
+import mousquetaires.app.modules.AppModule;
+import mousquetaires.execution.Programme;
+import mousquetaires.languages.parsers.ProgrammeParser;
 
 import java.io.IOException;
 
-import mousquetaires.app.modules.IAppModule;
-import mousquetaires.app.modules.porthos.PorthosMode;
-import mousquetaires.app.modules.porthos.PorthosOptions;
-import mousquetaires.app.modules.porthos.PorthosVerdict;
-import mousquetaires.languages.parsers.ProgramParserFactory;
-
 //import mousquetaires.program.Init;
-import mousquetaires.program.Program;
 
 
 @SuppressWarnings("deprecation")
-public class PorthosModule implements IAppModule {
+public class PorthosModule extends AppModule {
 
     private final PorthosOptions options;
 
@@ -21,46 +21,50 @@ public class PorthosModule implements IAppModule {
         this.options = options;
     }
 
-    public PorthosVerdict run() throws /*Z3Exception,//--RuntimeException, no need to declare*/ IOException {
+    @Override
+    public PorthosVerdict run() {
 
         PorthosVerdict verdict = new PorthosVerdict();
         verdict.onStartExecution();
 
-        //options.addOption("state", false, "PORTHOS performs state portability");
+        try {
 
-        //options.addOption(Option.builder("draw")
-        //        .hasArg()
-        //        .desc("If a buf is found, it outputs a graph \\path_to_file.dot")
-        //        .build());
+            //options.addOption("state", false, "PORTHOS performs state portability");
 
-        //options.addOption(Option.builder("rels")
-        //        .hasArgs()
-        //        .desc("Relations to be drawn in the graph")
-        //        .build());
+            //options.addOption(Option.builder("draw")
+            //        .hasArg()
+            //        .desc("If a buf is found, it outputs a graph \\path_to_file.dot")
+            //        .build());
 
-
-        //boolean statePortability = cmd.hasOption("state");
-        //String[] rels = new String[100];
-        //if(cmd.hasOption("rels")) {
-        //    rels = cmd.getOptionValues("rels");
-        //}
+            //options.addOption(Option.builder("rels")
+            //        .hasArgs()
+            //        .desc("Relations to be drawn in the graph")
+            //        .build());
 
 
-        // MOCKS:
-        String source = options.sourceModel.toString().toLowerCase();
-        String target = options.targetModel.toString().toLowerCase();
-        boolean statePortability = options.mode == PorthosMode.StateInclusion;
-        String outputGraphFile = null;
-        String[] rels = null;
+            //boolean statePortability = cmd.hasOption("state");
+            //String[] rels = new String[100];
+            //if(cmd.hasOption("rels")) {
+            //    rels = cmd.getOptionValues("rels");
+            //}
 
-        //MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
 
-        Program program = ProgramParserFactory.getProgram(options.inputProgramFile);
+            // MOCKS:
+            String source = options.sourceModel.name().toLowerCase();
+            String target = options.targetModel.name().toLowerCase();
+            boolean statePortability = options.mode == PorthosMode.StateInclusion;
+            String outputGraphFile = null;
+            String[] rels = null;
+
+            //MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
+
+            Programme programme = ProgrammeParser.parse(options.inputProgramFile);
+
 
         /*
-        program.initialize();
-        Program pSource = program.clone();
-        Program pTarget = program.clone();
+        programme.initialize();
+        Programme pSource = programme.clone();
+        Programme pTarget = programme.clone();
 
         pSource.compile(source, false, true);
         Integer startEId = Collections.max(pSource.getEvents().stream().filter(e -> e instanceof Init).map(e -> e.getEId()).collect(Collectors.toSet())) + 1;
@@ -105,7 +109,7 @@ public class PorthosModule implements IAppModule {
                 verdict.result = PorthosVerdict.Status.NonStatePortable;
                 if(outputGraphFile != null) {
                     String outputPath = outputGraphFile;
-                    Utils.drawGraph(program, pSource, pTarget, ctx, solverSource.getModel(), outputPath, rels);
+                    Utils.drawGraph(programme, pSource, pTarget, ctx, solverSource.getModel(), outputPath, rels);
                 }
             }
             else {
@@ -130,7 +134,7 @@ public class PorthosModule implements IAppModule {
                 assert(iterations == visited.size());
                 solverTarget.add(reachedState);
                 if(solverTarget.check() == Status.UNSATISFIABLE) {
-                    //System.out.println("The program is not state-portable");
+                    //System.out.println("The programme is not state-portable");
                     verdict.iterations = iterations;
                     verdict.result = PorthosVerdict.Status.NonStatePortable;
                     return verdict;
@@ -147,6 +151,12 @@ public class PorthosModule implements IAppModule {
             }
         }
         */
+
+        } catch (IOException e) {
+            verdict.addError(new IOError(e));
+        } catch (Exception e) {
+            verdict.addError(new UnrecognisedError(AppError.Severity.Critical, e));
+        }
 
         return verdict;
     }

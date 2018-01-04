@@ -1,7 +1,7 @@
 package mousquetaires;
 
 import mousquetaires.app.App;
-import mousquetaires.app.modules.IAppModule;
+import mousquetaires.app.modules.AppModule;
 import mousquetaires.app.modules.dartagnan.DartagnanModule;
 import mousquetaires.app.modules.dartagnan.DartagnanOptions;
 
@@ -14,7 +14,7 @@ public class Dartagnan extends App {
             System.exit(1);
         }
 
-        IAppModule module = new DartagnanModule(options);
+        AppModule module = new DartagnanModule(options);
         start(module);
     }
 }

@@ -1,20 +1,25 @@
 package mousquetaires.app.modules.dartagnan;
 
-import com.microsoft.z3.Context;
-import com.microsoft.z3.Solver;
-import com.microsoft.z3.enumerations.Z3_ast_print_mode;
-import mousquetaires.app.modules.IAppModule;
+import mousquetaires.app.errors.*;
+import mousquetaires.app.modules.AppModule;
+import mousquetaires.interpretation.Interpreter;
+import mousquetaires.languages.ProgramExtensions;
+import mousquetaires.languages.ProgramLanguage;
+import mousquetaires.languages.SyntaxTreeToInternalTransformer;
+import mousquetaires.languages.TransformerFactory;
 import mousquetaires.languages.parsers.ProgramParserFactory;
-import mousquetaires.program.Program;
-import mousquetaires.wmm.Domain;
-import mousquetaires.wmm.MemoryModel;
-import mousquetaires.wmm.MemoryModelFactory;
+import mousquetaires.execution.Programme;
+import mousquetaires.languages.parsers.ProgrammeParser;
+import mousquetaires.memorymodels.old.MemoryModel;
+import mousquetaires.memorymodels.old.MemoryModelFactory;
+import org.antlr.v4.runtime.ParserRuleContext;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
 
-public class DartagnanModule implements IAppModule {
+public class DartagnanModule extends AppModule {
 
     private static final Logger log = Logger.getLogger(DartagnanModule.class.getName());
 
@@ -24,78 +29,64 @@ public class DartagnanModule implements IAppModule {
         this.options = options;
     }
 
-    public DartagnanVerdict run() throws /*Z3Exception,//--RuntimeException, no need to declare*/ IOException {
+    @Override
+    public DartagnanVerdict run() {
 
         DartagnanVerdict verdict = new DartagnanVerdict();
         verdict.onStartExecution();
 
-        //if (inputFilePath.endsWith("litmus")) {
-        //    LitmusLexer lexer = new LitmusLexer(input);
-        //    CommonTokenStream tokens = new CommonTokenStream(lexer);
-        //    LitmusParser parser = new LitmusParser(tokens);
-        //    program = parser.program(inputFilePath).program;
-        //}
-        //
-        //if (inputFilePath.endsWith("pts")) {
-        //    PorthosLexer lexer = new PorthosLexer(input);
-        //    CommonTokenStream tokens = new CommonTokenStream(lexer);
-        //    PorthosParser parser = new PorthosParser(tokens);
-        //    program = parser.program(inputFilePath).program;
-        //}
+        try {
 
-        MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
+            MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
 
-        Program program = ProgramParserFactory.getProgram(options.inputProgramFile);
+            Programme programme = ProgrammeParser.parse(options.inputProgramFile);
 
-        //CommonTree t = (CommonTree) .getTree();
+            // SmtEncoder.encode(programme) ...
 
-        //Program program = parser.
+            // TODO: cat-file parsing
+            //if (cmd.hasOption("file")) {
+            //    String filePath = cmd.getOptionValue("file");
+            //    if (!filePath.endsWith("cat")) {
+            //        System.out.println("Unrecognized memory model format");
+            //        System.exit(0);
+            //        return;
+            //    }
+            //    File modelfile = new File(filePath);
+            //
+            //    String mcmtext = FileUtils.readFileToString(modelfile, "UTF-8");
+            //    ANTLRInputStream mcminput = new ANTLRInputStream(mcmtext);
+            //    ModelLexer lexer = new ModelLexer(mcminput);
+            //    CommonTokenStream tokens = new CommonTokenStream(lexer);
+            //    ModelParser parser = new ModelParser(tokens);
+            //    //System.out.println((parser.mcm()).getText());
+            //    //System.out.println(parser.mcm());
+            //    mcm=parser.mcm().value;
+            //} else {
+            //
+            //}
 
-
-        // TODO: cat-file parsing
-        //if (cmd.hasOption("file")) {
-        //    String filePath = cmd.getOptionValue("file");
-        //    if (!filePath.endsWith("cat")) {
-        //        System.out.println("Unrecognized memory model format");
-        //        System.exit(0);
-        //        return;
-        //    }
-        //    File modelfile = new File(filePath);
-        //
-        //    String mcmtext = FileUtils.readFileToString(modelfile, "UTF-8");
-        //    ANTLRInputStream mcminput = new ANTLRInputStream(mcmtext);
-        //    ModelLexer lexer = new ModelLexer(mcminput);
-        //    CommonTokenStream tokens = new CommonTokenStream(lexer);
-        //    ModelParser parser = new ModelParser(tokens);
-        //    //System.out.println((parser.mcm()).getText());
-        //    //System.out.println(parser.mcm());
-        //    mcm=parser.mcm().value;
-        //} else {
-        //
-        //}
-
-        String target = options.sourceModel.toString();
+            String target = options.sourceModel.name();
         /*
-        program.initialize();
-        program.compile(target, false, true);
+        programme.initialize();
+        programme.compile(target, false, true);
 
         Context ctx = new Context();
         Solver solver = ctx.mkSolver();
 
-        solver.add(program.encodeDF(ctx));
-        solver.add(program.ass.encode(ctx));
-        solver.add(program.encodeCF(ctx));
-        solver.add(program.encodeDF_RF(ctx));
-        solver.add(Domain.encode(program, ctx));
+        solver.add(programme.encodeDF(ctx));
+        solver.add(programme.ass.encode(ctx));
+        solver.add(programme.encodeCF(ctx));
+        solver.add(programme.encodeDF_RF(ctx));
+        solver.add(Domain.encode(programme, ctx));
         if (mcm != null) {
             log.warning(mcm.write());
 
-            solver.add(mcm.encode(program, ctx));
-            solver.add(mcm.Consistent(program, ctx));
+            solver.add(mcm.encode(programme, ctx));
+            solver.add(mcm.Consistent(programme, ctx));
         } else {
             log.info("Using static model.");
-            solver.add(program.encodeMM(ctx, target));
-            solver.add(program.encodeConsistent(ctx, target));
+            solver.add(programme.encodeMM(ctx, target));
+            solver.add(programme.encodeConsistent(ctx, target));
         }
 
         ctx.setPrintMode(Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL);
@@ -108,6 +99,13 @@ public class DartagnanModule implements IAppModule {
         }
 
         */
+        }
+        catch (IOException e) {
+            verdict.addError(new IOError(e));
+        }
+        catch (Exception e) {
+            verdict.addError(new UnrecognisedError(AppError.Severity.Critical, e));
+        }
 
         verdict.onFinishExecution();
 
