@@ -1,9 +1,9 @@
 grammar LitmusDirty;
 
 @header{
-import mousquetaires.program.*;
-import mousquetaires.program.events.old.barriers.*;
-import mousquetaires.program.Process;
+import mousquetaires.programme.*;
+import mousquetaires.programme.events.old.barriers.*;
+import mousquetaires.programme.Process;
 import mousquetaires.expression.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +19,7 @@ private Map<String, Location> mapLoc = new HashMap<String, Location>();
 private Map<String, List<Thread>> mapThreads = new HashMap<String, List<Thread>>();
 }
 
-program [String name] returns [Program p]: 
+programme [String name] returns [Program p]:
 	{
 		Program p = new Program(name);
 		p.ass = new Assert();

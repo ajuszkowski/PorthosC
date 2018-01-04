@@ -1,9 +1,9 @@
 grammar PorthosDirty;
 
 @header{
-import mousquetaires.program.*;
-import mousquetaires.program.events.old.barriers.*;
-import mousquetaires.program.Process;
+import mousquetaires.programme.*;
+import mousquetaires.programme.events.old.barriers.*;
+import mousquetaires.programme.Process;
 import mousquetaires.expression.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +15,8 @@ private Map<String, Map<String, Register>> mapRegs = new HashMap<String, Map<Str
 }
 
 arith_expr [String mainThread] returns [AExpr expr]:
-	| e1 = arith_atom [mainThread] op = ARITH_OP e2 = arith_atom [mainThread] {
-		$expr = new AExpr($e1.expr, $op.getText(), $e2.expr);
+	| e1 = arith_atom [mainThread] operator = ARITH_OP e2 = arith_atom [mainThread] {
+		$expr = new AExpr($e1.expr, $operator.getText(), $e2.expr);
 	}
 	| e = arith_atom [mainThread] {
 		$expr = $e.expr;
@@ -31,14 +31,14 @@ arith_atom [String mainThread] returns [AExpr expr]:
 		$expr = $e.expr;
 	};
 arith_comp [String mainThread] returns [BExpr expr]: 
-	LPAR a1 = arith_expr [mainThread] op = COMP_OP a2 = arith_expr [mainThread] RPAR {
-		$expr = new Atom($a1.expr, $op.getText(), $a2.expr);
+	LPAR a1 = arith_expr [mainThread] operator = COMP_OP a2 = arith_expr [mainThread] RPAR {
+		$expr = new Atom($a1.expr, $operator.getText(), $a2.expr);
 	};
 
 bool_expr [String mainThread] returns [BExpr expr]: 
 	| b = bool_atom [mainThread] {$expr = $b.expr;}
-	| b1 = bool_atom [mainThread] op = BOOL_OP b2 = bool_atom [mainThread] {
-		$expr = new BExpr($b1.expr, $op.getText(), $b2.expr);
+	| leftExpression = bool_atom [mainThread] operator = BOOL_OP rightExpression = bool_atom [mainThread] {
+		$expr = new BExpr($leftExpression.expr, $operator.getText(), $rightExpression.expr);
 	};
 bool_atom [String mainThread] returns [BExpr expr]: 
 	| ('True' | 'true') {$expr = new BConst(true);}

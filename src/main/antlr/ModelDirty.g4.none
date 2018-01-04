@@ -17,7 +17,7 @@ reldef returns [Relation value]:
 'let' n=NAME '=' m1=relation {$value =$m1.value; $value.setName($n.text);};
 
 relation returns [Relation value]: 
-b1=base {$value =$b1.value;} 
+leftExpression=base {$value =$leftExpression.value;}
 | '(' ( m1=relation '|' {$value =$m1.value;}) ( m2=relation '|' {$value =new RelUnion($value, $m2.value);} )* m3=relation ')'{$value =new RelUnion($value, $m3.value);} 
 | '(' m1=relation '\\' m2=relation ')' {$value =new RelUnion($m1.value, $m2.value);}//TODO: implement
 | '(' m1=relation '&' relation ')' {$value =new RelInterSect($m1.value, $m2.value);}

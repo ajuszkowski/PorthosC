@@ -1,5 +1,9 @@
 grammar Porthos;
 
+main
+    :   program
+    ;
+
 
 arith_expr
     :   arith_atom ARITH_OP arith_atom

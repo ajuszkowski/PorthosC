@@ -28,6 +28,12 @@
 /** source: https://github.com/antlr/grammars-v4/ */
 grammar C11;
 
+
+// Entry point
+main
+    :   declaration
+    ;
+
 primaryExpression
     :   Identifier
     |   Constant
@@ -181,6 +187,7 @@ declaration
     :   declarationSpecifiers initDeclaratorList ';'
 	| 	declarationSpecifiers ';'
     |   staticAssertDeclaration
+    |   functionDefinition
     ;
 
 declarationSpecifiers
@@ -455,7 +462,7 @@ statement
     :   labeledStatement
     |   compoundStatement
     |   expressionStatement
-    |   selectionStatement
+    |   branchingStatement
     |   iterationStatement
     |   jumpStatement
     |   ('__asm' | '__asm__') ('volatile' | '__volatile__') '(' (logicalOrExpression (',' logicalOrExpression)*)? (':' (logicalOrExpression (',' logicalOrExpression)*)?)* ')' ';'
@@ -485,7 +492,7 @@ expressionStatement
     :   expression? ';'
     ;
 
-selectionStatement
+branchingStatement
     :   'if' '(' expression ')' statement ('else' statement)?
     |   'switch' '(' expression ')' statement
     ;
@@ -545,6 +552,19 @@ declarationList
     :   declaration
     |   declarationList declaration
     ;
+
+
+/*Preprocessing directives: from https://github.com/antlr/grammars-v4/blob/master/cpp/CPP14.g4 */
+MultiLineMacro
+    :   '#' (~[\n]*? '\\' '\r'? '\n')+ ~[\n]+
+        -> skip  //-> channel(HIDDEN)
+    ;
+
+Directive
+    :   '#' ~[\n]*
+        -> skip  //-> channel(HIDDEN)
+    ;
+
 
 Auto : 'auto';
 Break : 'break';
