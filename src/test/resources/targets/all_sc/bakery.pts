@@ -29,8 +29,8 @@ while True {
   q0 = n0.load(_sc);
   q1 <- (q0 + 1);
   n1.store(_sc,q1);
-  b1 <- 0;
-  c1.store(_sc,b1);
+  leftExpression <- 0;
+  c1.store(_sc,leftExpression);
   chk = c0.load(_sc);
   while (chk != 0) {
     chk = c0.load(_sc)
@@ -39,7 +39,7 @@ while True {
   while ((q0 != 0) and (q0 < q1)) {
     q0 = n1.load(_sc)
   };
-  b2 <- 0;
-  c0.store(_sc,b2)
+  rightExpression <- 0;
+  c0.store(_sc,rightExpression)
 }
 }

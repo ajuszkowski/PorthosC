@@ -1,0 +1,13 @@
+== Meeting 3.01.2018
+
+1. no loops
+2. ssa: phi node -- merging the branching
+3. in final internal graph - separate cfg and memory model graphs
+4. mem model действует only for shared var
+5. approx of determining local vars: if any takes its address (&) then it's shared. (there are other papers on this problem, see escape analysis)
+6. add in current porthos: set of events E={e1,e2,e3}, relations A={(e1,e2)}, B={(e2,e3)}, then A;B={(e1,e3)}. Instead of this, we write large formula ((e1,e2)/\(e2,e3) -> (e1,e3)) /\ ((e1,e3)/\(e3,e1)) -> (e1,e1), ... . You go through all potenial pairs of A & B: (e1,e1)  ==> it's the exponent, we'll need optimisations. todo: read about composition.
+7. by week 15-19 the interpreter part should be ready, with tests!
+
+next meeting: mon 8.01 10:00
+
+==

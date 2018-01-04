@@ -1,0 +1,42 @@
+package mousquetaires.languages.internal.expressions;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import com.microsoft.z3.*;
+
+import mousquetaires.execution.events.old.Register;
+import mousquetaires.utils.MapSSA;
+
+public class BooleanConst extends BooleanExpression {
+
+    private boolean value;
+
+    public BooleanConst(boolean value) {
+        this.value = value;
+    }
+
+    public String toString() {
+        if (value)
+            return "True";
+        else
+            return "False";
+    }
+
+    public BooleanConst clone() {
+        return new BooleanConst(value);
+    }
+
+    public BoolExpr toZ3(MapSSA map, Context ctx) {
+        if(value) {
+            return ctx.mkTrue();
+        }
+        else {
+            return ctx.mkFalse();
+        }
+    }
+
+    public Set<Register> getRegs() {
+        return new HashSet<Register>();
+    }
+}

@@ -1,6 +1,6 @@
 package mousquetaires.memorymodels;
 
-// TODO: replace abbreviations with full names
+// TODO: replace abbreviations with full aliases
 public enum MemoryModelName {
     SC,
     TSO,
