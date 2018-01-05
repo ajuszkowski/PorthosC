@@ -283,6 +283,7 @@ expression
     :   '(' expression ')'
     |   unaryOrNullaryExpression
     |   binaryOrTernaryExpression
+    |   assignmentExpression
     ;
 
 branchingStatement
