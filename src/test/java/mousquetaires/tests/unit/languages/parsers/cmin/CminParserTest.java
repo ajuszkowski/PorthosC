@@ -1,6 +1,6 @@
 package mousquetaires.tests.unit.languages.parsers.cmin;
 
-import mousquetaires.languages.internal.InternalSyntaxTree;
+import mousquetaires.languages.internalrepr.InternalSyntaxTree;
 import mousquetaires.tests.unit.languages.parsers.AbstractParserUnitTest;
 import org.junit.Test;
 

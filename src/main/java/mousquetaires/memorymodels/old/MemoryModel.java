@@ -5,16 +5,9 @@
  */
 package mousquetaires.memorymodels.old;
 
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.Context;
-import mousquetaires.execution.Programme;
 //import mousquetaires.execution.events.old.Event;
 //import mousquetaires.execution.events.old.MemEvent;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
-import java.util.stream.Collectors;
 
 /**
  *

@@ -1,7 +1,7 @@
 package mousquetaires.languages.cmin;
 
-import mousquetaires.languages.internal.InternalEntity;
-import mousquetaires.languages.internal.types.InternalType;
+import mousquetaires.languages.internalrepr.InternalEntity;
+import mousquetaires.languages.internalrepr.types.InternalType;
 
 import java.util.EnumMap;
 import java.util.Map;

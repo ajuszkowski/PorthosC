@@ -1,14 +1,14 @@
 package mousquetaires.languages.cmin;
 
 
-import mousquetaires.interpretation.Interpreter;
-import mousquetaires.interpretation.exceptions.ParserException;
+import mousquetaires.interpretation.eventrepr.Interpreter;
+import mousquetaires.interpretation.eventrepr.exceptions.ParserException;
 import mousquetaires.languages.SyntaxTreeToInternalTransformer;
 import mousquetaires.languages.cmin.types.CminPrimitiveTypeBuilder;
-import mousquetaires.languages.internal.InternalEntity;
-import mousquetaires.languages.internal.InternalSyntaxTree;
-import mousquetaires.languages.internal.InternalSyntaxTreeBuilder;
-import mousquetaires.languages.internal.types.InternalType;
+import mousquetaires.languages.internalrepr.InternalEntity;
+import mousquetaires.languages.internalrepr.InternalSyntaxTree;
+import mousquetaires.languages.internalrepr.InternalSyntaxTreeBuilder;
+import mousquetaires.languages.internalrepr.types.InternalType;
 import mousquetaires.languages.parsers.CminBaseVisitor;
 import mousquetaires.languages.parsers.CminParser;
 import org.antlr.v4.runtime.ParserRuleContext;

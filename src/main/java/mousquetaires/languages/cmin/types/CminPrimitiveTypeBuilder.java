@@ -1,7 +1,7 @@
 package mousquetaires.languages.cmin.types;
 
 import mousquetaires.languages.cmin.CminKeyword;
-import mousquetaires.languages.internal.types.InternalType;
+import mousquetaires.languages.internalrepr.types.InternalType;
 import mousquetaires.patterns.Builder;
 
 import java.util.BitSet;

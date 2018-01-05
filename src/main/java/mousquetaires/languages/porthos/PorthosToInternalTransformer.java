@@ -1,9 +1,9 @@
 package mousquetaires.languages.porthos;
 
-import mousquetaires.interpretation.Interpreter;
+import mousquetaires.interpretation.eventrepr.Interpreter;
 import mousquetaires.languages.SyntaxTreeToInternalTransformer;
-import mousquetaires.languages.internal.InternalSyntaxTree;
-import mousquetaires.languages.internal.InternalSyntaxTreeBuilder;
+import mousquetaires.languages.internalrepr.InternalSyntaxTree;
+import mousquetaires.languages.internalrepr.InternalSyntaxTreeBuilder;
 import mousquetaires.languages.parsers.PorthosBaseListener;
 import org.antlr.v4.runtime.ParserRuleContext;
 

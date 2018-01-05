@@ -1,6 +1,6 @@
 package mousquetaires.tests.unit.languages.parsers;
 
-import mousquetaires.languages.internal.InternalSyntaxTree;
+import mousquetaires.languages.internalrepr.InternalSyntaxTree;
 import mousquetaires.languages.parsers.InternalLanguageParser;
 import mousquetaires.tests.AbstractTest;
 import mousquetaires.tests.TestFailedException;

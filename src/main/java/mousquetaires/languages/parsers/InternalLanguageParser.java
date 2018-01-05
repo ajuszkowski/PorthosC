@@ -1,11 +1,11 @@
 package mousquetaires.languages.parsers;
 
-import mousquetaires.interpretation.Interpreter;
+import mousquetaires.interpretation.eventrepr.Interpreter;
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.SyntaxTreeToInternalTransformer;
 import mousquetaires.languages.TransformerFactory;
-import mousquetaires.languages.internal.InternalSyntaxTree;
+import mousquetaires.languages.internalrepr.InternalSyntaxTree;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.io.File;

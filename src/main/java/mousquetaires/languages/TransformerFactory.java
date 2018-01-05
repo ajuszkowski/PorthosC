@@ -1,6 +1,6 @@
 package mousquetaires.languages;
 
-import mousquetaires.interpretation.Interpreter;
+import mousquetaires.interpretation.eventrepr.Interpreter;
 import mousquetaires.languages.porthos.PorthosToInternalTransformer;
 import mousquetaires.languages.cmin.CminToInternalTransformer;
 

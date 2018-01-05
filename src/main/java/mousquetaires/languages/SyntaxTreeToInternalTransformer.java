@@ -1,6 +1,6 @@
 package mousquetaires.languages;
 
-import mousquetaires.languages.internal.InternalSyntaxTree;
+import mousquetaires.languages.internalrepr.InternalSyntaxTree;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 

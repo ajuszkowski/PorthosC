@@ -2,9 +2,9 @@ package mousquetaires.app.modules.dartagnan;
 
 import mousquetaires.app.errors.*;
 import mousquetaires.app.modules.AppModule;
-import mousquetaires.execution.Programme;
-import mousquetaires.execution.ProgrammeConverter;
-import mousquetaires.languages.internal.InternalSyntaxTree;
+import mousquetaires.languages.eventrepr.Programme;
+import mousquetaires.languages.eventrepr.ProgrammeConverter;
+import mousquetaires.languages.internalrepr.InternalSyntaxTree;
 import mousquetaires.languages.parsers.InternalLanguageParser;
 import mousquetaires.memorymodels.old.MemoryModel;
 import mousquetaires.memorymodels.old.MemoryModelFactory;
