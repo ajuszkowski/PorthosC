@@ -98,11 +98,6 @@ public class CminToInternalTransformer
     }
 
     @Override
-    public AbstractEntity visitCastExpression(CminParser.CastExpressionContext ctx) {
-        return super.visitCastExpression(ctx);
-    }
-
-    @Override
     public AbstractEntity visitBinaryOrTernaryExpression(CminParser.BinaryOrTernaryExpressionContext ctx) {
         return super.visitBinaryOrTernaryExpression(ctx);
     }
@@ -219,23 +214,8 @@ public class CminToInternalTransformer
     }
 
     @Override
-    public AbstractEntity visitTypeDeclaration(CminParser.TypeDeclarationContext ctx) {
-        return super.visitTypeDeclaration(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitCustomTypeName(CminParser.CustomTypeNameContext ctx) {
-        return super.visitCustomTypeName(ctx);
-    }
-
-    @Override
     public AbstractEntity visitTypeDeclarator(CminParser.TypeDeclaratorContext ctx) {
         return super.visitTypeDeclarator(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitPointerTypeDeclarator(CminParser.PointerTypeDeclaratorContext ctx) {
-        return super.visitPointerTypeDeclarator(ctx);
     }
 
     @Override
@@ -321,118 +301,18 @@ public class CminToInternalTransformer
     }
 
     @Override
-    public AbstractEntity visitVariableStructOrUnionTypeDeclarator(CminParser.VariableStructOrUnionTypeDeclaratorContext ctx) {
-        return super.visitVariableStructOrUnionTypeDeclarator(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitStructOrUnionDeclaration(CminParser.StructOrUnionDeclarationContext ctx) {
-        return super.visitStructOrUnionDeclaration(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitStructOrUnion(CminParser.StructOrUnionContext ctx) {
-        return super.visitStructOrUnion(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitStructOrUnionName(CminParser.StructOrUnionNameContext ctx) {
-        return super.visitStructOrUnionName(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitStructElementDeclarationList(CminParser.StructElementDeclarationListContext ctx) {
-        return super.visitStructElementDeclarationList(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitStructElementDeclaration(CminParser.StructElementDeclarationContext ctx) {
-        return super.visitStructElementDeclaration(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitStructElementDeclaratorList(CminParser.StructElementDeclaratorListContext ctx) {
-        return super.visitStructElementDeclaratorList(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitStructElementDeclarator(CminParser.StructElementDeclaratorContext ctx) {
-        return super.visitStructElementDeclarator(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitVariableEnumTypeDeclarator(CminParser.VariableEnumTypeDeclaratorContext ctx) {
-        return super.visitVariableEnumTypeDeclarator(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitCustomTypeNameDeclarator(CminParser.CustomTypeNameDeclaratorContext ctx) {
-        return super.visitCustomTypeNameDeclarator(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitEnumDeclarator(CminParser.EnumDeclaratorContext ctx) {
-        return super.visitEnumDeclarator(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitEnumeratorList(CminParser.EnumeratorListContext ctx) {
-        return super.visitEnumeratorList(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitEnumerator(CminParser.EnumeratorContext ctx) {
-        return super.visitEnumerator(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitEnumerationConstant(CminParser.EnumerationConstantContext ctx) {
-        return super.visitEnumerationConstant(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitFunctionSpecifier(CminParser.FunctionSpecifierContext ctx) {
-        return super.visitFunctionSpecifier(ctx);
-    }
-
-    @Override
     public AbstractEntity visitVariableName(CminParser.VariableNameContext ctx) {
         return super.visitVariableName(ctx);
     }
 
     @Override
-    public AbstractEntity visitNestedParenthesesBlock(CminParser.NestedParenthesesBlockContext ctx) {
-        return super.visitNestedParenthesesBlock(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitParameterFullList(CminParser.ParameterFullListContext ctx) {
-        return super.visitParameterFullList(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitParameterList(CminParser.ParameterListContext ctx) {
-        return super.visitParameterList(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitParameterDeclaration(CminParser.ParameterDeclarationContext ctx) {
-        return super.visitParameterDeclaration(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitTypeSpecifierQualifierList(CminParser.TypeSpecifierQualifierListContext ctx) {
-        return super.visitTypeSpecifierQualifierList(ctx);
+    public AbstractEntity visitVariableTypeSpecifierQualifierList(CminParser.VariableTypeSpecifierQualifierListContext ctx) {
+        return super.visitVariableTypeSpecifierQualifierList(ctx);
     }
 
     @Override
     public AbstractEntity visitVariableInitializer(CminParser.VariableInitializerContext ctx) {
         return super.visitVariableInitializer(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitInitializerList(CminParser.InitializerListContext ctx) {
-        return super.visitInitializerList(ctx);
     }
 
     @Override
@@ -498,15 +378,5 @@ public class CminToInternalTransformer
     @Override
     public AbstractEntity visitJumpStatement(CminParser.JumpStatementContext ctx) {
         return super.visitJumpStatement(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitFunctionDefinition(CminParser.FunctionDefinitionContext ctx) {
-        return super.visitFunctionDefinition(ctx);
-    }
-
-    @Override
-    public AbstractEntity visitFunctionSpecifiers(CminParser.FunctionSpecifiersContext ctx) {
-        return super.visitFunctionSpecifiers(ctx);
     }
 }

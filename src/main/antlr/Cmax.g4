@@ -27,12 +27,15 @@
 /** C 2011 grammar built from the C11 Spec */
 /** source: https://github.com/antlr/grammars-v4/ */
 
-/** Grammar for the minimised subset of C language */
-grammar Cmin;
+/** Grammar for the maximised subset of C language */
+grammar Cmax;
 
 // Entry point
 main
-    :   statement+
+    :   (   typeDeclaration
+        |   functionDefinition
+        |   statement
+        )+
     ;
 
 primaryExpression
@@ -43,9 +46,15 @@ primaryExpression
 
 postfixExpression
     :   primaryExpression
+    |   postfixExpression '[' unaryOrNullaryExpression ']'
     |   postfixExpression '(' functionArgumentExpressionList? ')'
+    |   postfixExpression '.' Identifier
+    |   postfixExpression '->' Identifier
     |   postfixExpression '++'
     |   postfixExpression '--'
+    // todo: what is it below?
+//    |   '(' typeDeclarator ')' '{' initializerList '}'
+//    |   '(' typeDeclarator ')' '{' initializerList ',' '}'
     ;
 
 functionArgumentExpressionList
@@ -58,12 +67,21 @@ functionArgumentExpression
     ;
 
 unaryOrNullaryExpression
-    :   postfixExpression
+    :   //'(' unaryOrNullaryExpression ')'  // todo: check whether expression's brackets around it work
+    |   postfixExpression
+    |   castExpression
     |   unaryOperator unaryOrNullaryExpression
+    |   Sizeof unaryOrNullaryExpression
+    |   Sizeof '(' typeDeclarator ')'
+    |   Alignof '(' typeDeclarator ')'
     ;
 
 unaryOperator
     :   '&' | '*' | '+' | '-' | '~' | '!' | '--' | '++'
+    ;
+
+castExpression
+    :   '(' typeDeclarator ')' unaryOrNullaryExpression
     ;
 
 binaryOrTernaryExpression
@@ -196,10 +214,28 @@ variableTypeQualifier
     |   Atomic
     ;
 
+typeDeclaration
+    :   Typedef customTypeName typeDeclarator
+    |   structOrUnionDeclaration
+    |   enumDeclarator
+    ;
+
+customTypeName
+    :   Identifier
+    ;
+
 typeDeclarator
     :   '(' typeDeclarator ')'
+    |   pointerTypeDeclarator
     |   primitiveTypeDeclarator
     |   atomicTypeDeclarator
+    |   variableStructOrUnionTypeDeclarator
+    |   variableEnumTypeDeclarator
+    |   customTypeNameDeclarator
+    ;
+
+pointerTypeDeclarator
+    :   primitiveTypeDeclarator '*'
     ;
 
 primitiveTypeDeclarator
@@ -228,21 +264,182 @@ primitiveTypeKeyword
     ;
 
 atomicTypeDeclarator  //note: Atomic may be also declared in typeSpecifier
-    :   primitiveTypeKeyword Atomic   // for `int * _Atomic x;`
+    :   pointerTypeDeclarator Atomic   // for `int * _Atomic x;`
     ;
+
+variableStructOrUnionTypeDeclarator
+    :   structOrUnion Identifier
+    ;
+
+structOrUnionDeclaration
+    :   structOrUnion Identifier? '{' structElementDeclarationList '}' structOrUnionName?
+    ;
+
+structOrUnion
+    :   Struct
+    |   Union
+    ;
+
+structOrUnionName
+    :   Identifier
+    ;
+
+structElementDeclarationList
+    :   structElementDeclaration
+    |   structElementDeclarationList structElementDeclaration
+    ;
+
+structElementDeclaration
+    :    structElementDeclaratorList ';'
+    ;
+
+structElementDeclaratorList
+    :   structElementDeclarator
+    |   structElementDeclaratorList ',' structElementDeclarator
+    ;
+
+structElementDeclarator
+    :   variableDeclarator
+    |   variableDeclarator? ':' constantExpression  // bit fields
+    ;
+
+variableEnumTypeDeclarator
+    :   Enum Identifier
+    ;
+
+customTypeNameDeclarator
+    :   customTypeName
+    ;
+
+enumDeclarator
+    :   Enum Identifier? '{' enumeratorList ','? '}'
+    ;
+
+enumeratorList
+    :   enumerator
+    |   enumeratorList ',' enumerator
+    ;
+
+enumerator
+    :   enumerationConstant
+    |   enumerationConstant '=' constantExpression
+    ;
+
+enumerationConstant
+    :   Identifier
+    ;
+
+
+
+functionSpecifier
+    :   (   Inline
+        |   Noreturn
+        )
+    ;
+
+//directDeclarator
+//    :   '('? variableDeclarator ')'?
+////    |   directDeclarator '[' typeQualifierList? assignmentExpression? ']'
+////    |   directDeclarator '[' 'static' typeQualifierList? assignmentExpression ']'
+////    |   directDeclarator '[' typeQualifierList 'static' assignmentExpression ']'
+////    |   directDeclarator '[' typeQualifierList? '*' ']'
+////    |   directDeclarator '(' parameterTypeList ')'
+////    |   directDeclarator '(' identifierList? ')'
+////    |   variableName ':' DigitSequence  // bit field
+//    ;
+//
 
 variableName
     :   Identifier
     ;
+
+//TODO: is this rule achievable? remove it.
+nestedParenthesesBlock
+    :   (   ~( '(' | ')' )
+        |   '(' nestedParenthesesBlock ')'
+        )*
+    ;
+
+//pointer
+//    :  /* '*' typeQualifierList?\n    |*/
+//       '*' /*typeQualifierList?*/ pointer
+//    //|   '^' typeQualifierList? // Blocks language extension
+//    //|   '^' typeQualifierList? pointer // Blocks language extension
+//    ;
+
+//typeQualifierList
+//    :   variableTypeQualifier
+//    |   typeQualifierList variableTypeQualifier
+//    ;
+
+parameterFullList
+    :   parameterList
+    |   parameterList ',' '...'
+    ;
+
+parameterList
+    :   parameterDeclaration
+    |   parameterList ',' parameterDeclaration
+    ;
+
+parameterDeclaration
+    :   typeDeclarator variableName
+    ;
+
+//identifierList
+//    :   Identifier
+//    |   identifierList ',' Identifier
+//    ;
 
 variableTypeSpecifierQualifierList
     :   typeSpecifier         variableTypeSpecifierQualifierList?
     |   variableTypeQualifier variableTypeSpecifierQualifierList?
     ;
 
+
+//abstractDeclarator
+//    :   pointer
+//    //|   pointer? directAbstractDeclarator //gccDeclaratorExtension*
+//    ;
+
+//directAbstractDeclarator
+//    :   '(' abstractDeclarator ')' //gccDeclaratorExtension*
+//    |   '[' typeQualifierList? assignmentExpression? ']'
+//    |   '[' 'static' typeQualifierList? assignmentExpression ']'
+//    |   '[' typeQualifierList 'static' assignmentExpression ']'
+//    |   '[' '*' ']'
+//    |   '(' parameterTypeList? ')' //gccDeclaratorExtension*
+//    |   directAbstractDeclarator '[' typeQualifierList? assignmentExpression? ']'
+//    |   directAbstractDeclarator '[' 'static' typeQualifierList? assignmentExpression ']'
+//    |   directAbstractDeclarator '[' typeQualifierList 'static' assignmentExpression ']'
+//    |   directAbstractDeclarator '[' '*' ']'
+//    |   directAbstractDeclarator '(' parameterTypeList? ')' //gccDeclaratorExtension*
+//    ;
+
+
 variableInitializer
     :   assignmentExpression
+    |   '{' initializerList ','? '}'
     ;
+
+initializerList
+    //:   designation? variableInitializer
+    //|   initializerList ',' designation? variableInitializer
+    :   variableInitializer
+    |   initializerList ',' variableInitializer
+    ;
+
+//designation
+//    :   designatorList '='
+//    ;
+//designatorList
+//    :   designator
+//    |   designatorList designator
+//    ;
+//designator
+//    :   '[' constantExpression ']'
+//    |   '.' Identifier
+//    ;
 
 statement
     :   variableDeclarationStatement
@@ -253,6 +450,7 @@ statement
     |   branchingStatement
     |   loopStatement
     |   jumpStatement
+    //|   ('__asm' | '__asm__') ('volatile' | '__volatile__') '(' (logicalOrAndExpression (',' logicalOrAndExpression)*)? (':' (logicalOrAndExpression (',' logicalOrAndExpression)*)?)* ')' ';'
     ;
 
 labeledStatement
@@ -315,6 +513,14 @@ jumpStatement
     |   Continue ';'
     |   Break ';'
     |   Return assignmentExpressionList? ';'
+    ;
+
+functionDefinition
+    :   functionSpecifiers? typeDeclarator variableName '(' parameterFullList ')' compoundStatement
+    ;
+
+functionSpecifiers
+    :   functionSpecifier+
     ;
 
 
