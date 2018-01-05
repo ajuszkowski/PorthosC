@@ -11,7 +11,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 
-public class CminPrimitiveTypeBuilder implements Builder<Type> {
+public class CminPrimitiveTypeBuilder extends Builder<Type> {
 
     private final int modifiersNumber = CminKeyword.values().length;
     private BitSet modifiers = new BitSet(modifiersNumber);
@@ -27,6 +27,9 @@ public class CminPrimitiveTypeBuilder implements Builder<Type> {
     }
 
     public void addModifier(CminKeyword keyword) {
+        if (isBuilt()) {
+            throw new RuntimeException(getAlreadyFinishedMessage());
+        }
         Integer modifierId = keywordIdentificatorsMap.get(keyword);
         if (modifierId == null) {
             throw new IllegalArgumentException(keyword.name());
@@ -36,6 +39,9 @@ public class CminPrimitiveTypeBuilder implements Builder<Type> {
 
     @Override
     public Type build() {
+        if (isBuilt()) {
+            throw new RuntimeException(getAlreadyFinishedMessage());
+        }
         boolean signed = true;
         Bitness bitness = Bitness.getMinBitness();
         for (Map.Entry<CminKeyword, Integer> entry : keywordIdentificatorsMap.entrySet()) {
@@ -54,6 +60,7 @@ public class CminPrimitiveTypeBuilder implements Builder<Type> {
                 }
             }
         }
+        setBuilt();
         return new BitvectorType(bitness, signed);
     }
 }

@@ -4,12 +4,8 @@ import com.google.common.collect.ImmutableSet;
 import mousquetaires.patterns.Builder;
 
 
-public class ProgrammeBuilder implements Builder<Programme> {
+public class ProgrammeBuilder extends Builder<Programme> {
 
-    private static final String FINISHED_MESSAGE = "Programme building has already built.";
-    private static final String NOT_FINISHED_MESSAGE = "Programme building is not built yet.";
-
-    private boolean built;
     private final ImmutableSet.Builder<Processus> processes;
 
     public ProgrammeBuilder() {
@@ -17,23 +13,23 @@ public class ProgrammeBuilder implements Builder<Programme> {
     }
 
     public Programme build() {
-        if (built) {
-            throw new RuntimeException(FINISHED_MESSAGE);
+        if (isBuilt()) {
+            throw new RuntimeException(getAlreadyFinishedMessage());
         }
-        built = true;
+        setBuilt();
         return new Programme(this);
     }
 
     public void addProcessus(Processus processus) {
-        if (built) {
-            throw new RuntimeException(FINISHED_MESSAGE);
+        if (isBuilt()) {
+            throw new RuntimeException(getAlreadyFinishedMessage());
         }
         processes.add(processus);
     }
 
     public ImmutableSet<Processus> getProcesses() {
-        if (!built) {
-            throw new RuntimeException(NOT_FINISHED_MESSAGE);
+        if (!isBuilt()) {
+            throw new RuntimeException(getAlreadyFinishedMessage());
         }
         return processes.build();
     }

@@ -7,10 +7,7 @@ import mousquetaires.execution.events.MemoryEvent;
 import mousquetaires.patterns.Builder;
 
 
-public class ProcessusBuilder implements Builder<Processus> {
-
-    private static final String FINISHED_MESSAGE = "Processus building has already built.";
-    private static final String NOT_FINISHED_MESSAGE = "Processus building is not built yet.";
+public class ProcessusBuilder extends Builder<Processus> {
 
     private boolean built;
     private final String name;
@@ -30,10 +27,10 @@ public class ProcessusBuilder implements Builder<Processus> {
     }
 
     public Processus build() {
-        if (built) {
-            throw new RuntimeException(FINISHED_MESSAGE);
+        if (isBuilt()) {
+            throw new RuntimeException(getAlreadyFinishedMessage());
         }
-        built = true;
+        setBuilt();
         return new Processus(this);
     }
 
@@ -42,43 +39,43 @@ public class ProcessusBuilder implements Builder<Processus> {
     }
 
     public void addMemoryEvent(MemoryEvent event) {
-        if (built) {
-            throw new RuntimeException(FINISHED_MESSAGE);
+        if (isBuilt()) {
+            throw new RuntimeException(getAlreadyFinishedMessage());
         }
         memoryEvents.add(event);
     }
 
     public void addCallEvent(CallEvent event) {
-        if (built) {
-            throw new RuntimeException(FINISHED_MESSAGE);
+        if (isBuilt()) {
+            throw new RuntimeException(getAlreadyFinishedMessage());
         }
         callEvents.add(event);
     }
 
     public void addBarrierEvent(BarrierEvent event) {
-        if (built) {
-            throw new RuntimeException(FINISHED_MESSAGE);
+        if (isBuilt()) {
+            throw new RuntimeException(getAlreadyFinishedMessage());
         }
         barrierEvents.add(event);
     }
 
     public ImmutableSet<MemoryEvent> getMemoryEvents() {
-        if (!built) {
-            throw new RuntimeException(NOT_FINISHED_MESSAGE);
+        if (!isBuilt()) {
+            throw new RuntimeException(getNotYetFinishedMessage());
         }
         return memoryEvents.build();
     }
 
     public ImmutableSet<CallEvent> getCallEvents() {
-        if (!built) {
-            throw new RuntimeException(NOT_FINISHED_MESSAGE);
+        if (!isBuilt()) {
+            throw new RuntimeException(getNotYetFinishedMessage());
         }
         return callEvents.build();
     }
 
     public ImmutableSet<BarrierEvent> getBarrierEvents() {
-        if (!built) {
-            throw new RuntimeException(NOT_FINISHED_MESSAGE);
+        if (!isBuilt()) {
+            throw new RuntimeException(getNotYetFinishedMessage());
         }
         return barrierEvents.build();
     }
