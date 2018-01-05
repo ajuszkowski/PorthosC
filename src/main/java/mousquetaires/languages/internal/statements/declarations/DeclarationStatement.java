@@ -1,4 +1,4 @@
-package mousquetaires.languages.internal.statements.definition;
+package mousquetaires.languages.internal.statements.declarations;
 
 import mousquetaires.languages.internal.statements.Statement;
 
