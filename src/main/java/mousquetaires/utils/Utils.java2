@@ -218,7 +218,7 @@ public class Utils {
             if(i1 > i2) {
                 if(o instanceof Register) {
                     // If the ssa index of a register differs in the two branches
-                    // I need to maintain the value when the event is not executed
+                    // I need to maintain the bitness when the event is not executed
                     // for testing reachability
                     for(Event e : t.getEvents()) {
                         if(!(e instanceof Load || e instanceof Local)) {continue;}

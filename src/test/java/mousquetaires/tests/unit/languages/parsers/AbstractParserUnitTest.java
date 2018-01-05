@@ -1,25 +1,26 @@
 package mousquetaires.tests.unit.languages.parsers;
 
-import mousquetaires.execution.Programme;
-import mousquetaires.languages.parsers.ProgrammeParser;
+import mousquetaires.languages.internal.InternalSyntaxTree;
+import mousquetaires.languages.parsers.InternalLanguageParser;
 import mousquetaires.tests.AbstractTest;
 import mousquetaires.tests.TestFailedException;
 
 import java.io.File;
 import java.io.IOException;
 
+
 public abstract class AbstractParserUnitTest extends AbstractTest {
 
     protected final String parsersDirectory = resourcesDirectory + "parsers/";
 
-    protected Programme runTest(String file) {
-        Programme programme;
+    protected InternalSyntaxTree runTest(String file) {
+        InternalSyntaxTree internalRepr;
         try {
-            programme = ProgrammeParser.parse(new File(file));
+            internalRepr = InternalLanguageParser.parse(new File(file));
         } catch (IOException e) {
             e.printStackTrace();
             throw new TestFailedException(e);
         }
-        return programme;
+        return internalRepr;
     }
 }

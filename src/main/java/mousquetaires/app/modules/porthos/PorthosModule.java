@@ -5,7 +5,9 @@ import mousquetaires.app.errors.IOError;
 import mousquetaires.app.errors.UnrecognisedError;
 import mousquetaires.app.modules.AppModule;
 import mousquetaires.execution.Programme;
-import mousquetaires.languages.parsers.ProgrammeParser;
+import mousquetaires.execution.ProgrammeConverter;
+import mousquetaires.languages.internal.InternalSyntaxTree;
+import mousquetaires.languages.parsers.InternalLanguageParser;
 
 import java.io.IOException;
 
@@ -58,7 +60,8 @@ public class PorthosModule extends AppModule {
 
             //MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
 
-            Programme programme = ProgrammeParser.parse(options.inputProgramFile);
+            InternalSyntaxTree internalRepr = InternalLanguageParser.parse(options.inputProgramFile);
+            Programme programme = ProgrammeConverter.toProgramme(internalRepr);
 
 
         /*

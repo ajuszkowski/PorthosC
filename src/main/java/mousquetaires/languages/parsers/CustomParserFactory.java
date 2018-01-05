@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 
-public class ProgramParserFactory {
+public class CustomParserFactory {
 
     public static ParserRuleContext getParser(File programFile, ProgramLanguage language) throws IOException {
         CharStream charStream = FileUtils.getFileCharStream(programFile);

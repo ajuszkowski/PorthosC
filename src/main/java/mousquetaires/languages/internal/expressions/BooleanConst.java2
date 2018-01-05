@@ -10,25 +10,25 @@ import mousquetaires.utils.MapSSA;
 
 public class BooleanConst extends BooleanExpression {
 
-    private boolean value;
+    private boolean bitness;
 
-    public BooleanConst(boolean value) {
-        this.value = value;
+    public BooleanConst(boolean bitness) {
+        this.bitness = bitness;
     }
 
     public String toString() {
-        if (value)
+        if (bitness)
             return "True";
         else
             return "False";
     }
 
     public BooleanConst clone() {
-        return new BooleanConst(value);
+        return new BooleanConst(bitness);
     }
 
     public BoolExpr toZ3(MapSSA map, Context ctx) {
-        if(value) {
+        if(bitness) {
             return ctx.mkTrue();
         }
         else {

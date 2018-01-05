@@ -6,7 +6,7 @@ import java.util.Set;
 
 import com.microsoft.z3.*;
 
-import mousquetaires.languages.internal.expressions.BooleanExpression;
+import mousquetaires.languages.internal.expressions.InternalBinaryExpression;
 import mousquetaires.execution.Processus;
 import mousquetaires.utils.LastModMap;
 import mousquetaires.utils.MapSSA;

@@ -1,10 +1,10 @@
 package mousquetaires.languages;
 
-import mousquetaires.execution.Programme;
+import mousquetaires.languages.internal.InternalSyntaxTree;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 
 public interface SyntaxTreeToInternalTransformer {
 
-    Programme transform(ParserRuleContext parserRuleContext);
+    InternalSyntaxTree transform(ParserRuleContext parserRuleContext);
 }

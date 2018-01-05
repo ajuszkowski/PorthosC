@@ -2,19 +2,13 @@ package mousquetaires.app.modules.dartagnan;
 
 import mousquetaires.app.errors.*;
 import mousquetaires.app.modules.AppModule;
-import mousquetaires.interpretation.Interpreter;
-import mousquetaires.languages.ProgramExtensions;
-import mousquetaires.languages.ProgramLanguage;
-import mousquetaires.languages.SyntaxTreeToInternalTransformer;
-import mousquetaires.languages.TransformerFactory;
-import mousquetaires.languages.parsers.ProgramParserFactory;
 import mousquetaires.execution.Programme;
-import mousquetaires.languages.parsers.ProgrammeParser;
+import mousquetaires.execution.ProgrammeConverter;
+import mousquetaires.languages.internal.InternalSyntaxTree;
+import mousquetaires.languages.parsers.InternalLanguageParser;
 import mousquetaires.memorymodels.old.MemoryModel;
 import mousquetaires.memorymodels.old.MemoryModelFactory;
-import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -39,7 +33,8 @@ public class DartagnanModule extends AppModule {
 
             MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
 
-            Programme programme = ProgrammeParser.parse(options.inputProgramFile);
+            InternalSyntaxTree internalRepr = InternalLanguageParser.parse(options.inputProgramFile);
+            Programme programme = ProgrammeConverter.toProgramme(internalRepr);
 
             // SmtEncoder.encode(programme) ...
 
@@ -60,7 +55,7 @@ public class DartagnanModule extends AppModule {
             //    ModelParser parser = new ModelParser(tokens);
             //    //System.out.println((parser.mcm()).getText());
             //    //System.out.println(parser.mcm());
-            //    mcm=parser.mcm().value;
+            //    mcm=parser.mcm().bitness;
             //} else {
             //
             //}

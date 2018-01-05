@@ -18,12 +18,12 @@ public class Assert {
 
     public Assert() {}
 
-    public void addPair(Register reg, Integer value) {
-        regValue.put(reg, value);
+    public void addPair(Register reg, Integer bitness) {
+        regValue.put(reg, bitness);
     }
 
-    public void addPair(Location loc, Integer value) {
-        locValue.put(loc, value);
+    public void addPair(Location loc, Integer bitness) {
+        locValue.put(loc, bitness);
     }
 
     public BoolExpr encode(Context ctx) {

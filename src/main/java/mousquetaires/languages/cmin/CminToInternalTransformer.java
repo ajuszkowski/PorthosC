@@ -1,66 +1,64 @@
 package mousquetaires.languages.cmin;
 
 
-import mousquetaires.execution.Programme;
-import mousquetaires.execution.ProgrammeBuilder;
 import mousquetaires.interpretation.Interpreter;
 import mousquetaires.interpretation.exceptions.ParserException;
 import mousquetaires.languages.SyntaxTreeToInternalTransformer;
 import mousquetaires.languages.cmin.types.CminPrimitiveTypeBuilder;
-import mousquetaires.languages.internal.AbstractEntity;
+import mousquetaires.languages.internal.InternalEntity;
+import mousquetaires.languages.internal.InternalSyntaxTree;
+import mousquetaires.languages.internal.InternalSyntaxTreeBuilder;
+import mousquetaires.languages.internal.types.InternalType;
 import mousquetaires.languages.parsers.CminBaseVisitor;
 import mousquetaires.languages.parsers.CminParser;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 
 public class CminToInternalTransformer
-        extends CminBaseVisitor<AbstractEntity>
+        extends CminBaseVisitor<InternalEntity>
         implements SyntaxTreeToInternalTransformer {
 
     private final Interpreter interpreter;
-    private final ProgrammeBuilder builder = new ProgrammeBuilder();
+    private final InternalSyntaxTreeBuilder builder = new InternalSyntaxTreeBuilder();
 
     public CminToInternalTransformer(Interpreter interpreter) {
         this.interpreter = interpreter;
     }
 
-    public Programme transform(ParserRuleContext parserRuleContext) {
+    public InternalSyntaxTree transform(ParserRuleContext parserRuleContext) {
         parserRuleContext.accept(this);
         return builder.build();
     }
 
     @Override
-    public AbstractEntity visitMain(CminParser.MainContext ctx) {
+    public InternalEntity visitMain(CminParser.MainContext ctx) {
         int childrenCount = ctx.getChildCount();
         for (int i = 0; i < childrenCount; i++) {
-            visit(ctx.getChild(i));
+            InternalEntity root = visit(ctx.getChild(i));
+            builder.addRoot(root);
         }
         return null;
     }
 
     @Override
-    public AbstractEntity visitPrimaryExpression(CminParser.PrimaryExpressionContext ctx) {
-        /*
-        CminParser.AssignmentExpressionListContext assignmentExpressionList = ctx.assignmentExpressionList();
-        if (assignmentExpressionList != null) {
-            return visitAssignmentExpressionList(assignmentExpressionList);
-        }
+    public InternalEntity visitPrimaryExpression(CminParser.PrimaryExpressionContext ctx) {
 
         TerminalNode identifier = ctx.Identifier();
         if (identifier != null) {
             String name = identifier.getText();
-            MemoryLocation memoryLocation = interpreter.tryGetMemoryLocation(name);
-            if (memoryLocation == null) {
-                throw new MemoryLocationNotFoundException(name);
-            }
-            return memoryLocation;
+            return CminKeyword.Int;
+            //MemoryLocation memoryLocation = interpreter.tryGetMemoryLocation(name);
+            //if (memoryLocation == null) {
+            //    throw new MemoryLocationNotFoundException(name);
+            //}
+            //return memoryLocation;
         }
-        */
         return super.visitPrimaryExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitPostfixExpression(CminParser.PostfixExpressionContext ctx) {
+    public InternalEntity visitPostfixExpression(CminParser.PostfixExpressionContext ctx) {
         /*
         CminParser.PrimaryExpressionContext primaryExpressionContext = ctx.primaryExpression();
         if (primaryExpressionContext != null) {
@@ -78,148 +76,159 @@ public class CminToInternalTransformer
     }
 
     @Override
-    public AbstractEntity visitFunctionArgumentExpressionList(CminParser.FunctionArgumentExpressionListContext ctx) {
+    public InternalEntity visitFunctionArgumentExpressionList(CminParser.FunctionArgumentExpressionListContext ctx) {
         return super.visitFunctionArgumentExpressionList(ctx);
     }
 
     @Override
-    public AbstractEntity visitFunctionArgumentExpression(CminParser.FunctionArgumentExpressionContext ctx) {
+    public InternalEntity visitFunctionArgumentExpression(CminParser.FunctionArgumentExpressionContext ctx) {
         return super.visitFunctionArgumentExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitUnaryOrNullaryExpression(CminParser.UnaryOrNullaryExpressionContext ctx) {
+    public InternalEntity visitUnaryOrNullaryExpression(CminParser.UnaryOrNullaryExpressionContext ctx) {
         return super.visitUnaryOrNullaryExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitUnaryOperator(CminParser.UnaryOperatorContext ctx) {
+    public InternalEntity visitUnaryOperator(CminParser.UnaryOperatorContext ctx) {
         return super.visitUnaryOperator(ctx);
     }
 
     @Override
-    public AbstractEntity visitBinaryOrTernaryExpression(CminParser.BinaryOrTernaryExpressionContext ctx) {
+    public InternalEntity visitBinaryOrTernaryExpression(CminParser.BinaryOrTernaryExpressionContext ctx) {
         return super.visitBinaryOrTernaryExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitMultiplicativeExpression(CminParser.MultiplicativeExpressionContext ctx) {
+    public InternalEntity visitMultiplicativeExpression(CminParser.MultiplicativeExpressionContext ctx) {
         return super.visitMultiplicativeExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitAdditiveExpression(CminParser.AdditiveExpressionContext ctx) {
+    public InternalEntity visitAdditiveExpression(CminParser.AdditiveExpressionContext ctx) {
         return super.visitAdditiveExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitShiftExpression(CminParser.ShiftExpressionContext ctx) {
+    public InternalEntity visitShiftExpression(CminParser.ShiftExpressionContext ctx) {
         return super.visitShiftExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitRelationalExpression(CminParser.RelationalExpressionContext ctx) {
+    public InternalEntity visitRelationalExpression(CminParser.RelationalExpressionContext ctx) {
         return super.visitRelationalExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitEqualityExpression(CminParser.EqualityExpressionContext ctx) {
+    public InternalEntity visitEqualityExpression(CminParser.EqualityExpressionContext ctx) {
         return super.visitEqualityExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitAndExpression(CminParser.AndExpressionContext ctx) {
+    public InternalEntity visitAndExpression(CminParser.AndExpressionContext ctx) {
         return super.visitAndExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitExclusiveOrExpression(CminParser.ExclusiveOrExpressionContext ctx) {
+    public InternalEntity visitExclusiveOrExpression(CminParser.ExclusiveOrExpressionContext ctx) {
         return super.visitExclusiveOrExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitInclusiveOrExpression(CminParser.InclusiveOrExpressionContext ctx) {
+    public InternalEntity visitInclusiveOrExpression(CminParser.InclusiveOrExpressionContext ctx) {
         return super.visitInclusiveOrExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitLogicalAndExpression(CminParser.LogicalAndExpressionContext ctx) {
+    public InternalEntity visitLogicalAndExpression(CminParser.LogicalAndExpressionContext ctx) {
         return super.visitLogicalAndExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitLogicalOrAndExpression(CminParser.LogicalOrAndExpressionContext ctx) {
+    public InternalEntity visitLogicalOrAndExpression(CminParser.LogicalOrAndExpressionContext ctx) {
         return super.visitLogicalOrAndExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitTernaryExpression(CminParser.TernaryExpressionContext ctx) {
+    public InternalEntity visitTernaryExpression(CminParser.TernaryExpressionContext ctx) {
         return super.visitTernaryExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitConstantExpression(CminParser.ConstantExpressionContext ctx) {
+    public InternalEntity visitConstantExpression(CminParser.ConstantExpressionContext ctx) {
         return super.visitConstantExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitAssignmentExpression(CminParser.AssignmentExpressionContext ctx) {
+    public InternalEntity visitAssignmentExpression(CminParser.AssignmentExpressionContext ctx) {
         return super.visitAssignmentExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitAssignmentOperator(CminParser.AssignmentOperatorContext ctx) {
+    public InternalEntity visitAssignmentOperator(CminParser.AssignmentOperatorContext ctx) {
         return super.visitAssignmentOperator(ctx);
     }
 
     @Override
-    public AbstractEntity visitAssignmentExpressionList(CminParser.AssignmentExpressionListContext ctx) {
+    public InternalEntity visitAssignmentExpressionList(CminParser.AssignmentExpressionListContext ctx) {
         return super.visitAssignmentExpressionList(ctx);
     }
 
     @Override
-    public AbstractEntity visitVariableDeclarationStatement(CminParser.VariableDeclarationStatementContext ctx) {
-        /*CminParser.DeclarationSpecifiersContext declarationSpecifiersContext = ctx.declarationSpecifiers();
-        assert declarationSpecifiersContext != null;
-        Type type = (Type) visitDeclarationSpecifiers(declarationSpecifiersContext);
+    public InternalEntity visitVariableDeclarationStatement(CminParser.VariableDeclarationStatementContext ctx) {
+        // for now ignore type specifiers ('extern', 'static', etc)
+        //for (CminParser.TypeSpecifierContext typeSpecifierContext : ctx.typeSpecifier()) {
+        //    CminKeyword typeSpecifier = (CminKeyword) visitTypeSpecifier(typeSpecifierContext);
+        //}
+        InternalType typeDeclarator = (InternalType) visitTypeDeclarator(ctx.typeDeclarator());
+        // TODO: Initialisation
 
-        return super.visitDeclaration(ctx);
-        */
         return super.visitVariableDeclarationStatement(ctx);
     }
 
     @Override
-    public AbstractEntity visitTypeSpecifier(CminParser.TypeSpecifierContext ctx) {
+    public InternalEntity visitTypeSpecifier(CminParser.TypeSpecifierContext ctx) {
         return super.visitTypeSpecifier(ctx);
     }
 
     @Override
-    public AbstractEntity visitVariableDeclaratorList(CminParser.VariableDeclaratorListContext ctx) {
+    public InternalEntity visitVariableDeclaratorList(CminParser.VariableDeclaratorListContext ctx) {
         return super.visitVariableDeclaratorList(ctx);
     }
 
     @Override
-    public AbstractEntity visitVariableDeclarator(CminParser.VariableDeclaratorContext ctx) {
+    public InternalEntity visitVariableDeclarator(CminParser.VariableDeclaratorContext ctx) {
         return super.visitVariableDeclarator(ctx);
     }
 
     @Override
-    public AbstractEntity visitStorageClassSpecifier(CminParser.StorageClassSpecifierContext ctx) {
+    public InternalEntity visitStorageClassSpecifier(CminParser.StorageClassSpecifierContext ctx) {
         return super.visitStorageClassSpecifier(ctx);
     }
 
     @Override
-    public AbstractEntity visitVariableTypeQualifier(CminParser.VariableTypeQualifierContext ctx) {
+    public InternalEntity visitVariableTypeQualifier(CminParser.VariableTypeQualifierContext ctx) {
         return super.visitVariableTypeQualifier(ctx);
     }
 
     @Override
-    public AbstractEntity visitTypeDeclarator(CminParser.TypeDeclaratorContext ctx) {
+    public InternalEntity visitTypeDeclarator(CminParser.TypeDeclaratorContext ctx) {
+        InternalEntity primitiveTypeDeclarator = visitPrimitiveTypeDeclarator(ctx.primitiveTypeDeclarator());
+        if (primitiveTypeDeclarator != null) {
+            return primitiveTypeDeclarator;
+        }
+
+        InternalEntity atomicTypeDeclarator = visitAtomicTypeDeclarator(ctx.atomicTypeDeclarator());
+        if (atomicTypeDeclarator != null) {
+            return atomicTypeDeclarator;
+        }
+
         return super.visitTypeDeclarator(ctx);
     }
 
     @Override
-    public AbstractEntity visitPrimitiveTypeDeclarator(CminParser.PrimitiveTypeDeclaratorContext ctx) {
+    public InternalEntity visitPrimitiveTypeDeclarator(CminParser.PrimitiveTypeDeclaratorContext ctx) {
         CminPrimitiveTypeBuilder builder = new CminPrimitiveTypeBuilder();
         CminKeyword primitiveTypeKeyword = (CminKeyword) visitPrimitiveTypeKeyword(ctx.primitiveTypeKeyword());
         builder.addModifier(primitiveTypeKeyword);
@@ -233,13 +242,13 @@ public class CminToInternalTransformer
     }
 
     @Override
-    public AbstractEntity visitPrimitiveTypeKeyword(CminParser.PrimitiveTypeKeywordContext ctx) {
+    public InternalEntity visitPrimitiveTypeKeyword(CminParser.PrimitiveTypeKeywordContext ctx) {
         if (ctx == null) {
             throw new ParserException(ctx, "Cannot find expected primitive type keyword.");
         }
         int childCount = ctx.getChildCount();
         assert childCount > 0 : childCount;
-        String keyword = ctx.getChild(0).getText(); // todo: get token value correctly, something like: `ctx.getToken(...)`
+        String keyword = ctx.getChild(0).getText(); // todo: get token bitness correctly, something like: `ctx.getToken(...)`
 
         switch (keyword) {
             case "short":
@@ -275,13 +284,13 @@ public class CminToInternalTransformer
     }
 
     @Override
-    public AbstractEntity visitPrimitiveTypeSpecifier(CminParser.PrimitiveTypeSpecifierContext ctx) {
+    public InternalEntity visitPrimitiveTypeSpecifier(CminParser.PrimitiveTypeSpecifierContext ctx) {
         if (ctx == null) {
             return null;
         }
         int childCount = ctx.getChildCount();
         assert childCount > 0 : childCount;
-        String keyword = ctx.getChild(0).getText(); // todo: get token value correctly, something like: `ctx.getToken(...)`
+        String keyword = ctx.getChild(0).getText(); // todo: get token bitness correctly, something like: `ctx.getToken(...)`
 
         switch (keyword) {
             case "signed":
@@ -294,89 +303,89 @@ public class CminToInternalTransformer
     }
 
     @Override
-    public AbstractEntity visitAtomicTypeDeclarator(CminParser.AtomicTypeDeclaratorContext ctx) {
+    public InternalEntity visitAtomicTypeDeclarator(CminParser.AtomicTypeDeclaratorContext ctx) {
 
 
         return super.visitAtomicTypeDeclarator(ctx);
     }
 
     @Override
-    public AbstractEntity visitVariableName(CminParser.VariableNameContext ctx) {
+    public InternalEntity visitVariableName(CminParser.VariableNameContext ctx) {
         return super.visitVariableName(ctx);
     }
 
     @Override
-    public AbstractEntity visitVariableTypeSpecifierQualifierList(CminParser.VariableTypeSpecifierQualifierListContext ctx) {
+    public InternalEntity visitVariableTypeSpecifierQualifierList(CminParser.VariableTypeSpecifierQualifierListContext ctx) {
         return super.visitVariableTypeSpecifierQualifierList(ctx);
     }
 
     @Override
-    public AbstractEntity visitVariableInitializer(CminParser.VariableInitializerContext ctx) {
+    public InternalEntity visitVariableInitializer(CminParser.VariableInitializerContext ctx) {
         return super.visitVariableInitializer(ctx);
     }
 
     @Override
-    public AbstractEntity visitStatement(CminParser.StatementContext ctx) {
+    public InternalEntity visitStatement(CminParser.StatementContext ctx) {
         return super.visitStatement(ctx);
     }
 
     @Override
-    public AbstractEntity visitLabeledStatement(CminParser.LabeledStatementContext ctx) {
+    public InternalEntity visitLabeledStatement(CminParser.LabeledStatementContext ctx) {
         return super.visitLabeledStatement(ctx);
     }
 
     @Override
-    public AbstractEntity visitCompoundStatement(CminParser.CompoundStatementContext ctx) {
+    public InternalEntity visitCompoundStatement(CminParser.CompoundStatementContext ctx) {
         return super.visitCompoundStatement(ctx);
     }
 
     @Override
-    public AbstractEntity visitBlockItemList(CminParser.BlockItemListContext ctx) {
+    public InternalEntity visitBlockItemList(CminParser.BlockItemListContext ctx) {
         return super.visitBlockItemList(ctx);
     }
 
     @Override
-    public AbstractEntity visitBlockItem(CminParser.BlockItemContext ctx) {
+    public InternalEntity visitBlockItem(CminParser.BlockItemContext ctx) {
         return super.visitBlockItem(ctx);
     }
 
     @Override
-    public AbstractEntity visitExpressionStatement(CminParser.ExpressionStatementContext ctx) {
+    public InternalEntity visitExpressionStatement(CminParser.ExpressionStatementContext ctx) {
         return super.visitExpressionStatement(ctx);
     }
 
     @Override
-    public AbstractEntity visitExpression(CminParser.ExpressionContext ctx) {
+    public InternalEntity visitExpression(CminParser.ExpressionContext ctx) {
         return super.visitExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitBranchingStatement(CminParser.BranchingStatementContext ctx) {
+    public InternalEntity visitBranchingStatement(CminParser.BranchingStatementContext ctx) {
         return super.visitBranchingStatement(ctx);
     }
 
     @Override
-    public AbstractEntity visitLoopStatement(CminParser.LoopStatementContext ctx) {
+    public InternalEntity visitLoopStatement(CminParser.LoopStatementContext ctx) {
         return super.visitLoopStatement(ctx);
     }
 
     @Override
-    public AbstractEntity visitForCondition(CminParser.ForConditionContext ctx) {
+    public InternalEntity visitForCondition(CminParser.ForConditionContext ctx) {
         return super.visitForCondition(ctx);
     }
 
     @Override
-    public AbstractEntity visitForDeclaration(CminParser.ForDeclarationContext ctx) {
+    public InternalEntity visitForDeclaration(CminParser.ForDeclarationContext ctx) {
         return super.visitForDeclaration(ctx);
     }
 
     @Override
-    public AbstractEntity visitForExpression(CminParser.ForExpressionContext ctx) {
+    public InternalEntity visitForExpression(CminParser.ForExpressionContext ctx) {
         return super.visitForExpression(ctx);
     }
 
     @Override
-    public AbstractEntity visitJumpStatement(CminParser.JumpStatementContext ctx) {
+    public InternalEntity visitJumpStatement(CminParser.JumpStatementContext ctx) {
         return super.visitJumpStatement(ctx);
     }
 }

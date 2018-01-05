@@ -1,6 +1,6 @@
 package mousquetaires.languages.internal.expressions;
 
-public abstract class ConstantExpression extends Expression {
+public abstract class InternalConstant extends InternalExpression {
 
     public enum Type {
         Boolean,
@@ -10,14 +10,14 @@ public abstract class ConstantExpression extends Expression {
     protected final Object value;
     protected final Type type;
 
-    public ConstantExpression(String originalExpression, Object value, Type type) {
+    public InternalConstant(String originalExpression, Object value, Type type) {
         super(originalExpression);
         this.value = value;
         this.type = type;
     }
 
     //public ArithExpr toZ3(MapSSA map, Context ctx) {
-    //    return ctx.mkInt(value);
+    //    return ctx.mkInt(bitness);
     //}
     //
     //public Set<Register> getRegs() {

@@ -2,7 +2,7 @@ package mousquetaires.execution.events.old;
 
 import java.util.Collections;
 
-import mousquetaires.languages.internal.expressions.BooleanExpression;
+import mousquetaires.languages.internal.expressions.InternalBinaryExpression;
 import mousquetaires.execution.Processus;
 
 

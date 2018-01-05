@@ -3,11 +3,12 @@ package mousquetaires.languages.internal.expressions;
 import mousquetaires.execution.memory.MemoryLocation;
 
 
-public class AssignmentExpression extends Expression {
-    public final MemoryLocation destination;
-    public final Expression source;
+public class InternalAssignmentExpression extends InternalExpression {
 
-    public AssignmentExpression(String originalExpression, MemoryLocation destination, Expression source) {
+    public final MemoryLocation destination;
+    public final InternalExpression source;
+
+    public InternalAssignmentExpression(String originalExpression, MemoryLocation destination, InternalExpression source) {
         super(originalExpression);
         this.destination = destination;
         this.source = source;

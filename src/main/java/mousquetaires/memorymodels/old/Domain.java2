@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import com.microsoft.z3.*;
 
-import mousquetaires.languages.internal.expressions.ConstantExpression;
+import mousquetaires.languages.internal.expressions.InternalConstant;
 import mousquetaires.execution.Programme;
 import mousquetaires.execution.events.old.barriers.Barrier;
 import mousquetaires.execution.events.old.Event;

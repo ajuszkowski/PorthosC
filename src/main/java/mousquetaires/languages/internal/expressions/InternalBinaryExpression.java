@@ -1,35 +1,35 @@
 package mousquetaires.languages.internal.expressions;
 
-public class BooleanExpression extends Expression {
-
-    private Expression leftExpression;
-    private Expression rightExpression;
-    private OperatorKind operator;
-
-    public BooleanExpression(String originalExpression,
-                             BooleanExpression leftExpression,
-                             OperatorKind operator,
-                             BooleanExpression rightExpression) {
-        super(originalExpression);
-        this.leftExpression = leftExpression;
-        this.rightExpression = rightExpression;
-        this.operator = operator;
-    }
-
+public class InternalBinaryExpression extends InternalExpression {
     public enum OperatorKind {
         Plus,
         Minus,
         Multiply,
     }
 
+    private InternalExpression leftExpression;
+    private InternalExpression rightExpression;
+    private OperatorKind operator;
+
+    public InternalBinaryExpression(String originalExpression,
+                                    InternalExpression leftExpression,
+                                    OperatorKind operator,
+                                    InternalExpression rightExpression) {
+        super(originalExpression);
+        this.leftExpression = leftExpression;
+        this.rightExpression = rightExpression;
+        this.operator = operator;
+    }
+
+
     //public String toString() {
     //    return String.format("(%s %s %s)", leftExpression, operator, rightExpression);
     //}
     //
-    //public BooleanExpression clone() {
-    //    BooleanExpression newB1 = leftExpression.clone();
-    //    BooleanExpression newB2 = rightExpression.clone();
-    //    return new BooleanExpression(newB1, operator, newB2);
+    //public InternalBinaryExpression clone() {
+    //    InternalBinaryExpression newB1 = leftExpression.clone();
+    //    InternalBinaryExpression newB2 = rightExpression.clone();
+    //    return new InternalBinaryExpression(newB1, operator, newB2);
     //}
 
     //public BoolExpr toZ3(MapSSA map, Context ctx) {

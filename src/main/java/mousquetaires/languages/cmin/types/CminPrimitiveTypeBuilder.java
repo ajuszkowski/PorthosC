@@ -1,9 +1,7 @@
 package mousquetaires.languages.cmin.types;
 
 import mousquetaires.languages.cmin.CminKeyword;
-import mousquetaires.languages.internal.types.Bitness;
-import mousquetaires.languages.internal.types.BitvectorType;
-import mousquetaires.languages.internal.types.Type;
+import mousquetaires.languages.internal.types.InternalType;
 import mousquetaires.patterns.Builder;
 
 import java.util.BitSet;
@@ -11,7 +9,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 
-public class CminPrimitiveTypeBuilder extends Builder<Type> {
+public class CminPrimitiveTypeBuilder extends Builder<InternalType> {
 
     private final int modifiersNumber = CminKeyword.values().length;
     private BitSet modifiers = new BitSet(modifiersNumber);
@@ -38,29 +36,30 @@ public class CminPrimitiveTypeBuilder extends Builder<Type> {
     }
 
     @Override
-    public Type build() {
+    public InternalType build() {
         if (isBuilt()) {
             throw new RuntimeException(getAlreadyFinishedMessage());
         }
         boolean signed = true;
-        Bitness bitness = Bitness.getMinBitness();
+        int bitness = 0;
         for (Map.Entry<CminKeyword, Integer> entry : keywordIdentificatorsMap.entrySet()) {
             boolean hasValue = modifiers.get(entry.getValue());
             if (hasValue) {
                 CminKeyword keyword = entry.getKey();
                 if (keyword == CminKeyword.Unsigned) {
                     signed = false;
-                }
-                Bitness newBitness = CminKeyword.bitnessMap.get(keyword);
-                if (newBitness == null) {
                     continue;
                 }
-                if (newBitness.value > bitness.value) {
-                    bitness = newBitness;
+                InternalType newType = CminKeyword.tryConvert(keyword);
+                if (newType == null) {
+                    continue;
+                }
+                if (newType.bitness > bitness) {
+                    bitness = newType.bitness;
                 }
             }
         }
         setBuilt();
-        return new BitvectorType(bitness, signed);
+        return new InternalType(bitness, signed);
     }
 }

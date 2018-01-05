@@ -1,10 +1,9 @@
 package mousquetaires.execution.memory;
 
-import mousquetaires.languages.internal.AbstractEntity;
+import mousquetaires.languages.internal.InternalEntity;
 
 
-public abstract class MemoryLocation
-        implements AbstractEntity, Cloneable {
+public abstract class MemoryLocation implements InternalEntity, Cloneable {
 
     public enum Kind {
         Registry,

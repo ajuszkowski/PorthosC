@@ -1,11 +1,11 @@
 package mousquetaires.execution.events;
 
-import mousquetaires.languages.internal.AbstractEntity;
+import mousquetaires.languages.internal.InternalEntity;
 
 import java.util.Objects;
 
 
-public abstract class Event implements AbstractEntity {
+public abstract class Event implements InternalEntity {
     public final EventInfo info;
 
     Event(EventInfo info) {
