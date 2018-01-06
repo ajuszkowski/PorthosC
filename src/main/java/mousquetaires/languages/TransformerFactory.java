@@ -2,7 +2,7 @@ package mousquetaires.languages;
 
 import mousquetaires.interpretation.eventrepr.Interpreter;
 import mousquetaires.languages.porthos.PorthosToInternalTransformer;
-import mousquetaires.languages.cmin.CminToInternalTransformer;
+import mousquetaires.languages.cmin.transformer.CminToInternalTransformer;
 
 
 public class TransformerFactory {

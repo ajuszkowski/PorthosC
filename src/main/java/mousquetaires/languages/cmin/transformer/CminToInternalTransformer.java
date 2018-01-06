@@ -1,14 +1,20 @@
-package mousquetaires.languages.cmin;
+package mousquetaires.languages.cmin.transformer;
 
 
 import mousquetaires.interpretation.eventrepr.Interpreter;
-import mousquetaires.interpretation.eventrepr.exceptions.ParserException;
+import mousquetaires.interpretation.internalrepr.exceptions.ParserException;
 import mousquetaires.languages.SyntaxTreeToInternalTransformer;
 import mousquetaires.languages.cmin.types.CminPrimitiveTypeBuilder;
 import mousquetaires.languages.internalrepr.InternalEntity;
 import mousquetaires.languages.internalrepr.InternalSyntaxTree;
 import mousquetaires.languages.internalrepr.InternalSyntaxTreeBuilder;
+import mousquetaires.languages.internalrepr.expressions.InternalAssignmentExpression;
+import mousquetaires.languages.internalrepr.expressions.InternalExpression;
+import mousquetaires.languages.internalrepr.statements.InternalCompoundStatement;
+import mousquetaires.languages.internalrepr.temporaries.InternalVariableDeclarationListTemp;
+import mousquetaires.languages.internalrepr.temporaries.InternalVariableDeclarationTemp;
 import mousquetaires.languages.internalrepr.types.InternalType;
+import mousquetaires.languages.internalrepr.variables.InternalLvalueExpression;
 import mousquetaires.languages.parsers.CminBaseVisitor;
 import mousquetaires.languages.parsers.CminParser;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -43,35 +49,35 @@ public class CminToInternalTransformer
 
     @Override
     public InternalEntity visitPrimaryExpression(CminParser.PrimaryExpressionContext ctx) {
-
         TerminalNode identifier = ctx.Identifier();
         if (identifier != null) {
-            String name = identifier.getText();
-            return CminKeyword.Int;
-            //MemoryLocation memoryLocation = interpreter.tryGetMemoryLocation(name);
-            //if (memoryLocation == null) {
-            //    throw new MemoryLocationNotFoundException(name);
-            //}
-            //return memoryLocation;
+            return new CminIdentifier(identifier.getText());
         }
-        return super.visitPrimaryExpression(ctx);
+
+        TerminalNode constant = ctx.Constant();
+        if (constant != null) {
+            String constantText = constant.getText();
+            try {
+                int value = Integer.parseInt(constantText);
+                return new CminIntegerConstant(value);
+            }
+            catch (NumberFormatException e) {
+            }
+
+            // TODO: Determine other constant types
+
+            throw new ParserException(ctx, "Could not determine type of constant " + constantText);
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (TerminalNode stringLiteral : ctx.StringLiteral()) {
+            stringBuilder.append(stringLiteral.getSymbol().getText());
+        }
+        return new CminStringConstant(stringBuilder.toString());
     }
 
     @Override
     public InternalEntity visitPostfixExpression(CminParser.PostfixExpressionContext ctx) {
-        /*
-        CminParser.PrimaryExpressionContext primaryExpressionContext = ctx.primaryExpression();
-        if (primaryExpressionContext != null) {
-            return visitPrimaryExpression(primaryExpressionContext);
-        }
-
-
-        CminParser.PostfixExpressionContext postfixExpressionContext = ctx.postfixExpression();
-        if (postfixExpressionContext != null) {
-            return visitPostfixExpression(postfixExpressionContext);
-        }
-         */
-
         return super.visitPostfixExpression(ctx);
     }
 
@@ -161,8 +167,29 @@ public class CminToInternalTransformer
     }
 
     @Override
+    public InternalEntity visitLvalueExpression(CminParser.LvalueExpressionContext ctx) {
+        // as-is
+        return super.visitLvalueExpression(ctx);
+    }
+
+    @Override
+    public InternalEntity visitRvalueExpression(CminParser.RvalueExpressionContext ctx) {
+        // as-is
+        return super.visitRvalueExpression(ctx);
+    }
+
+    @Override
     public InternalEntity visitAssignmentExpression(CminParser.AssignmentExpressionContext ctx) {
-        return super.visitAssignmentExpression(ctx);
+        InternalExpression leftExpression = (InternalExpression) visitLvalueExpression(ctx.lvalueExpression());
+        assert  leftExpression != null;
+        if (!(leftExpression instanceof InternalLvalueExpression)) {
+            throw new ParserException(ctx, "Invalid l-value expression: `" + leftExpression + "`");
+        }
+        InternalLvalueExpression leftAssignableExpression = (InternalLvalueExpression) leftExpression;
+
+        InternalExpression rightExpression = (InternalExpression) visitRvalueExpression(ctx.rvalueExpression());
+
+        return new InternalAssignmentExpression(leftAssignableExpression, rightExpression);
     }
 
     @Override
@@ -177,14 +204,19 @@ public class CminToInternalTransformer
 
     @Override
     public InternalEntity visitVariableDeclarationStatement(CminParser.VariableDeclarationStatementContext ctx) {
+        InternalType type = (InternalType) visitTypeDeclarator(ctx.typeDeclarator());
         // for now ignore type specifiers ('extern', 'static', etc)
+        // todo: set specifier to the 'type'
         //for (CminParser.TypeSpecifierContext typeSpecifierContext : ctx.typeSpecifier()) {
         //    CminKeyword typeSpecifier = (CminKeyword) visitTypeSpecifier(typeSpecifierContext);
         //}
-        InternalType typeDeclarator = (InternalType) visitTypeDeclarator(ctx.typeDeclarator());
-        // TODO: Initialisation
 
-        return super.visitVariableDeclarationStatement(ctx);
+        InternalVariableDeclarationListTemp declaratorList =
+                (InternalVariableDeclarationListTemp) visitVariableDeclaratorList(ctx.variableDeclaratorList());
+        declaratorList.setType(type);
+
+        InternalCompoundStatement result = declaratorList.toCompoundStatement();
+        return result;
     }
 
     @Override
@@ -194,12 +226,34 @@ public class CminToInternalTransformer
 
     @Override
     public InternalEntity visitVariableDeclaratorList(CminParser.VariableDeclaratorListContext ctx) {
-        return super.visitVariableDeclaratorList(ctx);
+        InternalVariableDeclarationListTemp declarationList;
+
+        CminParser.VariableDeclaratorListContext varDeclListCtx = ctx.variableDeclaratorList();
+        if (varDeclListCtx != null) {
+             declarationList = (InternalVariableDeclarationListTemp) visitVariableDeclaratorList(varDeclListCtx);
+        }
+        else {
+            declarationList = new InternalVariableDeclarationListTemp();
+        }
+
+        InternalVariableDeclarationTemp declarator =
+                (InternalVariableDeclarationTemp) visitVariableDeclarator(ctx.variableDeclarator());
+        declarationList.addDeclarator(declarator);
+
+        return declarationList;
     }
 
     @Override
     public InternalEntity visitVariableDeclarator(CminParser.VariableDeclaratorContext ctx) {
-        return super.visitVariableDeclarator(ctx);
+        CminIdentifier variableName = (CminIdentifier) visitVariableName(ctx.variableName());
+        assert variableName != null;
+
+        InternalExpression initializer = null;
+        CminParser.VariableInitializerContext initializerContext = ctx.variableInitializer();
+        if (initializerContext != null) {
+            initializer = (InternalExpression) visitVariableInitializer(initializerContext);
+        }
+        return new InternalVariableDeclarationTemp(variableName.getValue(), initializer);
     }
 
     @Override
@@ -225,6 +279,11 @@ public class CminToInternalTransformer
         }
 
         return super.visitTypeDeclarator(ctx);
+    }
+
+    @Override
+    public InternalEntity visitPointerTypeDeclarator(CminParser.PointerTypeDeclaratorContext ctx) {
+        return super.visitPointerTypeDeclarator(ctx);
     }
 
     @Override
@@ -290,7 +349,7 @@ public class CminToInternalTransformer
         }
         int childCount = ctx.getChildCount();
         assert childCount > 0 : childCount;
-        String keyword = ctx.getChild(0).getText(); // todo: get token bitness correctly, something like: `ctx.getToken(...)`
+        String keyword = ctx.getChild(0).getText(); // todo: get token value correctly, something like: `ctx.getToken(...)`
 
         switch (keyword) {
             case "signed":
@@ -304,14 +363,16 @@ public class CminToInternalTransformer
 
     @Override
     public InternalEntity visitAtomicTypeDeclarator(CminParser.AtomicTypeDeclaratorContext ctx) {
-
-
         return super.visitAtomicTypeDeclarator(ctx);
     }
 
     @Override
     public InternalEntity visitVariableName(CminParser.VariableNameContext ctx) {
-        return super.visitVariableName(ctx);
+        int childCount = ctx.getChildCount();
+        assert childCount > 0 : childCount;
+        String identifier = ctx.getChild(0).getText(); // todo: get token value correctly, something like: `ctx.getToken(...)`
+
+        return new CminIdentifier(identifier);
     }
 
     @Override
@@ -321,6 +382,7 @@ public class CminToInternalTransformer
 
     @Override
     public InternalEntity visitVariableInitializer(CminParser.VariableInitializerContext ctx) {
+        // as-is
         return super.visitVariableInitializer(ctx);
     }
 

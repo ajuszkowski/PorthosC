@@ -10,8 +10,7 @@ public abstract class InternalConstant extends InternalExpression {
     protected final Object value;
     protected final Type type;
 
-    public InternalConstant(String originalExpression, Object value, Type type) {
-        super(originalExpression);
+    public InternalConstant(Object value, Type type) {
         this.value = value;
         this.type = type;
     }

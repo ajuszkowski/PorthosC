@@ -5,7 +5,7 @@ import mousquetaires.languages.eventrepr.memory.RegistryLocation;
 
 
 /** Write event from registry ({@link mousquetaires.languages.eventrepr.memory.RegistryLocation})
- * to shared variable ({@link SharedLocation})
+ * to shared assignee ({@link SharedLocation})
  */
 public class WriteEvent extends MemoryEvent {
 

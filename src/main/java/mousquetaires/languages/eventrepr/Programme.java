@@ -338,7 +338,7 @@ public class Programme {
     //    while (iter.hasNext()) {
     //        Processus t = iter.next();
     //        Pair<BoolExpr, MapSSA>recResult = t.encodeDF(lastMap, ctx);
-    //        enc = ctx.mkAnd(enc, recResult.getFirst());
+    //        enc = ctx.mkAnd(enc, recResult.first());
     //        lastMap = recResult.getSecond();
     //    }
     //    this.lastMap = lastMap;

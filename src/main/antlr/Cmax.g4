@@ -165,8 +165,16 @@ constantExpression   // todo: check this definition
     :   ternaryExpression  // as one of the most general expression definitions. better 'expression' ?
     ;
 
+lvalueExpression
+    :   unaryOrNullaryExpression
+    ;
+
+rvalueExpression
+    :   ternaryExpression
+    ;
+
 assignmentExpression
-    :   unaryOrNullaryExpression assignmentOperator ternaryExpression //todo: better 'expression' instead of constantExpression ?
+    :   lvalueExpression assignmentOperator rvalueExpression //todo: better 'expression' instead of constantExpression ?
     // ternaryExpression as one of the most general expression definitions. better 'expression' ?
     ;
 
@@ -418,7 +426,7 @@ variableTypeSpecifierQualifierList
 
 
 variableInitializer
-    :   assignmentExpression
+    :   rvalueExpression
     |   '{' initializerList ','? '}'
     ;
 

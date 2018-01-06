@@ -9,10 +9,8 @@ public class InternalInvocationExpression extends InternalExpression {
     public final MethodSignature signature;
     public final MethodArgument[] arguments;
 
-    public InternalInvocationExpression(String originalExpression,
-                                        MethodSignature signature,
+    public InternalInvocationExpression(MethodSignature signature,
                                         MethodArgument[] arguments) {
-        super(originalExpression);
         this.signature = signature;
         this.arguments = arguments;
     }

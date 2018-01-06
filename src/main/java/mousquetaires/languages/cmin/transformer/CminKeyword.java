@@ -1,4 +1,4 @@
-package mousquetaires.languages.cmin;
+package mousquetaires.languages.cmin.transformer;
 
 import mousquetaires.languages.internalrepr.InternalEntity;
 import mousquetaires.languages.internalrepr.types.InternalType;
@@ -8,9 +8,9 @@ import java.util.Map;
 
 
 /**
- * Note, this class extends InternalEntity, although it does not belongs to the type system of Internal language.
+ * Note, this class implements InternalEntity, although it does not belongs to the type system of Internal language.
  * This is done in order to simplify parsing types in CminToInternalTransformer visitor, where this Cmin-type will be
- * converted to Internal-type on the last stage, when the variable identifier is determined.
+ * converted to Internal-type on the last stage, when the assignee identifier is determined.
  */
 public enum CminKeyword implements InternalEntity {
     // typeSpecifier:

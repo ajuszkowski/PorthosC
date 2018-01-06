@@ -11,11 +11,9 @@ public class InternalBinaryExpression extends InternalExpression {
     private InternalExpression rightExpression;
     private OperatorKind operator;
 
-    public InternalBinaryExpression(String originalExpression,
-                                    InternalExpression leftExpression,
+    public InternalBinaryExpression(InternalExpression leftExpression,
                                     OperatorKind operator,
                                     InternalExpression rightExpression) {
-        super(originalExpression);
         this.leftExpression = leftExpression;
         this.rightExpression = rightExpression;
         this.operator = operator;

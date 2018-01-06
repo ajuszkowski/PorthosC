@@ -1,33 +1,26 @@
 package mousquetaires.utils;
 
-public class Pair<A, B> {
-    private A first;
-    private B second;
+public class Pair<T1, T2> {
 
-    public Pair(A first, B second) {
+    private final T1 first;
+    private final T2 second;
+
+    public Pair(T1 first, T2 second) {
         super();
         this.first = first;
         this.second = second;
     }
 
-    public String toString()
-    { 
-           return "(" + first + ", " + second + ")"; 
-    }
-
-    public A getFirst() {
+    public T1 first() {
         return first;
     }
 
-    public void setFirst(A first) {
-        this.first = first;
-    }
-
-    public B getSecond() {
+    public T2 second() {
         return second;
     }
 
-    public void setSecond(B second) {
-        this.second = second;
+    @Override
+    public String toString() {
+        return "(" + first + ", " + second + ")";
     }
 }

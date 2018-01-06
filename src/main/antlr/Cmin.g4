@@ -147,8 +147,17 @@ constantExpression   // todo: check this definition
     :   ternaryExpression  // as one of the most general expression definitions. better 'expression' ?
     ;
 
+lvalueExpression
+    :   unaryOrNullaryExpression
+    ;
+
+rvalueExpression
+    :   ternaryExpression
+    ;
+
+// todo: check syntax 'a = b = c = 3;'
 assignmentExpression
-    :   unaryOrNullaryExpression assignmentOperator ternaryExpression //todo: better 'expression' instead of constantExpression ?
+    :   lvalueExpression assignmentOperator rvalueExpression //todo: better 'expression' instead of constantExpression ?
     // ternaryExpression as one of the most general expression definitions. better 'expression' ?
     ;
 
@@ -198,8 +207,13 @@ variableTypeQualifier
 
 typeDeclarator
     :   '(' typeDeclarator ')'
+    |   pointerTypeDeclarator
     |   primitiveTypeDeclarator
     |   atomicTypeDeclarator
+    ;
+
+pointerTypeDeclarator
+    :   primitiveTypeDeclarator '*'
     ;
 
 primitiveTypeDeclarator
@@ -241,7 +255,7 @@ variableTypeSpecifierQualifierList
     ;
 
 variableInitializer
-    :   assignmentExpression
+    :   rvalueExpression
     ;
 
 statement

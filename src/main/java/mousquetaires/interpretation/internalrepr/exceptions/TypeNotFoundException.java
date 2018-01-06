@@ -1,4 +1,5 @@
-package mousquetaires.interpretation.eventrepr.exceptions;
+package mousquetaires.interpretation.internalrepr.exceptions;
+
 
 public class TypeNotFoundException extends InterpretationException {
 

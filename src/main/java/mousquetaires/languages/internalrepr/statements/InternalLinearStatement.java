@@ -10,11 +10,6 @@ public class InternalLinearStatement extends InternalStatement {
         this.expression = expression;
     }
 
-    //@Override
-    //public Iterable<InternalEntity> iterateChildren() {
-    //    return List.of(expression);
-    //}
-
     @Override
     public String toString() {
         return expression.toString() + ';';

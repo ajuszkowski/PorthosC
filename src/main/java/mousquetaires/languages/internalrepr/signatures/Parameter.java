@@ -8,8 +8,7 @@ public class Parameter extends InternalExpression {
     public final InternalType type;
     public final String name;
 
-    public Parameter(String originalExpression, InternalType type, String name) {
-        super(originalExpression);
+    public Parameter(InternalType type, String name) {
         this.type = type;
         this.name = name;
     }

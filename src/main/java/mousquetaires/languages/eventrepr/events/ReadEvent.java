@@ -2,7 +2,7 @@ package mousquetaires.languages.eventrepr.events;
 
 import mousquetaires.languages.eventrepr.memory.SharedLocation;
 
-/** Read event from shared variable ({@link SharedLocation}) */
+/** Read event from shared assignee ({@link SharedLocation}) */
 public class ReadEvent extends MemoryEvent {
 
     public final SharedLocation source;

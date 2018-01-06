@@ -3,9 +3,9 @@ package mousquetaires.languages.internalrepr.expressions;
 
 // old BConst or BooleanConst
 public class InternalBooleanConstant extends InternalConstant {
-    public InternalBooleanConstant(String originalExpression, Object value) {
-        // todo: conovert to true/false?
-        super(originalExpression, value, Type.Boolean);
+    public InternalBooleanConstant(Object value) {
+        // todo: convert to true/false?
+        super(value, Type.Boolean);
     }
 
 
