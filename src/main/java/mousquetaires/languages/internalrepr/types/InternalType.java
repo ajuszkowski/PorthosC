@@ -2,6 +2,9 @@ package mousquetaires.languages.internalrepr.types;
 
 import mousquetaires.languages.internalrepr.InternalEntity;
 
+import java.util.Objects;
+
+
 /** Integer type as in LLVM: see https://llvm.org/docs/LangRef.html#integer-type */
 public class InternalType implements InternalEntity {
 
@@ -25,11 +28,26 @@ public class InternalType implements InternalEntity {
     }
     @Override
     public String toString() {
-        String signedPostfix = signed ? "" : "; signed";
-        return "i" + bitness + signedPostfix;
+        //String signedPrefix = signed ? "" : "signed ";
+        return "i" + bitness; // signedPrefix +
     }
 
 
     // see https://os.mbed.com/handbook/C-Data-Types
     // or http://en.cppreference.com/w/cpp/language/types
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof InternalType)) return false;
+        InternalType that = (InternalType) o;
+        return bitness == that.bitness &&
+                signed == that.signed;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bitness, signed);
+    }
 }

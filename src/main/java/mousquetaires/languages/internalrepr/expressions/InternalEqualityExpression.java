@@ -1,26 +1,10 @@
 package mousquetaires.languages.internalrepr.expressions;
 
-import java.util.Objects;
+public class InternalEqualityExpression extends InternalBinaryExpression {
 
-
-public class InternalBinaryExpression extends InternalExpression {
-    public enum OperatorKind {
-        Plus,
-        Minus,
-        Multiply,
-        Equals,
-    }
-
-    private InternalExpression leftExpression;
-    private InternalExpression rightExpression;
-    private OperatorKind operator;
-
-    public InternalBinaryExpression(OperatorKind operator,
-                                    InternalExpression leftExpression,
-                                    InternalExpression rightExpression) {
-        this.leftExpression = leftExpression;
-        this.rightExpression = rightExpression;
-        this.operator = operator;
+    public InternalEqualityExpression(InternalExpression leftExpression,
+                                      InternalExpression rightExpression) {
+        super(OperatorKind.Equals, leftExpression, rightExpression);
     }
 
 
@@ -79,42 +63,4 @@ public class InternalBinaryExpression extends InternalExpression {
     //    return setRegs;
     //}
 
-
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer();
-        sb.append(leftExpression).append(" ");
-        switch (operator) {
-            case Plus:
-                sb.append("+");
-                break;
-            case Minus:
-                sb.append("-");
-                break;
-            case Multiply:
-                sb.append("*");
-                break;
-            case Equals:
-                sb.append("==");
-                break;
-        }
-        sb.append(" ").append(rightExpression);
-        return sb.toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof InternalBinaryExpression)) return false;
-        InternalBinaryExpression that = (InternalBinaryExpression) o;
-        return Objects.equals(leftExpression, that.leftExpression) &&
-                Objects.equals(rightExpression, that.rightExpression) &&
-                operator == that.operator;
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(leftExpression, rightExpression, operator);
-    }
 }

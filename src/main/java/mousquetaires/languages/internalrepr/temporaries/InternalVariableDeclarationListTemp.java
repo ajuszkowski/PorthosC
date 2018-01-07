@@ -2,7 +2,7 @@ package mousquetaires.languages.internalrepr.temporaries;
 
 import mousquetaires.languages.internalrepr.expressions.InternalAssignmentExpression;
 import mousquetaires.languages.internalrepr.expressions.InternalExpression;
-import mousquetaires.languages.internalrepr.statements.InternalCompoundStatement;
+import mousquetaires.languages.internalrepr.statements.InternalBlockStatement;
 import mousquetaires.languages.internalrepr.statements.InternalLinearStatement;
 import mousquetaires.languages.internalrepr.statements.InternalStatement;
 import mousquetaires.languages.internalrepr.statements.InternalVariableDeclarationStatement;
@@ -19,18 +19,18 @@ public class InternalVariableDeclarationListTemp extends InternalStatement {
     private InternalType type;
     private List<InternalVariableDeclarationTemp> declarators;
 
-    public InternalCompoundStatement toCompoundStatement() {
-        InternalCompoundStatementBuilder builder = new InternalCompoundStatementBuilder();
+    public InternalBlockStatement toBlockStatement() {
+        InternalBlockStatementBuilder builder = new InternalBlockStatementBuilder();
 
         for (InternalVariableDeclarationTemp declarator : declarators) {
 
             InternalVariable assignee = new InternalVariable(type, declarator.variableName);
-            builder.addStatement(new InternalVariableDeclarationStatement(assignee));
+            builder.append(new InternalVariableDeclarationStatement(assignee));
 
             InternalExpression declaratorExpr = declarator.expression;
             if (declaratorExpr != null){
                 InternalAssignmentExpression assignmentExpression = new InternalAssignmentExpression(assignee, declaratorExpr);
-                builder.addStatement(new InternalLinearStatement(assignmentExpression));
+                builder.append(new InternalLinearStatement(assignmentExpression));
             }
         }
         return builder.build();

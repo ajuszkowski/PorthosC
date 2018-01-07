@@ -13,4 +13,9 @@ public class InternalUntypedVariable extends InternalVariable {
     public InternalVariable toTypedVariable(InternalType type) {
         return new InternalVariable(type, name);
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

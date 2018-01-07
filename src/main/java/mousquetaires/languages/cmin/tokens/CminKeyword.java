@@ -65,4 +65,12 @@ public enum CminKeyword implements InternalEntity {
     public static InternalType tryConvert(CminKeyword keyword) {
         return CminKeyword.bitnessMap.get(keyword);
     }
+
+    public static InternalType convert(CminKeyword keyword) {
+        InternalType result = tryConvert(keyword);
+        if (result == null) {
+            throw new IllegalArgumentException(keyword.name());
+        }
+        return result;
+    }
 }

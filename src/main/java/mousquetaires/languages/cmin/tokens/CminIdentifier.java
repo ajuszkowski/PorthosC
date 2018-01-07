@@ -21,6 +21,6 @@ public class CminIdentifier extends InternalExpression {
 
     @Override
     public String toString() {
-        return value;
+        return "cmin_keyword(" + value + ")";
     }
 }

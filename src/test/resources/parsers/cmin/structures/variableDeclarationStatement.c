@@ -4,6 +4,8 @@ int a = 1, b, c = 3;
 
 int x;
 int * x;
+int ** x;
+(int*)* x;
 unsigned int x;
 unsigned int* x;
 //_Atomic(int* x);
