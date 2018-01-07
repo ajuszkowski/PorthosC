@@ -1,9 +1,12 @@
 package mousquetaires.languages.cmin.transformer;
 
 
-import mousquetaires.interpretation.eventrepr.Interpreter;
 import mousquetaires.interpretation.internalrepr.exceptions.ParserException;
 import mousquetaires.languages.SyntaxTreeToInternalTransformer;
+import mousquetaires.languages.cmin.tokens.CminIdentifier;
+import mousquetaires.languages.cmin.tokens.CminIntegerConstant;
+import mousquetaires.languages.cmin.tokens.CminKeyword;
+import mousquetaires.languages.cmin.tokens.CminStringConstant;
 import mousquetaires.languages.cmin.types.CminPrimitiveTypeBuilder;
 import mousquetaires.languages.internalrepr.InternalEntity;
 import mousquetaires.languages.internalrepr.InternalSyntaxTree;

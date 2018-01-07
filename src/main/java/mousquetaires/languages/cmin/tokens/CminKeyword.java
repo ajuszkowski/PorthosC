@@ -1,4 +1,4 @@
-package mousquetaires.languages.cmin.transformer;
+package mousquetaires.languages.cmin.tokens;
 
 import mousquetaires.languages.internalrepr.InternalEntity;
 import mousquetaires.languages.internalrepr.types.InternalType;

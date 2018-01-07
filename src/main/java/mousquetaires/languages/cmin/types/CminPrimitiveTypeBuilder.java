@@ -1,6 +1,6 @@
 package mousquetaires.languages.cmin.types;
 
-import mousquetaires.languages.cmin.transformer.CminKeyword;
+import mousquetaires.languages.cmin.tokens.CminKeyword;
 import mousquetaires.languages.internalrepr.types.InternalType;
 import mousquetaires.patterns.Builder;
 
