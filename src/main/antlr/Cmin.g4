@@ -36,7 +36,7 @@ main
     ;
 
 primaryExpression
-    :   Identifier
+    :   variableName
     |   Constant
     |   StringLiteral+
     ;
@@ -109,8 +109,7 @@ relationalExpression
 
 equalityExpression
     :   relationalExpression
-    |   equalityExpression '==' relationalExpression
-    |   equalityExpression '!=' relationalExpression
+    |   equalityExpression (Equals|NotEquals) relationalExpression
     ;
 
 andExpression
@@ -165,18 +164,13 @@ assignmentOperator
     :   '=' | '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '&=' | '^=' | '|='
     ;
 
-assignmentExpressionList
-    :   assignmentExpression
-    |   assignmentExpressionList ',' assignmentExpression
-    ;
-
 variableDeclarationStatement
     :   typeSpecifier* typeDeclarator variableDeclaratorList ';'
     ;
 
 typeSpecifier
     :   storageClassSpecifier
-    |   variableTypeQualifier
+    //|   variableTypeQualifier
     ;
 
 variableDeclaratorList
@@ -198,26 +192,27 @@ storageClassSpecifier
     |   Register
     ;
 
-variableTypeQualifier
-    :   Const
-    |   Restrict
-    |   Volatile
-    |   Atomic
-    ;
+//variableTypeQualifier
+//    :   Const
+//    |   Restrict
+//    |   Volatile
+//    |   Atomic
+//    ;
+
 
 typeDeclarator
     :   '(' typeDeclarator ')'
-    |   pointerTypeDeclarator
+    |   typeDeclarator Asterisk // Pointer
     |   primitiveTypeDeclarator
-    |   atomicTypeDeclarator
+    //|   atomicTypeDeclarator
+    //|   variableStructOrUnionTypeDeclarator
+    //|   variableEnumTypeDeclarator
+    //|   customTypeNameDeclarator
     ;
 
-pointerTypeDeclarator
-    :   primitiveTypeDeclarator '*'
-    ;
 
 primitiveTypeDeclarator
-    :   primitiveTypeSpecifier? primitiveTypeKeyword
+    :   primitiveTypeSpecifier? primitiveTypeKeyword+
     ;
 
 primitiveTypeSpecifier
@@ -235,14 +230,11 @@ primitiveTypeKeyword
     |   Float
     |   Double
     |   Bool
+    |   Auto
     //|   Complex
     //|   '__m128'
     //|   '__m128d'
     //|   '__m128i'
-    ;
-
-atomicTypeDeclarator  //note: Atomic may be also declared in typeSpecifier
-    :   primitiveTypeKeyword Atomic   // for `int * _Atomic x;`
     ;
 
 variableName
@@ -251,7 +243,7 @@ variableName
 
 variableTypeSpecifierQualifierList
     :   typeSpecifier         variableTypeSpecifierQualifierList?
-    |   variableTypeQualifier variableTypeSpecifierQualifierList?
+    //|   variableTypeQualifier variableTypeSpecifierQualifierList?
     ;
 
 variableInitializer
@@ -260,13 +252,16 @@ variableInitializer
 
 statement
     :   variableDeclarationStatement
-    |   expression ';'
+    |   statementExpression
     |   labeledStatement
-    |   compoundStatement
-    |   expressionStatement
+    |   blockStatement
     |   branchingStatement
     |   loopStatement
     |   jumpStatement
+    ;
+
+statementExpression
+    :   expression? ';'
     ;
 
 labeledStatement
@@ -275,22 +270,8 @@ labeledStatement
     |   Default ':' statement
     ;
 
-compoundStatement
-    :   '{' blockItemList? '}'
-    ;
-
-blockItemList
-    :   blockItem
-    |   blockItemList blockItem
-    ;
-
-blockItem
-    :   variableDeclarationStatement
-    |   statement
-    ;
-
-expressionStatement
-    :   expression? ';'
+blockStatement
+    :   '{' statement* '}'
     ;
 
 expression
@@ -300,36 +281,45 @@ expression
     |   assignmentExpression
     ;
 
+condition
+    :   expression
+    ;
+
+falseStatement
+    :   statement
+    ;
+
 branchingStatement
-    :   If '(' expression ')' statement (Else statement)?
-    |   Switch '(' assignmentExpressionList ')' statement
+    :   If '(' condition ')' statement (Else falseStatement)?
+    |   Switch '(' condition ')' statement
     ;
 
 loopStatement
-    :   While '(' assignmentExpressionList ')' statement
-    |   Do statement While '(' assignmentExpressionList ')' ';'
+    :   While '(' condition ')' statement
+    |   Do statement While '(' condition ')' ';'
     |   For '(' forCondition ')' statement
     ;
 
 forCondition
 	:   forDeclaration ';' forExpression? ';' forExpression?
-	|   assignmentExpressionList? ';' forExpression? ';' forExpression?
+	|   expression? ';' forExpression? ';' forExpression?
 	;
 
 forDeclaration
     :   typeDeclarator variableDeclaratorList
     ;
 
+// todo: restore old 'assignmentExpression' instead of 'expression' -- for faster parsing
 forExpression
-    :   assignmentExpression
-    |   forExpression ',' assignmentExpression
+    :   expression
+    |   forExpression ',' expression
     ;
 
 jumpStatement
     :   Goto Identifier ';'
     |   Continue ';'
     |   Break ';'
-    |   Return assignmentExpressionList? ';'
+    |   Return expression? ';'
     ;
 
 
@@ -439,8 +429,8 @@ AndAssign : '&=';
 XorAssign : '^=';
 OrAssign : '|=';
 
-Equal : '==';
-NotEqual : '!=';
+Equals : '==';
+NotEquals : '!=';
 
 Arrow : '->';
 Dot : '.';

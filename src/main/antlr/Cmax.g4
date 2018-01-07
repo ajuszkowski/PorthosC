@@ -39,7 +39,7 @@ main
     ;
 
 primaryExpression
-    :   Identifier
+    :   variableName
     |   Constant
     |   StringLiteral+
     ;
@@ -127,8 +127,7 @@ relationalExpression
 
 equalityExpression
     :   relationalExpression
-    |   equalityExpression '==' relationalExpression
-    |   equalityExpression '!=' relationalExpression
+    |   equalityExpression (Equals|NotEquals) relationalExpression
     ;
 
 andExpression
@@ -193,7 +192,7 @@ variableDeclarationStatement
 
 typeSpecifier
     :   storageClassSpecifier
-    |   variableTypeQualifier
+//    |   variableTypeQualifier
     ;
 
 variableDeclaratorList
@@ -215,12 +214,12 @@ storageClassSpecifier
     |   Register
     ;
 
-variableTypeQualifier
-    :   Const
-    |   Restrict
-    |   Volatile
-    |   Atomic
-    ;
+//variableTypeQualifier
+//    :   Const
+//    |   Restrict
+//    |   Volatile
+//    |   Atomic
+//    ;
 
 typeDeclaration
     :   Typedef customTypeName typeDeclarator
@@ -242,12 +241,13 @@ typeDeclarator
     |   customTypeNameDeclarator
     ;
 
+// TODO: something wrong with pointers. Do not support them yet.
 pointerTypeDeclarator
     :   primitiveTypeDeclarator '*'
     ;
 
 primitiveTypeDeclarator
-    :   primitiveTypeSpecifier? primitiveTypeKeyword
+    :   primitiveTypeSpecifier? primitiveTypeKeyword+
     ;
 
 primitiveTypeSpecifier
@@ -265,6 +265,7 @@ primitiveTypeKeyword
     |   Float
     |   Double
     |   Bool
+    |   Auto
     //|   Complex
     //|   '__m128'
     //|   '__m128d'
@@ -272,7 +273,7 @@ primitiveTypeKeyword
     ;
 
 atomicTypeDeclarator  //note: Atomic may be also declared in typeSpecifier
-    :   pointerTypeDeclarator Atomic   // for `int * _Atomic x;`
+    :   primitiveTypeKeyword Atomic   // for `int * _Atomic x;`
     ;
 
 variableStructOrUnionTypeDeclarator
@@ -401,7 +402,7 @@ parameterDeclaration
 
 variableTypeSpecifierQualifierList
     :   typeSpecifier         variableTypeSpecifierQualifierList?
-    |   variableTypeQualifier variableTypeSpecifierQualifierList?
+//    |   variableTypeQualifier variableTypeSpecifierQualifierList?
     ;
 
 
@@ -451,14 +452,17 @@ initializerList
 
 statement
     :   variableDeclarationStatement
-    |   expression ';'
+    |   statementExpression
     |   labeledStatement
-    |   compoundStatement
-    |   expressionStatement
+    |   blockStatement
     |   branchingStatement
     |   loopStatement
     |   jumpStatement
     //|   ('__asm' | '__asm__') ('volatile' | '__volatile__') '(' (logicalOrAndExpression (',' logicalOrAndExpression)*)? (':' (logicalOrAndExpression (',' logicalOrAndExpression)*)?)* ')' ';'
+    ;
+
+statementExpression
+    :   expression ';'
     ;
 
 labeledStatement
@@ -467,7 +471,7 @@ labeledStatement
     |   Default ':' statement
     ;
 
-compoundStatement
+blockStatement
     :   '{' blockItemList? '}'
     ;
 
@@ -481,10 +485,6 @@ blockItem
     |   statement
     ;
 
-expressionStatement
-    :   expression? ';'
-    ;
-
 expression
     :   '(' expression ')'
     |   unaryOrNullaryExpression
@@ -492,14 +492,22 @@ expression
     |   assignmentExpression
     ;
 
+condition
+    :   expression
+    ;
+
+elseStatement
+    :   statement
+    ;
+
 branchingStatement
-    :   If '(' expression ')' statement (Else statement)?
-    |   Switch '(' assignmentExpressionList ')' statement
+    :   If '(' condition ')' statement (Else elseStatement)?
+    |   Switch '(' condition ')' statement
     ;
 
 loopStatement
-    :   While '(' assignmentExpressionList ')' statement
-    |   Do statement While '(' assignmentExpressionList ')' ';'
+    :   While '(' condition ')' statement
+    |   Do statement While '(' condition ')' ';'
     |   For '(' forCondition ')' statement
     ;
 
@@ -525,7 +533,7 @@ jumpStatement
     ;
 
 functionDefinition
-    :   functionSpecifiers? typeDeclarator variableName '(' parameterFullList ')' compoundStatement
+    :   functionSpecifiers? typeDeclarator variableName '(' parameterFullList ')' blockStatement
     ;
 
 functionSpecifiers

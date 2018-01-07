@@ -41,6 +41,7 @@ public class CminToInternalTransformer
         for (int i = 0; i < childrenCount; i++) {
             InternalEntity root = visit(ctx.getChild(i));
             builder.addRoot(root);
+            //System.out.println(root + ": ok");
         }
         return null;
     }
@@ -266,6 +267,13 @@ public class CminToInternalTransformer
 
     @Override
     public InternalEntity visitTypeDeclarator(CminParser.TypeDeclaratorContext ctx) {
+        CminParser.TypeDeclaratorContext typeDeclaratorContext = ctx.typeDeclarator();
+        if (typeDeclaratorContext != null) {
+            if (ctx.Asterisk() != null) {
+
+            }
+        }
+
         InternalEntity primitiveTypeDeclarator = visitPrimitiveTypeDeclarator(ctx.primitiveTypeDeclarator());
         if (primitiveTypeDeclarator != null) {
             return primitiveTypeDeclarator;
@@ -280,19 +288,20 @@ public class CminToInternalTransformer
     }
 
     @Override
-    public InternalEntity visitPointerTypeDeclarator(CminParser.PointerTypeDeclaratorContext ctx) {
-        return super.visitPointerTypeDeclarator(ctx);
-    }
-
-    @Override
     public InternalEntity visitPrimitiveTypeDeclarator(CminParser.PrimitiveTypeDeclaratorContext ctx) {
-        CminPrimitiveTypeBuilder builder = new CminPrimitiveTypeBuilder();
-        CminKeyword primitiveTypeKeyword = (CminKeyword) visitPrimitiveTypeKeyword(ctx.primitiveTypeKeyword());
-        builder.addModifier(primitiveTypeKeyword);
+        if (ctx == null) {
+            return null;
+        }
 
-        CminKeyword primitiveTypeSpecifierKeyword = (CminKeyword) visitPrimitiveTypeSpecifier(ctx.primitiveTypeSpecifier());
-        if (primitiveTypeSpecifierKeyword != null) {
-            builder.addModifier(primitiveTypeSpecifierKeyword);
+        CminPrimitiveTypeBuilder builder = new CminPrimitiveTypeBuilder();
+        for (CminParser.PrimitiveTypeKeywordContext typeKeywordContext : ctx.primitiveTypeKeyword()) {
+            CminKeyword typeKeyword = (CminKeyword) visitPrimitiveTypeKeyword(typeKeywordContext);
+            builder.addModifier(typeKeyword);
+
+            CminKeyword specifierKeyword = (CminKeyword) visitPrimitiveTypeSpecifier(ctx.primitiveTypeSpecifier());
+            if (specifierKeyword != null) {
+                builder.addModifier(specifierKeyword);
+            }
         }
 
         return builder.build();
