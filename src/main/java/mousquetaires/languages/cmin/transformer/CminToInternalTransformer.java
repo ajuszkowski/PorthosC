@@ -25,12 +25,7 @@ public class CminToInternalTransformer
         extends CminBaseVisitor<InternalEntity>
         implements SyntaxTreeToInternalTransformer {
 
-    private final Interpreter interpreter;
     private final InternalSyntaxTreeBuilder builder = new InternalSyntaxTreeBuilder();
-
-    public CminToInternalTransformer(Interpreter interpreter) {
-        this.interpreter = interpreter;
-    }
 
     public InternalSyntaxTree transform(ParserRuleContext parserRuleContext) {
         parserRuleContext.accept(this);

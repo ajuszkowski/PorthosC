@@ -1,17 +1,16 @@
 package mousquetaires.languages;
 
-import mousquetaires.interpretation.eventrepr.Interpreter;
 import mousquetaires.languages.porthos.PorthosToInternalTransformer;
 import mousquetaires.languages.cmin.transformer.CminToInternalTransformer;
 
 
 public class TransformerFactory {
-    public static SyntaxTreeToInternalTransformer getTransformer(ProgramLanguage inputLanguage, Interpreter interpreter) {
+    public static SyntaxTreeToInternalTransformer getTransformer(ProgramLanguage inputLanguage) {
         switch (inputLanguage) {
             case Cmin:
-                return new CminToInternalTransformer(interpreter);
+                return new CminToInternalTransformer();
             case Porthos:
-                return new PorthosToInternalTransformer(interpreter);
+                return new PorthosToInternalTransformer();
             case Litmus:
                 throw new RuntimeException("not implemented yet");
             default:

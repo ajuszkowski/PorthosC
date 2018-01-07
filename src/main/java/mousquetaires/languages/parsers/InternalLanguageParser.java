@@ -17,7 +17,7 @@ public class InternalLanguageParser {
     public static InternalSyntaxTree parse(File inputProgramFile) throws IOException {
         ProgramLanguage language = ProgramExtensions.parseProgramLanguage(inputProgramFile.getName());
         Interpreter interpreter = new Interpreter(language);
-        SyntaxTreeToInternalTransformer transformer = TransformerFactory.getTransformer(language, interpreter);
+        SyntaxTreeToInternalTransformer transformer = TransformerFactory.getTransformer(language);
 
         ParserRuleContext parserEntryPoint = CustomParserFactory.getParser(inputProgramFile, language);
 
