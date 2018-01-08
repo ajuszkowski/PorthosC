@@ -8,6 +8,8 @@ import java.util.Objects;
 /** Integer type as in LLVM: see https://llvm.org/docs/LangRef.html#integer-type */
 public class InternalType implements InternalEntity {
 
+    // TODO!!! remake it as close as possible to the smt representation
+
     public static InternalType i0  = new InternalType(0);  // void
     public static InternalType i1  = new InternalType(1);
     public static InternalType i8  = new InternalType(8);

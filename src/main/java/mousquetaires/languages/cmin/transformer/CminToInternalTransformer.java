@@ -3,25 +3,18 @@ package mousquetaires.languages.cmin.transformer;
 
 import mousquetaires.interpretation.internalrepr.exceptions.ParserException;
 import mousquetaires.languages.SyntaxTreeToInternalTransformer;
-import mousquetaires.languages.cmin.tokens.CminIdentifier;
-import mousquetaires.languages.cmin.tokens.CminKeyword;
-import mousquetaires.languages.cmin.types.CminPrimitiveTypeBuilder;
 import mousquetaires.languages.internalrepr.InternalEntity;
 import mousquetaires.languages.internalrepr.InternalSyntaxTree;
 import mousquetaires.languages.internalrepr.InternalSyntaxTreeBuilder;
 import mousquetaires.languages.internalrepr.expressions.*;
-import mousquetaires.languages.internalrepr.statements.InternalBranchingStatement;
-import mousquetaires.languages.internalrepr.statements.InternalBlockStatement;
-import mousquetaires.languages.internalrepr.statements.InternalLinearStatement;
-import mousquetaires.languages.internalrepr.statements.InternalStatement;
-import mousquetaires.languages.internalrepr.temporaries.InternalBlockStatementBuilder;
-import mousquetaires.languages.internalrepr.temporaries.InternalVariableDeclarationListTemp;
-import mousquetaires.languages.internalrepr.temporaries.InternalVariableDeclarationTemp;
-import mousquetaires.languages.internalrepr.types.InternalType;
-import mousquetaires.languages.internalrepr.variables.InternalUntypedVariable;
+import mousquetaires.languages.internalrepr.expressions.lvalue.InternalLvalueExpression;
+import mousquetaires.languages.internalrepr.expressions.lvalue.InternalVariableRef;
+import mousquetaires.languages.internalrepr.statements.*;
+import mousquetaires.languages.internalrepr.temporaries.InternalSequenceStatementBuilder;
+import mousquetaires.languages.internalrepr.temporaries.InternalMultiVariableDeclarationBuilder;
 import mousquetaires.languages.parsers.CminBaseVisitor;
 import mousquetaires.languages.parsers.CminParser;
-import mousquetaires.utils.NotImplementedException;
+import mousquetaires.utils.exceptions.NotImplementedException;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -33,6 +26,7 @@ public class CminToInternalTransformer
         implements SyntaxTreeToInternalTransformer {
 
     private final InternalSyntaxTreeBuilder builder = new InternalSyntaxTreeBuilder();
+    private final CminToInternalTransformerInterior interior = new CminToInternalTransformerInterior();
 
     public InternalSyntaxTree transform(ParserRuleContext parserRuleContext) {
         parserRuleContext.accept(this);
@@ -43,42 +37,25 @@ public class CminToInternalTransformer
     public InternalEntity visitMain(CminParser.MainContext ctx) {
         int childrenCount = ctx.getChildCount();
         for (int i = 0; i < childrenCount; i++) {
-            InternalEntity root = visit(ctx.getChild(i));
+            InternalEntity root = this.visit(ctx.getChild(i));
             builder.addRoot(root);
-            //System.out.println(root + ": ok");
         }
         return null;
     }
 
     @Override
     public InternalEntity visitPrimaryExpression(CminParser.PrimaryExpressionContext ctx) {
-        CminParser.VariableNameContext variableNameCtx = ctx.variableName();
-        if (variableNameCtx != null) {
-            return visitVariableName(variableNameCtx);
+        InternalVariableRef variableRef = interior.visitVariableName(ctx.variableName());
+        if (variableRef != null) {
+            return variableRef;
         }
 
-        TerminalNode constant = ctx.Constant();
+        InternalConstant constant = interior.visitConstant(ctx.constant());
         if (constant != null) {
-            String constantText = constant.getText();
-            try {
-                int value = Integer.parseInt(constantText);
-                return InternalConstant.newIntegerConstant(value);
-            } catch (NumberFormatException e) {
-            }
-
-            // TODO: Determine other constant types
-
-            throw new ParserException(ctx, "Could not determine type of constant " + constantText);
+            return constant;
         }
 
-        StringBuilder stringBuilder = new StringBuilder();
-        for (TerminalNode stringLiteral : ctx.StringLiteral()) {
-            stringBuilder.append(stringLiteral.getSymbol().getText());
-        }
-
-        // TODO: process strings as arrays
-        //return new CminStringConstant(stringBuilder.toString());
-        throw new NotImplementedException();
+        throw new IllegalStateException();
     }
 
     @Override
@@ -195,8 +172,7 @@ public class CminToInternalTransformer
 
     @Override
     public InternalEntity visitAssignmentExpression(CminParser.AssignmentExpressionContext ctx) {
-        InternalExpression leftExpression = (InternalExpression) visitLvalueExpression(ctx.lvalueExpression());
-
+        InternalLvalueExpression leftExpression = (InternalLvalueExpression) visitLvalueExpression(ctx.lvalueExpression());
         InternalExpression rightExpression = (InternalExpression) visitRvalueExpression(ctx.rvalueExpression());
 
         return new InternalAssignmentExpression(leftExpression, rightExpression);
@@ -204,8 +180,7 @@ public class CminToInternalTransformer
 
     @Override
     public InternalEntity visitLvalueExpression(CminParser.LvalueExpressionContext ctx) {
-        // as-is
-        return super.visitLvalueExpression(ctx);
+
     }
 
     @Override
@@ -221,19 +196,7 @@ public class CminToInternalTransformer
 
     @Override
     public InternalEntity visitVariableDeclarationStatement(CminParser.VariableDeclarationStatementContext ctx) {
-        InternalType type = (InternalType) visitTypeDeclarator(ctx.typeDeclarator());
-        // for now ignore type specifiers ('extern', 'static', etc)
-        // todo: set specifier to the 'type'
-        //for (CminParser.TypeSpecifierContext typeSpecifierContext : ctx.typeSpecifier()) {
-        //    CminKeyword typeSpecifier = (CminKeyword) visitTypeSpecifier(typeSpecifierContext);
-        //}
-
-        InternalVariableDeclarationListTemp declaratorList =
-                (InternalVariableDeclarationListTemp) visitVariableDeclaratorList(ctx.variableDeclaratorList());
-        declaratorList.setType(type);
-
-        InternalBlockStatement result = declaratorList.toBlockStatement();
-        return result;
+        return interior.visitVariableDeclarationStatement(ctx);
     }
 
     @Override
@@ -242,14 +205,17 @@ public class CminToInternalTransformer
     }
 
     @Override
-    public InternalEntity visitVariableDeclaratorList(CminParser.VariableDeclaratorListContext ctx) {
-        InternalVariableDeclarationListTemp declarationList;
+    public InternalEntity visitVariableInitialisationList(CminParser.VariableInitialisationListContext ctx) {
+        return visitVariableInitialisationListImpl(ctx);
+    }
 
-        CminParser.VariableDeclaratorListContext varDeclListCtx = ctx.variableDeclaratorList();
-        if (varDeclListCtx != null) {
-            declarationList = (InternalVariableDeclarationListTemp) visitVariableDeclaratorList(varDeclListCtx);
+    public InternalMultiVariableDeclarationBuilder visitVariableInitialisationListImpl(CminParser.VariableInitialisationListContext ctx) {
+        InternalMultiVariableDeclarationBuilder declarationBuilder;
+        CminParser.VariableInitialisationListContext initialisationListCtx = ctx.variableInitialisationList();
+        if (initialisationListCtx != null) {
+            declarationBuilder = visitVariableInitialisationListImpl(initialisationListCtx);
         } else {
-            declarationList = new InternalVariableDeclarationListTemp();
+            declarationBuilder = new InternalMultiVariableDeclarationBuilder();
         }
 
         InternalVariableDeclarationTemp declarator =
@@ -261,15 +227,15 @@ public class CminToInternalTransformer
 
     @Override
     public InternalEntity visitVariableDeclarator(CminParser.VariableDeclaratorContext ctx) {
-        CminIdentifier variableName = (CminIdentifier) visitVariableName(ctx.variableName());
-        assert variableName != null;
+        InternalVariableRef variable = (InternalVariableRef) visitVariableName(ctx.variableName());
+        assert variable != null;
 
         InternalExpression initializer = null;
         CminParser.VariableInitializerContext initializerContext = ctx.variableInitializer();
         if (initializerContext != null) {
             initializer = (InternalExpression) visitVariableInitializer(initializerContext);
         }
-        return new InternalVariableDeclarationTemp(variableName.getValue(), initializer);
+        return new InternalVariableDeclarationTemp(variable.name, initializer);
     }
 
     @Override
@@ -279,112 +245,22 @@ public class CminToInternalTransformer
 
     @Override
     public InternalEntity visitTypeDeclarator(CminParser.TypeDeclaratorContext ctx) {
-        CminParser.TypeDeclaratorContext typeDeclaratorContext = ctx.typeDeclarator();
-        if (typeDeclaratorContext != null) {
-            if (ctx.Asterisk() != null) {
-                // TODO: do not ignore pointers here!
-                //return visitTypeDeclarator(ctx.typeDeclarator());
-                throw new NotImplementedException();
-            }
-        }
-
-        InternalEntity primitiveTypeDeclarator = visitPrimitiveTypeDeclarator(ctx.primitiveTypeDeclarator());
-        if (primitiveTypeDeclarator != null) {
-            return primitiveTypeDeclarator;
-        }
-
-        // todo: atomicTypeDeclarator
-
-        return super.visitTypeDeclarator(ctx);
+        return interior.visitTypeDeclarator(ctx);
     }
 
     @Override
     public InternalEntity visitPrimitiveTypeDeclarator(CminParser.PrimitiveTypeDeclaratorContext ctx) {
-        if (ctx == null) {
-            return null;
-        }
-        CminPrimitiveTypeBuilder builder = new CminPrimitiveTypeBuilder();
-        for (CminParser.PrimitiveTypeKeywordContext typeKeywordContext : ctx.primitiveTypeKeyword()) {
-            CminKeyword typeKeyword = (CminKeyword) visitPrimitiveTypeKeyword(typeKeywordContext);
-            builder.addModifier(typeKeyword);
-
-            CminKeyword specifierKeyword = (CminKeyword) visitPrimitiveTypeSpecifier(ctx.primitiveTypeSpecifier());
-            if (specifierKeyword != null) {
-                builder.addModifier(specifierKeyword);
-            }
-        }
-        return builder.build();
+        return interior.visitPrimitiveTypeDeclarator(ctx);
     }
 
     @Override
     public InternalEntity visitPrimitiveTypeKeyword(CminParser.PrimitiveTypeKeywordContext ctx) {
-        if (ctx == null) {
-            throw new ParserException(ctx, "Cannot find expected primitive type keyword.");
-        }
-        int childCount = ctx.getChildCount();
-        assert childCount > 0 : childCount;
-        String keyword = ctx.getChild(0).getText(); // todo: get token bitness correctly, something like: `ctx.getToken(...)`
-
-        switch (keyword) {
-            case "short":
-                return CminKeyword.Short;
-            case "long":
-                return CminKeyword.Long;
-            case "long long":
-                return CminKeyword.LongLong;
-            // TODO: process some common custom types
-            //case "int8_t":
-            //    this.sizeModifier = CminPrimitiveType.SizeModifier.int8_t;
-            //    return true;
-            //case "int16_t":
-            //    this.sizeModifier = CminPrimitiveType.SizeModifier.int16_t;
-            //    return true;
-            //case "int32_t":
-            //    this.sizeModifier = CminPrimitiveType.SizeModifier.int32_t;
-            //    return true;
-            //case "int64_t":
-            //    this.sizeModifier = CminPrimitiveType.SizeModifier.int64_t;
-            //    return true;
-            case "int":
-                return CminKeyword.Int;
-            case "char":
-                return CminKeyword.Char;
-            case "float":
-                return CminKeyword.Float;
-            case "double":
-                return CminKeyword.Double;
-            default:
-                throw new ParserException(ctx, "Unexpected primitive type keyword: " + keyword);
-        }
+        return interior.visitPrimitiveTypeKeyword(ctx);
     }
 
     @Override
     public InternalEntity visitPrimitiveTypeSpecifier(CminParser.PrimitiveTypeSpecifierContext ctx) {
-        if (ctx == null) {
-            return null;
-        }
-        int childCount = ctx.getChildCount();
-        assert childCount > 0 : childCount;
-        String keyword = ctx.getChild(0).getText(); // todo: get token characters correctly, something like: `ctx.getToken(...)`
-
-        switch (keyword) {
-            case "signed":
-                return CminKeyword.Signed;
-            case "unsigned":
-                return CminKeyword.Unsigned;
-            default:
-                throw new ParserException(ctx, "Unexpected primitive type specifier: " + keyword);
-        }
-    }
-
-    @Override
-    public InternalEntity visitVariableName(CminParser.VariableNameContext ctx) {
-        int childCount = ctx.getChildCount();
-        assert childCount > 0 : childCount;
-        String identifier = ctx.getChild(0).getText(); // todo: get token characters correctly, something like: `ctx.getToken(...)`
-
-        //return new CminIdentifier(identifier);
-        return new InternalUntypedVariable(identifier);
+        return interior.visitPrimitiveTypeSpecifier(ctx);
     }
 
     @Override
@@ -459,19 +335,21 @@ public class CminToInternalTransformer
             CminParser.StatementContext statementCtx = statementsCtxList.get(0);
             return visit(statementCtx);
         }
-        InternalBlockStatementBuilder builder = new InternalBlockStatementBuilder();
+        InternalSequenceStatementBuilder builder = new InternalSequenceStatementBuilder();
         for (CminParser.StatementContext statementContext : statementsCtxList) {
             InternalStatement statement = (InternalStatement) visit(statementContext);
             builder.append(statement);
         }
-        return builder.build();
+        InternalSequenceStatement sequenceStatement = builder.build();
+
+        return sequenceStatement.toBlockStatement();
     }
 
     @Override
     public InternalEntity visitBranchingStatement(CminParser.BranchingStatementContext ctx) {
-        InternalExpression condition  = (InternalExpression) visit(ctx.condition());
-        InternalStatement trueBranch  = (InternalStatement)  visit(ctx.statement());
-        InternalStatement falseBranch = (InternalStatement)  visit(ctx.falseStatement());
+        InternalExpression condition = (InternalExpression) visit(ctx.condition());
+        InternalStatement trueBranch = (InternalStatement) visit(ctx.statement());
+        InternalStatement falseBranch = (InternalStatement) visit(ctx.falseStatement());
         return new InternalBranchingStatement(condition, trueBranch, falseBranch);
     }
 

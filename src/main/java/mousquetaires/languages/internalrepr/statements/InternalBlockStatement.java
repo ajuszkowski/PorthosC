@@ -1,16 +1,16 @@
 package mousquetaires.languages.internalrepr.statements;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.internalrepr.temporaries.InternalBlockStatementBuilder;
 
 import java.util.Objects;
 
 
 public class InternalBlockStatement extends InternalStatement {
+
     public final ImmutableList<InternalStatement> statements;
 
-    public InternalBlockStatement(InternalBlockStatementBuilder builder) {
-        this.statements = builder.getStatements();
+    public InternalBlockStatement(ImmutableList<InternalStatement> statements) {
+        this.statements = statements;
     }
 
     @Override

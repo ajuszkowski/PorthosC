@@ -2,14 +2,11 @@ package mousquetaires.tests.unit.languages.parsers.cmin;
 
 import mousquetaires.languages.internalrepr.InternalSyntaxTree;
 import mousquetaires.languages.internalrepr.expressions.InternalAssignmentExpression;
-import mousquetaires.languages.internalrepr.expressions.InternalBinaryExpression;
 import mousquetaires.languages.internalrepr.expressions.InternalConstant;
 import mousquetaires.languages.internalrepr.expressions.InternalEqualityExpression;
 import mousquetaires.languages.internalrepr.statements.InternalBranchingStatement;
 import mousquetaires.languages.internalrepr.statements.InternalLinearStatement;
-import mousquetaires.languages.internalrepr.types.InternalType;
 import mousquetaires.languages.internalrepr.variables.InternalUntypedVariable;
-import mousquetaires.languages.internalrepr.variables.InternalVariable;
 import mousquetaires.tests.unit.languages.parsers.AbstractParserUnitTest;
 import org.junit.Test;
 

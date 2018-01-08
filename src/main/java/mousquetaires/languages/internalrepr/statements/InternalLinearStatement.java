@@ -31,7 +31,6 @@ public class InternalLinearStatement extends InternalStatement {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(expression);
     }
 }

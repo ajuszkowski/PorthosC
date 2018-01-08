@@ -2,6 +2,7 @@ package mousquetaires.languages.internalrepr.expressions;
 
 import mousquetaires.languages.cmin.tokens.CminKeyword;
 import mousquetaires.languages.internalrepr.types.InternalType;
+import mousquetaires.utils.exceptions.ArgumentNullException;
 
 import java.util.Objects;
 
@@ -24,6 +25,23 @@ public class InternalConstant extends InternalExpression {
     //    return new HashSet<Register>();
     //}
 
+    public static InternalConstant tryParse(String text){
+        if (text == null) {
+            throw new ArgumentNullException("text");
+        }
+
+        // Integer:
+        try {
+            int value = Integer.parseInt(text);
+            return InternalConstant.newIntegerConstant(value);
+        } catch (NumberFormatException e) { }
+
+        // String (char array) :
+        // use StringBuilder
+
+        // TODO: try other known types.
+        return null;
+    }
 
     public static InternalConstant newIntegerConstant(int value) {
         return new InternalConstant(value, CminKeyword.convert(CminKeyword.Int));
@@ -36,7 +54,6 @@ public class InternalConstant extends InternalExpression {
     public static InternalConstant newCharConstant(char value) {
         return new InternalConstant(value, CminKeyword.convert(CminKeyword.Char));
     }
-
 
     @Override
     public String toString() {
