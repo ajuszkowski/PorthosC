@@ -1,4 +1,4 @@
-package mousquetaires.utils;
+package mousquetaires.utils.exceptions;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

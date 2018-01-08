@@ -1,12 +1,7 @@
 package mousquetaires.app.errors;
 
-import mousquetaires.utils.ExceptionUtils;
+import mousquetaires.utils.exceptions.ExceptionUtils;
 import mousquetaires.utils.StringUtils;
-
-import java.io.BufferedOutputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.PrintWriter;
 
 
 public abstract class AppError {
