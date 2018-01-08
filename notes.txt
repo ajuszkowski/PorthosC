@@ -9,5 +9,40 @@
 7. by week 15-19 the interpreter part should be ready, with tests!
 
 next meeting: mon 8.01 10:00
+questions:
+1) is C11 a subset of C++11?
+2) using llvm parser: still we convert c-subset code to llvm-subset, maybe it's more reasonable to use llvm directly?
+	+ very powerful -> highly scalable for future
+	+ problem of writing parser C to internal and internal to event -> parse C to llvm and llvm to event.
+	- very complicated code and C++. but much of it is already written.
+3) if not using llvm code, I want to try scala parser (same as grammar)
+4) TYPES: already primitives. structures, enums -- non-primitive types
+
+
+i try to stop myself when doing more than small c subset.
+i understand that we don't need the production-level code, it will still not working because of the exponent.
+	therefore i'm orienting to kernel-level compilicity of c language
+	plus, if we use llvm, we won't need the c parser at all
+i try to write the code so that i won't be ashamed for it in future.
+i try to write scalable code, but sometimes it's hard (i changed the grammar).
+
+
+
+== Meeting 8.01
+1. now - no optimisations in smt, adding them is non-trivial.
+2. what we'll need is to map asm level state to high level code
+3. not for me: research optimisations, 
+4. should be done: compilation from asm to smt (easy), hard part: comparison, how the registers correspond to locals/globals.
+5. if mapping from 3. exist, find a mapping from asm to c
+6. we are allowed to do minor simplifacations, but log it
+	gotos: add goto to AST 
+7. by default: integer theory. only integers and booleans (floats are very hard to encode), but as a parameter if user insists - use bitvectors. Check if SMT has float.  
+8. poniters, arrays and structs - later; Z3 has array theories. Firstly: pointer as array of size 1. then implement pointer arithmetic
+9. Pointers: we might need to do some alias analysis. But for now, we may do encoding by assuming that there's no aliases (no two pointers point to same memory).
+10. Find appropriate simple code excrepts of kernel.
+most of the problems - any symbolic exec tool faces. take a look at SAGE by microsft
+
+next meeting: Mon 15.01 13:00
+
 
 ==
