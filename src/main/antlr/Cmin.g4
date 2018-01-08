@@ -37,8 +37,12 @@ main
 
 primaryExpression
     :   variableName
-    |   Constant
-    |   StringLiteral+
+    |   constant
+    ;
+
+constant
+    :   Constant
+    |   StringLiteral
     ;
 
 postfixExpression
@@ -142,7 +146,7 @@ ternaryExpression   // todo: check this definition
     |   ternaryExpression '?' ternaryExpression ':' ternaryExpression
     ;
 
-constantExpression   // todo: check this definition
+caseExpression   // todo: check this definition
     :   ternaryExpression  // as one of the most general expression definitions. better 'expression' ?
     ;
 
@@ -165,7 +169,7 @@ assignmentOperator
     ;
 
 variableDeclarationStatement
-    :   typeSpecifier* typeDeclarator variableDeclaratorList ';'
+    :   typeSpecifier* typeDeclarator variableInitialisationList ';'
     ;
 
 typeSpecifier
@@ -173,14 +177,14 @@ typeSpecifier
     //|   variableTypeQualifier
     ;
 
-variableDeclaratorList
-    :   variableDeclarator
-    |   variableDeclaratorList ',' variableDeclarator
+variableInitialisationList
+    :   variableInitialisation
+    |   variableInitialisationList ',' variableInitialisation
     ;
 
-variableDeclarator
+variableInitialisation
     :   variableName
-    |   variableName '=' variableInitializer
+    |   variableName '=' rvalueExpression
     ;
 
 storageClassSpecifier
@@ -246,10 +250,6 @@ variableTypeSpecifierQualifierList
     //|   variableTypeQualifier variableTypeSpecifierQualifierList?
     ;
 
-variableInitializer
-    :   rvalueExpression
-    ;
-
 statement
     :   variableDeclarationStatement
     |   statementExpression
@@ -266,7 +266,7 @@ statementExpression
 
 labeledStatement
     :   Identifier ':' statement
-    |   Case constantExpression ':' statement
+    |   Case caseExpression ':' statement
     |   Default ':' statement
     ;
 
@@ -306,7 +306,7 @@ forCondition
 	;
 
 forDeclaration
-    :   typeDeclarator variableDeclaratorList
+    :   typeDeclarator variableInitialisationList
     ;
 
 // todo: restore old 'assignmentExpression' instead of 'expression' -- for faster parsing
@@ -649,9 +649,11 @@ fragment
 HexadecimalEscapeSequence
     :   '\\x' HexadecimalDigit+
     ;
+
 StringLiteral
     :   EncodingPrefix? '"' SCharSequence? '"'
     ;
+
 fragment
 EncodingPrefix
     :   'u8'

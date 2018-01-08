@@ -187,7 +187,7 @@ assignmentExpressionList
     ;
 
 variableDeclarationStatement
-    :   typeSpecifier* typeDeclarator variableDeclaratorList ';'
+    :   typeSpecifier* typeDeclarator variableInitialisationList ';'
     ;
 
 typeSpecifier
@@ -195,14 +195,14 @@ typeSpecifier
 //    |   variableTypeQualifier
     ;
 
-variableDeclaratorList
-    :   variableDeclarator
-    |   variableDeclaratorList ',' variableDeclarator
+variableInitialisationList
+    :   variableInitialisation
+    |   variableInitialisationList ',' variableInitialisation
     ;
 
-variableDeclarator
+variableInitialisation
     :   variableName
-    |   variableName '=' variableInitializer
+    |   variableName '=' rvalueExpression
     ;
 
 storageClassSpecifier
@@ -308,8 +308,8 @@ structElementDeclaratorList
     ;
 
 structElementDeclarator
-    :   variableDeclarator
-    |   variableDeclarator? ':' constantExpression  // bit fields
+    :   variableInitialisation
+    |   variableInitialisation? ':' constantExpression  // bit fields
     ;
 
 variableEnumTypeDeclarator
@@ -426,17 +426,17 @@ variableTypeSpecifierQualifierList
 //    ;
 
 
-variableInitializer
-    :   rvalueExpression
-    |   '{' initializerList ','? '}'
-    ;
-
-initializerList
-    //:   designation? variableInitializer
-    //|   initializerList ',' designation? variableInitializer
-    :   variableInitializer
-    |   initializerList ',' variableInitializer
-    ;
+//variableInitializer
+//    :   rvalueExpression
+//    |   '{' initializerList ','? '}'
+//    ;
+//
+//initializerList
+//    //:   designation? variableInitializer
+//    //|   initializerList ',' designation? variableInitializer
+//    :   variableInitializer
+//    |   initializerList ',' variableInitializer
+//    ;
 
 //designation
 //    :   designatorList '='
@@ -517,7 +517,7 @@ forCondition
 	;
 
 forDeclaration
-    :   typeDeclarator variableDeclaratorList
+    :   typeDeclarator variableInitialisationList
     ;
 
 forExpression
