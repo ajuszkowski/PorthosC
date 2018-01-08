@@ -1,9 +1,9 @@
 package mousquetaires.languages.eventrepr.memory;
 
-import mousquetaires.languages.internalrepr.InternalEntity;
+import mousquetaires.languages.ytree.YEntity;
 
 
-public abstract class MemoryLocation implements InternalEntity, Cloneable {
+public abstract class MemoryLocation implements YEntity, Cloneable {
 
     public enum Kind {
         Registry,

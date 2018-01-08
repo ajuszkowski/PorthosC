@@ -1,12 +1,12 @@
 package mousquetaires.tests.unit.languages.parsers.cmin;
 
-import mousquetaires.languages.internalrepr.InternalSyntaxTree;
-import mousquetaires.languages.internalrepr.expressions.InternalAssignmentExpression;
-import mousquetaires.languages.internalrepr.expressions.InternalConstant;
-import mousquetaires.languages.internalrepr.expressions.InternalEqualityExpression;
-import mousquetaires.languages.internalrepr.statements.InternalBranchingStatement;
-import mousquetaires.languages.internalrepr.statements.InternalLinearStatement;
-import mousquetaires.languages.internalrepr.variables.InternalUntypedVariable;
+import mousquetaires.languages.ytree.InternalSyntaxTree;
+import mousquetaires.languages.ytree.expressions.YAssignmentExpression;
+import mousquetaires.languages.ytree.expressions.YEqualityExpression;
+import mousquetaires.languages.ytree.expressions.YConstant;
+import mousquetaires.languages.ytree.expressions.lvalue.YVariableRef;
+import mousquetaires.languages.ytree.statements.YBranchingStatement;
+import mousquetaires.languages.ytree.statements.YLinearStatement;
 import mousquetaires.tests.unit.languages.parsers.AbstractParserUnitTest;
 import org.junit.Test;
 
@@ -38,21 +38,21 @@ public class CminParserTest extends AbstractParserUnitTest {
 
     @Test
     public void test_branchingStatement() {
-        InternalBranchingStatement expected = new InternalBranchingStatement(
-                new InternalEqualityExpression(
-                        new InternalUntypedVariable("x"),
-                        InternalConstant.newIntegerConstant(1)),
-                new InternalLinearStatement(
-                        new InternalAssignmentExpression(
-                                new InternalUntypedVariable("y"),
-                                InternalConstant.newIntegerConstant(2))),
-                new InternalLinearStatement(
-                        new InternalAssignmentExpression(
-                                new InternalUntypedVariable("y"),
-                                InternalConstant.newIntegerConstant(3))));
+        YBranchingStatement expected = new YBranchingStatement(
+                new YEqualityExpression(
+                        new YVariableRef("x"),
+                        YConstant.newIntegerConstant(1)),
+                new YLinearStatement(
+                        new YAssignmentExpression(
+                                new YVariableRef("y"),
+                                YConstant.newIntegerConstant(2))),
+                new YLinearStatement(
+                        new YAssignmentExpression(
+                                new YVariableRef("y"),
+                                YConstant.newIntegerConstant(3))));
         InternalSyntaxTree internalRepr = runTest(structuresDirectory + "branchingStatement.c");
         assertEquals(1, internalRepr.getRoots().size());
-        InternalBranchingStatement actualStatement = (InternalBranchingStatement) internalRepr.getRoots().get(0);
+        YBranchingStatement actualStatement = (YBranchingStatement) internalRepr.getRoots().get(0);
         assertEquals(expected, actualStatement);
     }
 }

@@ -1,10 +1,10 @@
 //package mousquetaires.languages.cmin.tokens;
 //
 //
-//import mousquetaires.languages.internalrepr.InternalEntity;
+//import mousquetaires.languages.internalrepr.YEntity;
 //
 //
-//public class CminAssignmentOperator implements InternalEntity {
+//public class CminAssignmentOperator implements YEntity {
 //
 //    public enum Kind {
 //        // '=' | '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '&=' | '^=' | '|='

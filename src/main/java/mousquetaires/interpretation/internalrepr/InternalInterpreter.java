@@ -1,7 +1,6 @@
 package mousquetaires.interpretation.internalrepr;
 
 import mousquetaires.languages.ProgramLanguage;
-import mousquetaires.languages.internalrepr.InternalEntity;
 
 
 public class InternalInterpreter {
@@ -12,5 +11,5 @@ public class InternalInterpreter {
         this.typeManager = new TypeManager(language);
     }
 
-    //public InternalEntity createMethodInvocation()
+    //public YEntity createMethodInvocation()
 }

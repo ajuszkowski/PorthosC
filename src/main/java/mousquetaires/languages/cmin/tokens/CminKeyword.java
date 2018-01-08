@@ -1,18 +1,18 @@
 package mousquetaires.languages.cmin.tokens;
 
-import mousquetaires.languages.internalrepr.InternalEntity;
-import mousquetaires.languages.internalrepr.types.InternalType;
+import mousquetaires.languages.ytree.YEntity;
+import mousquetaires.languages.ytree.types.InternalType;
 
 import java.util.EnumMap;
 import java.util.Map;
 
 
 /**
- * Note, this class implements InternalEntity, although it does not belongs to the type system of Internal language.
+ * Note, this class implements YEntity, although it does not belongs to the type system of Internal language.
  * This is done in order to simplify parsing types in CminToInternalTransformer visitor, where this Cmin-type will be
  * converted to Internal-type on the last stage, when the assignee identifier is determined.
  */
-public enum CminKeyword implements InternalEntity {
+public enum CminKeyword implements YEntity {
     // typeSpecifier:
     Signed,
     Unsigned,

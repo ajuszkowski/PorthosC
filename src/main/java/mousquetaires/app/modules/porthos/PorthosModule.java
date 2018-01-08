@@ -6,7 +6,7 @@ import mousquetaires.app.errors.UnrecognisedError;
 import mousquetaires.app.modules.AppModule;
 import mousquetaires.languages.eventrepr.Programme;
 import mousquetaires.languages.eventrepr.ProgrammeConverter;
-import mousquetaires.languages.internalrepr.InternalSyntaxTree;
+import mousquetaires.languages.ytree.InternalSyntaxTree;
 import mousquetaires.languages.parsers.InternalLanguageParser;
 
 import java.io.IOException;

@@ -4,7 +4,7 @@ import mousquetaires.app.errors.*;
 import mousquetaires.app.modules.AppModule;
 import mousquetaires.languages.eventrepr.Programme;
 import mousquetaires.languages.eventrepr.ProgrammeConverter;
-import mousquetaires.languages.internalrepr.InternalSyntaxTree;
+import mousquetaires.languages.ytree.InternalSyntaxTree;
 import mousquetaires.languages.parsers.InternalLanguageParser;
 import mousquetaires.memorymodels.old.MemoryModel;
 import mousquetaires.memorymodels.old.MemoryModelFactory;

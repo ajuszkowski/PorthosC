@@ -1,6 +1,6 @@
 package mousquetaires.languages.eventrepr;
 
-import mousquetaires.languages.internalrepr.InternalSyntaxTree;
+import mousquetaires.languages.ytree.InternalSyntaxTree;
 
 
 public class ProgrammeConverter {
