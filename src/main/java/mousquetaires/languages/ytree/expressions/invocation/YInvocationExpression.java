@@ -7,10 +7,10 @@ import mousquetaires.languages.ytree.signatures.MethodSignature;
 public class YInvocationExpression extends YExpression {
 
     public final MethodSignature signature;
-    public final MethodArgument[] arguments;
+    public final YMethodArgument[] arguments;
 
     public YInvocationExpression(MethodSignature signature,
-                                 MethodArgument[] arguments) {
+                                 YMethodArgument[] arguments) {
         this.signature = signature;
         this.arguments = arguments;
     }

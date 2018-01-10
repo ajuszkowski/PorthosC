@@ -2,9 +2,8 @@ package mousquetaires.languages.ytree.expressions;
 
 public class YEqualityExpression extends YBinaryExpression {
 
-    public YEqualityExpression(YExpression leftExpression,
-                               YExpression rightExpression) {
-        super(OperatorKind.Equals, leftExpression, rightExpression);
+    public YEqualityExpression(YExpression leftExpression, YExpression rightExpression) {
+        super(leftExpression, rightExpression, Operator.Equals);
     }
 
 

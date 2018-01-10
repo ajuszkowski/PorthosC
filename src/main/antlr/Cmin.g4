@@ -66,14 +66,7 @@ unaryOrNullaryExpression
     ;
 
 unaryOperator
-    :   And
-    |   Asterisk
-    |   Plus
-    |   Minus
-    |   Tilde
-    |   Not
-    |   PlusPlus
-    |   MinusMinus
+    :   (And|Asterisk|Plus|Minus|Tilde|Not|PlusPlus|MinusMinus)
     ;
 
 binaryOrTernaryExpression
@@ -95,19 +88,20 @@ multiplicativeExpression
     |   multiplicativeExpression (Asterisk | Div | Mod) unaryOrNullaryExpression
     ;
 
+
 additiveExpression
     :   multiplicativeExpression
-    |   additiveExpression AdditiveOperator multiplicativeExpression
+    |   additiveExpression (Plus | Minus) multiplicativeExpression
     ;
 
 shiftExpression
     :   additiveExpression
-    |   shiftExpression ShiftOperator additiveExpression
+    |   shiftExpression (LeftShift | RightShift) additiveExpression
     ;
 
 relationalExpression
     :   shiftExpression
-    |   relationalExpression RelationalOperator shiftExpression
+    |   relationalExpression (Less | LessEqual | Greater | GreaterEqual) shiftExpression
     ;
 
 equalityExpression
@@ -146,7 +140,7 @@ ternaryExpression   // todo: check this definition
     :   logicalOrExpression (Question expression Colon ternaryExpression)?
     ;
 
-caseExpression   // todo: check this definition
+constantExpression   // todo: check this definition
     :   ternaryExpression  // as one of the most general expression definitions. better 'expression' ?
     ;
 
@@ -161,15 +155,15 @@ rvalueExpression
 // todo: check syntax 'a = b = c = 3;'
 assignmentExpression
     :   rvalueExpression
-    |   lvalueExpression assignmentOperator assignmentExpression //todo: better 'expression' instead of constantExpression ?
+    |   lvalueExpression assignmentOperator assignmentExpression
     // ternaryExpression as one of the most general expression definitions. better 'expression' ?
     ;
 
 assignmentOperator
     :   Assign
-    |   AsteriskAssign
-    |   DivAssign
-    |   ModAssign
+    |   MultiplyAssign
+    |   DivideAssign
+    |   ModuloAssign
     |   PlusAssign
     |   MinusAssign
     |   LeftShiftAssign
@@ -234,7 +228,7 @@ storageClassSpecifier
 
 
 primitiveTypeDeclarator
-    :   primitiveTypeSpecifier? primitiveTypeKeyword+
+    :   primitiveTypeSpecifier? primitiveTypeKeyword
     ;
 
 primitiveTypeSpecifier
@@ -245,12 +239,14 @@ primitiveTypeSpecifier
 primitiveTypeKeyword
     :   Void
     |   Char
-    |   Short
+    |   Short Int?
+    |   Short Short Int?
     |   Int
     |   Long
-    |   Long Long
+    |   Long Long Int?
     |   Float
     |   Double
+    |   Long Double
     |   Bool
     |   Auto
     //|   Complex
@@ -270,7 +266,7 @@ variableTypeSpecifierQualifierList
 
 statement
     :   variableDeclarationStatement
-    |   statementExpression
+    |   expressionStatement
     |   labeledStatement
     |   blockStatement
     |   branchingStatement
@@ -278,13 +274,13 @@ statement
     |   jumpStatement
     ;
 
-statementExpression
+expressionStatement
     :   expression? ';'
     ;
 
 labeledStatement
     :   Identifier ':' statement
-    |   Case caseExpression ':' statement
+    |   Case constantExpression ':' statement
     |   Default ':' statement
     ;
 
@@ -410,11 +406,9 @@ Less : '<';
 LessEqual : '<=';
 Greater : '>';
 GreaterEqual : '>=';
-RelationalOperator : Less | LessEqual | Greater | GreaterEqual;
 
 LeftShift : '<<';
 RightShift : '>>';
-ShiftOperator : LeftShift | RightShift;
 
 Asterisk : '*';
 
@@ -423,7 +417,6 @@ MinusMinus : '--';
 
 Plus : '+';
 Minus : '-';
-AdditiveOperator : Plus | Minus;
 
 Div : '/';
 Mod : '%';
@@ -432,7 +425,7 @@ And : '&';
 Or : '|';
 AndAnd : '&&';
 OrOr : '||';
-Caret : '^';
+Xor : '^';
 Not : '!';
 Tilde : '~';
 
@@ -442,9 +435,9 @@ Semicolon : ';';
 Comma : ',';
 
 Assign : '=';
-AsteriskAssign : '*=';
-DivAssign : '/=';
-ModAssign : '%=';
+MultiplyAssign : '*=';
+DivideAssign : '/=';
+ModuloAssign : '%=';
 PlusAssign : '+=';
 MinusAssign : '-=';
 LeftShiftAssign : '<<=';

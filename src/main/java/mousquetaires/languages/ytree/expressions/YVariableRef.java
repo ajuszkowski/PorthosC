@@ -1,9 +1,9 @@
-package mousquetaires.languages.ytree.expressions.lvalue;
+package mousquetaires.languages.ytree.expressions;
 
 import java.util.Objects;
 
 
-public class YVariableRef extends YLvalueExpression {
+public class YVariableRef extends YExpression {
 
     // TODO: add kind
     public enum Kind {

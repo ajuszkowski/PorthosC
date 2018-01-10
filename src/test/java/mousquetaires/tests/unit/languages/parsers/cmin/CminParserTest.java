@@ -4,7 +4,8 @@ import mousquetaires.languages.ytree.YSyntaxTree;
 import mousquetaires.languages.ytree.expressions.YAssignmentExpression;
 import mousquetaires.languages.ytree.expressions.YEqualityExpression;
 import mousquetaires.languages.ytree.expressions.YConstant;
-import mousquetaires.languages.ytree.expressions.lvalue.YVariableRef;
+import mousquetaires.languages.ytree.expressions.YVariableRef;
+import mousquetaires.languages.ytree.statements.YBlockStatement;
 import mousquetaires.languages.ytree.statements.YBranchingStatement;
 import mousquetaires.languages.ytree.statements.YLinearStatement;
 import mousquetaires.tests.unit.languages.parsers.AbstractParserUnitTest;
@@ -42,14 +43,16 @@ public class CminParserTest extends AbstractParserUnitTest {
                 new YEqualityExpression(
                         new YVariableRef("x"),
                         YConstant.newIntegerConstant(1)),
-                new YLinearStatement(
-                        new YAssignmentExpression(
+                new YBlockStatement(
+                        new YLinearStatement(
+                                new YAssignmentExpression(
+                                        new YVariableRef("y"),
+                                        YConstant.newIntegerConstant(2)))),
+                new YBlockStatement(
+                        new YLinearStatement(
+                            new YAssignmentExpression(
                                 new YVariableRef("y"),
-                                YConstant.newIntegerConstant(2))),
-                new YLinearStatement(
-                        new YAssignmentExpression(
-                                new YVariableRef("y"),
-                                YConstant.newIntegerConstant(3))));
+                                YConstant.newIntegerConstant(3)))));
         YSyntaxTree internalRepr = runTest(structuresDirectory + "branchingStatement.c");
         assertEquals(1, internalRepr.getRoots().size());
         YBranchingStatement actualStatement = (YBranchingStatement) internalRepr.getRoots().get(0);

@@ -9,17 +9,22 @@ public class YBlockStatement extends YStatement {
 
     public final ImmutableList<YStatement> statements;
 
+    public YBlockStatement(YStatement... statements) {
+        this.statements = ImmutableList.copyOf(statements);
+    }
+
     public YBlockStatement(ImmutableList<YStatement> statements) {
         this.statements = statements;
     }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder sb = new StringBuilder("{ ");
         for (YStatement statement : statements) {
-            builder.append(statement.toString()).append("; ");
+            sb.append(statement.toString());
         }
-        return builder.toString();
+        sb.append(" }");
+        return sb.toString();
     }
 
     @Override
@@ -32,7 +37,6 @@ public class YBlockStatement extends YStatement {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(statements);
     }
 }

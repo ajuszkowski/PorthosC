@@ -1,4 +1,4 @@
-package mousquetaires.languages.ytree.expressions.lvalue;
+package mousquetaires.languages.ytree.expressions;
 
 public class YMemberAccess extends YVariableRef {
 

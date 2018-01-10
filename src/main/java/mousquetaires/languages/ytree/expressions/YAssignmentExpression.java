@@ -1,25 +1,39 @@
 package mousquetaires.languages.ytree.expressions;
 
 
-import mousquetaires.languages.ytree.expressions.lvalue.YLvalueExpression;
-import mousquetaires.languages.ytree.expressions.lvalue.YVariableRef;
+import mousquetaires.languages.ytree.YEntity;
 
 import java.util.Objects;
 
 
 public class YAssignmentExpression extends YExpression {
-
-    // TODO: Add fences / atomic/ ...
-    public final YLvalueExpression assignee;
-    public final YExpression expression;
-
-    public YAssignmentExpression(YLvalueExpression assignee, YExpression expression) {
-        this.assignee = assignee;
-        this.expression = expression;
+    public enum Operator implements YEntity {
+        Assign,           // '='
+        MultiplyAssign,   // '*='
+        DivideAssign,     // '/='
+        ModuloAssign,     // '%='
+        PlusAssign,       // '+='
+        MinusAssign,      // '-='
+        LeftShiftAssign,  // '<<='
+        RightShiftAssign, // '>>='
+        AndAssign,        // '&='
+        OrAssign,         // '|='
+        XorAssign,        // '^='
     }
 
-    public YAssignmentExpression withNewAssignee(YVariableRef newAssignee) {
-        return new YAssignmentExpression(newAssignee, expression);
+    // TODO: Add fences / atomic/ ...
+    public final YExpression assignee;
+    public final Operator operator;
+    public final YExpression expression;
+
+    public YAssignmentExpression(YExpression assignee, YExpression expression) {
+        this(Operator.Assign, assignee, expression);
+    }
+
+    public YAssignmentExpression(Operator operator, YExpression assignee, YExpression expression) {
+        this.operator = operator;
+        this.assignee = assignee;
+        this.expression = expression;
     }
 
     @Override
@@ -38,7 +52,6 @@ public class YAssignmentExpression extends YExpression {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(assignee, expression);
     }
 }

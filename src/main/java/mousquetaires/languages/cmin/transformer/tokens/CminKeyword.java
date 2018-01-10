@@ -54,7 +54,7 @@ public enum CminKeyword implements YEntity {
         put(Bool,       YType.i1);
         put(Char,       YType.i8);
         put(Short,      YType.i16);
-        put(Int,        YType.i16); // todo: set with respect to data model, sometimes int is 32-bit
+        put(Int,        YType.i16); // todo: set with respect to data model, often int is 32-bit!
         put(Long,       YType.i32);
         put(LongLong,   YType.i64);
         put(Float,      YType.i32);

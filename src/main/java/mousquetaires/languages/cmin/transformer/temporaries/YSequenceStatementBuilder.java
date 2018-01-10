@@ -1,4 +1,4 @@
-package mousquetaires.languages.ytree.temporaries;
+package mousquetaires.languages.cmin.transformer.temporaries;
 
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.ytree.YEntity;
@@ -21,7 +21,7 @@ public class YSequenceStatementBuilder
         return new YSequenceStatement(this);
     }
 
-    public void append(YStatement statement) {
+    public void add(YStatement statement) {
         statements.add(statement);
     }
 

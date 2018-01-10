@@ -4,5 +4,4 @@ import mousquetaires.languages.ytree.YEntity;
 
 
 public abstract class YStatement implements YEntity {
-
 }

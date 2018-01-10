@@ -71,7 +71,6 @@ public class YConstant extends YExpression {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(value, type);
     }
 }

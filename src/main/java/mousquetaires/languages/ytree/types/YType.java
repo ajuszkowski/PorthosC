@@ -25,6 +25,10 @@ public class YType implements YEntity {
         this(bitness, false, 0);
     }
 
+    public YType(int bitness, boolean signed) {
+        this(bitness, signed, 0);
+    }
+
     public YType(int bitness, boolean signed, int pointerLevel) {
         this.bitness = bitness;
         this.signed = signed;

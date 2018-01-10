@@ -36,7 +36,6 @@ public class YLoopStatement extends YStatement {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(condition, body);
     }
 }

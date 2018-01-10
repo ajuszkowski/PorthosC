@@ -4,20 +4,56 @@ import java.util.Objects;
 
 
 public class YBinaryExpression extends YExpression {
-    public enum OperatorKind {
-        Plus,
-        Minus,
-        Multiply,
+    public enum Operator {
+        // int operators:
+        IntPlus,
+        IntMinus,
+        IntMultiply,
+        IntDivide,
+        IntModulo,
+        IntLeftShift,
+        IntRightShift,
+        // bit operators:
+        BitAnd,
+        BitOr,
+        BitXor,
+        // equalities:
         Equals,
+        Less,
+        LessOrEquals,
+        Greater,
+        GreaterOrEquals,
+        ;
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case IntPlus:         return "+";
+                case IntMinus:        return "-";
+                case IntMultiply:     return "*";
+                case IntDivide:       return "/";
+                case IntModulo:       return "%";
+                case IntLeftShift:    return "<<";
+                case IntRightShift:   return ">>";
+                case BitAnd:          return "&";
+                case BitOr:           return "|";
+                case BitXor:          return "^";
+                case Equals:          return "==";
+                case Less:            return "<";
+                case LessOrEquals:    return "<=";
+                case Greater:         return ">";
+                case GreaterOrEquals: return ">=";
+                default:
+                    throw new IllegalArgumentException(this.name());
+            }
+        }
     }
 
     private YExpression leftExpression;
     private YExpression rightExpression;
-    private OperatorKind operator;
+    private Operator operator;
 
-    public YBinaryExpression(OperatorKind operator,
-                             YExpression leftExpression,
-                             YExpression rightExpression) {
+    public YBinaryExpression(YExpression leftExpression, YExpression rightExpression, Operator operator) {
         this.leftExpression = leftExpression;
         this.rightExpression = rightExpression;
         this.operator = operator;
@@ -82,24 +118,7 @@ public class YBinaryExpression extends YExpression {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer();
-        sb.append(leftExpression).append(" ");
-        switch (operator) {
-            case Plus:
-                sb.append("+");
-                break;
-            case Minus:
-                sb.append("-");
-                break;
-            case Multiply:
-                sb.append("*");
-                break;
-            case Equals:
-                sb.append("==");
-                break;
-        }
-        sb.append(" ").append(rightExpression);
-        return sb.toString();
+        return leftExpression + " " + operator.toString() + " " + rightExpression;
     }
 
     @Override
@@ -114,7 +133,6 @@ public class YBinaryExpression extends YExpression {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(leftExpression, rightExpression, operator);
     }
 }

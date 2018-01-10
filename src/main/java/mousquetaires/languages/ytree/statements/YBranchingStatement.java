@@ -30,7 +30,7 @@ public class YBranchingStatement extends YStatement {
 
     @Override
     public String toString() {
-        return String.format("if (%s) { %s } else { %s }", condition, trueBranch, falseBranch);
+        return String.format("if (%s) %s else %s", condition, trueBranch, falseBranch);
     }
 
     @Override
