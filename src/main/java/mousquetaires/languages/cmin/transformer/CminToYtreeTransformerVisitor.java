@@ -1,7 +1,7 @@
 package mousquetaires.languages.cmin.transformer;
 
 import mousquetaires.interpretation.internalrepr.exceptions.ParserException;
-import mousquetaires.languages.cmin.transformer.temporaries.YSequenceStatementBuilder;
+import mousquetaires.languages.cmin.transformer.temporaries.YBlockStatementBuilder;
 import mousquetaires.languages.cmin.transformer.temporaries.YVariableInitialiser;
 import mousquetaires.languages.cmin.transformer.temporaries.YVariableInitialiserList;
 import mousquetaires.languages.cmin.transformer.tokens.CminKeyword;
@@ -74,7 +74,7 @@ class CminToYtreeTransformerVisitor
             return null;
         }
         String name = ctx.Identifier().getText(); // todo: get token name correctly
-        return new YVariableRef(name);
+        return YVariableRef.create(name);
     }
 
     /**
@@ -397,7 +397,7 @@ class CminToYtreeTransformerVisitor
             YAssignmentExpression.Operator assignmentOperator = visitAssignmentOperator(assignmentOperatorCtx);
             YExpression leftExpression = visitLvalueExpression(ctx.lvalueExpression());
             YExpression rightExpression = visitAssignmentExpression(ctx.assignmentExpression());
-            return new YAssignmentExpression(assignmentOperator, leftExpression, rightExpression);
+            return new YAssignmentExpression(leftExpression, rightExpression, assignmentOperator);
         }
         return visitRvalueExpression(ctx.rvalueExpression());
     }
@@ -677,10 +677,11 @@ class CminToYtreeTransformerVisitor
      * :   typeDeclaration variableInitialisationList ';'
      * ;
      */
-    public YSequenceStatement visitVariableDeclarationStatement(CminParser.VariableDeclarationStatementContext ctx) {
+    public YBlockStatement visitVariableDeclarationStatement(CminParser.VariableDeclarationStatementContext ctx) {
         YType type = visitTypeDeclaration(ctx.typeDeclaration());
+
         YVariableInitialiserList initialisationList = visitVariableInitialisationList(ctx.variableInitialisationList());
-        YSequenceStatementBuilder builder = new YSequenceStatementBuilder();
+        YBlockStatementBuilder builder = new YBlockStatementBuilder();
         for (YVariableInitialiser initialiser : initialisationList) {
             YVariableRef variable = initialiser.variable;
             YExpression initExpression = initialiser.initExpression;
@@ -719,7 +720,7 @@ class CminToYtreeTransformerVisitor
         CminParser.VariableInitialisationListContext recursiveListCtx = ctx.variableInitialisationList();
         if (recursiveListCtx != null) {
             YVariableInitialiserList recursiveList = visitVariableInitialisationList(recursiveListCtx);
-            builder.addAll(recursiveList.values);
+            builder.addAll(recursiveList);
         }
         return builder;
     }
@@ -780,12 +781,12 @@ class CminToYtreeTransformerVisitor
      * ;
      */
     public YBlockStatement visitBlockStatement(CminParser.BlockStatementContext ctx) {
-        YSequenceStatementBuilder builder = new YSequenceStatementBuilder();
+        YBlockStatementBuilder builder = new YBlockStatementBuilder(true);
         for (CminParser.StatementContext statementContext : ctx.statement()) {
             YStatement statement = visitStatement(statementContext);
             builder.add(statement);
         }
-        return builder.build().toBlockStatement();
+        return builder.build();
     }
 
     /**
@@ -904,7 +905,7 @@ class CminToYtreeTransformerVisitor
      * |   Return expression? ';'
      * ;
      */
-    public YSequenceStatement visitJumpStatement(CminParser.JumpStatementContext ctx) {
+    public YStatement visitJumpStatement(CminParser.JumpStatementContext ctx) {
         throw new IllegalStateException();
     }
 }

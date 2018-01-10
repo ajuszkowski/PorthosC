@@ -17,4 +17,9 @@ public class YVariableInitialiser implements YEntity {
     public boolean hasInitExpression() {
         return initExpression != null;
     }
+
+    @Override
+    public String toString() {
+        return variable + " = " + initExpression;
+    }
 }

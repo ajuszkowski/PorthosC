@@ -33,7 +33,7 @@ public class YConstant extends YExpression {
         // Integer:
         try {
             int value = Integer.parseInt(text);
-            return YConstant.newIntegerConstant(value);
+            return YConstant.createInteger(value);
         } catch (NumberFormatException e) { }
 
         // String (char array) :
@@ -43,7 +43,7 @@ public class YConstant extends YExpression {
         return null;
     }
 
-    public static YConstant newIntegerConstant(int value) {
+    public static YConstant createInteger(int value) {
         return new YConstant(value, CminKeyword.convert(CminKeyword.Int));
     }
 

@@ -27,10 +27,10 @@ public class YAssignmentExpression extends YExpression {
     public final YExpression expression;
 
     public YAssignmentExpression(YExpression assignee, YExpression expression) {
-        this(Operator.Assign, assignee, expression);
+        this(assignee, expression, Operator.Assign);
     }
 
-    public YAssignmentExpression(Operator operator, YExpression assignee, YExpression expression) {
+    public YAssignmentExpression(YExpression assignee, YExpression expression, Operator operator) {
         this.operator = operator;
         this.assignee = assignee;
         this.expression = expression;

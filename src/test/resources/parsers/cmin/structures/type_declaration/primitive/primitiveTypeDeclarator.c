@@ -1,7 +1,3 @@
-int X, Y = 1;
-int a = 1, c = 3;
-int a = 1, b, c = 3;
-
 int x;
 int * x;
 int ** x;
@@ -29,8 +25,8 @@ volatile int* x;
 restrict int x;
 restrict int* x;
 
-void* x;
 
+void* x;
 auto x = 1;
 
 int x = 1;

@@ -14,8 +14,12 @@ public class YVariableRef extends YExpression {
     public final Kind kind = Kind.Local;
     public final String name;
 
-    public YVariableRef(String name) {
+    protected YVariableRef(String name) {
         this.name = name;
+    }
+
+    public static YVariableRef create(String name) {
+        return new YVariableRef(name);
     }
 
     private static int tempVariableCount = 1;

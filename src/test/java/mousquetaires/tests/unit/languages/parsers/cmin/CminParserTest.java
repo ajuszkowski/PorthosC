@@ -14,26 +14,21 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 
-public class CminParserTest extends AbstractParserUnitTest {
+public abstract class CminParserTest extends AbstractParserUnitTest {
 
-    private final String rootDirectory = parsersDirectory + "cmin/";
-    private final String structuresDirectory = rootDirectory + "structures/";
+    protected final String rootDirectory = parsersDirectory + "cmin/";
+    protected final String structuresDirectory = rootDirectory + "structures/";
 
-    @Test
-    public void test_typedef() {
-        YSyntaxTree internalRepr = runTest(structuresDirectory + "typedef.c");
-        //assertEquals(programme)
-    }
 
     @Test
     public void test_variableDeclarationStatement() {
-        YSyntaxTree internalRepr = runTest(structuresDirectory + "variableDeclarationStatement.c");
+        YSyntaxTree parsed = runTest(structuresDirectory + "variableDeclarationStatement.c");
         //assertEquals(programme)
     }
 
     @Test
     public void test_postfixExpression_call() {
-        YSyntaxTree internalRepr = runTest(structuresDirectory + "postfixExpression_call.c");
+        YSyntaxTree parsed = runTest(structuresDirectory + "postfixExpression_call.c");
         //assertEquals(programme)
     }
 
@@ -41,21 +36,21 @@ public class CminParserTest extends AbstractParserUnitTest {
     public void test_branchingStatement() {
         YBranchingStatement expected = new YBranchingStatement(
                 new YEqualityExpression(
-                        new YVariableRef("x"),
-                        YConstant.newIntegerConstant(1)),
+                        YVariableRef.create("x"),
+                        YConstant.createInteger(1)),
                 new YBlockStatement(
                         new YLinearStatement(
                                 new YAssignmentExpression(
-                                        new YVariableRef("y"),
-                                        YConstant.newIntegerConstant(2)))),
+                                        YVariableRef.create("y"),
+                                        YConstant.createInteger(2)))),
                 new YBlockStatement(
                         new YLinearStatement(
                             new YAssignmentExpression(
-                                new YVariableRef("y"),
-                                YConstant.newIntegerConstant(3)))));
-        YSyntaxTree internalRepr = runTest(structuresDirectory + "branchingStatement.c");
-        assertEquals(1, internalRepr.getRoots().size());
-        YBranchingStatement actualStatement = (YBranchingStatement) internalRepr.getRoots().get(0);
+                                YVariableRef.create("y"),
+                                YConstant.createInteger(3)))));
+        YSyntaxTree parsed = runTest(structuresDirectory + "branchingStatement.c");
+        assertEquals(1, parsed.getRoots().size());
+        YBranchingStatement actualStatement = (YBranchingStatement) parsed.getRoots().get(0);
         assertEquals(expected, actualStatement);
     }
 }

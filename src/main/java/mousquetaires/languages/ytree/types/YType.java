@@ -1,5 +1,6 @@
 package mousquetaires.languages.ytree.types;
 
+import mousquetaires.languages.cmin.transformer.tokens.CminKeyword;
 import mousquetaires.languages.ytree.YEntity;
 
 import java.util.Objects;
@@ -16,6 +17,11 @@ public class YType implements YEntity {
     public static YType i16 = new YType(16);
     public static YType i32 = new YType(32);
     public static YType i64 = new YType(64);
+
+    // TODO: bad design, operate 'int' and 'long' on Y-level as well (parametrised by bitness)
+    public static YType getIntType() {
+        return CminKeyword.convert(CminKeyword.Int);
+    }
 
     public final int bitness;
     public final boolean signed;

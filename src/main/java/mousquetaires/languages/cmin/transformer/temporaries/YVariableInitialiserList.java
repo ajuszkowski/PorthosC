@@ -2,26 +2,34 @@ package mousquetaires.languages.cmin.transformer.temporaries;
 
 import mousquetaires.languages.ytree.YEntity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 
 public class YVariableInitialiserList implements YEntity, Iterable<YVariableInitialiser> { //Iterable<YVariableInitialiser> {
-    public final List<YVariableInitialiser> values = new ArrayList<>();
+    private final List<YVariableInitialiser> values = new ArrayList<>();
 
-    //public void add(YVariableRef variable, YExpression initialisation)
     public void add(YVariableInitialiser initialiser) {
         values.add(initialiser);
     }
 
-    public void addAll(Collection<YVariableInitialiser> initialiserList) {
-        values.addAll(initialiserList);
+    public void addAll(YVariableInitialiserList initialiserList) {
+        values.addAll(initialiserList.values);
     }
 
     @Override
     public Iterator<YVariableInitialiser> iterator() {
-        return values.iterator();
+        return new Iterator<>() {
+            private int currentIndex = values.size() - 1;
+
+            @Override
+            public boolean hasNext() {
+                return currentIndex >= 0;
+            }
+
+            @Override
+            public YVariableInitialiser next() {
+                return values.get(currentIndex--);
+            }
+        };
     }
 }

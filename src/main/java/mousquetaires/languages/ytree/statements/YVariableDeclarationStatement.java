@@ -17,6 +17,11 @@ public class YVariableDeclarationStatement extends YStatement {
     }
 
     @Override
+    public String toString() {
+        return String.format("declare(%s:%s);", type, variable);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof YVariableDeclarationStatement)) return false;
