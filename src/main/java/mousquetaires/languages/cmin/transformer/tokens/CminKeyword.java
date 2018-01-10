@@ -1,7 +1,7 @@
-package mousquetaires.languages.cmin.tokens;
+package mousquetaires.languages.cmin.transformer.tokens;
 
 import mousquetaires.languages.ytree.YEntity;
-import mousquetaires.languages.ytree.types.InternalType;
+import mousquetaires.languages.ytree.types.YType;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -37,7 +37,7 @@ public enum CminKeyword implements YEntity {
 
     /**
      * https://stackoverflow.com/a/697531
-     * InternalType:      C99 Minimum:
+     * YType:      C99 Minimum:
      * char       8
      * short      16
      * int        16 (however it's always 32)
@@ -48,26 +48,26 @@ public enum CminKeyword implements YEntity {
      * long double 80 (64)
      * see possible set of modifiers: https://en.wikipedia.org/wiki/C_data_types
      */
-    private final static Map<CminKeyword, InternalType> bitnessMap =
-            new EnumMap<CminKeyword, InternalType>(CminKeyword.class) {{
-        put(Void,       InternalType.i0); // todo: set with respect to target machine bitness
-        put(Bool,       InternalType.i1);
-        put(Char,       InternalType.i8);
-        put(Short,      InternalType.i16);
-        put(Int,        InternalType.i16); // todo: set with respect to data model, sometimes int is 32-bit
-        put(Long,       InternalType.i32);
-        put(LongLong,   InternalType.i64);
-        put(Float,      InternalType.i32);
-        put(Double,     InternalType.i64);
-        put(LongDouble, InternalType.i64);
+    private final static Map<CminKeyword, YType> bitnessMap =
+            new EnumMap<CminKeyword, YType>(CminKeyword.class) {{
+        put(Void,       YType.i0); // todo: set with respect to target machine bitness
+        put(Bool,       YType.i1);
+        put(Char,       YType.i8);
+        put(Short,      YType.i16);
+        put(Int,        YType.i16); // todo: set with respect to data model, sometimes int is 32-bit
+        put(Long,       YType.i32);
+        put(LongLong,   YType.i64);
+        put(Float,      YType.i32);
+        put(Double,     YType.i64);
+        put(LongDouble, YType.i64);
     }};
 
-    public static InternalType tryConvert(CminKeyword keyword) {
+    public static YType tryConvert(CminKeyword keyword) {
         return CminKeyword.bitnessMap.get(keyword);
     }
 
-    public static InternalType convert(CminKeyword keyword) {
-        InternalType result = tryConvert(keyword);
+    public static YType convert(CminKeyword keyword) {
+        YType result = tryConvert(keyword);
         if (result == null) {
             throw new IllegalArgumentException(keyword.name());
         }

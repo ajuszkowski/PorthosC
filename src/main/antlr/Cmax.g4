@@ -173,7 +173,8 @@ rvalueExpression
     ;
 
 assignmentExpression
-    :   lvalueExpression assignmentOperator rvalueExpression //todo: better 'expression' instead of constantExpression ?
+    :   rvalueExpression
+    |   lvalueExpression assignmentOperator rvalueExpression //todo: better 'expression' instead of constantExpression ?
     // ternaryExpression as one of the most general expression definitions. better 'expression' ?
     ;
 
@@ -187,7 +188,7 @@ assignmentExpressionList
     ;
 
 variableDeclarationStatement
-    :   typeSpecifier* typeDeclarator variableInitialisationList ';'
+    :   typeDeclaration variableInitialisationList ';'
     ;
 
 typeSpecifier
@@ -222,23 +223,24 @@ storageClassSpecifier
 //    ;
 
 typeDeclaration
-    :   Typedef customTypeName typeDeclarator
+    :   typeSpecifier* typeDeclarator
+    |   Typedef customTypeName typeDeclarator
     |   structOrUnionDeclaration
     |   enumDeclarator
     ;
 
-customTypeName
-    :   Identifier
-    ;
-
 typeDeclarator
     :   '(' typeDeclarator ')'
-    |   pointerTypeDeclarator
+    |   typeDeclarator Asterisk // Pointer
     |   primitiveTypeDeclarator
-    |   atomicTypeDeclarator
-    |   variableStructOrUnionTypeDeclarator
-    |   variableEnumTypeDeclarator
-    |   customTypeNameDeclarator
+    //|   atomicTypeDeclarator
+    //|   variableStructOrUnionTypeDeclarator
+    //|   variableEnumTypeDeclarator
+    //|   customTypeNameDeclarator
+    ;
+
+customTypeName
+    :   Identifier
     ;
 
 // TODO: something wrong with pointers. Do not support them yet.

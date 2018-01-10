@@ -4,17 +4,17 @@ import com.google.common.collect.ImmutableList;
 import mousquetaires.patterns.Builder;
 
 
-public class InternalSyntaxTreeBuilder extends Builder<InternalSyntaxTree> {
+public class YSyntaxTreeBuilder extends Builder<YSyntaxTree> {
 
     private final ImmutableList.Builder<YEntity> roots;
 
-    public InternalSyntaxTreeBuilder() {
+    public YSyntaxTreeBuilder() {
         this.roots = new ImmutableList.Builder<>();
     }
 
     @Override
-    public InternalSyntaxTree build() {
-        return new InternalSyntaxTree(this);
+    public YSyntaxTree build() {
+        return new YSyntaxTree(this);
     }
 
     public void addRoot(YEntity root) {

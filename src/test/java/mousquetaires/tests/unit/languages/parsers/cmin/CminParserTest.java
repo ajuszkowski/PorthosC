@@ -1,6 +1,6 @@
 package mousquetaires.tests.unit.languages.parsers.cmin;
 
-import mousquetaires.languages.ytree.InternalSyntaxTree;
+import mousquetaires.languages.ytree.YSyntaxTree;
 import mousquetaires.languages.ytree.expressions.YAssignmentExpression;
 import mousquetaires.languages.ytree.expressions.YEqualityExpression;
 import mousquetaires.languages.ytree.expressions.YConstant;
@@ -20,19 +20,19 @@ public class CminParserTest extends AbstractParserUnitTest {
 
     @Test
     public void test_typedef() {
-        InternalSyntaxTree internalRepr = runTest(structuresDirectory + "typedef.c");
+        YSyntaxTree internalRepr = runTest(structuresDirectory + "typedef.c");
         //assertEquals(programme)
     }
 
     @Test
     public void test_variableDeclarationStatement() {
-        InternalSyntaxTree internalRepr = runTest(structuresDirectory + "variableDeclarationStatement.c");
+        YSyntaxTree internalRepr = runTest(structuresDirectory + "variableDeclarationStatement.c");
         //assertEquals(programme)
     }
 
     @Test
     public void test_postfixExpression_call() {
-        InternalSyntaxTree internalRepr = runTest(structuresDirectory + "postfixExpression_call.c");
+        YSyntaxTree internalRepr = runTest(structuresDirectory + "postfixExpression_call.c");
         //assertEquals(programme)
     }
 
@@ -50,7 +50,7 @@ public class CminParserTest extends AbstractParserUnitTest {
                         new YAssignmentExpression(
                                 new YVariableRef("y"),
                                 YConstant.newIntegerConstant(3))));
-        InternalSyntaxTree internalRepr = runTest(structuresDirectory + "branchingStatement.c");
+        YSyntaxTree internalRepr = runTest(structuresDirectory + "branchingStatement.c");
         assertEquals(1, internalRepr.getRoots().size());
         YBranchingStatement actualStatement = (YBranchingStatement) internalRepr.getRoots().get(0);
         assertEquals(expected, actualStatement);

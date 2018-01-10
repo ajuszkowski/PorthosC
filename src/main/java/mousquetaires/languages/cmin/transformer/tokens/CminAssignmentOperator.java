@@ -1,4 +1,4 @@
-//package mousquetaires.languages.cmin.tokens;
+//package mousquetaires.languages.cmin.transformer.tokens;
 //
 //
 //import mousquetaires.languages.internalrepr.YEntity;

@@ -1,14 +1,14 @@
 //package mousquetaires.languages.internalrepr.expressions;
 //
 //
-//import mousquetaires.languages.internalrepr.types.InternalType;
+//import mousquetaires.languages.internalrepr.types.YType;
 //
 //
 //// old BConst or BooleanConst
 //public class InternalBooleanConstant extends YConstant {
 //    public InternalBooleanConstant(Object characters) {
 //        // todo: convert to true/false?
-//        super(characters, InternalType.i1);
+//        super(characters, YType.i1);
 //    }
 //
 //

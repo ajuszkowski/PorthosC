@@ -1,7 +1,7 @@
 package mousquetaires.languages.ytree.expressions;
 
-import mousquetaires.languages.cmin.tokens.CminKeyword;
-import mousquetaires.languages.ytree.types.InternalType;
+import mousquetaires.languages.cmin.transformer.tokens.CminKeyword;
+import mousquetaires.languages.ytree.types.YType;
 import mousquetaires.utils.exceptions.ArgumentNullException;
 
 import java.util.Objects;
@@ -10,9 +10,9 @@ import java.util.Objects;
 public class YConstant extends YExpression {
 
     protected final Object value;
-    protected final InternalType type;
+    protected final YType type;
 
-    public YConstant(Object value, InternalType type) {
+    public YConstant(Object value, YType type) {
         this.value = value;
         this.type = type;
     }

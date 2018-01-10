@@ -1,7 +1,7 @@
 package mousquetaires.languages.cmin.types;
 
-import mousquetaires.languages.cmin.tokens.CminKeyword;
-import mousquetaires.languages.ytree.types.InternalType;
+import mousquetaires.languages.cmin.transformer.tokens.CminKeyword;
+import mousquetaires.languages.ytree.types.YType;
 import mousquetaires.patterns.Builder;
 
 import java.util.BitSet;
@@ -9,7 +9,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 
-public class CminPrimitiveTypeBuilder extends Builder<InternalType> {
+public class CminPrimitiveTypeBuilder extends Builder<YType> {
 
     private final int modifiersNumber = CminKeyword.values().length;
     private BitSet modifiers = new BitSet(modifiersNumber);
@@ -36,7 +36,7 @@ public class CminPrimitiveTypeBuilder extends Builder<InternalType> {
     }
 
     @Override
-    public InternalType build() {
+    public YType build() {
         if (isBuilt()) {
             throw new RuntimeException(getAlreadyFinishedMessage());
         }
@@ -50,7 +50,7 @@ public class CminPrimitiveTypeBuilder extends Builder<InternalType> {
                     signed = false;
                     continue;
                 }
-                InternalType newType = CminKeyword.tryConvert(keyword);
+                YType newType = CminKeyword.tryConvert(keyword);
                 if (newType == null) {
                     continue;
                 }
@@ -60,6 +60,6 @@ public class CminPrimitiveTypeBuilder extends Builder<InternalType> {
             }
         }
         setBuilt();
-        return new InternalType(bitness, signed);
+        return new YType(bitness, signed);
     }
 }

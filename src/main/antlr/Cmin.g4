@@ -48,8 +48,7 @@ constant
 postfixExpression
     :   primaryExpression
     |   postfixExpression '(' functionArgumentExpressionList? ')'
-    |   postfixExpression '++'
-    |   postfixExpression '--'
+    |   postfixExpression (PlusPlus | MinusMinus)
     ;
 
 functionArgumentExpressionList
@@ -67,7 +66,14 @@ unaryOrNullaryExpression
     ;
 
 unaryOperator
-    :   '&' | '*' | '+' | '-' | '~' | '!' | '--' | '++'
+    :   And
+    |   Asterisk
+    |   Plus
+    |   Minus
+    |   Tilde
+    |   Not
+    |   PlusPlus
+    |   MinusMinus
     ;
 
 binaryOrTernaryExpression
@@ -80,70 +86,64 @@ binaryOrTernaryExpression
     |   exclusiveOrExpression
     |   inclusiveOrExpression
     |   logicalAndExpression
-    |   logicalOrAndExpression
+    |   logicalOrExpression
     |   ternaryExpression
     ;
 
 multiplicativeExpression
     :   unaryOrNullaryExpression
-    |   multiplicativeExpression '*' unaryOrNullaryExpression
-    |   multiplicativeExpression '/' unaryOrNullaryExpression
-    |   multiplicativeExpression '%' unaryOrNullaryExpression
+    |   multiplicativeExpression (Asterisk | Div | Mod) unaryOrNullaryExpression
     ;
 
 additiveExpression
     :   multiplicativeExpression
-    |   additiveExpression '+' multiplicativeExpression
-    |   additiveExpression '-' multiplicativeExpression
+    |   additiveExpression AdditiveOperator multiplicativeExpression
     ;
 
 shiftExpression
     :   additiveExpression
-    |   shiftExpression '<<' additiveExpression
-    |   shiftExpression '>>' additiveExpression
+    |   shiftExpression ShiftOperator additiveExpression
     ;
 
 relationalExpression
     :   shiftExpression
-    |   relationalExpression '<' shiftExpression
-    |   relationalExpression '>' shiftExpression
-    |   relationalExpression '<=' shiftExpression
-    |   relationalExpression '>=' shiftExpression
+    |   relationalExpression RelationalOperator shiftExpression
     ;
 
 equalityExpression
     :   relationalExpression
-    |   equalityExpression (Equals|NotEquals) relationalExpression
+    |   equalityExpression (Equals | NotEquals) relationalExpression
     ;
 
 andExpression
     :   equalityExpression
-    |   andExpression '&' equalityExpression
+    |   andExpression And equalityExpression
     ;
 
 exclusiveOrExpression
     :   andExpression
-    |   exclusiveOrExpression '^' andExpression
+    |   exclusiveOrExpression Xor andExpression
     ;
 
 inclusiveOrExpression
     :   exclusiveOrExpression
-    |   inclusiveOrExpression '|' exclusiveOrExpression
+    |   inclusiveOrExpression Or exclusiveOrExpression
     ;
 
 logicalAndExpression
     :   inclusiveOrExpression
-    |   logicalAndExpression '&&' inclusiveOrExpression
+    |   logicalAndExpression AndAnd inclusiveOrExpression
     ;
 
-logicalOrAndExpression
+logicalOrExpression
     :   logicalAndExpression
-    |   logicalOrAndExpression '||' logicalAndExpression
+    |   logicalOrExpression OrOr logicalAndExpression
     ;
 
 ternaryExpression   // todo: check this definition
-    :   logicalOrAndExpression
-    |   ternaryExpression '?' ternaryExpression ':' ternaryExpression
+//    :   logicalOrExpression
+//    |   ternaryExpression '?' ternaryExpression ':' ternaryExpression
+    :   logicalOrExpression (Question expression Colon ternaryExpression)?
     ;
 
 caseExpression   // todo: check this definition
@@ -160,16 +160,44 @@ rvalueExpression
 
 // todo: check syntax 'a = b = c = 3;'
 assignmentExpression
-    :   lvalueExpression assignmentOperator rvalueExpression //todo: better 'expression' instead of constantExpression ?
+    :   rvalueExpression
+    |   lvalueExpression assignmentOperator assignmentExpression //todo: better 'expression' instead of constantExpression ?
     // ternaryExpression as one of the most general expression definitions. better 'expression' ?
     ;
 
 assignmentOperator
-    :   '=' | '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '&=' | '^=' | '|='
+    :   Assign
+    |   AsteriskAssign
+    |   DivAssign
+    |   ModAssign
+    |   PlusAssign
+    |   MinusAssign
+    |   LeftShiftAssign
+    |   RightShiftAssign
+    |   AndAssign
+    |   XorAssign
+    |   OrAssign
     ;
 
 variableDeclarationStatement
-    :   typeSpecifier* typeDeclarator variableInitialisationList ';'
+    :   typeDeclaration variableInitialisationList ';'
+    ;
+
+typeDeclaration
+    :   typeSpecifier* typeDeclarator
+    //|   Typedef customTypeName typeDeclarator
+    //|   structOrUnionDeclaration
+    //|   enumDeclarator
+    ;
+
+typeDeclarator
+    :   LeftParen typeDeclarator RightParen
+    |   typeDeclarator Asterisk // Pointer
+    |   primitiveTypeDeclarator
+    //|   atomicTypeDeclarator
+    //|   variableStructOrUnionTypeDeclarator
+    //|   variableEnumTypeDeclarator
+    //|   customTypeNameDeclarator
     ;
 
 typeSpecifier
@@ -203,16 +231,6 @@ storageClassSpecifier
 //    |   Atomic
 //    ;
 
-
-typeDeclarator
-    :   '(' typeDeclarator ')'
-    |   typeDeclarator Asterisk // Pointer
-    |   primitiveTypeDeclarator
-    //|   atomicTypeDeclarator
-    //|   variableStructOrUnionTypeDeclarator
-    //|   variableEnumTypeDeclarator
-    //|   customTypeNameDeclarator
-    ;
 
 
 primitiveTypeDeclarator
@@ -271,11 +289,11 @@ labeledStatement
     ;
 
 blockStatement
-    :   '{' statement* '}'
+    :   LeftBrace statement* RightBrace
     ;
 
 expression
-    :   '(' expression ')'
+    :   LeftParen expression RightParen
     |   unaryOrNullaryExpression
     |   binaryOrTernaryExpression
     |   assignmentExpression
@@ -321,7 +339,6 @@ jumpStatement
     |   Break ';'
     |   Return expression? ';'
     ;
-
 
 /*Preprocessing directives: from https://github.com/antlr/grammars-v4/blob/master/cpp/CPP14.g4 */
 MultiLineMacro
@@ -393,14 +410,21 @@ Less : '<';
 LessEqual : '<=';
 Greater : '>';
 GreaterEqual : '>=';
+RelationalOperator : Less | LessEqual | Greater | GreaterEqual;
+
 LeftShift : '<<';
 RightShift : '>>';
+ShiftOperator : LeftShift | RightShift;
+
+Asterisk : '*';
+
+PlusPlus : '++';
+MinusMinus : '--';
 
 Plus : '+';
-PlusPlus : '++';
 Minus : '-';
-MinusMinus : '--';
-Asterisk : '*';
+AdditiveOperator : Plus | Minus;
+
 Div : '/';
 Mod : '%';
 
@@ -414,7 +438,7 @@ Tilde : '~';
 
 Question : '?';
 Colon : ':';
-Semi : ';';
+Semicolon : ';';
 Comma : ',';
 
 Assign : '=';

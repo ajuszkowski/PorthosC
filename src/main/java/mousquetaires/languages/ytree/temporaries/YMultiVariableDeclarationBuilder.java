@@ -7,7 +7,7 @@ import mousquetaires.languages.ytree.expressions.lvalue.YVariableRef;
 import mousquetaires.languages.ytree.statements.YLinearStatement;
 import mousquetaires.languages.ytree.statements.YSequenceStatement;
 import mousquetaires.languages.ytree.statements.YVariableDeclarationStatement;
-import mousquetaires.languages.ytree.types.InternalType;
+import mousquetaires.languages.ytree.types.YType;
 import mousquetaires.patterns.Builder;
 import mousquetaires.utils.exceptions.UninitialisedFieldException;
 import org.antlr.v4.misc.OrderedHashMap;
@@ -16,10 +16,10 @@ import java.util.Map;
 
 
 // TODO: it's mutable!
-public class InternalMultiVariableDeclarationBuilder
+public class YMultiVariableDeclarationBuilder
         extends Builder<YSequenceStatement> implements YEntity {
 
-    private InternalType declaredType;
+    private YType declaredType;
     private Map<YVariableRef, YExpression> variablesInitialisations;  // value may be null in case 'int x;'
 
     @Override
@@ -31,7 +31,7 @@ public class InternalMultiVariableDeclarationBuilder
             throw new UninitialisedFieldException("variablesInitialisations");
         }
 
-        InternalSequenceStatementBuilder builder = new InternalSequenceStatementBuilder();
+        YSequenceStatementBuilder builder = new YSequenceStatementBuilder();
 
         for (Map.Entry<YVariableRef, YExpression> entry : variablesInitialisations.entrySet()) {
 
@@ -48,7 +48,7 @@ public class InternalMultiVariableDeclarationBuilder
         return builder.build();
     }
 
-    public void setDeclaredType(InternalType type) {
+    public void setDeclaredType(YType type) {
         declaredType = type;
     }
 

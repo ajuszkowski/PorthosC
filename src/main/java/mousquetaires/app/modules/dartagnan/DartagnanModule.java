@@ -4,8 +4,8 @@ import mousquetaires.app.errors.*;
 import mousquetaires.app.modules.AppModule;
 import mousquetaires.languages.eventrepr.Programme;
 import mousquetaires.languages.eventrepr.ProgrammeConverter;
-import mousquetaires.languages.ytree.InternalSyntaxTree;
-import mousquetaires.languages.parsers.InternalLanguageParser;
+import mousquetaires.languages.ytree.YSyntaxTree;
+import mousquetaires.languages.parsers.YtreeParser;
 import mousquetaires.memorymodels.old.MemoryModel;
 import mousquetaires.memorymodels.old.MemoryModelFactory;
 
@@ -33,7 +33,7 @@ public class DartagnanModule extends AppModule {
 
             MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
 
-            InternalSyntaxTree internalRepr = InternalLanguageParser.parse(options.inputProgramFile);
+            YSyntaxTree internalRepr = YtreeParser.parse(options.inputProgramFile);
             Programme programme = ProgrammeConverter.toProgramme(internalRepr);
 
             // SmtEncoder.encode(programme) ...

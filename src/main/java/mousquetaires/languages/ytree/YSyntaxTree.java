@@ -5,11 +5,11 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 
 
-public class InternalSyntaxTree implements YEntity {
+public class YSyntaxTree implements YEntity {
 
     private final ImmutableList<YEntity> roots;
 
-    public InternalSyntaxTree(InternalSyntaxTreeBuilder builder) {
+    public YSyntaxTree(YSyntaxTreeBuilder builder) {
         this.roots = builder.getRoots();
     }
 

@@ -6,28 +6,35 @@ import java.util.Objects;
 
 
 /** Integer type as in LLVM: see https://llvm.org/docs/LangRef.html#integer-type */
-public class InternalType implements YEntity {
+public class YType implements YEntity {
 
     // TODO!!! remake it as close as possible to the smt representation
 
-    public static InternalType i0  = new InternalType(0);  // void
-    public static InternalType i1  = new InternalType(1);
-    public static InternalType i8  = new InternalType(8);
-    public static InternalType i16 = new InternalType(16);
-    public static InternalType i32 = new InternalType(32);
-    public static InternalType i64 = new InternalType(64);
+    public static YType i0  = new YType(0);  // void
+    public static YType i1  = new YType(1);
+    public static YType i8  = new YType(8);
+    public static YType i16 = new YType(16);
+    public static YType i32 = new YType(32);
+    public static YType i64 = new YType(64);
 
     public final int bitness;
     public final boolean signed;
+    public final int pointerLevel;
 
-    public InternalType(int bitness) {
-        this(bitness, false);
+    public YType(int bitness) {
+        this(bitness, false, 0);
     }
 
-    public InternalType(int bitness, boolean signed) {
+    public YType(int bitness, boolean signed, int pointerLevel) {
         this.bitness = bitness;
         this.signed = signed;
+        this.pointerLevel = pointerLevel;
     }
+
+    public YType withPointerLevel(int newPointerLevel) {
+        return new YType(bitness, signed, newPointerLevel);
+    }
+
     @Override
     public String toString() {
         //String signedPrefix = signed ? "" : "signed ";
@@ -42,8 +49,8 @@ public class InternalType implements YEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof InternalType)) return false;
-        InternalType that = (InternalType) o;
+        if (!(o instanceof YType)) return false;
+        YType that = (YType) o;
         return bitness == that.bitness &&
                 signed == that.signed;
     }

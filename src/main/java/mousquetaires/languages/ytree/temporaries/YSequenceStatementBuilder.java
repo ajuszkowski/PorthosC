@@ -7,12 +7,12 @@ import mousquetaires.languages.ytree.statements.YSequenceStatement;
 import mousquetaires.patterns.Builder;
 
 
-public class InternalSequenceStatementBuilder
+public class YSequenceStatementBuilder
         extends Builder<YSequenceStatement> implements YEntity {
 
     public final ImmutableList.Builder<YStatement> statements;
 
-    public InternalSequenceStatementBuilder() {
+    public YSequenceStatementBuilder() {
         this.statements = new ImmutableList.Builder<>();
     }
 

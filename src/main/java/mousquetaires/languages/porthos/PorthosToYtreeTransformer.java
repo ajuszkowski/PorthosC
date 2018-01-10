@@ -1,8 +1,8 @@
 package mousquetaires.languages.porthos;
 
 import mousquetaires.languages.ProgramToYtreeTransformer;
-import mousquetaires.languages.ytree.InternalSyntaxTree;
-import mousquetaires.languages.ytree.InternalSyntaxTreeBuilder;
+import mousquetaires.languages.ytree.YSyntaxTree;
+import mousquetaires.languages.ytree.YSyntaxTreeBuilder;
 import mousquetaires.languages.parsers.PorthosBaseListener;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -11,9 +11,9 @@ public class PorthosToYtreeTransformer
         extends PorthosBaseListener
         implements ProgramToYtreeTransformer {
 
-    private final InternalSyntaxTreeBuilder builder = new InternalSyntaxTreeBuilder();
+    private final YSyntaxTreeBuilder builder = new YSyntaxTreeBuilder();
 
-    public InternalSyntaxTree transform(ParserRuleContext parserRuleContext) {
+    public YSyntaxTree transform(ParserRuleContext parserRuleContext) {
         parserRuleContext.enterRule(this);
         return builder.build();
     }
