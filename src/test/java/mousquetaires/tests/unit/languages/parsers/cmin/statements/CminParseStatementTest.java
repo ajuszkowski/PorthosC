@@ -1,24 +1,16 @@
-package mousquetaires.tests.unit.languages.parsers.cmin;
+package mousquetaires.tests.unit.languages.parsers.cmin.statements;
 
-import mousquetaires.languages.internalrepr.YEntity;
-import mousquetaires.languages.internalrepr.YSyntaxTree;
 import mousquetaires.languages.internalrepr.expressions.YConstant;
 import mousquetaires.languages.internalrepr.expressions.YConstantFactory;
 import mousquetaires.languages.internalrepr.expressions.YVariableRef;
 import mousquetaires.languages.internalrepr.types.YPrimitiveTypeName;
 import mousquetaires.languages.internalrepr.types.YType;
 import mousquetaires.languages.internalrepr.types.YTypeFactory;
-import mousquetaires.tests.unit.languages.parsers.AbstractParserUnitTest;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
+import mousquetaires.tests.unit.languages.parsers.cmin.CminParseTest;
 
 
-public abstract class CminParserTest extends AbstractParserUnitTest {
-
-    protected final String rootDirectory = parsersDirectory + "cmin/";
-    protected final String structuresDirectory = rootDirectory + "structures/";
+public abstract class CminParseStatementTest extends CminParseTest {
+    protected final String statementsDirectory = rootDirectory + "statements/";
 
     // shortcuts necessary for tests
     protected YVariableRef variableX = YVariableRef.create("x");
@@ -38,17 +30,5 @@ public abstract class CminParserTest extends AbstractParserUnitTest {
     protected YType typeLong = YTypeFactory.getPrimitiveType(YPrimitiveTypeName.Long);
     protected YType typeLongLong = YTypeFactory.getPrimitiveType(YPrimitiveTypeName.LongLong);
     protected YType typeVoidPointer = YTypeFactory.getPrimitiveType(YPrimitiveTypeName.Void, 1);
-
-
-    protected void runParserTest(String file, YSyntaxTree expectedTree) {
-        YSyntaxTree actualTree = runTest(file);
-        List<YEntity> actualRoots = actualTree.getRoots();
-        List<YEntity> expectedRoots = expectedTree.getRoots();
-        assertEquals("roots number does not match", expectedRoots.size(), actualRoots.size());
-        for (int i = 0; i < expectedRoots.size(); ++i) {
-            assertEquals("mismatch in " + i + "th statement:", expectedRoots.get(i), actualRoots.get(i));
-        }
-    }
-
 
 }

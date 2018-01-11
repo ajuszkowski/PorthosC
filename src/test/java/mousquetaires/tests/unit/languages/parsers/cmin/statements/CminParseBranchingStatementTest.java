@@ -1,4 +1,4 @@
-package mousquetaires.tests.unit.languages.parsers.cmin;
+package mousquetaires.tests.unit.languages.parsers.cmin.statements;
 
 import mousquetaires.languages.internalrepr.YSyntaxTree;
 import mousquetaires.languages.internalrepr.expressions.YAssignmentExpression;
@@ -8,7 +8,7 @@ import mousquetaires.languages.internalrepr.statements.YLinearStatement;
 import org.junit.Test;
 
 
-public class CminBranchingStatementTest extends CminParserTest {
+public class CminParseBranchingStatementTest extends CminParseStatementTest {
 
     @Test
     public void test_branchingStatement() {
@@ -17,6 +17,6 @@ public class CminBranchingStatementTest extends CminParserTest {
                         new YEqualityExpression(variableX, constant1),
                         new YLinearStatement(new YAssignmentExpression(variableY, constant2)),
                         new YLinearStatement(new YAssignmentExpression(variableY, constant3))));
-        runParserTest(structuresDirectory + "branchingStatement.c", expected);
+        runParserTest(statementsDirectory + "branchingStatement.c", expected);
     }
 }

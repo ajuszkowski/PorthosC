@@ -1,4 +1,4 @@
-package mousquetaires.tests.unit.languages.parsers.cmin;
+package mousquetaires.tests.unit.languages.parsers.cmin.statements;
 
 import mousquetaires.languages.internalrepr.YSyntaxTree;
 import mousquetaires.languages.internalrepr.expressions.YAssignmentExpression;
@@ -8,9 +8,9 @@ import mousquetaires.languages.internalrepr.statements.YVariableDeclarationState
 import org.junit.Test;
 
 
-public class CminPrimitiveTypeDeclarationParserTest extends CminParserTest {
+public class CminParsePrimitiveTypeDeclarationTest extends CminParseStatementTest {
 
-    private final String primitiveDirectory = structuresDirectory + "/type_declaration/primitive";
+    private final String primitiveDirectory = statementsDirectory + "/type_declaration/primitive";
 
     @Test
     public void test_primitiveTypeDeclaration_initialisation() {

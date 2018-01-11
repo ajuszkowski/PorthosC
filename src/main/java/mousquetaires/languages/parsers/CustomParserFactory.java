@@ -22,12 +22,12 @@ public class CustomParserFactory {
                 CminParser parser = new CminParser(tokenStream);
                 return parser.main();
             }
-            case Porthos: {
-                PorthosLexer lexer = new PorthosLexer(charStream);
-                CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-                PorthosParser parser = new PorthosParser(tokenStream);
-                return parser.main();
-            }
+            //case Porthos: {
+            //    PorthosLexer lexer = new PorthosLexer(charStream);
+            //    CommonTokenStream tokenStream = new CommonTokenStream(lexer);
+            //    PorthosParser parser = new PorthosParser(tokenStream);
+            //    return parser.main();
+            //}
             //case Litmus: {
             //    LitmusLexer lexer = new LitmusLexer(charStream);
             //    CommonTokenStream tokenStream = new CommonTokenStream(lexer);

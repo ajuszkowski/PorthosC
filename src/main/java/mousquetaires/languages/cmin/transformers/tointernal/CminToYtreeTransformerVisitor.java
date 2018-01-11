@@ -2,8 +2,11 @@ package mousquetaires.languages.cmin.transformers.tointernal;
 
 import mousquetaires.interpretation.internalrepr.exceptions.ParserException;
 import mousquetaires.languages.cmin.transformers.tointernal.temporaries.YBlockStatementBuilder;
+import mousquetaires.languages.cmin.transformers.tointernal.temporaries.YSequenceStatementBuilder;
 import mousquetaires.languages.cmin.transformers.tointernal.temporaries.YVariableInitialiser;
 import mousquetaires.languages.cmin.transformers.tointernal.temporaries.YVariableInitialiserList;
+import mousquetaires.languages.internalrepr.statements.artificial.YBugonStatement;
+import mousquetaires.languages.internalrepr.statements.artificial.YProcess;
 import mousquetaires.languages.parsers.CminParser;
 import mousquetaires.languages.parsers.CminVisitor;
 import mousquetaires.languages.internalrepr.YEntity;
@@ -18,6 +21,7 @@ import mousquetaires.languages.internalrepr.types.YTypeFactory;
 import mousquetaires.utils.exceptions.ArgumentNullException;
 import mousquetaires.utils.exceptions.NotImplementedException;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 
@@ -31,15 +35,49 @@ class CminToYtreeTransformerVisitor
     /**
      * main
      * :   statement+
+     * |   processStatement+ // temporary
      * ;
      */
     public YSyntaxTree visitMain(CminParser.MainContext ctx) {
         int childrenCount = ctx.getChildCount();
         for (int i = 0; i < childrenCount; i++) {
-            YEntity root = this.visit(ctx.getChild(i));
+            ParseTree childTree = ctx.getChild(i);
+            assert childTree != null;
+            YEntity root = this.visit(childTree);
             syntaxTreeBuilder.addRoot(root);
         }
         return syntaxTreeBuilder.build();
+    }
+
+    // Temporary: explicitly specified processes
+    /**
+     * processStatement
+     * :   'process' Identifier blockStatement
+     * |   bugonStatement
+     * ;
+     */
+    public YStatement visitProcessStatement(CminParser.ProcessStatementContext ctx) {
+        CminParser.BlockStatementContext blockStatementCtx = ctx.blockStatement();
+        if (blockStatementCtx != null) {
+            YBlockStatement blockStatement = visitBlockStatement(blockStatementCtx);
+            String processName = ctx.Identifier().getText();
+            return new YProcess(processName, blockStatement);
+        }
+        CminParser.BugonStatementContext bugonStatementCtx = ctx.bugonStatement();
+        if (bugonStatementCtx != null) {
+            return visitBugonStatement(bugonStatementCtx);
+        }
+        throw new IllegalStateException();
+    }
+
+    /**
+     * bugOnStatement
+     * :   'bug_on' '(' expression ')'
+     * ;
+     */
+    public YBugonStatement visitBugonStatement(CminParser.BugonStatementContext ctx) {
+        YExpression expression = visitExpression(ctx.expression());
+        return new YBugonStatement(expression);
     }
 
     /**
@@ -634,35 +672,9 @@ class CminToYtreeTransformerVisitor
      * ;
      */
     public YStatement visitStatement(CminParser.StatementContext ctx) {
-        CminParser.VariableDeclarationStatementContext variableDeclarationCtx = ctx.variableDeclarationStatement();
-        if (variableDeclarationCtx != null) {
-            return visitVariableDeclarationStatement(variableDeclarationCtx);
-        }
-        CminParser.ExpressionStatementContext expressionStatementCtx = ctx.expressionStatement();
-        if (expressionStatementCtx != null) {
-            return visitExpressionStatement(expressionStatementCtx);
-        }
-        CminParser.LabeledStatementContext labeledStatementCtx = ctx.labeledStatement();
-        if (labeledStatementCtx != null) {
-            return visitLabeledStatement(labeledStatementCtx);
-        }
-        CminParser.BlockStatementContext blockStatementCtx = ctx.blockStatement();
-        if (blockStatementCtx != null) {
-            return visitBlockStatement(blockStatementCtx);
-        }
-        CminParser.BranchingStatementContext branchingStatementCtx = ctx.branchingStatement();
-        if (branchingStatementCtx != null) {
-            return visitBranchingStatement(branchingStatementCtx);
-        }
-        CminParser.LoopStatementContext loopStatementCtx = ctx.loopStatement();
-        if (loopStatementCtx != null) {
-            return visitLoopStatement(loopStatementCtx);
-        }
-        CminParser.JumpStatementContext jumpStatementCtx = ctx.jumpStatement();
-        if (jumpStatementCtx != null) {
-            return visitJumpStatement(jumpStatementCtx);
-        }
-        throw new IllegalStateException();
+        int childrenCount = ctx.getChildCount();
+        assert childrenCount == 1: childrenCount;
+        return (YStatement) visit(ctx.getChild(0));
     }
 
     /**
@@ -676,12 +688,12 @@ class CminToYtreeTransformerVisitor
             YType type = visitTypeDeclaration(typeDeclarationCtx);
 
             YVariableInitialiserList initialisationList = visitVariableInitialisationList(ctx.variableInitialisationList());
-            YBlockStatementBuilder builder = new YBlockStatementBuilder();
+            YSequenceStatementBuilder builder = new YSequenceStatementBuilder();
             for (YVariableInitialiser initialiser : initialisationList) {
                 YVariableRef variable = initialiser.variable;
                 YExpression initExpression = initialiser.initExpression;
                 builder.add(new YVariableDeclarationStatement(type, variable));
-                if (initialiser.hasInitExpression()) {
+                if (initExpression != null) {
                     YAssignmentExpression assignmentExpression = new YAssignmentExpression(variable, initExpression);
                     builder.add(new YLinearStatement(assignmentExpression));
                 }
@@ -781,8 +793,8 @@ class CminToYtreeTransformerVisitor
      * :   LeftBrace statement* RightBrace
      * ;
      */
-    public YStatement visitBlockStatement(CminParser.BlockStatementContext ctx) {
-        YBlockStatementBuilder builder = new YBlockStatementBuilder(true);
+    public YBlockStatement visitBlockStatement(CminParser.BlockStatementContext ctx) {
+        YBlockStatementBuilder builder = new YBlockStatementBuilder();
         for (CminParser.StatementContext statementContext : ctx.statement()) {
             YStatement statement = visitStatement(statementContext);
             builder.add(statement);

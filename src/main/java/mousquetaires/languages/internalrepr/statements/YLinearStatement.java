@@ -12,9 +12,9 @@ public class YLinearStatement extends YStatement {
         this.expression = expression;
     }
 
-    public YLinearStatement() {
-        this.expression = null;  // empty statement
-    }
+    //public YLinearStatement() {
+    //    this.expression = null;  // empty statement
+    //}
 
     @Override
     public String toString() {

@@ -33,6 +33,19 @@ grammar Cmin;
 // Entry point
 main
     :   statement+
+    // todo: function definition statement
+    // temporaries:
+    |   processStatement+
+    ;
+
+// Temporary: explicitly specify processes
+processStatement
+    :   'process' Identifier blockStatement
+    |   bugonStatement
+    ;
+// Temporary: explicitly specify processes
+bugonStatement
+    :   'bug_on' '(' expression ')' ';'
     ;
 
 primaryExpression
@@ -260,7 +273,7 @@ variableName
     ;
 
 variableTypeSpecifierQualifierList
-    :   typeSpecifier         variableTypeSpecifierQualifierList?
+    :   typeSpecifier variableTypeSpecifierQualifierList?
     //|   variableTypeQualifier variableTypeSpecifierQualifierList?
     ;
 
