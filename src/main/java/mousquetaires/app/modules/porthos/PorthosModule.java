@@ -4,10 +4,10 @@ import mousquetaires.app.errors.AppError;
 import mousquetaires.app.errors.IOError;
 import mousquetaires.app.errors.UnrecognisedError;
 import mousquetaires.app.modules.AppModule;
-import mousquetaires.languages.eventrepr.Programme;
-import mousquetaires.languages.eventrepr.ProgrammeConverter;
+import mousquetaires.languages.eventrepr.XProgram;
+import mousquetaires.languages.eventrepr.XProgrammeConverter;
 import mousquetaires.languages.eventrepr.memory.datamodels.DataModel;
-import mousquetaires.languages.ytree.YSyntaxTree;
+import mousquetaires.languages.internalrepr.YSyntaxTree;
 import mousquetaires.languages.parsers.YtreeParser;
 
 import java.io.IOException;
@@ -63,13 +63,13 @@ public class PorthosModule extends AppModule {
 
             YSyntaxTree internalRepr = YtreeParser.parse(options.inputProgramFile);
             DataModel dataModel = null; // TODO
-            Programme programme = ProgrammeConverter.toProgramme(internalRepr, dataModel);
+            XProgram program = XProgrammeConverter.toProgramme(internalRepr, dataModel);
 
 
         /*
-        programme.initialize();
-        Programme pSource = programme.clone();
-        Programme pTarget = programme.clone();
+        program.initialize();
+        XProgram pSource = program.clone();
+        XProgram pTarget = program.clone();
 
         pSource.compile(source, false, true);
         Integer startEId = Collections.max(pSource.getEvents().stream().filter(e -> e instanceof Init).map(e -> e.getEId()).collect(Collectors.toSet())) + 1;
@@ -114,7 +114,7 @@ public class PorthosModule extends AppModule {
                 verdict.result = PorthosVerdict.Status.NonStatePortable;
                 if(outputGraphFile != null) {
                     String outputPath = outputGraphFile;
-                    Utils.drawGraph(programme, pSource, pTarget, ctx, solverSource.getModel(), outputPath, rels);
+                    Utils.drawGraph(program, pSource, pTarget, ctx, solverSource.getModel(), outputPath, rels);
                 }
             }
             else {
@@ -139,7 +139,7 @@ public class PorthosModule extends AppModule {
                 assert(iterations == visited.size());
                 solverTarget.add(reachedState);
                 if(solverTarget.check() == Status.UNSATISFIABLE) {
-                    //System.out.println("The programme is not state-portable");
+                    //System.out.println("The program is not state-portable");
                     verdict.iterations = iterations;
                     verdict.result = PorthosVerdict.Status.NonStatePortable;
                     return verdict;

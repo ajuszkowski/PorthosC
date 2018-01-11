@@ -10,7 +10,7 @@ public class ProgramExtensions {
             new HashMap<>() {{
                 put("cmin", ProgramLanguage.Cmin);
                 put("c", ProgramLanguage.Cmin);
-                put("pts", ProgramLanguage.Porthos);
+                //put("pts", ProgramLanguage.Porthos);
                 put("litmus", ProgramLanguage.Litmus);
             }};
 

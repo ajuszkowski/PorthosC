@@ -1,14 +1,13 @@
 package mousquetaires.tests.unit.languages.parsers.cmin;
 
-import mousquetaires.languages.ytree.YEntity;
-import mousquetaires.languages.ytree.YSyntaxTree;
-import mousquetaires.languages.ytree.expressions.YConstant;
-import mousquetaires.languages.ytree.expressions.YConstantFactory;
-import mousquetaires.languages.ytree.expressions.YVariableRef;
-import mousquetaires.languages.ytree.types.YPrimitiveTypeName;
-import mousquetaires.languages.ytree.types.YPrimitiveTypeSpecifier;
-import mousquetaires.languages.ytree.types.YType;
-import mousquetaires.languages.ytree.types.YTypeFactory;
+import mousquetaires.languages.internalrepr.YEntity;
+import mousquetaires.languages.internalrepr.YSyntaxTree;
+import mousquetaires.languages.internalrepr.expressions.YConstant;
+import mousquetaires.languages.internalrepr.expressions.YConstantFactory;
+import mousquetaires.languages.internalrepr.expressions.YVariableRef;
+import mousquetaires.languages.internalrepr.types.YPrimitiveTypeName;
+import mousquetaires.languages.internalrepr.types.YType;
+import mousquetaires.languages.internalrepr.types.YTypeFactory;
 import mousquetaires.tests.unit.languages.parsers.AbstractParserUnitTest;
 
 import java.util.List;
@@ -51,17 +50,5 @@ public abstract class CminParserTest extends AbstractParserUnitTest {
         }
     }
 
-
-    //@Test
-    //public void test_variableDeclarationStatement() {
-    //    YSyntaxTree parsed = runTest(structuresDirectory + "variableDeclarationStatement.c");
-    //    //assertEquals(programme)
-    //}
-    //
-    //@Test
-    //public void test_postfixExpression_call() {
-    //    YSyntaxTree parsed = runTest(structuresDirectory + "postfixExpression_call.c");
-    //    //assertEquals(programme)
-    //}
 
 }

@@ -1,8 +1,8 @@
 package mousquetaires.interpretation.eventrepr;
 
-import mousquetaires.languages.eventrepr.memory.MemoryLocation;
-import mousquetaires.languages.eventrepr.memory.RegistryLocation;
-import mousquetaires.languages.eventrepr.memory.SharedLocation;
+import mousquetaires.languages.eventrepr.memory.XMemoryLocation;
+import mousquetaires.languages.eventrepr.memory.XRegistryLocation;
+import mousquetaires.languages.eventrepr.memory.XSharedLocation;
 import mousquetaires.languages.ProgramLanguage;
 
 
@@ -18,7 +18,7 @@ public class Interpreter {
         this.typeManager   = new TypeManager(language);
     }
 
-    public void createMemoryLocation(String name, MemoryLocation.Kind kind) {
+    public void createMemoryLocation(String name, XMemoryLocation.Kind kind) {
         switch (kind) {
             case Registry:
                 memoryManager.registerRegistryLocation(name);
@@ -31,12 +31,12 @@ public class Interpreter {
         }
     }
 
-    public MemoryLocation tryGetMemoryLocation(String name) {
-        SharedLocation sharedLocation = memoryManager.tryGetSharedLocation(name);
+    public XMemoryLocation tryGetMemoryLocation(String name) {
+        XSharedLocation sharedLocation = memoryManager.tryGetSharedLocation(name);
         if (sharedLocation != null) {
             return sharedLocation;
         }
-        RegistryLocation registryLocation = memoryManager.tryGetRegistryLocation(name);
+        XRegistryLocation registryLocation = memoryManager.tryGetRegistryLocation(name);
         if (registryLocation != null) {
             return registryLocation;
         }

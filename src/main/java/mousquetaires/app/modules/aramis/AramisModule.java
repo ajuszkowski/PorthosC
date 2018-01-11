@@ -25,7 +25,7 @@
 //import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 //
 //import mousquetaires.languages.parsers.*;
-//import mousquetaires.program.Programme;
+//import mousquetaires.program.XProgram;
 //import mousquetaires.wmm.Domain;
 //import mousquetaires.wmm.MemoryModel;
 //import mousquetaires.wmm.BasicRelation;
@@ -53,13 +53,13 @@
 //
 //    private static final Logger log = Logger.getLogger(Aramis.class.getName());
 //
-//    private static Programme parseProgramFile(String inputFilePath, String target) throws IOException {
+//    private static XProgram parseProgramFile(String inputFilePath, String target) throws IOException {
 //        File file = new File(inputFilePath);
 //
 //        String program = FileUtils.readFileToString(file, "UTF-8");
 //        ANTLRInputStream input = new ANTLRInputStream(program);
 //
-//        Programme p = new Programme(inputFilePath);
+//        XProgram p = new XProgram(inputFilePath);
 //
 //        if (inputFilePath.endsWith("litmus")) {
 //            LitmusLexer lexer = new LitmusLexer(input);
@@ -81,11 +81,11 @@
 //    }
 //    private static int unchecked = 0;
 //    private static final ArrayList<CandidateAxiom> candidates = new ArrayList<>();
-//    private static ArrayList<Programme> posPrograms;
-//    private static ArrayList<Programme> negPrograms;
+//    private static ArrayList<XProgram> posPrograms;
+//    private static ArrayList<XProgram> negPrograms;
 //    private static ArrayList<Solver> posSolvers;
 //    private static ArrayList<Solver> negSolvers;
-//    private static HashMap<Programme, Solver> solvers = new HashMap<>();
+//    private static HashMap<XProgram, Solver> solvers = new HashMap<>();
 //    private static final Context ctx = new Context();
 //    private static int[] current;
 //    private static MemoryModel currentCandidate;
@@ -127,7 +127,7 @@
 //        log.fine("Adding and Checking" + rel.getName()+". Consistent: "+ax.consistent);
 //    }
 //
-//        private static void add(Relation rel, HashMap<Programme, Boolean> map) {
+//        private static void add(Relation rel, HashMap<XProgram, Boolean> map) {
 //        CandidateAxiom ax = new CandidateAxiom(rel);
 //        ax.consProg=map;
 //        ax.consistent = checkCandidate(ax);
@@ -148,7 +148,7 @@
 //            Relation r1 = candidates.get(j).getRel();
 //            //candidates.get(j).consProg.fir
 //            boolean consr1 = candidates.get(j).consistent;
-//            Map<Programme, Boolean> r1consProg = candidates.get(j).consProg;
+//            Map<XProgram, Boolean> r1consProg = candidates.get(j).consProg;
 //            if (!(r1 instanceof RelTransRef)) {
 //                //add(new RelTransRef(r1), consr1);
 //            }
@@ -163,7 +163,7 @@
 //                //       if(i!=j){
 //                Relation r2 = candidates.get(i).getRel();
 //                boolean consr2 = candidates.get(i).consistent;
-//                Map<Programme, Boolean> r2consProg = candidates.get(i).consProg;
+//                Map<XProgram, Boolean> r2consProg = candidates.get(i).consProg;
 //
 //                //unions are always added from the left
 //                if (!(r2 instanceof RelUnion)) {
@@ -175,16 +175,16 @@
 //                    }
 //                }
 //                boolean unionCons = candidates.get(candidates.size() - 1).consistent;
-//                HashMap<Programme, Boolean> unionProgCons =candidates.get(candidates.size() - 1).consProg;
+//                HashMap<XProgram, Boolean> unionProgCons =candidates.get(candidates.size() - 1).consProg;
 //
 //                //intersections are always added from the left
 //                if (!(r2 instanceof RelInterSect)) {
 //                    if (consr1 && consr2) {
 //                        add(new RelInterSect(r1, r2), true);
 //                    } else {
-//                        HashMap<Programme, Boolean> tempmap =new HashMap<>(posPrograms.size());
-//                        for (Map.Entry<Programme, Boolean> entry : r2consProg.entrySet()) {
-//                            Programme key = entry.getKey();
+//                        HashMap<XProgram, Boolean> tempmap =new HashMap<>(posPrograms.size());
+//                        for (Map.Entry<XProgram, Boolean> entry : r2consProg.entrySet()) {
+//                            XProgram key = entry.getKey();
 //                            Boolean value = entry.getValue();
 //                            if(value=Boolean.TRUE){
 //                                if(r1consProg.get(key)==Boolean.TRUE)
@@ -286,7 +286,7 @@
 //
 //            } else {
 //                log.fine("Positive litmus test: " + string);
-//                Programme p = parseProgramFile(string, target);
+//                XProgram p = parseProgramFile(string, target);
 //                posPrograms.add(p);
 //                solvers.put(p, ctx.mkSolver());
 //                Solver s = solvers.get(p);
@@ -308,7 +308,7 @@
 //
 //            } else {
 //                log.fine("Negative litmus test: " + string);
-//                Programme p = parseProgramFile(string, target);
+//                XProgram p = parseProgramFile(string, target);
 //                negPrograms.add(p);
 //                solvers.put(p, ctx.mkSolver());
 //                Solver s = solvers.get(p);
@@ -355,7 +355,7 @@
 //    }
 //
 //    private static boolean checkCandidate(CandidateAxiom ax) {
-//        for (Programme posProgram : posPrograms) {
+//        for (XProgram posProgram : posPrograms) {
 //            if (!Objects.equals(ax.consProg.get(posProgram), Boolean.TRUE)) {
 //                if (!checkCandidate(ax, posProgram)) {
 //                    ax.consProg.put(posProgram, Boolean.FALSE);
@@ -368,7 +368,7 @@
 //        return true;
 //    }
 //
-//    private static boolean checkCandidate(CandidateAxiom ax, Programme p) {
+//    private static boolean checkCandidate(CandidateAxiom ax, XProgram p) {
 //        MemoryModel tempmodel = new MemoryModel();
 //        tempmodel.addAxiom(ax);
 //        Solver s = solvers.get(p);
@@ -386,7 +386,7 @@
 //            currentCandidate.addAxiom(candidates.get(i));
 //        }
 //        log.fine("Checking " + currentCandidate.write());
-//        for (Programme p : negPrograms) {
+//        for (XProgram p : negPrograms) {
 //            //check if p is already knwon to be inconsistent with one of the axioms, if so we can skip it.
 //            boolean cons = true;
 //            for (int i : current) {
@@ -408,7 +408,7 @@
 //            }
 //
 //        }
-//        for (Programme p : posPrograms) {
+//        for (XProgram p : posPrograms) {
 //            log.finer("Checking pos " + p.name);
 //            Solver s = solvers.get(p);
 //            s.push();

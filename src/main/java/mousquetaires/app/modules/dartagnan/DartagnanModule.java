@@ -2,9 +2,10 @@ package mousquetaires.app.modules.dartagnan;
 
 import mousquetaires.app.errors.*;
 import mousquetaires.app.modules.AppModule;
-import mousquetaires.languages.eventrepr.Programme;
-import mousquetaires.languages.eventrepr.ProgrammeConverter;
-import mousquetaires.languages.ytree.YSyntaxTree;
+import mousquetaires.languages.eventrepr.XProgram;
+import mousquetaires.languages.eventrepr.XProgrammeConverter;
+import mousquetaires.languages.eventrepr.memory.datamodels.DataModelLP64;
+import mousquetaires.languages.internalrepr.YSyntaxTree;
 import mousquetaires.languages.parsers.YtreeParser;
 import mousquetaires.languages.eventrepr.memory.datamodels.DataModel;
 import mousquetaires.memorymodels.old.MemoryModel;
@@ -36,10 +37,10 @@ public class DartagnanModule extends AppModule {
 
             YSyntaxTree internalRepr = YtreeParser.parse(options.inputProgramFile);
 
-            DataModel dataModel = null; // TODO: pass as cli-option
-            Programme programme = ProgrammeConverter.toProgramme(internalRepr, dataModel);
+            DataModel dataModel = new DataModelLP64(); // TODO: pass as cli-option
+            XProgram program = XProgrammeConverter.toProgramme(internalRepr, dataModel);
 
-            // SmtEncoder.encode(programme) ...
+            // SmtEncoder.encode(program) ...
 
             // TODO: cat-file parsing
             //if (cmd.hasOption("file")) {
@@ -65,26 +66,26 @@ public class DartagnanModule extends AppModule {
 
             String target = options.sourceModel.name();
         /*
-        programme.initialize();
-        programme.compile(target, false, true);
+        program.initialize();
+        program.compile(target, false, true);
 
         Context ctx = new Context();
         Solver solver = ctx.mkSolver();
 
-        solver.add(programme.encodeDF(ctx));
-        solver.add(programme.ass.encode(ctx));
-        solver.add(programme.encodeCF(ctx));
-        solver.add(programme.encodeDF_RF(ctx));
-        solver.add(Domain.encode(programme, ctx));
+        solver.add(program.encodeDF(ctx));
+        solver.add(program.ass.encode(ctx));
+        solver.add(program.encodeCF(ctx));
+        solver.add(program.encodeDF_RF(ctx));
+        solver.add(Domain.encode(program, ctx));
         if (mcm != null) {
             log.warning(mcm.write());
 
-            solver.add(mcm.encode(programme, ctx));
-            solver.add(mcm.Consistent(programme, ctx));
+            solver.add(mcm.encode(program, ctx));
+            solver.add(mcm.Consistent(program, ctx));
         } else {
             log.info("Using static model.");
-            solver.add(programme.encodeMM(ctx, target));
-            solver.add(programme.encodeConsistent(ctx, target));
+            solver.add(program.encodeMM(ctx, target));
+            solver.add(program.encodeConsistent(ctx, target));
         }
 
         ctx.setPrintMode(Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL);

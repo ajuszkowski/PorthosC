@@ -1,7 +1,7 @@
 package mousquetaires.interpretation.eventrepr;
 
-import mousquetaires.languages.eventrepr.memory.RegistryLocation;
-import mousquetaires.languages.eventrepr.memory.SharedLocation;
+import mousquetaires.languages.eventrepr.memory.XRegistryLocation;
+import mousquetaires.languages.eventrepr.memory.XSharedLocation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,19 +9,19 @@ import java.util.Map;
 
 class MemoryManager {
 
-    private final Map<String, SharedLocation> sharedLocations;
-    private final Map<String, RegistryLocation> registryLocations;
+    private final Map<String, XSharedLocation> sharedLocations;
+    private final Map<String, XRegistryLocation> registryLocations;
 
     MemoryManager() {
         this.sharedLocations = new HashMap<>();
         this.registryLocations = new HashMap<>();
     }
 
-    public SharedLocation tryGetSharedLocation(String name) {
+    public XSharedLocation tryGetSharedLocation(String name) {
         return sharedLocations.get(name);
     }
 
-    public RegistryLocation tryGetRegistryLocation(String name) {
+    public XRegistryLocation tryGetRegistryLocation(String name) {
         return registryLocations.get(name);
     }
 
@@ -29,7 +29,7 @@ class MemoryManager {
         if (sharedLocations.containsKey(name)) {
             return false;
         }
-        sharedLocations.put(name, new SharedLocation(name));
+        sharedLocations.put(name, new XSharedLocation(name));
         return true;
     }
 
@@ -45,7 +45,7 @@ class MemoryManager {
         if (registryLocations.containsKey(name)) {
             return false;
         }
-        registryLocations.put(name, new RegistryLocation(name));
+        registryLocations.put(name, new XRegistryLocation(name));
         return true;
     }
 

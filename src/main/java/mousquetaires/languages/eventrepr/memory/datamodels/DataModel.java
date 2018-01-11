@@ -1,6 +1,6 @@
 package mousquetaires.languages.eventrepr.memory.datamodels;
 
-import mousquetaires.languages.ytree.types.YPrimitiveTypeName;
+import mousquetaires.languages.internalrepr.types.YPrimitiveTypeName;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
 

@@ -1,7 +1,7 @@
 package mousquetaires.languages;
 
-import mousquetaires.languages.cmin.transformer.CminToYtreeTransformer;
-import mousquetaires.languages.porthos.PorthosToYtreeTransformer;
+import mousquetaires.languages.cmin.transformers.tointernal.CminToYtreeTransformer;
+import mousquetaires.utils.exceptions.NotImplementedException;
 
 
 public class TransformerFactory {
@@ -9,10 +9,10 @@ public class TransformerFactory {
         switch (inputLanguage) {
             case Cmin:
                 return new CminToYtreeTransformer();
-            case Porthos:
-                return new PorthosToYtreeTransformer();
+            //case Porthos:
+            //    return new PorthosToYtreeTransformer();
             case Litmus:
-                throw new RuntimeException("not implemented yet");
+                throw new NotImplementedException();
             default:
                 throw new IllegalArgumentException("Unsupported language: " + inputLanguage.toString());
         }

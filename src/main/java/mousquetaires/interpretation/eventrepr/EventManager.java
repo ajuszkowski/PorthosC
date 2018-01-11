@@ -1,21 +1,21 @@
 package mousquetaires.interpretation.eventrepr;
 
-import mousquetaires.languages.eventrepr.events.ReadEvent;
-import mousquetaires.languages.eventrepr.events.WriteEvent;
+import mousquetaires.languages.eventrepr.events.XReadEvent;
+import mousquetaires.languages.eventrepr.events.XWriteEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 class EventManager {
-    private final static List<ReadEvent> readEvents = new ArrayList<>();
-    private final static List<WriteEvent> writeEvents = new ArrayList<>();
+    private final static List<XReadEvent> readEvents = new ArrayList<>();
+    private final static List<XWriteEvent> writeEvents = new ArrayList<>();
 
-    public void registerReadEvent(ReadEvent event) {
+    public void registerReadEvent(XReadEvent event) {
         readEvents.add(event);
     }
 
-    public void registerWriteEvent(WriteEvent event) {
+    public void registerWriteEvent(XWriteEvent event) {
         writeEvents.add(event);
     }
 }

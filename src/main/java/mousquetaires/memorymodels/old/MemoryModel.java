@@ -5,7 +5,7 @@
  */
 package mousquetaires.memorymodels.old;
 
-//import mousquetaires.execution.events.old.Event;
+//import mousquetaires.execution.events.old.XEvent;
 //import mousquetaires.execution.events.old.MemEvent;
 
 
@@ -24,7 +24,7 @@ public class MemoryModel {
     //public void addRel(Relation rel){
     //    namedrels.add(rel);
     //}
-    //public BoolExpr encode(Programme programme, Context ctx) {
+    //public BoolExpr encode(XProgram programme, Context ctx) {
     //    BoolExpr expr = ctx.mkTrue();
     //    for (Axiom ax : axioms) {
     //        expr=ctx.mkAnd(expr,ax.getRel().encode(programme, ctx));
@@ -32,8 +32,8 @@ public class MemoryModel {
     //    return expr;
     //}
     //
-    //public BoolExpr Consistent(Programme programme, Context ctx) {
-    //    Set<Event> events = programme.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+    //public BoolExpr Consistent(XProgram programme, Context ctx) {
+    //    Set<XEvent> events = programme.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
     //    BoolExpr expr = ctx.mkTrue();
     //    for (Relation namedrel : namedrels) {
     //        expr=ctx.mkAnd(expr,namedrel.encode(programme, ctx));
@@ -44,8 +44,8 @@ public class MemoryModel {
     //    return expr;
     //}
     //
-    //    public BoolExpr Inconsistent(Programme programme, Context ctx) {
-    //    Set<Event> events = programme.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+    //    public BoolExpr Inconsistent(XProgram programme, Context ctx) {
+    //    Set<XEvent> events = programme.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
     //    BoolExpr expr = ctx.mkFalse();
     //    for (Axiom ax : axioms) {
     //        expr=ctx.mkOr(expr,ax.Inconsistent(events, ctx));
