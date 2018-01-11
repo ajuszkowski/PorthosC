@@ -2,15 +2,19 @@ package mousquetaires.app.modules.dartagnan;
 
 import mousquetaires.app.errors.*;
 import mousquetaires.app.modules.AppModule;
-import mousquetaires.languages.eventrepr.XProgram;
-import mousquetaires.languages.eventrepr.XProgrammeConverter;
-import mousquetaires.languages.eventrepr.memory.datamodels.DataModelLP64;
-import mousquetaires.languages.internalrepr.YSyntaxTree;
+import mousquetaires.interpretation.eventrepr.Interpreter;
+import mousquetaires.languages.ProgramExtensions;
+import mousquetaires.languages.ProgramLanguage;
+import mousquetaires.languages.xrepr.XProgram;
+import mousquetaires.languages.xrepr.XProgrammeConverter;
+import mousquetaires.languages.xrepr.memory.datamodels.DataModelLP64;
+import mousquetaires.languages.ytree.YSyntaxTree;
 import mousquetaires.languages.parsers.YtreeParser;
-import mousquetaires.languages.eventrepr.memory.datamodels.DataModel;
+import mousquetaires.languages.xrepr.memory.datamodels.DataModel;
 import mousquetaires.memorymodels.old.MemoryModel;
 import mousquetaires.memorymodels.old.MemoryModelFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -34,11 +38,12 @@ public class DartagnanModule extends AppModule {
         try {
 
             MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
-
-            YSyntaxTree internalRepr = YtreeParser.parse(options.inputProgramFile);
-
+            File inputProgramFile = options.inputProgramFile;
+            ProgramLanguage language = ProgramExtensions.parseProgramLanguage(inputProgramFile.getName());
+            YSyntaxTree internalRepr = YtreeParser.parse(inputProgramFile, language);
             DataModel dataModel = new DataModelLP64(); // TODO: pass as cli-option
-            XProgram program = XProgrammeConverter.toProgramme(internalRepr, dataModel);
+            Interpreter interpreter = new Interpreter(language, dataModel);
+            XProgram program = XProgrammeConverter.toProgramme(internalRepr, interpreter);
 
             // SmtEncoder.encode(program) ...
 

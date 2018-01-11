@@ -1,10 +1,10 @@
 package mousquetaires.tests.unit.languages.parsers.cmin.statements;
 
-import mousquetaires.languages.internalrepr.YSyntaxTree;
-import mousquetaires.languages.internalrepr.expressions.YAssignmentExpression;
-import mousquetaires.languages.internalrepr.expressions.YEqualityExpression;
-import mousquetaires.languages.internalrepr.statements.YBranchingStatement;
-import mousquetaires.languages.internalrepr.statements.YLinearStatement;
+import mousquetaires.languages.ytree.YSyntaxTree;
+import mousquetaires.languages.ytree.expressions.YAssignmentExpression;
+import mousquetaires.languages.ytree.expressions.YEqualityExpression;
+import mousquetaires.languages.ytree.statements.YBranchingStatement;
+import mousquetaires.languages.ytree.statements.YLinearStatement;
 import org.junit.Test;
 
 

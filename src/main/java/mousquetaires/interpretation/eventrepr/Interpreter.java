@@ -1,18 +1,21 @@
 package mousquetaires.interpretation.eventrepr;
 
-import mousquetaires.languages.eventrepr.memory.XMemoryLocation;
-import mousquetaires.languages.eventrepr.memory.XRegistryLocation;
-import mousquetaires.languages.eventrepr.memory.XSharedLocation;
+import mousquetaires.languages.xrepr.memory.XMemoryLocation;
+import mousquetaires.languages.xrepr.memory.XRegistryLocation;
+import mousquetaires.languages.xrepr.memory.XSharedLocation;
 import mousquetaires.languages.ProgramLanguage;
+import mousquetaires.languages.xrepr.memory.datamodels.DataModel;
 
 
 public class Interpreter {
 
+    private final DataModel dataModel;
     private final MemoryManager memoryManager;
     private final EventManager eventManager;
     private final TypeManager typeManager;
 
-    public Interpreter(ProgramLanguage language) {
+    public Interpreter(ProgramLanguage language, DataModel dataModel) {
+        this.dataModel = dataModel;
         this.memoryManager = new MemoryManager();
         this.eventManager  = new EventManager();
         this.typeManager   = new TypeManager(language);

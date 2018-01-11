@@ -1,7 +1,7 @@
 package mousquetaires.interpretation.eventrepr;
 
-import mousquetaires.languages.eventrepr.events.XReadEvent;
-import mousquetaires.languages.eventrepr.events.XWriteEvent;
+import mousquetaires.languages.xrepr.events.XReadEvent;
+import mousquetaires.languages.xrepr.events.XWriteEvent;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 package mousquetaires.interpretation.eventrepr;
 
-import mousquetaires.languages.eventrepr.memory.XRegistryLocation;
-import mousquetaires.languages.eventrepr.memory.XSharedLocation;
+import mousquetaires.languages.xrepr.memory.XRegistryLocation;
+import mousquetaires.languages.xrepr.memory.XSharedLocation;
 
 import java.util.HashMap;
 import java.util.Map;
