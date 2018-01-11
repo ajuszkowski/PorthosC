@@ -7,7 +7,7 @@ import mousquetaires.languages.ytree.statements.YBlockStatement;
 import mousquetaires.patterns.Builder;
 
 
-public class YBlockStatementBuilder extends Builder<YBlockStatement> implements YEntity {
+public class YBlockStatementBuilder extends Builder<YStatement> implements YEntity {
 
     public final ImmutableList.Builder<YStatement> statements;
     public boolean switchContext; // if true, has braces '{' '}' around
@@ -22,8 +22,12 @@ public class YBlockStatementBuilder extends Builder<YBlockStatement> implements 
     }
 
     @Override
-    public YBlockStatement build() {
-        return new YBlockStatement(this);
+    public YStatement build() {
+        ImmutableList<YStatement> statementsList = statements.build();
+        if (statementsList.size() > 1) {
+            return new YBlockStatement(switchContext, statementsList);
+        }
+        return statementsList.get(0);
     }
 
     public void setSwitchContext() {

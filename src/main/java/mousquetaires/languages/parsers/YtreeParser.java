@@ -18,9 +18,7 @@ public class YtreeParser {
         ProgramLanguage language = ProgramExtensions.parseProgramLanguage(inputProgramFile.getName());
         Interpreter interpreter = new Interpreter(language);
         ProgramToYtreeTransformer transformer = TransformerFactory.getTransformer(language);
-
         ParserRuleContext parserEntryPoint = CustomParserFactory.getParser(inputProgramFile, language);
-
         return transformer.transform(parserEntryPoint);
     }
 }

@@ -18,7 +18,7 @@ public class YVariableDeclarationStatement extends YStatement {
 
     @Override
     public String toString() {
-        return String.format("declare(%s:%s);", type, variable);
+        return String.format("declare(%s: %s);", variable, type);
     }
 
     @Override

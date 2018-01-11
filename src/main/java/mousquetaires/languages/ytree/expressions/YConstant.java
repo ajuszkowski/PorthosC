@@ -1,6 +1,5 @@
 package mousquetaires.languages.ytree.expressions;
 
-import mousquetaires.languages.cmin.transformer.tokens.CminKeyword;
 import mousquetaires.languages.ytree.types.YType;
 import mousquetaires.utils.exceptions.ArgumentNullException;
 
@@ -8,13 +7,36 @@ import java.util.Objects;
 
 
 public class YConstant extends YExpression {
-
     protected final Object value;
     protected final YType type;
 
-    public YConstant(Object value, YType type) {
+    YConstant(Object value, YType type) {
         this.value = value;
         this.type = type;
+    }
+
+    public static YConstant tryParse(String text) {
+        if (text == null) {
+            throw new ArgumentNullException();
+        }
+
+        // Integer:
+        try {
+            int value = Integer.parseInt(text);
+            return YConstantFactory.newIntConstant(value);
+        } catch (NumberFormatException e) {
+        }
+
+        // String (as char array) :
+        // use StringBuilder
+
+        // TODO: try other known types.
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return value + ":" + type;
     }
 
     //public ArithExpr toZ3(MapSSA map, Context ctx) {
@@ -24,41 +46,6 @@ public class YConstant extends YExpression {
     //public Set<Register> getRegs() {
     //    return new HashSet<Register>();
     //}
-
-    public static YConstant tryParse(String text){
-        if (text == null) {
-            throw new ArgumentNullException("text");
-        }
-
-        // Integer:
-        try {
-            int value = Integer.parseInt(text);
-            return YConstant.createInteger(value);
-        } catch (NumberFormatException e) { }
-
-        // String (char array) :
-        // use StringBuilder
-
-        // TODO: try other known types.
-        return null;
-    }
-
-    public static YConstant createInteger(int value) {
-        return new YConstant(value, CminKeyword.convert(CminKeyword.Int));
-    }
-
-    public static YConstant newBooleanConstant(boolean value) {
-        return new YConstant(value, CminKeyword.convert(CminKeyword.Bool));
-    }
-
-    public static YConstant newCharConstant(char value) {
-        return new YConstant(value, CminKeyword.convert(CminKeyword.Char));
-    }
-
-    @Override
-    public String toString() {
-        return value + ":" + type;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -73,4 +60,5 @@ public class YConstant extends YExpression {
     public int hashCode() {
         return Objects.hash(value, type);
     }
+
 }

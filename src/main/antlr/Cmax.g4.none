@@ -579,7 +579,7 @@ Register : 'register';
 Restrict : 'restrict';
 Return : 'return';
 Short : 'short';
-Signed : 'signed';
+Signed : 'specifier';
 Sizeof : 'sizeof';
 Static : 'static';
 Struct : 'struct';

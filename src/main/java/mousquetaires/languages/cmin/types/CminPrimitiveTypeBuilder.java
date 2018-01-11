@@ -1,6 +1,6 @@
 //package mousquetaires.languages.cmin.types;
 //
-//import mousquetaires.languages.cmin.transformer.tokens.CminKeyword;
+//import mousquetaires.languages.ytree.types.CminKeyword;
 //import mousquetaires.languages.ytree.types.YType;
 //import mousquetaires.patterns.Builder;
 //
@@ -40,14 +40,14 @@
 //        if (isBuilt()) {
 //            throw new RuntimeException(getAlreadyFinishedMessage());
 //        }
-//        boolean signed = true;
+//        boolean specifier = true;
 //        int bitness = 0;
 //        for (Map.Entry<CminKeyword, Integer> entry : keywordIdentificatorsMap.entrySet()) {
 //            boolean hasValue = modifiers.get(entry.getValue());
 //            if (hasValue) {
 //                CminKeyword keyword = entry.getKey();
 //                if (keyword == CminKeyword.Unsigned) {
-//                    signed = false;
+//                    specifier = false;
 //                    continue;
 //                }
 //                YType newType = CminKeyword.tryConvert(keyword);
@@ -60,6 +60,6 @@
 //            }
 //        }
 //        setBuilt();
-//        return new YType(bitness, signed);
+//        return new YType(bitness, specifier);
 //    }
 //}

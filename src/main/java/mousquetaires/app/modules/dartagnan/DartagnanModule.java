@@ -6,6 +6,7 @@ import mousquetaires.languages.eventrepr.Programme;
 import mousquetaires.languages.eventrepr.ProgrammeConverter;
 import mousquetaires.languages.ytree.YSyntaxTree;
 import mousquetaires.languages.parsers.YtreeParser;
+import mousquetaires.languages.eventrepr.memory.datamodels.DataModel;
 import mousquetaires.memorymodels.old.MemoryModel;
 import mousquetaires.memorymodels.old.MemoryModelFactory;
 
@@ -34,7 +35,9 @@ public class DartagnanModule extends AppModule {
             MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
 
             YSyntaxTree internalRepr = YtreeParser.parse(options.inputProgramFile);
-            Programme programme = ProgrammeConverter.toProgramme(internalRepr);
+
+            DataModel dataModel = null; // TODO: pass as cli-option
+            Programme programme = ProgrammeConverter.toProgramme(internalRepr, dataModel);
 
             // SmtEncoder.encode(programme) ...
 

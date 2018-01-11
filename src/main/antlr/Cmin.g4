@@ -242,7 +242,7 @@ primitiveTypeKeyword
     |   Short Int?
     |   Short Short Int?
     |   Int
-    |   Long
+    |   Long Int?
     |   Long Long Int?
     |   Float
     |   Double
@@ -372,7 +372,7 @@ Register : 'register';
 Restrict : 'restrict';
 Return : 'return';
 Short : 'short';
-Signed : 'signed';
+Signed : 'specifier';
 Sizeof : 'sizeof';
 Static : 'static';
 Struct : 'struct';

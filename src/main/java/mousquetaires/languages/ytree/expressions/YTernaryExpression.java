@@ -16,11 +16,11 @@ public class YTernaryExpression extends YExpression {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer();
-        sb.append(condition)     .append(" ? ");
-        sb.append(trueExpression).append(" : ");
-        sb.append(falseExpression);
-        return sb.toString();
+        final StringBuffer builder = new StringBuffer();
+        builder.append(condition)     .append(" ? ");
+        builder.append(trueExpression).append(" : ");
+        builder.append(falseExpression);
+        return builder.toString();
     }
 
     @Override

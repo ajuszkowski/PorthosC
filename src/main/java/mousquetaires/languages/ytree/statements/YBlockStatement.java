@@ -21,6 +21,11 @@ public class YBlockStatement extends YStatement {
         this.switchContext = switchContext;
     }
 
+    public YBlockStatement(boolean switchContext, ImmutableList<YStatement> statements) {
+        this.statements = statements;
+        this.switchContext = switchContext;
+    }
+
     public YBlockStatement(YBlockStatementBuilder builder) {
         this.statements = builder.getStatements();
         this.switchContext = builder.getSwitchContext();
@@ -28,17 +33,17 @@ public class YBlockStatement extends YStatement {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         if (switchContext) {
-            sb.append("{ ");
+            builder.append("{ ");
         }
         for (YStatement statement : statements) {
-            sb.append(statement.toString()).append(" ");
+            builder.append(statement.toString()).append(" ");
         }
         if (switchContext) {
-            sb.append(" }");
+            builder.append(" }");
         }
-        return sb.toString();
+        return builder.toString();
     }
 
     @Override

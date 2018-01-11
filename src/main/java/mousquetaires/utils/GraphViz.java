@@ -339,7 +339,7 @@ private static String DOT = configFile.getProperty("dotFor" + osName);
   */
  public void readSource(String input)
  {
-     StringBuilder sb = new StringBuilder();
+     StringBuilder builder = new StringBuilder();
 
      try
      {
@@ -348,7 +348,7 @@ private static String DOT = configFile.getProperty("dotFor" + osName);
          BufferedReader br = new BufferedReader(new InputStreamReader(dis));
          String line;
          while ((line = br.readLine()) != null) {
-             sb.append(line);
+             builder.append(line);
          }
          dis.close();
      } 
@@ -356,7 +356,7 @@ private static String DOT = configFile.getProperty("dotFor" + osName);
          System.err.println("Error: " + e.getMessage());
      }
 
-     this.graph = sb;
+     this.graph = builder;
  }
 
 }

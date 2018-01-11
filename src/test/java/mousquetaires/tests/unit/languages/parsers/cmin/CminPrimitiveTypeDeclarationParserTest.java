@@ -1,53 +1,82 @@
 package mousquetaires.tests.unit.languages.parsers.cmin;
 
-import mousquetaires.languages.ytree.YEntity;
 import mousquetaires.languages.ytree.YSyntaxTree;
 import mousquetaires.languages.ytree.expressions.YAssignmentExpression;
-import mousquetaires.languages.ytree.expressions.YConstant;
-import mousquetaires.languages.ytree.expressions.YVariableRef;
 import mousquetaires.languages.ytree.statements.YBlockStatement;
 import mousquetaires.languages.ytree.statements.YLinearStatement;
 import mousquetaires.languages.ytree.statements.YVariableDeclarationStatement;
-import mousquetaires.languages.ytree.types.YType;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 
 public class CminPrimitiveTypeDeclarationParserTest extends CminParserTest {
 
     private final String primitiveDirectory = structuresDirectory + "/type_declaration/primitive";
 
+
     @Test
-    public void test_primitiveType() {
-        YSyntaxTree parsedTree = runTest(primitiveDirectory + "/variableDeclarationStatement.c");
-        List<YEntity> actualRoots = parsedTree.getRoots();
+    public void test_primitive_type_declaration() {
+        YSyntaxTree expectedTree = new YSyntaxTree(
+                new YVariableDeclarationStatement(typeInt, variableX),
+                new YVariableDeclarationStatement(typeInt.withPointerLevel(1), variableX),
+                new YVariableDeclarationStatement(typeInt.withPointerLevel(2), variableX),
+                new YVariableDeclarationStatement(typeInt.withPointerLevel(2), variableX),
+                //
+                new YVariableDeclarationStatement(typeInt.asUnsigned(), variableX),
+                new YVariableDeclarationStatement(typeInt.asUnsigned().withPointerLevel(1), variableX),
+                //
+                new YVariableDeclarationStatement(typeChar, variableX),
+                new YVariableDeclarationStatement(typeChar.asUnsigned(), variableX),
+                //
+                new YVariableDeclarationStatement(typeShort, variableX),
+                new YVariableDeclarationStatement(typeShort, variableX),
+                new YVariableDeclarationStatement(typeShort.asUnsigned(), variableX),
+                //
+                new YVariableDeclarationStatement(typeLong, variableX),
+                new YVariableDeclarationStatement(typeLong, variableX),
+                new YVariableDeclarationStatement(typeLong.asUnsigned(), variableX),
+                //
+                new YVariableDeclarationStatement(typeLongLong, variableX),
+                new YVariableDeclarationStatement(typeLongLong, variableX),
+                new YVariableDeclarationStatement(typeLongLong.asUnsigned(), variableX),
+                //
+                new YVariableDeclarationStatement(typeVoidPointer, variableX)
+        );
+        runParserTest(primitiveDirectory + "/primitive_type_declaration.c", expectedTree);
+    }
 
-        YVariableRef aVariable = YVariableRef.create("a");
-        YVariableRef bVariable = YVariableRef.create("b");
-        YVariableRef cVariable = YVariableRef.create("c");
-        YType intType = YType.getIntType();
-        List<YEntity> expectedRoots = new ArrayList<>() {{
-            add(new YBlockStatement(
-                    // 'int a'
-                    new YVariableDeclarationStatement(intType, aVariable),
-                    // 'int b;'
-                    new YVariableDeclarationStatement(intType, bVariable),
-                    // 'b = 1;'
-                    new YLinearStatement(new YAssignmentExpression(bVariable, YConstant.createInteger(1))),
-                    // 'int c;'
-                    new YVariableDeclarationStatement(intType, cVariable),
-                    // 'c = 2;'
-                    new YLinearStatement(new YAssignmentExpression(cVariable, YConstant.createInteger(2)))
-            ));
-
-        }};
-        assertEquals(expectedRoots.size(), actualRoots.size());
-        for (int i = 0; i < expectedRoots.size(); ++i) {
-            assertEquals(i + "th statement:", expectedRoots.get(i), actualRoots.get(i));
-        }
+    @Test
+    public void test_primitive_type_declaration_initialisation() {
+        YSyntaxTree expectedTree = new YSyntaxTree(
+                new YBlockStatement(
+                        // 'int a'
+                        new YVariableDeclarationStatement(typeInt, variableA),
+                        // 'a = 1;'
+                        new YLinearStatement(new YAssignmentExpression(variableA, constant1))
+                ),
+                new YBlockStatement(
+                        // 'int a'
+                        new YVariableDeclarationStatement(typeInt, variableA),
+                        // 'int b;'
+                        new YVariableDeclarationStatement(typeInt, variableB),
+                        // 'b = 2;'
+                        new YLinearStatement(new YAssignmentExpression(variableB, constant2)),
+                        // 'int c;'
+                        new YVariableDeclarationStatement(typeInt, variableC),
+                        // 'c = 3;'
+                        new YLinearStatement(new YAssignmentExpression(variableC, constant3))
+                ),
+                new YBlockStatement(
+                        // 'int a'
+                        new YVariableDeclarationStatement(typeInt, variableA),
+                        // 'a = 1;'
+                        new YLinearStatement(new YAssignmentExpression(variableA, constant1)),
+                        // 'int b;'
+                        new YVariableDeclarationStatement(typeInt, variableB),
+                        // 'int c;'
+                        new YVariableDeclarationStatement(typeInt, variableC),
+                        // 'c = 3;'
+                        new YLinearStatement(new YAssignmentExpression(variableC, constant3))
+                ));
+        runParserTest(primitiveDirectory + "/variable_declaration_initialisation.c", expectedTree);
     }
 }

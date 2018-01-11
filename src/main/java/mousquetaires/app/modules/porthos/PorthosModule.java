@@ -6,6 +6,7 @@ import mousquetaires.app.errors.UnrecognisedError;
 import mousquetaires.app.modules.AppModule;
 import mousquetaires.languages.eventrepr.Programme;
 import mousquetaires.languages.eventrepr.ProgrammeConverter;
+import mousquetaires.languages.eventrepr.memory.datamodels.DataModel;
 import mousquetaires.languages.ytree.YSyntaxTree;
 import mousquetaires.languages.parsers.YtreeParser;
 
@@ -61,7 +62,8 @@ public class PorthosModule extends AppModule {
             //MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
 
             YSyntaxTree internalRepr = YtreeParser.parse(options.inputProgramFile);
-            Programme programme = ProgrammeConverter.toProgramme(internalRepr);
+            DataModel dataModel = null; // TODO
+            Programme programme = ProgrammeConverter.toProgramme(internalRepr, dataModel);
 
 
         /*

@@ -4,7 +4,6 @@ import mousquetaires.interpretation.internalrepr.exceptions.ParserException;
 import mousquetaires.languages.cmin.transformer.temporaries.YBlockStatementBuilder;
 import mousquetaires.languages.cmin.transformer.temporaries.YVariableInitialiser;
 import mousquetaires.languages.cmin.transformer.temporaries.YVariableInitialiserList;
-import mousquetaires.languages.cmin.transformer.tokens.CminKeyword;
 import mousquetaires.languages.parsers.CminParser;
 import mousquetaires.languages.parsers.CminVisitor;
 import mousquetaires.languages.ytree.YEntity;
@@ -12,7 +11,10 @@ import mousquetaires.languages.ytree.YSyntaxTree;
 import mousquetaires.languages.ytree.YSyntaxTreeBuilder;
 import mousquetaires.languages.ytree.expressions.*;
 import mousquetaires.languages.ytree.statements.*;
+import mousquetaires.languages.ytree.types.YPrimitiveTypeName;
+import mousquetaires.languages.ytree.types.YPrimitiveTypeSpecifier;
 import mousquetaires.languages.ytree.types.YType;
+import mousquetaires.languages.ytree.types.YTypeFactory;
 import mousquetaires.utils.exceptions.ArgumentNullException;
 import mousquetaires.utils.exceptions.NotImplementedException;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
@@ -25,7 +27,6 @@ class CminToYtreeTransformerVisitor
     //extends CminBaseVisitor<YEntity> {
 
     private final YSyntaxTreeBuilder syntaxTreeBuilder = new YSyntaxTreeBuilder();
-
 
     /**
      * main
@@ -524,13 +525,9 @@ class CminToYtreeTransformerVisitor
      * ;
      */
     public YType visitPrimitiveTypeDeclarator(CminParser.PrimitiveTypeDeclaratorContext ctx) {
-        // todo: use primitive type specifier as well
-        CminKeyword typeKeyword = visitPrimitiveTypeKeyword(ctx.primitiveTypeKeyword());
-        YType type = CminKeyword.tryConvert(typeKeyword);
-        if (type == null) {
-            throw new ParserException(ctx, "Could not parse primitive type " + ctx.getText());
-        }
-        return type;
+        YPrimitiveTypeSpecifier typeSpecifier = visitPrimitiveTypeSpecifier(ctx.primitiveTypeSpecifier());
+        YPrimitiveTypeName typeName = visitPrimitiveTypeKeyword(ctx.primitiveTypeKeyword());
+        return YTypeFactory.getPrimitiveType(typeName, typeSpecifier);
     }
 
     /**
@@ -539,7 +536,7 @@ class CminToYtreeTransformerVisitor
      * |   Unsigned
      * ;
      */
-    public CminKeyword visitPrimitiveTypeSpecifier(CminParser.PrimitiveTypeSpecifierContext ctx) {
+    public YPrimitiveTypeSpecifier visitPrimitiveTypeSpecifier(CminParser.PrimitiveTypeSpecifierContext ctx) {
         if (ctx == null) {
             return null;
         }
@@ -548,10 +545,10 @@ class CminToYtreeTransformerVisitor
         String keyword = ctx.getChild(0).getText(); // todo: get token characters correctly, something like: `ctx.getToken(...)`
 
         switch (keyword) {
-            case "signed":
-                return CminKeyword.Signed;
+            case "specifier":
+                return YPrimitiveTypeSpecifier.Signed;
             case "unsigned":
-                return CminKeyword.Unsigned;
+                return YPrimitiveTypeSpecifier.Unsigned;
             default:
                 throw new ParserException(ctx, "Unexpected primitive type specifier: " + keyword);
         }
@@ -573,24 +570,33 @@ class CminToYtreeTransformerVisitor
      * |   Auto
      * ;
      */
-    public CminKeyword visitPrimitiveTypeKeyword(CminParser.PrimitiveTypeKeywordContext ctx) {
+    public YPrimitiveTypeName visitPrimitiveTypeKeyword(CminParser.PrimitiveTypeKeywordContext ctx) {
         if (ctx == null) {
             throw new ArgumentNullException();
         }
         int childCount = ctx.getChildCount();
         assert childCount > 0 : childCount;
-        String keyword = ctx.getChild(0).getText(); // todo: get token bitness correctly, something like: `ctx.getToken(...)`
 
-        switch (keyword) {
+        // todo: get token correctly, something like: `ctx.getToken(...)`
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < childCount; ++i) {
+            builder.append(ctx.getChild(i).getText());
+            if (i != childCount-1) {
+                builder.append(' ');
+            }
+        }
+        String keywordText = builder.toString();
+
+        switch (keywordText) {
             case "short":
             case "short int":
-                return CminKeyword.Short;
+                return YPrimitiveTypeName.Short;
             case "long":
             case "long int":
-                return CminKeyword.Long;
+                return YPrimitiveTypeName.Long;
             case "long long":
             case "long long int":
-                return CminKeyword.LongLong;
+                return YPrimitiveTypeName.LongLong;
             // TODO: process some common custom types
             //case "int8_t":
             //    this.sizeModifier = CminPrimitiveType.SizeModifier.int8_t;
@@ -605,17 +611,19 @@ class CminToYtreeTransformerVisitor
             //    this.sizeModifier = CminPrimitiveType.SizeModifier.int64_t;
             //    return true;
             case "int":
-                return CminKeyword.Int;
+                return YPrimitiveTypeName.Int;
             case "char":
-                return CminKeyword.Char;
+                return YPrimitiveTypeName.Char;
             case "float":
-                return CminKeyword.Float;
+                return YPrimitiveTypeName.Float;
             case "double":
-                return CminKeyword.Double;
+                return YPrimitiveTypeName.Double;
             case "long double":
-                return CminKeyword.LongDouble;
+                return YPrimitiveTypeName.LongDouble;
+            case "void":
+                return YPrimitiveTypeName.Void;
             default:
-                throw new ParserException(ctx, "Unexpected primitive type keyword: " + keyword);
+                throw new ParserException(ctx, "Unexpected primitive type keyword: " + keywordText);
         }
     }
 
@@ -677,21 +685,25 @@ class CminToYtreeTransformerVisitor
      * :   typeDeclaration variableInitialisationList ';'
      * ;
      */
-    public YBlockStatement visitVariableDeclarationStatement(CminParser.VariableDeclarationStatementContext ctx) {
-        YType type = visitTypeDeclaration(ctx.typeDeclaration());
+    public YStatement visitVariableDeclarationStatement(CminParser.VariableDeclarationStatementContext ctx) {
+        CminParser.TypeDeclarationContext typeDeclarationCtx = ctx.typeDeclaration();
+        if (typeDeclarationCtx != null) {
+            YType type = visitTypeDeclaration(typeDeclarationCtx);
 
-        YVariableInitialiserList initialisationList = visitVariableInitialisationList(ctx.variableInitialisationList());
-        YBlockStatementBuilder builder = new YBlockStatementBuilder();
-        for (YVariableInitialiser initialiser : initialisationList) {
-            YVariableRef variable = initialiser.variable;
-            YExpression initExpression = initialiser.initExpression;
-            builder.add(new YVariableDeclarationStatement(type, variable));
-            if (initialiser.hasInitExpression()) {
-                YAssignmentExpression assignmentExpression = new YAssignmentExpression(variable, initExpression);
-                builder.add(new YLinearStatement(assignmentExpression));
+            YVariableInitialiserList initialisationList = visitVariableInitialisationList(ctx.variableInitialisationList());
+            YBlockStatementBuilder builder = new YBlockStatementBuilder();
+            for (YVariableInitialiser initialiser : initialisationList) {
+                YVariableRef variable = initialiser.variable;
+                YExpression initExpression = initialiser.initExpression;
+                builder.add(new YVariableDeclarationStatement(type, variable));
+                if (initialiser.hasInitExpression()) {
+                    YAssignmentExpression assignmentExpression = new YAssignmentExpression(variable, initExpression);
+                    builder.add(new YLinearStatement(assignmentExpression));
+                }
             }
+            return builder.build();
         }
-        return builder.build();
+        throw new IllegalStateException();
     }
 
     /**
@@ -700,9 +712,13 @@ class CminToYtreeTransformerVisitor
      * ;
      */
     public YType visitTypeDeclaration(CminParser.TypeDeclarationContext ctx) {
-        YType type = visitTypeDeclarator(ctx.typeDeclarator());
-        // todo: process typeSpecifier
-        return type;
+        CminParser.TypeDeclaratorContext typeDeclaratorCtx = ctx.typeDeclarator();
+        if (typeDeclaratorCtx != null) {
+            YType type = visitTypeDeclarator(typeDeclaratorCtx);
+            // todo: process typeSpecifier
+            return type;
+        }
+        throw new IllegalStateException();
     }
 
     /**
@@ -780,7 +796,7 @@ class CminToYtreeTransformerVisitor
      * :   LeftBrace statement* RightBrace
      * ;
      */
-    public YBlockStatement visitBlockStatement(CminParser.BlockStatementContext ctx) {
+    public YStatement visitBlockStatement(CminParser.BlockStatementContext ctx) {
         YBlockStatementBuilder builder = new YBlockStatementBuilder(true);
         for (CminParser.StatementContext statementContext : ctx.statement()) {
             YStatement statement = visitStatement(statementContext);
