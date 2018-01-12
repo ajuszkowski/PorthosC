@@ -1,6 +1,7 @@
 package mousquetaires.languages.transformers.ytree;
 
 import mousquetaires.interpretation.eventrepr.Interpreter;
+import mousquetaires.languages.xrepr.XProgram;
 import mousquetaires.languages.ytree.YSyntaxTree;
 
 
@@ -12,7 +13,7 @@ public class YtreeToXreprTransformer {
         this.interpreter = interpreter;
     }
 
-    public YSyntaxTree transform(YSyntaxTree internalSyntaxTree) {
-
+    public XProgram transform(YSyntaxTree internalSyntaxTree) {
+        return null;
     }
 }

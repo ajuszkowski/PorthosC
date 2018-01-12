@@ -1,8 +1,12 @@
 package mousquetaires.languages.ytree.statements;
 
+import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.ytree.YEntity;
 import mousquetaires.languages.ytree.expressions.YExpression;
+import mousquetaires.utils.YtreeUtils;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.Objects;
 
 
@@ -15,17 +19,39 @@ public class YBranchingStatement extends YStatement {
     @Nullable
     public final YStatement falseBranch;
 
+    public YBranchingStatement(YExpression condition, YStatement trueBranch) {
+        this(condition, trueBranch, null);
+    }
+
     public YBranchingStatement(YExpression condition,
                                YStatement trueBranch,
                                YStatement falseBranch) {
+        this(null, condition, trueBranch, falseBranch);
+    }
+
+    private YBranchingStatement(String label,
+                                YExpression condition,
+                                YStatement trueBranch,
+                                YStatement falseBranch) {
+        super(label);
         this.condition = condition;
         this.trueBranch = trueBranch;
         this.falseBranch = falseBranch;
     }
 
-    public YBranchingStatement(YExpression condition,
-                               YStatement trueBranch) {
-        this(condition, trueBranch, null);
+    @Override
+    public YBranchingStatement withLabel(String newLabel) {
+        return new YBranchingStatement(newLabel, condition, trueBranch, falseBranch);
+    }
+
+    @Override
+    public Iterator<YEntity> getChildrenIterator() {
+        return YtreeUtils.createIteratorFrom(condition, trueBranch, falseBranch);
+    }
+
+    @Override
+    public void accept(YtreeVisitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

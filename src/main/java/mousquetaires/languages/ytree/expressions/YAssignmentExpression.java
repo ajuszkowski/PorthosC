@@ -1,8 +1,11 @@
 package mousquetaires.languages.ytree.expressions;
 
 
+import mousquetaires.languages.visitors.YtreeVisitor;
 import mousquetaires.languages.ytree.YEntity;
+import mousquetaires.utils.YtreeUtils;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 
@@ -19,6 +22,17 @@ public class YAssignmentExpression extends YExpression {
         AndAssign,        // '&='
         OrAssign,         // '|='
         XorAssign,        // '^='
+        ;
+
+        @Override
+        public Iterator<YEntity> getChildrenIterator() {
+            return YtreeUtils.createIteratorFrom();
+        }
+
+        @Override
+        public void accept(YtreeVisitor visitor) {
+            visitor.visit(this);
+        }
     }
 
     // TODO: Add fences / atomic/ ...
@@ -34,6 +48,16 @@ public class YAssignmentExpression extends YExpression {
         this.operator = operator;
         this.assignee = assignee;
         this.expression = expression;
+    }
+
+    @Override
+    public Iterator<YEntity> getChildrenIterator() {
+        return YtreeUtils.createIteratorFrom(assignee, expression, operator);
+    }
+
+    @Override
+    public void accept(YtreeVisitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

@@ -1,9 +1,12 @@
 package mousquetaires.languages.ytree.expressions;
 
+import mousquetaires.languages.visitors.YtreeVisitor;
+
+
 public class YEqualityExpression extends YBinaryExpression {
 
     public YEqualityExpression(YExpression leftExpression, YExpression rightExpression) {
-        super(leftExpression, rightExpression, Operator.Equals);
+        super(leftExpression, rightExpression, Operator.Equals); // TODO: operator: ==, >, <, >=, <=
     }
 
 
@@ -62,4 +65,9 @@ public class YEqualityExpression extends YBinaryExpression {
     //    return setRegs;
     //}
 
+
+    @Override
+    public void accept(YtreeVisitor visitor) {
+        visitor.visit(this);
+    }
 }

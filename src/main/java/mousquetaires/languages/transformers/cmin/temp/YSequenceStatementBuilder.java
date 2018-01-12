@@ -5,7 +5,7 @@ import mousquetaires.languages.ytree.statements.YStatement;
 import mousquetaires.patterns.Builder;
 
 
-public class YSequenceStatementBuilder extends Builder<YTempMultiStatement> {
+public class YSequenceStatementBuilder extends Builder<YMultiStatementTemp> {
 
     public final ImmutableList.Builder<YStatement> statements;
 
@@ -14,8 +14,8 @@ public class YSequenceStatementBuilder extends Builder<YTempMultiStatement> {
     }
 
     @Override
-    public YTempMultiStatement build() {
-        return new YTempMultiStatement(statements.build());
+    public YMultiStatementTemp build() {
+        return new YMultiStatementTemp(statements.build());
     }
 
     public void add(YStatement statement) {

@@ -1,5 +1,6 @@
 package mousquetaires.languages.ytree.expressions;
 
+import mousquetaires.languages.visitors.YtreeVisitor;
 import mousquetaires.languages.ytree.types.YType;
 import mousquetaires.utils.exceptions.ArgumentNullException;
 
@@ -32,6 +33,11 @@ public class YConstant extends YExpression {
 
         // TODO: try other known types.
         return null;
+    }
+
+    @Override
+    public void accept(YtreeVisitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

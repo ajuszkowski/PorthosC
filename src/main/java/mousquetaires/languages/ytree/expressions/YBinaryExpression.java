@@ -1,10 +1,15 @@
 package mousquetaires.languages.ytree.expressions;
 
+import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.ytree.YEntity;
+import mousquetaires.utils.YtreeUtils;
+
+import java.util.Iterator;
 import java.util.Objects;
 
 
 public class YBinaryExpression extends YExpression {
-    public enum Operator {
+    public enum Operator implements YEntity {
         // int operators:
         IntPlus,
         IntMinus,
@@ -24,6 +29,17 @@ public class YBinaryExpression extends YExpression {
         Greater,
         GreaterOrEquals,
         ;
+
+
+        @Override
+        public Iterator<YEntity> getChildrenIterator() {
+            return YtreeUtils.createIteratorFrom();
+        }
+
+        @Override
+        public void accept(YtreeVisitor visitor) {
+            visitor.visit(this);
+        }
 
         @Override
         public String toString() {
@@ -115,6 +131,16 @@ public class YBinaryExpression extends YExpression {
     //    return setRegs;
     //}
 
+
+    @Override
+    public Iterator<YEntity> getChildrenIterator() {
+        return YtreeUtils.createIteratorFrom(leftExpression, rightExpression, operator);
+    }
+
+    @Override
+    public void accept(YtreeVisitor visitor) {
+        visitor.visit(this);
+    }
 
     @Override
     public String toString() {

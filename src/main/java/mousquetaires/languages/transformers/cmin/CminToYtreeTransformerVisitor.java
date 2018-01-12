@@ -3,8 +3,8 @@ package mousquetaires.languages.transformers.cmin;
 import mousquetaires.interpretation.internalrepr.exceptions.ParserException;
 import mousquetaires.languages.transformers.cmin.temp.YBlockStatementBuilder;
 import mousquetaires.languages.transformers.cmin.temp.YSequenceStatementBuilder;
-import mousquetaires.languages.transformers.cmin.temp.YVariableInitialiser;
-import mousquetaires.languages.transformers.cmin.temp.YVariableInitialiserList;
+import mousquetaires.languages.transformers.cmin.temp.YVariableInitialiserTemp;
+import mousquetaires.languages.transformers.cmin.temp.YVariableInitialiserListTemp;
 import mousquetaires.languages.ytree.statements.artificial.YBugonStatement;
 import mousquetaires.languages.ytree.statements.artificial.YProcess;
 import mousquetaires.languages.parsers.CminParser;
@@ -513,7 +513,7 @@ class CminToYtreeTransformerVisitor
      * |   variableName '=' rvalueExpression
      * ;
      */
-    public YVariableInitialiser visitVariableInitialisation(CminParser.VariableInitialisationContext ctx) {
+    public YVariableInitialiserTemp visitVariableInitialisation(CminParser.VariableInitialisationContext ctx) {
         if (ctx == null) {
             return null;
         }
@@ -526,7 +526,7 @@ class CminToYtreeTransformerVisitor
         YExpression expression = expressionCtx != null
                 ? visitRvalueExpression(expressionCtx)
                 : null;
-        return new YVariableInitialiser(variable, expression);
+        return new YVariableInitialiserTemp(variable, expression);
     }
 
     /**
@@ -687,9 +687,9 @@ class CminToYtreeTransformerVisitor
         if (typeDeclarationCtx != null) {
             YType type = visitTypeDeclaration(typeDeclarationCtx);
 
-            YVariableInitialiserList initialisationList = visitVariableInitialisationList(ctx.variableInitialisationList());
+            YVariableInitialiserListTemp initialisationList = visitVariableInitialisationList(ctx.variableInitialisationList());
             YSequenceStatementBuilder builder = new YSequenceStatementBuilder();
-            for (YVariableInitialiser initialiser : initialisationList) {
+            for (YVariableInitialiserTemp initialiser : initialisationList) {
                 YVariableRef variable = initialiser.variable;
                 YExpression initExpression = initialiser.initExpression;
                 builder.add(new YVariableDeclarationStatement(type, variable));
@@ -724,15 +724,15 @@ class CminToYtreeTransformerVisitor
      * |   variableInitialisationList ',' variableInitialisation
      * ;
      */
-    public YVariableInitialiserList visitVariableInitialisationList(CminParser.VariableInitialisationListContext ctx) {
-        YVariableInitialiserList builder = new YVariableInitialiserList();
-        YVariableInitialiser initialisation = visitVariableInitialisation(ctx.variableInitialisation());
+    public YVariableInitialiserListTemp visitVariableInitialisationList(CminParser.VariableInitialisationListContext ctx) {
+        YVariableInitialiserListTemp builder = new YVariableInitialiserListTemp();
+        YVariableInitialiserTemp initialisation = visitVariableInitialisation(ctx.variableInitialisation());
         if (initialisation != null) {
             builder.add(initialisation);
         }
         CminParser.VariableInitialisationListContext recursiveListCtx = ctx.variableInitialisationList();
         if (recursiveListCtx != null) {
-            YVariableInitialiserList recursiveList = visitVariableInitialisationList(recursiveListCtx);
+            YVariableInitialiserListTemp recursiveList = visitVariableInitialisationList(recursiveListCtx);
             builder.addAll(recursiveList);
         }
         return builder;
@@ -785,6 +785,17 @@ class CminToYtreeTransformerVisitor
      * ;
      */
     public YStatement visitLabeledStatement(CminParser.LabeledStatementContext ctx) {
+        CminParser.StatementContext statementCtx = ctx.statement();
+        assert statementCtx != null;
+        YStatement statement = visitStatement(statementCtx);
+        // todo: test
+        TerminalNode identifierNode = ctx.Identifier();
+        if (identifierNode != null) {
+            String identifier = identifierNode.getSymbol().getText();  // todo: get terminal node text correctly
+            return statement.withLabel(identifier);
+        }
+
+        // todo: rest
         throw new NotImplementedException();
     }
 

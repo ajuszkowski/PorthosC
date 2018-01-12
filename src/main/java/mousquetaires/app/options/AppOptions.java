@@ -23,7 +23,7 @@ public abstract class AppOptions {
             help = true)
     public boolean help;
 
-    //@Parameter(names = {"-m", "--module"},
+    //@YFunctionParameter(names = {"-m", "--module"},
     //        required = true,
     //        arity = 1,
     //        description = "module name",

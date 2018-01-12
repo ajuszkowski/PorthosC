@@ -1,5 +1,10 @@
 package mousquetaires.languages.ytree.expressions;
 
+import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.ytree.YEntity;
+import mousquetaires.utils.YtreeUtils;
+
+import java.util.Iterator;
 import java.util.Objects;
 
 
@@ -12,6 +17,16 @@ public class YTernaryExpression extends YExpression {
         this.condition = condition;
         this.trueExpression = trueExpression;
         this.falseExpression = falseExpression;
+    }
+
+    @Override
+    public Iterator<YEntity> getChildrenIterator() {
+        return YtreeUtils.createIteratorFrom(condition, trueExpression, falseExpression);
+    }
+
+    @Override
+    public void accept(YtreeVisitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

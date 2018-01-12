@@ -1,9 +1,7 @@
 package mousquetaires.languages.xrepr.memory;
 
-import mousquetaires.languages.ytree.YEntity;
 
-
-public abstract class XMemoryLocation implements YEntity, Cloneable {
+public abstract class XMemoryLocation implements Cloneable {
 
     public enum Kind {
         Registry,

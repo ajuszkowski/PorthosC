@@ -1,7 +1,11 @@
 package mousquetaires.languages.ytree.statements;
 
 import com.google.common.collect.ImmutableList;
+import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.ytree.YEntity;
+import mousquetaires.utils.YtreeUtils;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 
@@ -10,11 +14,31 @@ public class YBlockStatement extends YStatement {
     public final ImmutableList<YStatement> statements;
 
     public YBlockStatement(YStatement... statements) {
-        this.statements = ImmutableList.copyOf(statements);
+        this(null, ImmutableList.copyOf(statements));
+    }
+
+    private YBlockStatement(String label, ImmutableList<YStatement> statements) {
+        super(label);
+        this.statements = statements;
     }
 
     public YBlockStatement(ImmutableList<YStatement> statements) {
-        this.statements = statements;
+        this(null, statements);
+    }
+
+    @Override
+    public YBlockStatement withLabel(String newLabel) {
+        return new YBlockStatement(newLabel, this.statements);
+    }
+
+    @Override
+    public Iterator<YEntity> getChildrenIterator() {
+        return YtreeUtils.createIteratorFrom(statements);
+    }
+
+    @Override
+    public void accept(YtreeVisitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

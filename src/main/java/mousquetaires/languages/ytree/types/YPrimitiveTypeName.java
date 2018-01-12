@@ -1,6 +1,10 @@
 package mousquetaires.languages.ytree.types;
 
+import mousquetaires.languages.visitors.YtreeVisitor;
 import mousquetaires.languages.ytree.YEntity;
+import mousquetaires.utils.YtreeUtils;
+
+import java.util.Iterator;
 
 
 public enum YPrimitiveTypeName implements YEntity {
@@ -13,8 +17,17 @@ public enum YPrimitiveTypeName implements YEntity {
     Float,
     Double,
     LongDouble,
-    Bool,
-    ;
+    Bool,;
+
+    @Override
+    public Iterator<YEntity> getChildrenIterator() {
+        return YtreeUtils.createIteratorFrom();
+    }
+
+    @Override
+    public void accept(YtreeVisitor visitor) {
+        visitor.visit(this);
+    }
 
     @Override
     public String toString() {
@@ -23,8 +36,7 @@ public enum YPrimitiveTypeName implements YEntity {
         for (char c : this.name().toCharArray()) {
             if (c >= 'a' && c <= 'z') {
                 builder.append(c);
-            }
-            else {
+            } else {
                 builder.append(space).append(Character.toLowerCase(c));
                 space = " ";
             }

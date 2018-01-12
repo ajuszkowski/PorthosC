@@ -1,7 +1,10 @@
 package mousquetaires.languages.ytree.types;
 
+import mousquetaires.languages.visitors.YtreeVisitor;
 import mousquetaires.languages.ytree.YEntity;
+import mousquetaires.utils.YtreeUtils;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 
@@ -32,6 +35,17 @@ public class YType implements YEntity {
 
     public YType asUnsigned() {
         return new YType(name, YPrimitiveTypeSpecifier.Unsigned, pointerLevel);
+    }
+
+
+    @Override
+    public Iterator<YEntity> getChildrenIterator() {
+        return YtreeUtils.createIteratorFrom(specifier);
+    }
+
+    @Override
+    public void accept(YtreeVisitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

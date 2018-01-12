@@ -1,5 +1,7 @@
 package mousquetaires.tests.unit.languages.parsers;
 
+import mousquetaires.languages.ProgramExtensions;
+import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.ytree.YSyntaxTree;
 import mousquetaires.languages.parsers.YtreeParser;
 import mousquetaires.tests.AbstractTest;
@@ -13,10 +15,12 @@ public abstract class AbstractParserUnitTest extends AbstractTest {
 
     protected final String parsersDirectory = resourcesDirectory + "parsers/";
 
-    protected YSyntaxTree runTest(String file) {
+    protected YSyntaxTree runTest(String filePath) {
         YSyntaxTree internalRepr;
         try {
-            internalRepr = YtreeParser.parse(new File(file));
+            File file = new File(filePath);
+            ProgramLanguage language = ProgramExtensions.parseProgramLanguage(file.getName());
+            internalRepr = YtreeParser.parse(file, language);
         } catch (IOException e) {
             e.printStackTrace();
             throw new TestFailedException(e);

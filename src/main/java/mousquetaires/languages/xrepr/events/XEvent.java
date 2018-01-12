@@ -1,11 +1,11 @@
 package mousquetaires.languages.xrepr.events;
 
-import mousquetaires.languages.ytree.YEntity;
+import mousquetaires.languages.xrepr.XEntity;
 
 import java.util.Objects;
 
 
-public abstract class XEvent implements YEntity {
+public abstract class XEvent implements XEntity {
     public final XEventInfo info;
 
     XEvent(XEventInfo info) {

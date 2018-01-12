@@ -20,14 +20,16 @@ public class YBlockStatementBuilder extends Builder<YBlockStatement> {
     }
 
     public void add(YStatement statement) {
-        if (statement instanceof YTempMultiStatement) {
-            YTempMultiStatement multiStatement = (YTempMultiStatement) statement;
-            for (YStatement innerStatement : multiStatement.statements) {
-                statements.add(innerStatement);
-            }
-        }
-        else {
-            statements.add(statement);
-        }
+        statements.add(statement);
+        // todo: do this via visitor-cleaner in visitMain()
+        //if (statement instanceof YMultiStatementTemp) {
+        //    YMultiStatementTemp multiStatement = (YMultiStatementTemp) statement;
+        //    for (YStatement innerStatement : multiStatement.statements) {
+        //        statements.add(innerStatement);
+        //    }
+        //}
+        //else {
+        //    statements.add(statement);
+        //}
     }
 }

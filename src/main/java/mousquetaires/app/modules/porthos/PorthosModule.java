@@ -61,9 +61,10 @@ public class PorthosModule extends AppModule {
 
             //MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
 
-            YSyntaxTree internalRepr = YtreeParser.parse(options.inputProgramFile);
-            DataModel dataModel = null; // TODO
-            XProgram program = XProgrammeConverter.toProgramme(internalRepr, dataModel);
+            // todo: fix the code below
+            //YSyntaxTree internalRepr = YtreeParser.parse(options.inputProgramFile);
+            //DataModel dataModel = null; // TODO
+            //XProgram program = XProgrammeConverter.toProgramme(internalRepr, dataModel);
 
 
         /*
@@ -157,6 +158,7 @@ public class PorthosModule extends AppModule {
         }
         */
 
+        throw new IOException();//just to make code compilable for a while
         } catch (IOException e) {
             verdict.addError(new IOError(e));
         } catch (Exception e) {

@@ -1,7 +1,11 @@
 package mousquetaires.languages.ytree.statements;
 
+import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.ytree.YEntity;
 import mousquetaires.languages.ytree.expressions.YExpression;
+import mousquetaires.utils.YtreeUtils;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 
@@ -11,6 +15,11 @@ public class YLoopStatement extends YStatement {
     public final YStatement body;
 
     public YLoopStatement(YExpression condition, YStatement body) {
+        this(null, condition, body);
+    }
+
+    public YLoopStatement(String label, YExpression condition, YStatement body) {
+        super(label);
         this.condition = condition;
         this.body = body;
     }
@@ -19,6 +28,21 @@ public class YLoopStatement extends YStatement {
     //public Iterable<YEntity> iterateChildren() {
     //    return List.of(condition, body);
     //}
+
+    @Override
+    public YLoopStatement withLabel(String newLabel) {
+        return new YLoopStatement(newLabel, condition, body);
+    }
+
+    @Override
+    public Iterator<YEntity> getChildrenIterator() {
+        return YtreeUtils.createIteratorFrom(condition, body);
+    }
+
+    @Override
+    public void accept(YtreeVisitor visitor) {
+        visitor.visit(this);
+    }
 
     @Override
     public String toString() {

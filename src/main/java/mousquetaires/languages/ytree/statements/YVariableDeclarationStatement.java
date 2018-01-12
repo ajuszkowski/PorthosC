@@ -1,8 +1,12 @@
 package mousquetaires.languages.ytree.statements;
 
+import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.ytree.YEntity;
 import mousquetaires.languages.ytree.expressions.YVariableRef;
 import mousquetaires.languages.ytree.types.YType;
+import mousquetaires.utils.YtreeUtils;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 
@@ -12,8 +16,28 @@ public class YVariableDeclarationStatement extends YStatement {
     public final YVariableRef variable;
 
     public YVariableDeclarationStatement(YType type, YVariableRef variable) {
+        this(null, type, variable);
+    }
+
+    private YVariableDeclarationStatement(String label, YType type, YVariableRef variable) {
+        super(label);
         this.type = type;
         this.variable = variable;
+    }
+
+    @Override
+    public YVariableDeclarationStatement withLabel(String newLabel) {
+        return new YVariableDeclarationStatement(newLabel, type, variable);
+    }
+
+    @Override
+    public Iterator<YEntity> getChildrenIterator() {
+        return YtreeUtils.createIteratorFrom(type, variable);
+    }
+
+    @Override
+    public void accept(YtreeVisitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

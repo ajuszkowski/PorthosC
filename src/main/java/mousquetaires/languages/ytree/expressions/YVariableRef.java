@@ -1,14 +1,30 @@
 package mousquetaires.languages.ytree.expressions;
 
+import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.ytree.YEntity;
+import mousquetaires.utils.YtreeUtils;
+
+import java.util.Iterator;
 import java.util.Objects;
 
 
 public class YVariableRef extends YExpression {
 
     // TODO: add kind
-    public enum Kind {
+    public enum Kind implements YEntity {
         Local,
         Global,
+        ;
+
+        @Override
+        public Iterator<YEntity> getChildrenIterator() {
+            return YtreeUtils.createIteratorFrom();
+        }
+
+        @Override
+        public void accept(YtreeVisitor visitor) {
+            visitor.visit(this);
+        }
     }
 
     public final Kind kind = Kind.Local;
@@ -25,6 +41,16 @@ public class YVariableRef extends YExpression {
     private static int tempVariableCount = 1;
     public static YVariableRef newTempVariable() {
         return new YVariableRef("temp" + tempVariableCount++);
+    }
+
+    @Override
+    public Iterator<YEntity> getChildrenIterator() {
+        return YtreeUtils.createIteratorFrom(kind);
+    }
+
+    @Override
+    public void accept(YtreeVisitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

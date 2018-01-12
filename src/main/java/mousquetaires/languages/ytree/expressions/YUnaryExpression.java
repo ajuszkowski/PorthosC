@@ -1,7 +1,10 @@
 package mousquetaires.languages.ytree.expressions;
 
+import mousquetaires.languages.visitors.YtreeVisitor;
 import mousquetaires.languages.ytree.YEntity;
+import mousquetaires.utils.YtreeUtils;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 
@@ -14,6 +17,18 @@ public class YUnaryExpression extends YExpression {
         DecrementPostfix,   // x--
         PointerDereference,  // *x
         PointerReference,   // &x
+        ;
+
+
+        @Override
+        public Iterator<YEntity> getChildrenIterator() {
+            return YtreeUtils.createIteratorFrom();
+        }
+
+        @Override
+        public void accept(YtreeVisitor visitor) {
+            visitor.visit(this);
+        }
     }
 
     public final Operator operator;
@@ -22,6 +37,16 @@ public class YUnaryExpression extends YExpression {
     public YUnaryExpression(YExpression expression, Operator operator) {
         this.operator = operator;
         this.expression = expression;
+    }
+
+    @Override
+    public Iterator<YEntity> getChildrenIterator() {
+        return YtreeUtils.createIteratorFrom(operator, expression);
+    }
+
+    @Override
+    public void accept(YtreeVisitor visitor) {
+        visitor.visit(this);
     }
 
     @Override
