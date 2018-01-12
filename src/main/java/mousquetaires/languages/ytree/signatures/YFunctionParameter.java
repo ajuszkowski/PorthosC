@@ -24,7 +24,12 @@ public class YFunctionParameter implements YEntity {
     }
 
     @Override
-    public void accept(YtreeVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public YFunctionParameter copy() {
+        return new YFunctionParameter(type, name);
     }
 }

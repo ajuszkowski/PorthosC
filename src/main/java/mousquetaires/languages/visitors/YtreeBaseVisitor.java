@@ -1,5 +1,6 @@
 package mousquetaires.languages.visitors;
 
+import mousquetaires.languages.transformers.cmin.temp.YTempEntity;
 import mousquetaires.languages.ytree.YEntity;
 import mousquetaires.languages.ytree.YSyntaxTree;
 import mousquetaires.languages.ytree.expressions.*;
@@ -16,10 +17,10 @@ import mousquetaires.languages.ytree.types.YType;
 import java.util.Iterator;
 
 
-public class YtreeBaseVisitor implements YtreeVisitor {
+public abstract class YtreeBaseVisitor<T> implements YtreeVisitor<T> {
 
-    public void visitChildren(YEntity node) {
-        Iterator<YEntity> iterator = node.getChildrenIterator();
+    public final void visitChildren(YEntity node) {
+        Iterator<? extends YEntity> iterator = node.getChildrenIterator();
         while (iterator.hasNext()) {
             YEntity child = iterator.next();
             child.accept(this);
@@ -27,137 +28,175 @@ public class YtreeBaseVisitor implements YtreeVisitor {
     }
 
     @Override
-    public void visit(YSyntaxTree node) {
+    public T visit(YSyntaxTree node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YProcess node) {
+    public T visit(YProcess node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YBugonStatement node) {
+    public T visit(YBugonStatement node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YConstant node) {
+    public T visit(YConstant node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YMemberAccess node) {
+    public T visit(YMemberAccess node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YFunctionArgument node) {
+    public T visit(YFunctionArgument node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YFunctionInvocationExpression node) {
+    public T visit(YFunctionInvocationExpression node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YFunctionParameter node) {
+    public T visit(YFunctionParameter node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YFunctionDefinitionStatement node) {
+    public T visit(YFunctionDefinitionStatement node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YUnaryExpression node) {
+    public T visit(YUnaryExpression node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YUnaryExpression.Operator node) {
+    public T visit(YUnaryExpression.Operator node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YBinaryExpression node) {
+    public T visit(YBinaryExpression node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YBinaryExpression.Operator node) {
+    public T visit(YBinaryExpression.Operator node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YTernaryExpression node) {
+    public T visit(YTernaryExpression node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YAssignmentExpression node) {
+    public T visit(YAssignmentExpression node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YAssignmentExpression.Operator node) {
+    public T visit(YAssignmentExpression.Operator node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YLinearStatement node) {
+    public T visit(YLinearStatement node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YVariableDeclarationStatement node) {
+    public T visit(YVariableDeclarationStatement node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YType node) {
+    public T visit(YType node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YPrimitiveTypeName node) {
+    public T visit(YPrimitiveTypeName node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YPrimitiveTypeSpecifier node) {
+    public T visit(YPrimitiveTypeSpecifier node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YVariableRef node) {
+    public T visit(YVariableRef node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YVariableRef.Kind node) {
+    public T visit(YVariableRef.Kind node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YBlockStatement node) {
+    public T visit(YBlockStatement node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YBranchingStatement node) {
+    public T visit(YBranchingStatement node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YLoopStatement node) {
+    public T visit(YLoopStatement node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public void visit(YJumpStatement node) {
+    public T visit(YJumpStatement node) {
         visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
+    }
+
+    @Override
+    public T visit(YTempEntity node) {
+        visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
+    }
+    
+    
+    private String getExceptionMessage(YEntity node) {
+        return "Visit action for node type " + node.getClass().getName() + " is not defined";
     }
 }

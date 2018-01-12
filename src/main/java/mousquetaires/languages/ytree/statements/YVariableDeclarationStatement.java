@@ -36,8 +36,13 @@ public class YVariableDeclarationStatement extends YStatement {
     }
 
     @Override
-    public void accept(YtreeVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public YVariableDeclarationStatement copy() {
+        return new YVariableDeclarationStatement(label, type, variable);
     }
 
     @Override

@@ -1,11 +1,10 @@
 package mousquetaires.languages.visitors;
 
-import mousquetaires.languages.transformers.cmin.temp.YMultiStatementTemp;
-import mousquetaires.languages.transformers.cmin.temp.YVariableInitialiserTemp;
+import mousquetaires.languages.transformers.cmin.temp.YTempEntity;
 import mousquetaires.languages.ytree.YSyntaxTree;
 import mousquetaires.languages.ytree.expressions.*;
-import mousquetaires.languages.ytree.expressions.invocation.YFunctionInvocationExpression;
 import mousquetaires.languages.ytree.expressions.invocation.YFunctionArgument;
+import mousquetaires.languages.ytree.expressions.invocation.YFunctionInvocationExpression;
 import mousquetaires.languages.ytree.signatures.YFunctionParameter;
 import mousquetaires.languages.ytree.statements.*;
 import mousquetaires.languages.ytree.statements.artificial.YBugonStatement;
@@ -15,65 +14,68 @@ import mousquetaires.languages.ytree.types.YPrimitiveTypeSpecifier;
 import mousquetaires.languages.ytree.types.YType;
 
 
-public interface YtreeVisitor {
+public interface YtreeVisitor<T> {
 
-    void visit(YSyntaxTree node);
+    T visit(YSyntaxTree node);
 
-    void visit(YProcess node);
+    T visit(YProcess node);
 
-    void visit(YBugonStatement node);
+    T visit(YBugonStatement node);
 
-    void visit(YConstant node);
+    T visit(YConstant node);
 
-    void visit(YMemberAccess node);
+    T visit(YMemberAccess node);
 
-    void visit(YFunctionArgument node);
+    T visit(YFunctionArgument node);
 
-    void visit(YFunctionInvocationExpression node);
+    T visit(YFunctionInvocationExpression node);
 
-    void visit(YFunctionParameter node);
+    T visit(YFunctionParameter node);
 
-    void visit(YFunctionDefinitionStatement node);
+    T visit(YFunctionDefinitionStatement node);
 
-    void visit(YUnaryExpression node);
+    T visit(YUnaryExpression node);
 
-    void visit(YUnaryExpression.Operator node);
+    T visit(YUnaryExpression.Operator node);
 
-    void visit(YBinaryExpression node);
+    T visit(YBinaryExpression node);
 
-    void visit(YBinaryExpression.Operator node);
+    T visit(YBinaryExpression.Operator node);
 
-    void visit(YTernaryExpression node);
+    T visit(YTernaryExpression node);
 
-    void visit(YAssignmentExpression node);
+    T visit(YAssignmentExpression node);
 
-    void visit(YAssignmentExpression.Operator node);
+    T visit(YAssignmentExpression.Operator node);
 
-    void visit(YLinearStatement node);
+    T visit(YLinearStatement node);
 
-    void visit(YVariableDeclarationStatement node);
+    T visit(YVariableDeclarationStatement node);
 
-    void visit(YType node);
+    T visit(YType node);
 
-    void visit(YPrimitiveTypeName node);
+    T visit(YPrimitiveTypeName node);
 
-    void visit(YPrimitiveTypeSpecifier node);
+    T visit(YPrimitiveTypeSpecifier node);
 
-    //void visit(StorageClassSpecifier node);
+    //T visit(StorageClassSpecifier node);
     //
-    //void visit(PrimitiveTypeDeclarator node);
+    //T visit(PrimitiveTypeDeclarator node);
     //
-    //void visit(PrimitiveTypeSpecifier node);
+    //T visit(PrimitiveTypeSpecifier node);
 
-    void visit(YVariableRef node);
+    T visit(YVariableRef node);
 
-    void visit(YVariableRef.Kind node);
+    T visit(YVariableRef.Kind node);
 
-    void visit(YBlockStatement node);
+    T visit(YBlockStatement node);
 
-    void visit(YBranchingStatement node);
+    T visit(YBranchingStatement node);
 
-    void visit(YLoopStatement node);
+    T visit(YLoopStatement node);
 
-    void visit(YJumpStatement node);
+    T visit(YJumpStatement node);
+
+    // Temp node:
+    T visit(YTempEntity node);
 }

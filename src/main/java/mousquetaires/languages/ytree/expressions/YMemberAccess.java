@@ -13,7 +13,7 @@ public class YMemberAccess extends YVariableRef {
     }
 
     @Override
-    public void accept(YtreeVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

@@ -5,11 +5,13 @@ import mousquetaires.languages.visitors.YtreeVisitor;
 import java.util.Iterator;
 
 
-public interface YEntity {
+public interface YEntity extends Cloneable {
 
     //void setChild(YEntity child);
 
-    Iterator<YEntity> getChildrenIterator();
+    Iterator<? extends YEntity> getChildrenIterator();
 
-    void accept(YtreeVisitor visitor);
+    <T> T accept(YtreeVisitor<T> visitor);
+
+    YEntity copy();
 }

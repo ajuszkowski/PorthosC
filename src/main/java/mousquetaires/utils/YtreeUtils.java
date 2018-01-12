@@ -21,17 +21,6 @@ public class YtreeUtils {
         return new ArrayList<YEntity>(elements).iterator();
     }
 
-    public static Iterator<YEntity> createIteratorFrom(YEntity... elements) {
-        final int length = elements.length;
-        if (length == 0) {
-            return Collections.emptyIterator();
-        }
-        if (length == 1) {
-            return Iterators.singletonIterator(elements[0]);
-        }
-        return Arrays.asList(elements).iterator();
-    }
-
     public static Iterator<YEntity> createIteratorFrom(YEntity firstElement, YEntity[] otherElements) {
         switch (otherElements.length) {
             case 0:
@@ -49,6 +38,17 @@ public class YtreeUtils {
                 children.addAll(Arrays.asList(otherElements));
                 return createIteratorFrom(children);
         }
+    }
+
+    public static Iterator<YEntity> createIteratorFrom(YEntity... elements) {
+        final int length = elements.length;
+        if (length == 0) {
+            return Collections.emptyIterator();
+        }
+        if (length == 1) {
+            return Iterators.singletonIterator(elements[0]);
+        }
+        return Arrays.asList(elements).iterator();
     }
 
     public static Iterator<YEntity> createIteratorFrom(Iterable<YEntity> elements) {

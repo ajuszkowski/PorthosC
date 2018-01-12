@@ -1,6 +1,6 @@
 //package mousquetaires.languages.porthos;
 //
-//import mousquetaires.languages.transformers.ProgramToYtreeTransformer;
+//import mousquetaires.languages.transformers.ProgramToYtreeConverter;
 //import mousquetaires.languages.ytree.YSyntaxTree;
 //import mousquetaires.languages.ytree.YSyntaxTreeBuilder;
 //import mousquetaires.languages.parsers.PorthosBaseListener;
@@ -9,11 +9,11 @@
 //
 //public class PorthosToYtreeTransformer
 //        extends PorthosBaseListener
-//        implements ProgramToYtreeTransformer {
+//        implements ProgramToYtreeConverter {
 //
 //    private final YSyntaxTreeBuilder builder = new YSyntaxTreeBuilder();
 //
-//    public YSyntaxTree transform(ParserRuleContext parserRuleContext) {
+//    public YSyntaxTree convert(ParserRuleContext parserRuleContext) {
 //        parserRuleContext.enterRule(this);
 //        return builder.build();
 //    }

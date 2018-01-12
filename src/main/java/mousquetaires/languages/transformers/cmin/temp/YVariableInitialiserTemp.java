@@ -5,7 +5,7 @@ import mousquetaires.languages.ytree.YEntity;
 import mousquetaires.languages.ytree.expressions.YExpression;
 import mousquetaires.languages.ytree.expressions.YVariableRef;
 import mousquetaires.utils.YtreeUtils;
-import mousquetaires.utils.exceptions.NotImplementedException;
+import mousquetaires.utils.exceptions.NotSupportedException;
 
 import java.util.Iterator;
 
@@ -26,9 +26,14 @@ public class YVariableInitialiserTemp implements YTempEntity {
     }
 
     @Override
-    public void accept(YtreeVisitor visitor) {
+    public <T> T accept(YtreeVisitor<T> visitor) {
         //if (!(visitor instanceof))
-        throw new NotImplementedException();
+        throw new NotSupportedException();
+    }
+
+    @Override
+    public YEntity copy() {
+        return new YVariableInitialiserTemp(variable, initExpression);
     }
 
     @Override

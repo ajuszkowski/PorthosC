@@ -1,16 +1,16 @@
 package mousquetaires.languages.transformers;
 
 import mousquetaires.languages.ProgramLanguage;
-import mousquetaires.languages.transformers.cmin.CminToYtreeTransformer;
+import mousquetaires.languages.transformers.cmin.CminToYtreeConverter;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
 
 public class ProgramTransformerFactory {
 
-    public static ProgramToYtreeTransformer getTransformer(ProgramLanguage inputLanguage) {
+    public static ProgramToYtreeConverter getTransformer(ProgramLanguage inputLanguage) {
         switch (inputLanguage) {
             case Cmin:
-                return new CminToYtreeTransformer();
+                return new CminToYtreeConverter();
             //case Porthos:
             //    return new PorthosToYtreeTransformer();
             case Litmus:

@@ -44,8 +44,13 @@ public class YType implements YEntity {
     }
 
     @Override
-    public void accept(YtreeVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public YType copy() {
+        return new YType(name, specifier, pointerLevel);
     }
 
     @Override

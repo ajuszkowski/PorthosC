@@ -4,7 +4,7 @@ import mousquetaires.languages.ytree.YSyntaxTree;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 
-public interface ProgramToYtreeTransformer {
+public interface ProgramToYtreeConverter {
 
-    YSyntaxTree transform(ParserRuleContext mainRuleContext);
+    YSyntaxTree convert(ParserRuleContext mainRuleContext);
 }

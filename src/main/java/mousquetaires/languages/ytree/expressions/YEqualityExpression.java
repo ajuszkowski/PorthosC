@@ -67,7 +67,7 @@ public class YEqualityExpression extends YBinaryExpression {
 
 
     @Override
-    public void accept(YtreeVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

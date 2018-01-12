@@ -17,7 +17,8 @@ public enum YPrimitiveTypeName implements YEntity {
     Float,
     Double,
     LongDouble,
-    Bool,;
+    Bool,
+    ;
 
     @Override
     public Iterator<YEntity> getChildrenIterator() {
@@ -25,8 +26,13 @@ public enum YPrimitiveTypeName implements YEntity {
     }
 
     @Override
-    public void accept(YtreeVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public YEntity copy() {
+        return this;  // for singletons it's safe to return the value while cloning
     }
 
     @Override

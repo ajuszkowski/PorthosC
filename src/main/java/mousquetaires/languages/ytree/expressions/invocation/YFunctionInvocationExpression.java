@@ -7,7 +7,6 @@ import mousquetaires.languages.ytree.signatures.MethodSignature;
 import mousquetaires.utils.YtreeUtils;
 
 import java.util.Iterator;
-import java.util.List;
 
 
 public class YFunctionInvocationExpression extends YExpression {
@@ -30,7 +29,12 @@ public class YFunctionInvocationExpression extends YExpression {
     }
 
     @Override
-    public void accept(YtreeVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public YFunctionInvocationExpression copy() {
+        return new YFunctionInvocationExpression(signature, receiver, arguments);
     }
 }

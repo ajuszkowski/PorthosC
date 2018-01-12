@@ -25,8 +25,13 @@ public class YTernaryExpression extends YExpression {
     }
 
     @Override
-    public void accept(YtreeVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public YTernaryExpression copy() {
+        return new YTernaryExpression(condition, trueExpression, falseExpression);
     }
 
     @Override

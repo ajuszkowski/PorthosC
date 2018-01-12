@@ -1,19 +1,17 @@
 package mousquetaires.languages.transformers.cmin;
 
 import mousquetaires.interpretation.internalrepr.exceptions.ParserException;
-import mousquetaires.languages.transformers.cmin.temp.YBlockStatementBuilder;
-import mousquetaires.languages.transformers.cmin.temp.YSequenceStatementBuilder;
-import mousquetaires.languages.transformers.cmin.temp.YVariableInitialiserTemp;
-import mousquetaires.languages.transformers.cmin.temp.YVariableInitialiserListTemp;
-import mousquetaires.languages.ytree.statements.artificial.YBugonStatement;
-import mousquetaires.languages.ytree.statements.artificial.YProcess;
 import mousquetaires.languages.parsers.CminParser;
 import mousquetaires.languages.parsers.CminVisitor;
+import mousquetaires.languages.transformers.cmin.temp.YVariableInitialiserListTemp;
+import mousquetaires.languages.transformers.cmin.temp.YVariableInitialiserTemp;
 import mousquetaires.languages.ytree.YEntity;
 import mousquetaires.languages.ytree.YSyntaxTree;
 import mousquetaires.languages.ytree.YSyntaxTreeBuilder;
 import mousquetaires.languages.ytree.expressions.*;
 import mousquetaires.languages.ytree.statements.*;
+import mousquetaires.languages.ytree.statements.artificial.YBugonStatement;
+import mousquetaires.languages.ytree.statements.artificial.YProcess;
 import mousquetaires.languages.ytree.types.YPrimitiveTypeName;
 import mousquetaires.languages.ytree.types.YPrimitiveTypeSpecifier;
 import mousquetaires.languages.ytree.types.YType;
@@ -25,7 +23,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 
-class CminToYtreeTransformerVisitor
+class CminToYtreeConverterVisitor
         extends AbstractParseTreeVisitor<YEntity>
         implements CminVisitor<YEntity> {
     //extends CminBaseVisitor<YEntity> {
@@ -43,13 +41,14 @@ class CminToYtreeTransformerVisitor
         for (int i = 0; i < childrenCount; i++) {
             ParseTree childTree = ctx.getChild(i);
             assert childTree != null;
-            YEntity root = this.visit(childTree);
+            YStatement root = (YStatement) this.visit(childTree);
             syntaxTreeBuilder.addRoot(root);
         }
         return syntaxTreeBuilder.build();
     }
 
     // Temporary: explicitly specified processes
+
     /**
      * processStatement
      * :   'process' Identifier blockStatement
@@ -120,7 +119,7 @@ class CminToYtreeTransformerVisitor
      */
     public YConstant visitConstant(CminParser.ConstantContext ctx) {
         int childCount = ctx.getChildCount();
-        assert childCount == 1: childCount;
+        assert childCount == 1 : childCount;
         TerminalNode literal = (TerminalNode) ctx.getChild(0);
         if (literal != null) {
             String constantText = literal.getText();  // todo: get token symbol text properly here
@@ -605,7 +604,7 @@ class CminToYtreeTransformerVisitor
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < childCount; ++i) {
             builder.append(ctx.getChild(i).getText());
-            if (i != childCount-1) {
+            if (i != childCount - 1) {
                 builder.append(' ');
             }
         }
@@ -661,23 +660,6 @@ class CminToYtreeTransformerVisitor
     }
 
     /**
-     * statement
-     * :   variableDeclarationStatement
-     * |   expressionStatement
-     * |   labeledStatement
-     * |   blockStatement
-     * |   branchingStatement
-     * |   loopStatement
-     * |   jumpStatement
-     * ;
-     */
-    public YStatement visitStatement(CminParser.StatementContext ctx) {
-        int childrenCount = ctx.getChildCount();
-        assert childrenCount == 1: childrenCount;
-        return (YStatement) visit(ctx.getChild(0));
-    }
-
-    /**
      * variableDeclarationStatement
      * :   typeDeclaration variableInitialisationList ';'
      * ;
@@ -687,9 +669,9 @@ class CminToYtreeTransformerVisitor
         if (typeDeclarationCtx != null) {
             YType type = visitTypeDeclaration(typeDeclarationCtx);
 
-            YVariableInitialiserListTemp initialisationList = visitVariableInitialisationList(ctx.variableInitialisationList());
+            YVariableInitialiserListTemp initList = visitVariableInitialisationList(ctx.variableInitialisationList());
             YSequenceStatementBuilder builder = new YSequenceStatementBuilder();
-            for (YVariableInitialiserTemp initialiser : initialisationList) {
+            for (YVariableInitialiserTemp initialiser : initList.initialisers) {
                 YVariableRef variable = initialiser.variable;
                 YExpression initExpression = initialiser.initExpression;
                 builder.add(new YVariableDeclarationStatement(type, variable));
@@ -800,17 +782,34 @@ class CminToYtreeTransformerVisitor
     }
 
     /**
+     * statement
+     * :   variableDeclarationStatement
+     * |   expressionStatement
+     * |   labeledStatement
+     * |   blockStatement
+     * |   branchingStatement
+     * |   loopStatement
+     * |   jumpStatement
+     * ;
+     */
+    public YStatement visitStatement(CminParser.StatementContext ctx) {
+        int childrenCount = ctx.getChildCount();
+        assert childrenCount == 1 : childrenCount;
+        return (YStatement) visit(ctx.getChild(0));
+    }
+
+    /**
      * blockStatement
      * :   LeftBrace statement* RightBrace
      * ;
      */
     public YBlockStatement visitBlockStatement(CminParser.BlockStatementContext ctx) {
-        YBlockStatementBuilder builder = new YBlockStatementBuilder();
+        YSequenceStatementBuilder builder = new YSequenceStatementBuilder();
         for (CminParser.StatementContext statementContext : ctx.statement()) {
             YStatement statement = visitStatement(statementContext);
             builder.add(statement);
         }
-        return builder.build();
+        return YBlockStatement.create(builder.build());
     }
 
     /**

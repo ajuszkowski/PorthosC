@@ -4,11 +4,11 @@ import com.google.common.collect.ImmutableSet;
 import mousquetaires.patterns.Builder;
 
 
-public class XProgrammeBuilder extends Builder<XProgram> {
+public class XProgramBuilder extends Builder<XProgram> {
 
     private final ImmutableSet.Builder<XProcess> processes;
 
-    public XProgrammeBuilder() {
+    public XProgramBuilder() {
         this.processes = new ImmutableSet.Builder<>();
     }
 
@@ -20,7 +20,7 @@ public class XProgrammeBuilder extends Builder<XProgram> {
         return new XProgram(this);
     }
 
-    public void addProcessus(XProcess process) {
+    public void addProcess(XProcess process) {
         if (isBuilt()) {
             throw new RuntimeException(getAlreadyFinishedMessage());
         }

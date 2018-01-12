@@ -22,6 +22,10 @@ public class YLinearStatement extends YStatement {
         this.expression = expression;
     }
 
+    public static YLinearStatement emptyStatement() {
+        return new YLinearStatement(null);
+    }
+
     @Override
     public YLinearStatement withLabel(String newLabel) {
         return new YLinearStatement(newLabel, expression);
@@ -33,8 +37,13 @@ public class YLinearStatement extends YStatement {
     }
 
     @Override
-    public void accept(YtreeVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public YLinearStatement copy() {
+        return new YLinearStatement(label, expression);
     }
 
     @Override

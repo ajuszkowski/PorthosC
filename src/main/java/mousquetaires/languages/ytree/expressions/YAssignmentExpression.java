@@ -30,8 +30,13 @@ public class YAssignmentExpression extends YExpression {
         }
 
         @Override
-        public void accept(YtreeVisitor visitor) {
-            visitor.visit(this);
+        public <T> T accept(YtreeVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+
+        @Override
+        public YEntity copy() {
+            return this;  // for singletons it's safe to return the value while cloning
         }
     }
 
@@ -56,8 +61,13 @@ public class YAssignmentExpression extends YExpression {
     }
 
     @Override
-    public void accept(YtreeVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public YAssignmentExpression copy() {
+        return new YAssignmentExpression(assignee, expression, operator);
     }
 
     @Override

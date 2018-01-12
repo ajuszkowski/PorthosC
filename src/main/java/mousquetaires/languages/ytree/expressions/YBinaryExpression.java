@@ -37,9 +37,15 @@ public class YBinaryExpression extends YExpression {
         }
 
         @Override
-        public void accept(YtreeVisitor visitor) {
-            visitor.visit(this);
+        public <T> T accept(YtreeVisitor<T> visitor) {
+            return visitor.visit(this);
         }
+
+        @Override
+        public YEntity copy() {
+            return this; // for singletons it's safe to return the value while cloning
+        }
+
 
         @Override
         public String toString() {
@@ -138,8 +144,13 @@ public class YBinaryExpression extends YExpression {
     }
 
     @Override
-    public void accept(YtreeVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public YBinaryExpression copy() {
+        return new YBinaryExpression(leftExpression, rightExpression, operator);
     }
 
     @Override

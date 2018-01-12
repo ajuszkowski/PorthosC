@@ -7,7 +7,7 @@ public class XProgram {
 
     private ImmutableSet<XProcess> processes;
 
-    public XProgram(XProgrammeBuilder builder) {
+    public XProgram(XProgramBuilder builder) {
         this.processes = builder.getProcesses();
     }
 
@@ -383,7 +383,7 @@ public class XProgram {
     //    return enc;
     //}
     //
-    //public List<XProcess> getRoots() {
+    //public List<XProcess> buildRoots() {
     //    return this.processes;
     //}
     //

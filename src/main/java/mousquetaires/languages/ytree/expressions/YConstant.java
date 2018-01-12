@@ -8,6 +8,7 @@ import java.util.Objects;
 
 
 public class YConstant extends YExpression {
+
     protected final Object value;
     protected final YType type;
 
@@ -36,22 +37,19 @@ public class YConstant extends YExpression {
     }
 
     @Override
-    public void accept(YtreeVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public YConstant copy() {
+        return new YConstant(value, type);
     }
 
     @Override
     public String toString() {
         return value + ":" + type;
     }
-
-    //public ArithExpr toZ3(MapSSA map, Context ctx) {
-    //    return ctx.mkInt(bitness);
-    //}
-    //
-    //public Set<Register> getRegs() {
-    //    return new HashSet<Register>();
-    //}
 
     @Override
     public boolean equals(Object o) {
@@ -66,5 +64,13 @@ public class YConstant extends YExpression {
     public int hashCode() {
         return Objects.hash(value, type);
     }
+
+    //public ArithExpr toZ3(MapSSA map, Context ctx) {
+    //    return ctx.mkInt(bitness);
+    //}
+    //
+    //public Set<Register> getRegs() {
+    //    return new HashSet<Register>();
+    //}
 
 }

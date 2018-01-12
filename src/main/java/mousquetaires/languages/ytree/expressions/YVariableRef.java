@@ -22,8 +22,13 @@ public class YVariableRef extends YExpression {
         }
 
         @Override
-        public void accept(YtreeVisitor visitor) {
-            visitor.visit(this);
+        public <T> T accept(YtreeVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+
+        @Override
+        public Kind copy() {
+            return this;  // for singletons it's safe to return the value while cloning
         }
     }
 
@@ -31,16 +36,12 @@ public class YVariableRef extends YExpression {
     public final String name;
 
     protected YVariableRef(String name) {
+        // TODO: pass kind here also
         this.name = name;
     }
 
     public static YVariableRef create(String name) {
         return new YVariableRef(name);
-    }
-
-    private static int tempVariableCount = 1;
-    public static YVariableRef newTempVariable() {
-        return new YVariableRef("temp" + tempVariableCount++);
     }
 
     @Override
@@ -49,8 +50,13 @@ public class YVariableRef extends YExpression {
     }
 
     @Override
-    public void accept(YtreeVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public YVariableRef copy() {
+        return create(name); // TODO: process kind here also
     }
 
     @Override

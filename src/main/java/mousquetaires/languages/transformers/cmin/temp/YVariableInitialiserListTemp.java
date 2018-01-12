@@ -2,7 +2,6 @@ package mousquetaires.languages.transformers.cmin.temp;
 
 import mousquetaires.languages.visitors.YtreeVisitor;
 import mousquetaires.languages.ytree.YEntity;
-import mousquetaires.utils.YtreeUtils;
 import mousquetaires.utils.exceptions.NotSupportedException;
 
 import java.util.ArrayList;
@@ -10,43 +9,58 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class YVariableInitialiserListTemp
-        implements YTempEntity, Iterable<YVariableInitialiserTemp> {
+public class YVariableInitialiserListTemp implements YTempEntity {
+    public class ReversedVarInitCollection implements Iterable<YVariableInitialiserTemp> {
+        private final List<YVariableInitialiserTemp> values = new ArrayList<>();
 
-    private final List<YVariableInitialiserTemp> values = new ArrayList<>();
+        public void add(YVariableInitialiserTemp initialiser) {
+            values.add(initialiser);
+        }
+
+        public void addAll(ReversedVarInitCollection collection) {
+            values.addAll(collection.values);
+        }
+
+        @Override
+        public Iterator<YVariableInitialiserTemp> iterator() {
+            return new Iterator<>() {
+                private int currentIndex = values.size() - 1;
+                @Override
+                public boolean hasNext() {
+                    return currentIndex >= 0;
+                }
+                @Override
+                public YVariableInitialiserTemp next() {
+                    return values.get(currentIndex--);
+                }
+            };
+        }
+    }
+
+    public final ReversedVarInitCollection initialisers = new ReversedVarInitCollection();
 
     public void add(YVariableInitialiserTemp initialiser) {
-        values.add(initialiser);
+        initialisers.add(initialiser);
     }
 
     public void addAll(YVariableInitialiserListTemp initialiserList) {
-        values.addAll(initialiserList.values);
+        initialisers.addAll(initialiserList.initialisers);
+    }
+
+
+    @Override
+    public Iterator<YVariableInitialiserTemp> getChildrenIterator() {
+        return initialisers.iterator();
     }
 
     @Override
-    public Iterator<YVariableInitialiserTemp> iterator() {
-        return new Iterator<>() {
-            private int currentIndex = values.size() - 1;
-
-            @Override
-            public boolean hasNext() {
-                return currentIndex >= 0;
-            }
-
-            @Override
-            public YVariableInitialiserTemp next() {
-                return values.get(currentIndex--);
-            }
-        };
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        // todo: or not implemented exc
+        throw new NotSupportedException();
     }
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
-        return YtreeUtils.createIteratorFrom(values.toArray(YEntity.class));
-    }
-
-    @Override
-    public void accept(YtreeVisitor visitor) {
+    public YEntity copy() {
         throw new NotSupportedException();
     }
 }

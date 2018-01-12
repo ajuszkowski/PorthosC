@@ -11,6 +11,11 @@ public class YBugonStatement extends YLinearStatement {
     }
 
     @Override
+    public YBugonStatement copy() {
+        return new YBugonStatement(expression);
+    }
+
+    @Override
     public String toString() {
         return "bug_on(" + expression + ")";
     }

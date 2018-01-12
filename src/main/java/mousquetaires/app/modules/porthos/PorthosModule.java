@@ -4,11 +4,6 @@ import mousquetaires.app.errors.AppError;
 import mousquetaires.app.errors.IOError;
 import mousquetaires.app.errors.UnrecognisedError;
 import mousquetaires.app.modules.AppModule;
-import mousquetaires.languages.xrepr.XProgram;
-import mousquetaires.languages.xrepr.XProgrammeConverter;
-import mousquetaires.languages.xrepr.memory.datamodels.DataModel;
-import mousquetaires.languages.ytree.YSyntaxTree;
-import mousquetaires.languages.parsers.YtreeParser;
 
 import java.io.IOException;
 
@@ -64,7 +59,7 @@ public class PorthosModule extends AppModule {
             // todo: fix the code below
             //YSyntaxTree internalRepr = YtreeParser.parse(options.inputProgramFile);
             //DataModel dataModel = null; // TODO
-            //XProgram program = XProgrammeConverter.toProgramme(internalRepr, dataModel);
+            //XProgram program = XProgramConverter.convert(internalRepr, dataModel);
 
 
         /*
