@@ -1,6 +1,6 @@
 package mousquetaires.languages.ytree;
 
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.common.visitors.YtreeVisitor;
 
 import java.util.Iterator;
 

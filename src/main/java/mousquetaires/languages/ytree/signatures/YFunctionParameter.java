@@ -1,8 +1,8 @@
 package mousquetaires.languages.ytree.signatures;
 
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.common.types.YXType;
+import mousquetaires.languages.common.visitors.YtreeVisitor;
 import mousquetaires.languages.ytree.YEntity;
-import mousquetaires.languages.ytree.types.YType;
 import mousquetaires.utils.YtreeUtils;
 
 import java.util.Iterator;
@@ -10,10 +10,10 @@ import java.util.Iterator;
 
 public class YFunctionParameter implements YEntity {
 
-    public final YType type;
+    public final YXType type;
     public final String name;
 
-    public YFunctionParameter(YType type, String name) {
+    public YFunctionParameter(YXType type, String name) {
         this.type = type;
         this.name = name;
     }

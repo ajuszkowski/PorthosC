@@ -1,7 +1,10 @@
 package mousquetaires.languages.xrepr.memory;
 
-public class XSharedLocation extends XMemoryLocation {
-    public XSharedLocation(String name) {
-        super(name, Kind.SharedMemory);
+import mousquetaires.languages.common.types.YXType;
+
+
+public class XSharedLocation extends XLocation {
+    public XSharedLocation(String name, YXType type) {
+        super(name, type, Kind.Shared);
     }
 }

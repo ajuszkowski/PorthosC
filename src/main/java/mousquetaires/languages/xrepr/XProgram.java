@@ -69,8 +69,8 @@ public class XProgram {
     //    }
     //    processes = unrolledProcesses;
     //
-    //    Set<XMemoryLocation> locs = getEvents().stream().filter(e -> e instanceof MemEvent).map(e -> ((MemEvent) e).getLoc()).collect(Collectors.toSet());
-    //    for(XMemoryLocation loc : locs) {
+    //    Set<XLocation> locs = getEvents().stream().filter(e -> e instanceof MemEvent).map(e -> ((MemEvent) e).getLoc()).collect(Collectors.toSet());
+    //    for(XLocation loc : locs) {
     //        processes.add(new Init(loc));
     //    }
     //}

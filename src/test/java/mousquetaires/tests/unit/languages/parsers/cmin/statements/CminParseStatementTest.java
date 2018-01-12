@@ -1,11 +1,11 @@
 package mousquetaires.tests.unit.languages.parsers.cmin.statements;
 
+import mousquetaires.languages.common.types.YXType;
 import mousquetaires.languages.ytree.expressions.YConstant;
 import mousquetaires.languages.ytree.expressions.YConstantFactory;
 import mousquetaires.languages.ytree.expressions.YVariableRef;
-import mousquetaires.languages.ytree.types.YPrimitiveTypeName;
-import mousquetaires.languages.ytree.types.YType;
-import mousquetaires.languages.ytree.types.YTypeFactory;
+import mousquetaires.languages.common.types.YXTypeName;
+import mousquetaires.languages.common.types.YXTypeFactory;
 import mousquetaires.tests.unit.languages.parsers.cmin.CminParseTest;
 
 
@@ -24,11 +24,11 @@ public abstract class CminParseStatementTest extends CminParseTest {
     protected YConstant constant2 = YConstantFactory.newIntConstant(2);
     protected YConstant constant3 = YConstantFactory.newIntConstant(3);
 
-    protected YType typeInt = YTypeFactory.getPrimitiveType(YPrimitiveTypeName.Int);
-    protected YType typeChar = YTypeFactory.getPrimitiveType(YPrimitiveTypeName.Char);
-    protected YType typeShort = YTypeFactory.getPrimitiveType(YPrimitiveTypeName.Short);
-    protected YType typeLong = YTypeFactory.getPrimitiveType(YPrimitiveTypeName.Long);
-    protected YType typeLongLong = YTypeFactory.getPrimitiveType(YPrimitiveTypeName.LongLong);
-    protected YType typeVoidPointer = YTypeFactory.getPrimitiveType(YPrimitiveTypeName.Void, 1);
+    protected YXType typeInt = YXTypeFactory.getPrimitiveType(YXTypeName.Int);
+    protected YXType typeChar = YXTypeFactory.getPrimitiveType(YXTypeName.Char);
+    protected YXType typeShort = YXTypeFactory.getPrimitiveType(YXTypeName.Short);
+    protected YXType typeLong = YXTypeFactory.getPrimitiveType(YXTypeName.Long);
+    protected YXType typeLongLong = YXTypeFactory.getPrimitiveType(YXTypeName.LongLong);
+    protected YXType typeVoidPointer = YXTypeFactory.getPrimitiveType(YXTypeName.Void, 1);
 
 }

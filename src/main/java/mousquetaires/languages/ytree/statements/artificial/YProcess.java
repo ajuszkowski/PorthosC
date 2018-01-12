@@ -1,6 +1,6 @@
 package mousquetaires.languages.ytree.statements.artificial;
 
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.common.visitors.YtreeVisitor;
 import mousquetaires.languages.ytree.YEntity;
 import mousquetaires.languages.ytree.statements.YBlockStatement;
 import mousquetaires.languages.ytree.statements.YStatement;

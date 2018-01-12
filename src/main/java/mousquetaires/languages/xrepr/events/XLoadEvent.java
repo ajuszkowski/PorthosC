@@ -9,7 +9,7 @@ public class XLoadEvent extends XMemoryEvent {
     //private Register reg;
     //public Integer ssaRegIndex;
     //
-    //public Load(Register reg, XMemoryLocation loc) {
+    //public Load(Register reg, XLocation loc) {
     //    this.reg = reg;
     //    this.loc = loc;
     //    //this.condLevel = 0;
@@ -34,7 +34,7 @@ public class XLoadEvent extends XMemoryEvent {
     //
     //public Load clone() {
     //    Register newReg = reg.clone();
-    //    XMemoryLocation newLoc = loc.clone();
+    //    XLocation newLoc = loc.clone();
     //    Load newLoad = new Load(newReg, newLoc);
     //    newLoad.condLevel = condLevel;
     //    newLoad.setHLId(getHLId());

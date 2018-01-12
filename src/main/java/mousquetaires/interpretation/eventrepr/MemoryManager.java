@@ -1,59 +1,70 @@
 package mousquetaires.interpretation.eventrepr;
 
-import mousquetaires.languages.xrepr.memory.XRegistryLocation;
+import mousquetaires.languages.common.types.YXType;
+import mousquetaires.languages.xrepr.memory.XLocalLocation;
 import mousquetaires.languages.xrepr.memory.XSharedLocation;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * This class is responsible for virtual memory adresation (by variable names) and allocation.
+ */
 class MemoryManager {
 
     private final Map<String, XSharedLocation> sharedLocations;
-    private final Map<String, XRegistryLocation> registryLocations;
+    private final Map<String, XLocalLocation> localLocations;
 
     MemoryManager() {
         this.sharedLocations = new HashMap<>();
-        this.registryLocations = new HashMap<>();
+        this.localLocations = new HashMap<>();
     }
 
     public XSharedLocation tryGetSharedLocation(String name) {
         return sharedLocations.get(name);
     }
 
-    public XRegistryLocation tryGetRegistryLocation(String name) {
-        return registryLocations.get(name);
+    public XLocalLocation tryGetLocalLocation(String name) {
+        return localLocations.get(name);
     }
 
-    public boolean tryRegisterSharedLocation(String name) {
-        if (sharedLocations.containsKey(name)) {
-            return false;
-        }
-        sharedLocations.put(name, new XSharedLocation(name));
-        return true;
-    }
-
-    public void registerSharedLocation(String name) {
+    public XSharedLocation defineSharedLocation(String name, YXType type) {
         String baseName = name;
         int count = 1;
-        while (!tryRegisterSharedLocation(name)){
-            name = baseName + '_' + count;
+        XSharedLocation location = tryGetSharedLocation(name);
+        while (location != null) {
+            name = getNewName(baseName, count++);
+            location = tryGetSharedLocation(name);
         }
+        location = new XSharedLocation(name, type);
+
+        return newSharedLocation(name, type);
     }
 
-    public boolean tryRegisterRegistryLocation(String name) {
-        if (registryLocations.containsKey(name)) {
-            return false;
-        }
-        registryLocations.put(name, new XRegistryLocation(name));
-        return true;
-    }
-
-    public void registerRegistryLocation(String name) {
+    public XLocalLocation defineRegistryLocation(String name, YXType type) {
         String baseName = name;
         int count = 1;
-        while (!tryRegisterRegistryLocation(name)){
-            name = baseName + '_' + count;
+        XLocalLocation location = null;
+        while (location == null) {
+            location = tryGetLocalLocation(name);
+            name = getNewName(baseName, count++);
         }
+        return newLocalLocation(name, type);
+    }
+
+    private XLocalLocation newLocalLocation(String name, YXType type) {
+        XLocalLocation location = new XLocalLocation(name, type);
+        localLocations.put(name, location);
+        return location;
+    }
+
+    private XSharedLocation newSharedLocation(String name, YXType type) {
+        XSharedLocation location = new XSharedLocation(name, type);
+        sharedLocations.put(name, location);
+        return location;
+    }
+
+    private static String getNewName(String baseName, int count) {
+        return baseName + '_' + count;
     }
 }

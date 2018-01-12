@@ -1,17 +1,17 @@
 package mousquetaires.languages.ytree.expressions;
 
-import mousquetaires.languages.ytree.types.YPrimitiveTypeName;
-import mousquetaires.languages.ytree.types.YTypeFactory;
+import mousquetaires.languages.common.types.YXTypeName;
+import mousquetaires.languages.common.types.YXTypeFactory;
 
 
 public class YConstantFactory {
 
     public static YConstant newIntConstant(int value) {
-        return new YConstant(value, YTypeFactory.getPrimitiveType(YPrimitiveTypeName.Int));
+        return new YConstant(value, YXTypeFactory.getPrimitiveType(YXTypeName.Int));
     }
 
     public static YConstant newBoolConstant(boolean value) {
-        return new YConstant(value, YTypeFactory.getPrimitiveType(YPrimitiveTypeName.Bool));
+        return new YConstant(value, YXTypeFactory.getPrimitiveType(YXTypeName.Bool));
     }
 
     // ... todo: others

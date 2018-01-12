@@ -24,7 +24,7 @@
 //import com.microsoft.z3.Z3Exception;
 //import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 //
-//import mousquetaires.languages.parsers.*;
+//import mousquetaires.languages.common.parsers.*;
 //import mousquetaires.program.XProgram;
 //import mousquetaires.wmm.Domain;
 //import mousquetaires.wmm.MemoryModel;

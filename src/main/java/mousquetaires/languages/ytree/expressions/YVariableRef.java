@@ -1,6 +1,6 @@
 package mousquetaires.languages.ytree.expressions;
 
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.common.visitors.YtreeVisitor;
 import mousquetaires.languages.ytree.YEntity;
 import mousquetaires.utils.YtreeUtils;
 
@@ -62,7 +62,7 @@ public class YVariableRef extends YExpression {
     @Override
     public String toString() {
         String prefix = kind == Kind.Local ? "%" : "@";
-        return prefix + name;  // + ":" + type;
+        return prefix + name;
     }
 
     @Override

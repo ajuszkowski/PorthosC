@@ -1,7 +1,7 @@
 package mousquetaires.languages.ytree.statements;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.common.visitors.YtreeVisitor;
 import mousquetaires.languages.ytree.YEntity;
 import mousquetaires.utils.YtreeUtils;
 

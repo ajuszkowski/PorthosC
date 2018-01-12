@@ -1,6 +1,6 @@
 package mousquetaires.languages.ytree.expressions.invocation;
 
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.common.visitors.YtreeVisitor;
 import mousquetaires.languages.ytree.YEntity;
 import mousquetaires.languages.ytree.expressions.YExpression;
 import mousquetaires.languages.ytree.signatures.MethodSignature;

@@ -1,7 +1,7 @@
 package mousquetaires.languages.ytree.expressions;
 
 
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.common.visitors.YtreeVisitor;
 import mousquetaires.languages.ytree.YEntity;
 import mousquetaires.utils.YtreeUtils;
 

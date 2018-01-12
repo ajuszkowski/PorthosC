@@ -1,6 +1,6 @@
 package mousquetaires.languages.ytree.statements;
 
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.common.visitors.YtreeVisitor;
 import mousquetaires.languages.ytree.YEntity;
 import mousquetaires.languages.ytree.expressions.YExpression;
 import mousquetaires.utils.YtreeUtils;
@@ -14,39 +14,39 @@ public class YBranchingStatement extends YStatement {
 
     public final YExpression condition;
 
-    public final YStatement trueBranch;
+    public final YStatement thenBranch;
 
     @Nullable
-    public final YStatement falseBranch;
+    public final YStatement elseBranch;
 
-    public YBranchingStatement(YExpression condition, YStatement trueBranch) {
-        this(condition, trueBranch, null);
+    public YBranchingStatement(YExpression condition, YStatement thenBranch) {
+        this(condition, thenBranch, null);
     }
 
     public YBranchingStatement(YExpression condition,
-                               YStatement trueBranch,
-                               YStatement falseBranch) {
-        this(null, condition, trueBranch, falseBranch);
+                               YStatement thenBranch,
+                               YStatement elseBranch) {
+        this(null, condition, thenBranch, elseBranch);
     }
 
     private YBranchingStatement(String label,
                                 YExpression condition,
-                                YStatement trueBranch,
-                                YStatement falseBranch) {
+                                YStatement thenBranch,
+                                YStatement elseBranch) {
         super(label);
         this.condition = condition;
-        this.trueBranch = trueBranch;
-        this.falseBranch = falseBranch;
+        this.thenBranch = thenBranch;
+        this.elseBranch = elseBranch;
     }
 
     @Override
     public YBranchingStatement withLabel(String newLabel) {
-        return new YBranchingStatement(newLabel, condition, trueBranch, falseBranch);
+        return new YBranchingStatement(newLabel, condition, thenBranch, elseBranch);
     }
 
     @Override
     public Iterator<YEntity> getChildrenIterator() {
-        return YtreeUtils.createIteratorFrom(condition, trueBranch, falseBranch);
+        return YtreeUtils.createIteratorFrom(condition, thenBranch, elseBranch);
     }
 
     @Override
@@ -56,12 +56,12 @@ public class YBranchingStatement extends YStatement {
 
     @Override
     public YBranchingStatement copy() {
-        return new YBranchingStatement(label, condition, trueBranch, falseBranch);
+        return new YBranchingStatement(label, condition, thenBranch, elseBranch);
     }
 
     @Override
     public String toString() {
-        return String.format("if (%s) %s else %s", condition, trueBranch, falseBranch);
+        return String.format("if (%s) %s else %s", condition, thenBranch, elseBranch);
     }
 
     @Override
@@ -70,12 +70,12 @@ public class YBranchingStatement extends YStatement {
         if (!(o instanceof YBranchingStatement)) return false;
         YBranchingStatement that = (YBranchingStatement) o;
         return Objects.equals(condition, that.condition) &&
-                Objects.equals(trueBranch, that.trueBranch) &&
-                Objects.equals(falseBranch, that.falseBranch);
+                Objects.equals(thenBranch, that.thenBranch) &&
+                Objects.equals(elseBranch, that.elseBranch);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(condition, trueBranch, falseBranch);
+        return Objects.hash(condition, thenBranch, elseBranch);
     }
 }

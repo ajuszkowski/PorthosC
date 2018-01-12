@@ -312,12 +312,12 @@ condition
     :   expression
     ;
 
-falseStatement
+elseStatement
     :   statement
     ;
 
 branchingStatement
-    :   If '(' condition ')' statement (Else falseStatement)?
+    :   If '(' condition ')' statement (Else elseStatement)?
     |   Switch '(' condition ')' statement
     ;
 

@@ -1,6 +1,6 @@
 package mousquetaires.languages.xrepr.memory.datamodels;
 
-import mousquetaires.languages.ytree.types.YPrimitiveTypeName;
+import mousquetaires.languages.common.types.YXTypeName;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
 
@@ -13,7 +13,7 @@ public abstract class DataModel {
 
     /** Returns the size of primitive type in bytes
      */
-    public int getPrimitiveTypeSize(YPrimitiveTypeName typeName) {
+    public int getPrimitiveTypeSize(YXTypeName typeName) {
         switch (typeName) {
             case Void:
                 return getPointerSize();

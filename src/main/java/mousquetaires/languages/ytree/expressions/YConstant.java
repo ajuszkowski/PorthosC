@@ -1,7 +1,7 @@
 package mousquetaires.languages.ytree.expressions;
 
-import mousquetaires.languages.visitors.YtreeVisitor;
-import mousquetaires.languages.ytree.types.YType;
+import mousquetaires.languages.common.types.YXType;
+import mousquetaires.languages.common.visitors.YtreeVisitor;
 import mousquetaires.utils.exceptions.ArgumentNullException;
 
 import java.util.Objects;
@@ -10,9 +10,9 @@ import java.util.Objects;
 public class YConstant extends YExpression {
 
     protected final Object value;
-    protected final YType type;
+    protected final YXType type;
 
-    YConstant(Object value, YType type) {
+    YConstant(Object value, YXType type) {
         this.value = value;
         this.type = type;
     }
