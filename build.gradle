@@ -61,7 +61,7 @@ idea {
 ext.antlr4 = [
     generatedSourceDir: "src/generated/java/",
     grammarsDir: "src/main/antlr4/",
-    resultPackage: "mousquetaires.languages.parsers",
+    resultPackage: "mousquetaires.languages.common.parsers",
 ]
 
 generateGrammarSource {

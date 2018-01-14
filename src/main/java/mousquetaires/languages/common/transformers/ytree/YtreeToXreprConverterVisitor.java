@@ -3,7 +3,7 @@ package mousquetaires.languages.common.transformers.ytree;
 import mousquetaires.interpretation.Interpreter;
 import mousquetaires.interpretation.exceptions.InvalidLvalueException;
 import mousquetaires.interpretation.exceptions.InvalidRvalueException;
-import mousquetaires.interpretation.exceptions.UndeclaredMemoryLocationException;
+import mousquetaires.interpretation.exceptions.UndeclaredMemoryUnitException;
 import mousquetaires.languages.common.transformers.cmin.temp.YTempEntity;
 import mousquetaires.languages.common.types.YXType;
 import mousquetaires.languages.common.types.YXTypeName;
@@ -11,8 +11,8 @@ import mousquetaires.languages.common.types.YXTypeSpecifier;
 import mousquetaires.languages.common.visitors.YtreeBaseVisitor;
 import mousquetaires.languages.xrepr.XEntity;
 import mousquetaires.languages.xrepr.XValue;
-import mousquetaires.languages.xrepr.events.XWriteEvent;
-import mousquetaires.languages.xrepr.memory.XLocation;
+import mousquetaires.languages.xrepr.events.memory.XStoreEvent;
+import mousquetaires.languages.xrepr.memory.XMemoryUnit;
 import mousquetaires.languages.ytree.YSyntaxTree;
 import mousquetaires.languages.ytree.expressions.*;
 import mousquetaires.languages.ytree.expressions.invocation.YFunctionArgument;
@@ -106,9 +106,9 @@ public class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
     public XEntity visit(YAssignmentExpression node) {
         // todo: dont forget to process operator
         XEntity destinationEntity = visit(node.assignee);
-        XLocation destination;
+        XMemoryUnit destination;
         try {
-            destination = (XLocation) destinationEntity;
+            destination = (XMemoryUnit) destinationEntity;
         } catch (ClassCastException e) {
             throw new InvalidLvalueException(destinationEntity);
         }
@@ -121,7 +121,7 @@ public class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
         } catch (ClassCastException e) {
             throw new InvalidRvalueException(destinationEntity);
         }
-        return new XWriteEvent(null, source, destination);
+        return new XStoreEvent(null, source, destination);
         throw new NotImplementedException();
     }
 
@@ -138,7 +138,7 @@ public class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
     @Override
     public XEntity visit(YVariableDeclarationStatement node) {
         // TODO: determine type of memory here
-        XLocation.Kind memoryKind = XLocation.Kind.Shared;
+        XMemoryUnit.Kind memoryKind = XMemoryUnit.Kind.Shared;
         return interpreter.createMemoryLocation(node.variable.name, node.type, memoryKind);
     }
 
@@ -160,9 +160,9 @@ public class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
     @Override
     public XEntity visit(YVariableRef node) {
         String name = node.name;
-        XLocation location = interpreter.tryGetMemoryLocation(name);
+        XMemoryUnit location = interpreter.tryGetMemoryLocation(name);
         if (location == null) {
-            throw new UndeclaredMemoryLocationException(name);
+            throw new UndeclaredMemoryUnitException(name);
         }
         return location;
     }

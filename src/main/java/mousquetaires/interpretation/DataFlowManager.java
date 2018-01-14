@@ -1,8 +1,8 @@
 package mousquetaires.interpretation;
 
-import mousquetaires.languages.xrepr.events.XReadEvent;
-import mousquetaires.languages.xrepr.events.XWriteEvent;
-import mousquetaires.languages.xrepr.memory.XLocation;
+import mousquetaires.languages.xrepr.events.memory.XReadEvent;
+import mousquetaires.languages.xrepr.events.memory.XStoreEvent;
+import mousquetaires.languages.xrepr.memory.XMemoryUnit;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
 import java.util.HashMap;
@@ -18,13 +18,13 @@ import java.util.Map;
 class DataFlowManager {
     // TODO: to use hashmapes, set up hashes properly!!!
 
-    private final static Map<XLocation, XReadEvent> readEvents = new HashMap<>();
+    private final static Map<XMemoryUnit, XReadEvent> readEvents = new HashMap<>();
 
     // See: La thèse de Jade Alglave, 3.2.2 Write Serialisation:
     // "We assume all values written to a given location l to be serialised, following a coherence order."
-    private final static Map<XLocation, List<XWriteEvent>> writeSerialisation = new HashMap<>();
+    private final static Map<XMemoryUnit, List<XStoreEvent>> writeSerialisation = new HashMap<>();
 
-    private final static Map<XWriteEvent, XReadEvent> readFromRelations = new HashMap<>();
+    private final static Map<XStoreEvent, XReadEvent> readFromRelations = new HashMap<>();
 
     public void registerReadEvent(XReadEvent event) {
         //readEvents.add(event);
@@ -32,9 +32,9 @@ class DataFlowManager {
         throw new NotImplementedException();
     }
 
-    public void registerWriteEvent(XWriteEvent writeEvent) {
-        XLocation destinationLocation = writeEvent.destination;
-        List<XWriteEvent> previousEvents = writeSerialisation.get(destinationLocation);
+    public void registerWriteEvent(XStoreEvent writeEvent) {
+        XMemoryUnit destinationLocation = writeEvent.destination;
+        List<XStoreEvent> previousEvents = writeSerialisation.get(destinationLocation);
         if (previousEvents == null) {  // first write to that location
             previousEvents = new LinkedList<>();
             previousEvents.add(writeEvent);

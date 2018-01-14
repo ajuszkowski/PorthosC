@@ -1,15 +1,34 @@
-package mousquetaires.languages.xrepr.events;
+package mousquetaires.languages.xrepr.events.memory;
 
+import mousquetaires.languages.xrepr.events.XEventInfo;
+import mousquetaires.languages.xrepr.memory.XLocalMemory;
+import mousquetaires.languages.xrepr.memory.XSharedMemory;
+
+
+/** Load event from shared memory ({@link XSharedMemory})
+ * to local storage (registry, {@link XLocalMemory}) */
 public class XLoadEvent extends XMemoryEvent {
 
-    public XLoadEvent(XEventInfo info) {
+    public final XSharedMemory source;
+    public final XLocalMemory destination;
+    public final XMemoryOrder memoryOrder;
+
+    public XLoadEvent(XEventInfo info, XSharedMemory source, XLocalMemory destination, XMemoryOrder memoryOrder) {
         super(info);
+        this.source = source;
+        this.destination = destination;
+        this.memoryOrder = memoryOrder;
+    }
+
+    @Override
+    public String toString() {
+        return destination + "<- load(" + source + ", " + memoryOrder + ")";
     }
 
     //private Register reg;
     //public Integer ssaRegIndex;
     //
-    //public Load(Register reg, XLocation loc) {
+    //public Load(Register reg, XMemoryUnit loc) {
     //    this.reg = reg;
     //    this.loc = loc;
     //    //this.condLevel = 0;
@@ -34,7 +53,7 @@ public class XLoadEvent extends XMemoryEvent {
     //
     //public Load clone() {
     //    Register newReg = reg.clone();
-    //    XLocation newLoc = loc.clone();
+    //    XMemoryUnit newLoc = loc.clone();
     //    Load newLoad = new Load(newReg, newLoc);
     //    newLoad.condLevel = condLevel;
     //    newLoad.setHLId(getHLId());

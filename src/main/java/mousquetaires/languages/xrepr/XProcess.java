@@ -3,7 +3,7 @@ package mousquetaires.languages.xrepr;
 import com.google.common.collect.ImmutableSet;
 import mousquetaires.languages.xrepr.events.XBarrierEvent;
 import mousquetaires.languages.xrepr.events.XCallEvent;
-import mousquetaires.languages.xrepr.events.XMemoryEvent;
+import mousquetaires.languages.xrepr.events.memory.XMemoryEvent;
 
 
 public class XProcess {

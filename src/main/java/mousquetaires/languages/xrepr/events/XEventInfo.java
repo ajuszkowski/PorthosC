@@ -1,11 +1,13 @@
 package mousquetaires.languages.xrepr.events;
 
+import mousquetaires.languages.xrepr.XProcess;
+
 import java.util.Objects;
 
 
 public class XEventInfo {
     /** identifier of the process that event comes from */
-    public final short processIdentifier;
+    public final XProcess process;
 
     /** control label of the instruction that event comes from */
     public final String controlLabel;
@@ -17,8 +19,8 @@ public class XEventInfo {
     /** ensures that events in a trace are unique */
     public final int stamp;
 
-    public XEventInfo(short processIdentifier, String controlLabel, String instruction) {
-        this.processIdentifier = processIdentifier;
+    public XEventInfo(XProcess process, String controlLabel, String instruction) {
+        this.process = process;
         this.controlLabel = controlLabel;
         this.instruction = instruction;
         this.stamp = newStamp();
@@ -33,13 +35,13 @@ public class XEventInfo {
             return false;
         }
         XEventInfo eventInfo = (XEventInfo) o;
-        return processIdentifier == eventInfo.processIdentifier &&
+        return process == eventInfo.process &&
                 stamp == eventInfo.stamp;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(processIdentifier, stamp);
+        return Objects.hash(process, stamp);
     }
 
     private static int stampGlobalCounter = 0;

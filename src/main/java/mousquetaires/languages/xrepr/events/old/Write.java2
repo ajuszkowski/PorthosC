@@ -15,12 +15,12 @@ import mousquetaires.utils.Pair;
 public class Write extends MemEvent {
 
     private Register reg;
-    private String atomic;
+    private String memoryOrder;
 
-    public Write(Location loc, Register reg, String atomic) {
+    public Write(Location loc, Register reg, String memoryOrder) {
         this.reg = reg;
         this.loc = loc;
-        this.atomic = atomic;
+        this.memoryOrder = memoryOrder;
         this.condLevel = 0;
     }
 
@@ -29,7 +29,7 @@ public class Write extends MemEvent {
     }
 
     public String toString() {
-        return String.format("%s%s.store(%s, %s)", String.join("", Collections.nCopies(condLevel, "  ")), loc, atomic, reg);
+        return String.format("%s%s.store(%s, %s)", String.join("", Collections.nCopies(condLevel, "  ")), loc, memoryOrder, reg);
     }
 
     public LastModMap setLastModMap(LastModMap map) {
@@ -66,7 +66,7 @@ public class Write extends MemEvent {
         Ish ish2 = new Ish();
         ish2.condLevel = this.condLevel;
 
-        if(!target.equals("power") && !target.equals("arm") && atomic.equals("_sc")) {
+        if(!target.equals("power") && !target.equals("arm") && memoryOrder.equals("_sc")) {
             return new Seq(st, mfence);
         }
 
@@ -75,7 +75,7 @@ public class Write extends MemEvent {
         }
 
         if(target.equals("power")) {
-            if(atomic.equals("_sc")) {
+            if(memoryOrder.equals("_sc")) {
                 if(leading) {
                     return new Seq(sync, st);
                 }
@@ -83,27 +83,27 @@ public class Write extends MemEvent {
                     return new Seq(lwsync, new Seq(st, sync));
                 }
             }
-            if(atomic.equals("_rx") || atomic.equals("_na")) {
+            if(memoryOrder.equals("_rx") || memoryOrder.equals("_na")) {
                 return st;
             }
-            if(atomic.equals("_rel")) {
+            if(memoryOrder.equals("_rel")) {
                 return new Seq(lwsync, st);
             }
         }
 
         if(target.equals("arm")) {
-            if(atomic.equals("_sc")) {
+            if(memoryOrder.equals("_sc")) {
                 return new Seq(ish1, new Seq(st, ish2));
             }
-            if(atomic.equals("_rx") || atomic.equals("_na")) {
+            if(memoryOrder.equals("_rx") || memoryOrder.equals("_na")) {
                 return st;
             }
-            if(atomic.equals("_rel")) {
+            if(memoryOrder.equals("_rel")) {
                 return new Seq(ish1, st);
             }
         }
 
-        else System.out.println(String.format("Error in the atomic operation type of", this));
+        else System.out.println(String.format("Error in the memoryOrder operation type of", this));
         return null;
     }
 
@@ -117,7 +117,7 @@ public class Write extends MemEvent {
         Lwsync lwsync = new OptLwsync();
         lwsync.condLevel = this.condLevel;
 
-        if(atomic.equals("_sc")) {
+        if(memoryOrder.equals("_sc")) {
             if(leading) {
                 return new Seq(sync, st);
             }
@@ -125,13 +125,13 @@ public class Write extends MemEvent {
                 return new Seq(lwsync, new Seq(st, sync));
             }
         }
-        if(atomic.equals("_rx") || atomic.equals("_na")) {
+        if(memoryOrder.equals("_rx") || memoryOrder.equals("_na")) {
             return st;
         }
-        if(atomic.equals("_rel")) {
+        if(memoryOrder.equals("_rel")) {
             return new Seq(lwsync, st);
         }
-        else System.out.println(String.format("Error in the atomic operation type of", this));
+        else System.out.println(String.format("Error in the memoryOrder operation type of", this));
         return null;
     }
 

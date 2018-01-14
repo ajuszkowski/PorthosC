@@ -5,6 +5,9 @@
 # Generated files:
 src/generated/*
 
+# my helpers scripts:
+helpers/
+
 # Intellij IDEA:
 .idea/workspace.xml
 .idea/tasks.xml
