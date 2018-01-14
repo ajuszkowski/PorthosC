@@ -41,7 +41,7 @@ public class YXType implements YEntity, XEntity {
 
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
+    public Iterator<? extends YEntity> getChildrenIterator() {
         return YtreeUtils.createIteratorFrom(specifier);
     }
 

@@ -20,7 +20,7 @@ public class YTernaryExpression extends YExpression {
     }
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
+    public Iterator<? extends YEntity> getChildrenIterator() {
         return YtreeUtils.createIteratorFrom(condition, trueExpression, falseExpression);
     }
 

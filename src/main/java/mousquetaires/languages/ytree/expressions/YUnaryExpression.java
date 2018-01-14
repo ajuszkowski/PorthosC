@@ -21,7 +21,7 @@ public class YUnaryExpression extends YExpression {
 
 
         @Override
-        public Iterator<YEntity> getChildrenIterator() {
+        public Iterator<? extends YEntity> getChildrenIterator() {
             return YtreeUtils.createIteratorFrom();
         }
 
@@ -45,7 +45,7 @@ public class YUnaryExpression extends YExpression {
     }
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
+    public Iterator<? extends YEntity> getChildrenIterator() {
         return YtreeUtils.createIteratorFrom(operator, expression);
     }
 

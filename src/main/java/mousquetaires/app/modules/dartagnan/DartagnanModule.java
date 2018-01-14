@@ -7,7 +7,7 @@ import mousquetaires.app.modules.AppModule;
 import mousquetaires.interpretation.eventrepr.Interpreter;
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
-import mousquetaires.languages.parsers.YtreeParser;
+import mousquetaires.languages.common.parsers.YtreeParser;
 import mousquetaires.languages.common.transformers.ytree.YtreeToXreprConverter;
 import mousquetaires.languages.xrepr.XProgram;
 import mousquetaires.languages.xrepr.memory.datamodels.DataModel;

@@ -6,10 +6,11 @@ import mousquetaires.interpretation.internalrepr.exceptions.InvalidRvalueExcepti
 import mousquetaires.interpretation.internalrepr.exceptions.UndeclaredMemoryLocationException;
 import mousquetaires.languages.common.transformers.cmin.temp.YTempEntity;
 import mousquetaires.languages.common.types.YXType;
+import mousquetaires.languages.common.types.YXTypeName;
+import mousquetaires.languages.common.types.YXTypeSpecifier;
 import mousquetaires.languages.common.visitors.YtreeBaseVisitor;
 import mousquetaires.languages.xrepr.XEntity;
 import mousquetaires.languages.xrepr.XValue;
-import mousquetaires.languages.xrepr.events.XWriteEvent;
 import mousquetaires.languages.xrepr.memory.XLocation;
 import mousquetaires.languages.ytree.YSyntaxTree;
 import mousquetaires.languages.ytree.expressions.*;
@@ -19,10 +20,7 @@ import mousquetaires.languages.ytree.signatures.YFunctionParameter;
 import mousquetaires.languages.ytree.statements.*;
 import mousquetaires.languages.ytree.statements.artificial.YBugonStatement;
 import mousquetaires.languages.ytree.statements.artificial.YProcess;
-import mousquetaires.languages.common.types.YXTypeName;
-import mousquetaires.languages.common.types.YXTypeSpecifier;
-
-import java.util.SortedMap;
+import mousquetaires.utils.exceptions.NotImplementedException;
 
 
 public class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
@@ -114,13 +112,16 @@ public class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
             throw new InvalidLvalueException(destinationEntity);
         }
         XEntity sourceEntity = visit(node.expression);
+        // todo: instanceof : value / other location / ..?
+        // todo: if pure value, firstly write it to registry?
         XValue source;
         try {
             source = (XValue) sourceEntity;
         } catch (ClassCastException e) {
             throw new InvalidRvalueException(destinationEntity);
         }
-        return new XWriteEvent(, source, destination);
+        //return new XWriteEvent(null, source, destination);
+        throw new NotImplementedException();
     }
 
     @Override

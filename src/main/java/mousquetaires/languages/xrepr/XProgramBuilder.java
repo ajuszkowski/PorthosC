@@ -1,7 +1,7 @@
 package mousquetaires.languages.xrepr;
 
 import com.google.common.collect.ImmutableSet;
-import mousquetaires.patterns.Builder;
+import mousquetaires.utils.patterns.Builder;
 
 
 public class XProgramBuilder extends Builder<XProgram> {

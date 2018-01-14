@@ -3,7 +3,6 @@ package mousquetaires.interpretation.eventrepr;
 import mousquetaires.languages.xrepr.events.XReadEvent;
 import mousquetaires.languages.xrepr.events.XWriteEvent;
 import mousquetaires.languages.xrepr.memory.XLocation;
-import mousquetaires.languages.xrepr.memory.XSharedLocation;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
 import java.util.HashMap;
@@ -34,7 +33,7 @@ class DataFlowManager {
     }
 
     public void registerWriteEvent(XWriteEvent writeEvent) {
-        XSharedLocation destinationLocation = writeEvent.destination;
+        XLocation destinationLocation = writeEvent.destination;
         List<XWriteEvent> previousEvents = writeSerialisation.get(destinationLocation);
         if (previousEvents == null) {  // first write to that location
             previousEvents = new LinkedList<>();

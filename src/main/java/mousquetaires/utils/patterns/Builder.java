@@ -1,4 +1,4 @@
-package mousquetaires.patterns;
+package mousquetaires.utils.patterns;
 
 public abstract class Builder<T> {
 

@@ -1,7 +1,7 @@
 package mousquetaires.languages.ytree.statements;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.patterns.Builder;
+import mousquetaires.utils.patterns.Builder;
 
 
 public class YSequenceStatementBuilder extends Builder<YStatement> {

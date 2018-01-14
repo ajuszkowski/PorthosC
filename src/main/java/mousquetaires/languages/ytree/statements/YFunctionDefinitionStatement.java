@@ -26,7 +26,7 @@ public class YFunctionDefinitionStatement extends YStatement {
     }
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
+    public Iterator<? extends YEntity> getChildrenIterator() {
         return YtreeUtils.createIteratorFrom(body);
     }
 

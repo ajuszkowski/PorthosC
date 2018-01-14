@@ -2,7 +2,7 @@ package mousquetaires.languages.ytree;
 
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.ytree.statements.YStatement;
-import mousquetaires.patterns.Builder;
+import mousquetaires.utils.patterns.Builder;
 
 
 public class YSyntaxTreeBuilder extends Builder<YSyntaxTree> {

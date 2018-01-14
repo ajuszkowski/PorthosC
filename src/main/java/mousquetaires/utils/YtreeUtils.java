@@ -3,25 +3,16 @@ package mousquetaires.utils;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import mousquetaires.languages.ytree.YEntity;
-import mousquetaires.languages.ytree.statements.YStatement;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 
 public class YtreeUtils {
 
-    public static Iterator<YEntity> createIteratorFrom(ImmutableList<YStatement> elements) {
-        final int length = elements.size();
-        if (length == 0) {
-            return Collections.emptyIterator();
-        }
-        if (length == 1) {
-            return Iterators.singletonIterator(elements.get(0));
-        }
-        return new ArrayList<YEntity>(elements).iterator();
-    }
-
-    public static Iterator<YEntity> createIteratorFrom(YEntity firstElement, YEntity[] otherElements) {
+    public static Iterator<? extends YEntity> createIteratorFrom(YEntity firstElement, YEntity[] otherElements) {
         switch (otherElements.length) {
             case 0:
                 return createIteratorFrom(firstElement);
@@ -40,7 +31,7 @@ public class YtreeUtils {
         }
     }
 
-    public static Iterator<YEntity> createIteratorFrom(YEntity... elements) {
+    public static Iterator<? extends YEntity> createIteratorFrom(YEntity... elements) {
         final int length = elements.length;
         if (length == 0) {
             return Collections.emptyIterator();
@@ -51,7 +42,11 @@ public class YtreeUtils {
         return Arrays.asList(elements).iterator();
     }
 
-    public static Iterator<YEntity> createIteratorFrom(Iterable<YEntity> elements) {
+    public static Iterator<? extends YEntity> createIteratorFrom(Iterable<? extends YEntity> elements) {
         return elements.iterator();
+    }
+
+    public static Iterator<? extends YEntity> createIteratorFrom(ImmutableList<? extends YEntity> list) {
+        return list.listIterator();
     }
 }

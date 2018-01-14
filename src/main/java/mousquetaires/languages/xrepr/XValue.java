@@ -16,7 +16,7 @@ public class XValue implements XEntity {
 
     @Override
     public String toString() {
-        return value + ":" + type;
+        return "$" + value + ":" + type;
     }
 
     @Override

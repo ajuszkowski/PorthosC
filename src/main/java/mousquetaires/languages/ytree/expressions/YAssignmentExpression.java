@@ -25,7 +25,7 @@ public class YAssignmentExpression extends YExpression {
         ;
 
         @Override
-        public Iterator<YEntity> getChildrenIterator() {
+        public Iterator<? extends YEntity> getChildrenIterator() {
             return YtreeUtils.createIteratorFrom();
         }
 
@@ -56,7 +56,7 @@ public class YAssignmentExpression extends YExpression {
     }
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
+    public Iterator<? extends YEntity> getChildrenIterator() {
         return YtreeUtils.createIteratorFrom(assignee, expression, operator);
     }
 

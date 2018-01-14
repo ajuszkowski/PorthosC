@@ -45,7 +45,7 @@ public class YBranchingStatement extends YStatement {
     }
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
+    public Iterator<? extends YEntity> getChildrenIterator() {
         return YtreeUtils.createIteratorFrom(condition, thenBranch, elseBranch);
     }
 

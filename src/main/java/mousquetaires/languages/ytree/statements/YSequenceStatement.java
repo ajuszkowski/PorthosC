@@ -3,7 +3,6 @@ package mousquetaires.languages.ytree.statements;
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.common.visitors.YtreeVisitor;
 import mousquetaires.languages.ytree.YEntity;
-import mousquetaires.utils.YtreeUtils;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -35,8 +34,8 @@ public class YSequenceStatement extends YStatement {
     }
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
-        return YtreeUtils.createIteratorFrom(statements);
+    public Iterator<? extends YEntity> getChildrenIterator() {
+        return statements.iterator();
     }
 
     @Override

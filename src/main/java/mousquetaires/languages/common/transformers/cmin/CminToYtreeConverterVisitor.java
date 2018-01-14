@@ -3,6 +3,7 @@ package mousquetaires.languages.common.transformers.cmin;
 import mousquetaires.interpretation.internalrepr.exceptions.ParserException;
 import mousquetaires.languages.common.parsers.CminParser;
 import mousquetaires.languages.common.parsers.CminVisitor;
+import mousquetaires.languages.common.transformers.cmin.temp.YFunctionArgumentListTemp;
 import mousquetaires.languages.common.transformers.cmin.temp.YVariableInitialiserListTemp;
 import mousquetaires.languages.common.transformers.cmin.temp.YVariableInitialiserTemp;
 import mousquetaires.languages.common.types.YXType;
@@ -13,6 +14,8 @@ import mousquetaires.languages.ytree.YEntity;
 import mousquetaires.languages.ytree.YSyntaxTree;
 import mousquetaires.languages.ytree.YSyntaxTreeBuilder;
 import mousquetaires.languages.ytree.expressions.*;
+import mousquetaires.languages.ytree.expressions.invocation.YFunctionArgument;
+import mousquetaires.languages.ytree.expressions.invocation.YFunctionInvocationExpression;
 import mousquetaires.languages.ytree.statements.*;
 import mousquetaires.languages.ytree.statements.artificial.YBugonStatement;
 import mousquetaires.languages.ytree.statements.artificial.YProcess;
@@ -144,9 +147,23 @@ class CminToYtreeConverterVisitor
         if (primaryExpressionCtx != null) {
             return visitPrimaryExpression(primaryExpressionCtx);
         }
-        // todo: postfix expression cases
-        throw new NotImplementedException();
-        //throw new IllegalStateException();
+        CminParser.PostfixExpressionContext postfixExpressionCtx = ctx.postfixExpression();
+        if (postfixExpressionCtx != null) {
+            YExpression baseExpression = visitPostfixExpression(postfixExpressionCtx);
+            CminParser.FunctionArgumentExpressionListContext funArgumentsCtx = ctx.functionArgumentExpressionList();
+            if (funArgumentsCtx != null) {
+                YFunctionArgumentListTemp argumentsList = visitFunctionArgumentExpressionList(funArgumentsCtx);
+                argumentsList.reverse();
+                return new YFunctionInvocationExpression(baseExpression, argumentsList);
+            }
+            if (ctx.PlusPlus() != null) {
+                return new YUnaryExpression(baseExpression, YUnaryExpression.Operator.IncrementPostfix);
+            }
+            if (ctx.MinusMinus() != null) {
+                return new YUnaryExpression(baseExpression, YUnaryExpression.Operator.DecrementPostfix);
+            }
+        }
+        throw new IllegalStateException();
     }
 
     /**
@@ -155,8 +172,17 @@ class CminToYtreeConverterVisitor
      * |   functionArgumentExpressionList ',' functionArgumentExpression
      * ;
      */
-    public YEntity visitFunctionArgumentExpressionList(CminParser.FunctionArgumentExpressionListContext ctx) {
-        throw new NotImplementedException();
+    public YFunctionArgumentListTemp visitFunctionArgumentExpressionList(CminParser.FunctionArgumentExpressionListContext ctx) {
+        YFunctionArgumentListTemp argumentList = new YFunctionArgumentListTemp();
+        CminParser.FunctionArgumentExpressionContext variableArgumentCtx = ctx.functionArgumentExpression();
+        if (variableArgumentCtx != null) {
+            argumentList.add(visitFunctionArgumentExpression(variableArgumentCtx));
+        }
+        CminParser.FunctionArgumentExpressionListContext recursiveListCtx = ctx.functionArgumentExpressionList();
+        if (recursiveListCtx != null) {
+            argumentList.addAll(visitFunctionArgumentExpressionList(recursiveListCtx));
+        }
+        return argumentList;
     }
 
     /**
@@ -164,8 +190,9 @@ class CminToYtreeConverterVisitor
      * :   unaryOrNullaryExpression
      * ;
      */
-    public YExpression visitFunctionArgumentExpression(CminParser.FunctionArgumentExpressionContext ctx) {
-        return visitUnaryOrNullaryExpression(ctx.unaryOrNullaryExpression());
+    public YFunctionArgument visitFunctionArgumentExpression(CminParser.FunctionArgumentExpressionContext ctx) {
+        YExpression expression = visitUnaryOrNullaryExpression(ctx.unaryOrNullaryExpression());
+        return new YFunctionArgument(expression);
     }
 
     /**
@@ -513,9 +540,9 @@ class CminToYtreeConverterVisitor
      * ;
      */
     public YVariableInitialiserTemp visitVariableInitialisation(CminParser.VariableInitialisationContext ctx) {
-        if (ctx == null) {
-            return null;
-        }
+        //if (ctx == null) {
+        //    return null;
+        //}
         CminParser.VariableNameContext variableNameCtx = ctx.variableName();
         if (variableNameCtx == null) {
             throw new ParserException(ctx, "Missing variable name in variable declaration");
@@ -670,8 +697,9 @@ class CminToYtreeConverterVisitor
             YXType type = visitTypeDeclaration(typeDeclarationCtx);
 
             YVariableInitialiserListTemp initList = visitVariableInitialisationList(ctx.variableInitialisationList());
+            initList.reverse(); // initialisers are visited in reversed order
             YSequenceStatementBuilder builder = new YSequenceStatementBuilder();
-            for (YVariableInitialiserTemp initialiser : initList.initialisers) {
+            for (YVariableInitialiserTemp initialiser : initList) {
                 YVariableRef variable = initialiser.variable;
                 YExpression initExpression = initialiser.initExpression;
                 builder.add(new YVariableDeclarationStatement(type, variable));
@@ -707,17 +735,16 @@ class CminToYtreeConverterVisitor
      * ;
      */
     public YVariableInitialiserListTemp visitVariableInitialisationList(CminParser.VariableInitialisationListContext ctx) {
-        YVariableInitialiserListTemp builder = new YVariableInitialiserListTemp();
-        YVariableInitialiserTemp initialisation = visitVariableInitialisation(ctx.variableInitialisation());
-        if (initialisation != null) {
-            builder.add(initialisation);
+        YVariableInitialiserListTemp initialiserList = new YVariableInitialiserListTemp();
+        CminParser.VariableInitialisationContext variableInitialisationCtx = ctx.variableInitialisation();
+        if (variableInitialisationCtx != null) {
+            initialiserList.add(visitVariableInitialisation(variableInitialisationCtx));
         }
         CminParser.VariableInitialisationListContext recursiveListCtx = ctx.variableInitialisationList();
         if (recursiveListCtx != null) {
-            YVariableInitialiserListTemp recursiveList = visitVariableInitialisationList(recursiveListCtx);
-            builder.addAll(recursiveList);
+            initialiserList.addAll(visitVariableInitialisationList(recursiveListCtx));
         }
-        return builder;
+        return initialiserList;
     }
 
     /**

@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import mousquetaires.languages.xrepr.events.XMemoryEvent;
 import mousquetaires.languages.xrepr.events.XBarrierEvent;
 import mousquetaires.languages.xrepr.events.XCallEvent;
-import mousquetaires.patterns.Builder;
+import mousquetaires.utils.patterns.Builder;
 
 
 public class XProcessBuilder extends Builder<XProcess> {

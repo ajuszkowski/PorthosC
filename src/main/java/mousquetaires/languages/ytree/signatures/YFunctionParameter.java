@@ -19,7 +19,7 @@ public class YFunctionParameter implements YEntity {
     }
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
+    public Iterator<? extends YEntity> getChildrenIterator() {
         return YtreeUtils.createIteratorFrom(type);
     }
 

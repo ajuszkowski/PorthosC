@@ -1,7 +1,8 @@
 package mousquetaires.languages.xrepr.events;
 
-import mousquetaires.languages.xrepr.memory.XSharedLocation;
 import mousquetaires.languages.xrepr.memory.XLocalLocation;
+import mousquetaires.languages.xrepr.memory.XLocation;
+import mousquetaires.languages.xrepr.memory.XSharedLocation;
 
 
 /** Write event from registry ({@link XLocalLocation})
@@ -9,10 +10,10 @@ import mousquetaires.languages.xrepr.memory.XLocalLocation;
  */
 public class XWriteEvent extends XMemoryEvent {
 
-    public final XLocalLocation source;
-    public final XSharedLocation destination;
+    public final XLocation source;
+    public final XLocation destination;
 
-    public XWriteEvent(XEventInfo info, XLocalLocation source, XSharedLocation destination) {
+    public XWriteEvent(XEventInfo info, XLocation source, XLocation destination) {
         super(info);
         this.source = source;
         this.destination = destination;

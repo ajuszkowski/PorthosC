@@ -10,7 +10,7 @@ public abstract class YExpression implements YEntity {
     // TODO: store location in the original code
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
+    public Iterator<? extends YEntity> getChildrenIterator() {
         return YtreeUtils.createIteratorFrom();
     }
 

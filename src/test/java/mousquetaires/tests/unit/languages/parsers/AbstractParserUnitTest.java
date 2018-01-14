@@ -2,8 +2,8 @@ package mousquetaires.tests.unit.languages.parsers;
 
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
+import mousquetaires.languages.common.parsers.YtreeParser;
 import mousquetaires.languages.ytree.YSyntaxTree;
-import mousquetaires.languages.parsers.YtreeParser;
 import mousquetaires.tests.AbstractTest;
 import mousquetaires.tests.TestFailedException;
 
