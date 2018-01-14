@@ -1,9 +1,9 @@
 package mousquetaires.languages.common.transformers.ytree;
 
-import mousquetaires.interpretation.eventrepr.Interpreter;
-import mousquetaires.interpretation.internalrepr.exceptions.InvalidLvalueException;
-import mousquetaires.interpretation.internalrepr.exceptions.InvalidRvalueException;
-import mousquetaires.interpretation.internalrepr.exceptions.UndeclaredMemoryLocationException;
+import mousquetaires.interpretation.Interpreter;
+import mousquetaires.interpretation.exceptions.InvalidLvalueException;
+import mousquetaires.interpretation.exceptions.InvalidRvalueException;
+import mousquetaires.interpretation.exceptions.UndeclaredMemoryLocationException;
 import mousquetaires.languages.common.transformers.cmin.temp.YTempEntity;
 import mousquetaires.languages.common.types.YXType;
 import mousquetaires.languages.common.types.YXTypeName;
@@ -11,6 +11,7 @@ import mousquetaires.languages.common.types.YXTypeSpecifier;
 import mousquetaires.languages.common.visitors.YtreeBaseVisitor;
 import mousquetaires.languages.xrepr.XEntity;
 import mousquetaires.languages.xrepr.XValue;
+import mousquetaires.languages.xrepr.events.XWriteEvent;
 import mousquetaires.languages.xrepr.memory.XLocation;
 import mousquetaires.languages.ytree.YSyntaxTree;
 import mousquetaires.languages.ytree.expressions.*;
@@ -120,7 +121,7 @@ public class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
         } catch (ClassCastException e) {
             throw new InvalidRvalueException(destinationEntity);
         }
-        //return new XWriteEvent(null, source, destination);
+        return new XWriteEvent(null, source, destination);
         throw new NotImplementedException();
     }
 

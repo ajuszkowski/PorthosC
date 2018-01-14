@@ -1,6 +1,6 @@
 package mousquetaires.languages.common.transformers.ytree;
 
-import mousquetaires.interpretation.eventrepr.Interpreter;
+import mousquetaires.interpretation.Interpreter;
 import mousquetaires.languages.xrepr.XProgram;
 import mousquetaires.languages.ytree.YSyntaxTree;
 

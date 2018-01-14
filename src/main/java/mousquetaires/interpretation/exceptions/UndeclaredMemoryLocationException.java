@@ -1,4 +1,4 @@
-package mousquetaires.interpretation.internalrepr.exceptions;
+package mousquetaires.interpretation.exceptions;
 
 
 public class UndeclaredMemoryLocationException extends InterpreterException {

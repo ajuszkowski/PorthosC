@@ -16,6 +16,6 @@ public class XReadEvent extends XMemoryEvent {
 
     @Override
     public String toString() {
-        return "r(" + source + ')';
+        return "R(" + source + ')';
     }
 }

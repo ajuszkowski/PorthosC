@@ -1,4 +1,4 @@
-package mousquetaires.interpretation.internalrepr.exceptions;
+package mousquetaires.interpretation.exceptions;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 

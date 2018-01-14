@@ -21,7 +21,7 @@ public class XWriteEvent extends XMemoryEvent {
 
     @Override
     public String toString() {
-        return "w(" + source +
+        return "W(" + source +
                 ", " + destination +
                 ')';
     }

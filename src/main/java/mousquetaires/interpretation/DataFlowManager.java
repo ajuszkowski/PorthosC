@@ -1,4 +1,4 @@
-package mousquetaires.interpretation.eventrepr;
+package mousquetaires.interpretation;
 
 import mousquetaires.languages.xrepr.events.XReadEvent;
 import mousquetaires.languages.xrepr.events.XWriteEvent;

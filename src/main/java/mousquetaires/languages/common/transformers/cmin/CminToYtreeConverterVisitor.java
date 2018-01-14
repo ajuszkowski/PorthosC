@@ -1,6 +1,6 @@
 package mousquetaires.languages.common.transformers.cmin;
 
-import mousquetaires.interpretation.internalrepr.exceptions.ParserException;
+import mousquetaires.interpretation.exceptions.ParserException;
 import mousquetaires.languages.common.parsers.CminParser;
 import mousquetaires.languages.common.parsers.CminVisitor;
 import mousquetaires.languages.common.transformers.cmin.temp.YFunctionArgumentListTemp;

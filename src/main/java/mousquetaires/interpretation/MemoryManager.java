@@ -1,4 +1,4 @@
-package mousquetaires.interpretation.eventrepr;
+package mousquetaires.interpretation;
 
 import mousquetaires.languages.common.types.YXType;
 import mousquetaires.languages.xrepr.memory.XLocalLocation;

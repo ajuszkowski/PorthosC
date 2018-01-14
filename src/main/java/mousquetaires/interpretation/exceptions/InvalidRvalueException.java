@@ -1,4 +1,4 @@
-package mousquetaires.interpretation.internalrepr.exceptions;
+package mousquetaires.interpretation.exceptions;
 
 import mousquetaires.languages.xrepr.XEntity;
 
