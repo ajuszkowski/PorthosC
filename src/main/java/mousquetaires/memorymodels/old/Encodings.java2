@@ -22,7 +22,7 @@ import static mousquetaires.utils.Utils.lastValueReg;
 
 public class Encodings {
 
-    public static BoolExpr satComp(String name, String r1, String r2, Set<Event> events, Context ctx) {
+    public static BoolExpr satComp(String processName, String r1, String r2, Set<Event> events, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         for(Event e1 : events) {
             for(Event e2 : events) {
@@ -30,137 +30,137 @@ public class Encodings {
                 for(Event e3 : events) {
                     orClause = ctx.mkOr(orClause, ctx.mkAnd(Utils.edge(r1, e1, e3, ctx), Utils.edge(r2, e3, e2, ctx)));
                 }
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(name, e1, e2, ctx), orClause));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(processName, e1, e2, ctx), orClause));
             }
         }
         return enc;
     }
 
     public static BoolExpr satComp(String r1, String r2, Set<Event> events, Context ctx) {
-        String name = String.format("(%s;%s)", r1, r2);
-        return satComp(name, r1, r2, events, ctx);
+        String processName = String.format("(%s;%s)", r1, r2);
+        return satComp(processName, r1, r2, events, ctx);
     }
 
-    public static BoolExpr satEmpty(String name, Set<Event> events, Context ctx) {
+    public static BoolExpr satEmpty(String processName, Set<Event> events, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         for(Event e1 : events) {
             for(Event e2 : events) {
-                enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge(name, e1, e2, ctx)));
+                enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge(processName, e1, e2, ctx)));
             }
         }
         return enc;
     }
 
-    public static BoolExpr satUnion(String name, String r1, String r2, Set<Event> events, Context ctx) {
+    public static BoolExpr satUnion(String processName, String r1, String r2, Set<Event> events, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         for(Event e1 : events) {
             for(Event e2 : events) {
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(name, e1, e2, ctx), ctx.mkOr(Utils.edge(r1, e1, e2, ctx), Utils.edge(r2, e1, e2, ctx))));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(processName, e1, e2, ctx), ctx.mkOr(Utils.edge(r1, e1, e2, ctx), Utils.edge(r2, e1, e2, ctx))));
             }
         }
         return enc;
     }
 
     public static BoolExpr satUnion(String r1, String r2, Set<Event> events, Context ctx) {
-        String name = String.format("(%s+%s)", r1, r2);
-        return satUnion(name, r1, r2, events, ctx);
+        String processName = String.format("(%s+%s)", r1, r2);
+        return satUnion(processName, r1, r2, events, ctx);
     }
 
-    public static BoolExpr satIntersection(String name, String r1, String r2, Set<Event> events, Context ctx) {
+    public static BoolExpr satIntersection(String processName, String r1, String r2, Set<Event> events, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         for(Event e1 : events) {
             for(Event e2 : events) {
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(name, e1, e2, ctx), ctx.mkAnd(Utils.edge(r1, e1, e2, ctx), Utils.edge(r2, e1, e2, ctx))));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(processName, e1, e2, ctx), ctx.mkAnd(Utils.edge(r1, e1, e2, ctx), Utils.edge(r2, e1, e2, ctx))));
             }
         }
         return enc;
     }
 
     public static BoolExpr satIntersection(String r1, String r2, Set<Event> events, Context ctx) {
-        String name = String.format("(%s&%s)", r1, r2);
-        return satIntersection(name, r1, r2, events, ctx);
+        String processName = String.format("(%s&%s)", r1, r2);
+        return satIntersection(processName, r1, r2, events, ctx);
     }
 
-    public static BoolExpr satMinus(String name, String r1, String r2, Set<Event> events, Context ctx) {
+    public static BoolExpr satMinus(String processName, String r1, String r2, Set<Event> events, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         for(Event e1 : events) {
             for(Event e2 : events) {
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(name, e1, e2, ctx), ctx.mkAnd(Utils.edge(r1, e1, e2, ctx), ctx.mkNot(Utils.edge(r2, e1, e2, ctx)))));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(processName, e1, e2, ctx), ctx.mkAnd(Utils.edge(r1, e1, e2, ctx), ctx.mkNot(Utils.edge(r2, e1, e2, ctx)))));
             }
         }
         return enc;
     }
 
     public static BoolExpr satMinus(String r1, String r2, Set<Event> events, Context ctx) {
-        String name = String.format("(%s\\%s)", r1, r2);
-        return satMinus(name, r1, r2, events, ctx);
+        String processName = String.format("(%s\\%s)", r1, r2);
+        return satMinus(processName, r1, r2, events, ctx);
     }
 
-    public static BoolExpr satTO(String name, Set<Event> events, Context ctx) {
+    public static BoolExpr satTO(String processName, Set<Event> events, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         for(Event e1 : events) {
-            enc = ctx.mkAnd(enc, ctx.mkImplies(e1.executes(ctx), ctx.mkGt(Utils.intVar(name, e1, ctx), ctx.mkInt(0))));
-            enc = ctx.mkAnd(enc, ctx.mkImplies(e1.executes(ctx), ctx.mkLe(Utils.intVar(name, e1, ctx), ctx.mkInt(events.size()))));
+            enc = ctx.mkAnd(enc, ctx.mkImplies(e1.executes(ctx), ctx.mkGt(Utils.intVar(processName, e1, ctx), ctx.mkInt(0))));
+            enc = ctx.mkAnd(enc, ctx.mkImplies(e1.executes(ctx), ctx.mkLe(Utils.intVar(processName, e1, ctx), ctx.mkInt(events.size()))));
             for(Event e2 : events) {
-                enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.edge(name, e1, e2, ctx),
-                                                ctx.mkLt(Utils.intVar(name, e1, ctx), Utils.intVar(name, e2, ctx))));
+                enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.edge(processName, e1, e2, ctx),
+                                                ctx.mkLt(Utils.intVar(processName, e1, ctx), Utils.intVar(processName, e2, ctx))));
                 enc = ctx.mkAnd(enc, ctx.mkImplies(ctx.mkAnd(e1.executes(ctx), e2.executes(ctx)),
-                                        ctx.mkImplies(ctx.mkLt(Utils.intVar(name, e1, ctx), Utils.intVar(name, e2, ctx)),
-                                            Utils.edge(name, e1, e2, ctx))));
+                                        ctx.mkImplies(ctx.mkLt(Utils.intVar(processName, e1, ctx), Utils.intVar(processName, e2, ctx)),
+                                            Utils.edge(processName, e1, e2, ctx))));
                 if(e1 != e2) {
                     enc = ctx.mkAnd(enc, ctx.mkImplies(ctx.mkAnd(e1.executes(ctx), e2.executes(ctx)),
-                            ctx.mkNot(ctx.mkEq(Utils.intVar(name, e1, ctx), Utils.intVar(name, e2, ctx)))));
+                            ctx.mkNot(ctx.mkEq(Utils.intVar(processName, e1, ctx), Utils.intVar(processName, e2, ctx)))));
                     enc = ctx.mkAnd(enc, ctx.mkImplies(ctx.mkAnd(e1.executes(ctx), e2.executes(ctx)),
-                                            ctx.mkOr(Utils.edge(name, e1, e2, ctx), Utils.edge(name, e2, e1, ctx))));
+                                            ctx.mkOr(Utils.edge(processName, e1, e2, ctx), Utils.edge(processName, e2, e1, ctx))));
                 }
             }
         }
         return enc;
     }
 
-    public static BoolExpr satAcyclic(String name, Set<Event> events, Context ctx) {
+    public static BoolExpr satAcyclic(String processName, Set<Event> events, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         for(Event e1 : events) {
-            enc = ctx.mkAnd(enc, ctx.mkImplies(e1.executes(ctx), ctx.mkGt(Utils.intVar(name, e1, ctx), ctx.mkInt(0))));
+            enc = ctx.mkAnd(enc, ctx.mkImplies(e1.executes(ctx), ctx.mkGt(Utils.intVar(processName, e1, ctx), ctx.mkInt(0))));
             for(Event e2 : events) {
-                enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.edge(name, e1, e2, ctx), ctx.mkLt(Utils.intVar(name, e1, ctx), Utils.intVar(name, e2, ctx))));
+                enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.edge(processName, e1, e2, ctx), ctx.mkLt(Utils.intVar(processName, e1, ctx), Utils.intVar(processName, e2, ctx))));
             }
         }
         return enc;
     }
 
-    public static BoolExpr satCycle(String name, Set<Event> events, Context ctx) {
+    public static BoolExpr satCycle(String processName, Set<Event> events, Context ctx) {
         BoolExpr oneEventInCycle = ctx.mkFalse();
         for(Event e : events) {
-            oneEventInCycle = ctx.mkOr(oneEventInCycle, Utils.cycleVar(name, e, ctx));
+            oneEventInCycle = ctx.mkOr(oneEventInCycle, Utils.cycleVar(processName, e, ctx));
         }
         return oneEventInCycle;
     }
 
-    public static BoolExpr satCycleDef(String name, Set<Event> events, Context ctx) {
+    public static BoolExpr satCycleDef(String processName, Set<Event> events, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         for(Event e1 : events) {
             Set<BoolExpr> source = new HashSet<BoolExpr>();
             Set<BoolExpr> target = new HashSet<BoolExpr>();
             for(Event e2 : events) {
-                    source.add(Utils.cycleEdge(name, e1, e2, ctx));
-                    target.add(Utils.cycleEdge(name, e2, e1, ctx));
-                    enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.cycleEdge(name, e1, e2, ctx),
-                            ctx.mkAnd(e1.executes(ctx), e2.executes(ctx), Utils.edge(name, e1, e2, ctx), Utils.cycleVar(name, e1, ctx), Utils.cycleVar(name, e2, ctx))));
+                    source.add(Utils.cycleEdge(processName, e1, e2, ctx));
+                    target.add(Utils.cycleEdge(processName, e2, e1, ctx));
+                    enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.cycleEdge(processName, e1, e2, ctx),
+                            ctx.mkAnd(e1.executes(ctx), e2.executes(ctx), Utils.edge(processName, e1, e2, ctx), Utils.cycleVar(processName, e1, ctx), Utils.cycleVar(processName, e2, ctx))));
                 }
-            enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.cycleVar(name, e1, ctx), ctx.mkAnd(encodeEO(source, ctx), encodeEO(target, ctx))));
+            enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.cycleVar(processName, e1, ctx), ctx.mkAnd(encodeEO(source, ctx), encodeEO(target, ctx))));
             }
         return enc;
     }
 
-    public static BoolExpr satTransFixPoint(String name, Set<Event> events, Context ctx) {
+    public static BoolExpr satTransFixPoint(String processName, Set<Event> events, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         int bound = (int) (Math.ceil(Math.log(events.size())) + 1);
         for(Event e1 : events) {
             for(Event e2 : events) {
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(String.format("%s0", name), e1, e2, ctx), Utils.edge(name, e1, e2, ctx)));
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(String.format("%s^+", name), e1, e2, ctx),
-                                            Utils.edge(String.format("%s%s", name, bound), e1, e2, ctx)));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(String.format("%s0", processName), e1, e2, ctx), Utils.edge(processName, e1, e2, ctx)));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(String.format("%s^+", processName), e1, e2, ctx),
+                                            Utils.edge(String.format("%s%s", processName, bound), e1, e2, ctx)));
             }
         }
         for (int i : IntStream.range(0, bound).toArray()) {
@@ -168,30 +168,30 @@ public class Encodings {
                 for(Event e2 : events) {
                     BoolExpr orClause = ctx.mkFalse();
                     for(Event e3 : events) {
-                        orClause = ctx.mkOr(orClause, ctx.mkAnd(Utils.edge(String.format("%s%s", name, i), e1, e3, ctx),
-                                                                Utils.edge(String.format("%s%s", name, i), e3, e2, ctx)));
+                        orClause = ctx.mkOr(orClause, ctx.mkAnd(Utils.edge(String.format("%s%s", processName, i), e1, e3, ctx),
+                                                                Utils.edge(String.format("%s%s", processName, i), e3, e2, ctx)));
                     }
-                    enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(String.format("%s%s", name, i+1), e1, e2, ctx), ctx.mkOr(Utils.edge(name, e1, e2, ctx), orClause)));
+                    enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(String.format("%s%s", processName, i+1), e1, e2, ctx), ctx.mkOr(Utils.edge(processName, e1, e2, ctx), orClause)));
                 }
             }
         }
         return enc;
     }
 
-    public static BoolExpr satTransIDL(String name, Set<Event> events, Context ctx) {
+    public static BoolExpr satTransIDL(String processName, Set<Event> events, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         for(Event e1 : events) {
             for(Event e2 : events) {
                 BoolExpr orClause = ctx.mkFalse();
                 for(Event e3 : events) {
-                    orClause = ctx.mkOr(orClause, ctx.mkAnd(Utils.edge(String.format("%s^+", name), e1, e3, ctx), Utils.edge(String.format("%s^+", name), e3, e2, ctx),
-                                ctx.mkGt(Utils.intCount(String.format("(%s^+;%s^+)", name, name),e1,e2, ctx), Utils.intCount(String.format("%s^+", name),e1,e3, ctx)),
-                                ctx.mkGt(Utils.intCount(String.format("(%s^+;%s^+)", name, name),e1,e2, ctx), Utils.intCount(String.format("%s^+", name),e3,e2, ctx))));
+                    orClause = ctx.mkOr(orClause, ctx.mkAnd(Utils.edge(String.format("%s^+", processName), e1, e3, ctx), Utils.edge(String.format("%s^+", processName), e3, e2, ctx),
+                                ctx.mkGt(Utils.intCount(String.format("(%s^+;%s^+)", processName, processName),e1,e2, ctx), Utils.intCount(String.format("%s^+", processName),e1,e3, ctx)),
+                                ctx.mkGt(Utils.intCount(String.format("(%s^+;%s^+)", processName, processName),e1,e2, ctx), Utils.intCount(String.format("%s^+", processName),e3,e2, ctx))));
                 }
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(String.format("(%s^+;%s^+)", name, name), e1, e2, ctx), orClause));
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(String.format("%s^+", name),e1,e2, ctx), ctx.mkOr(
-                        ctx.mkAnd(Utils.edge(name,e1,e2, ctx), ctx.mkGt(Utils.intCount(String.format("%s^+", name),e1,e2, ctx), Utils.intCount(name,e1,e2, ctx))),
-                        ctx.mkAnd(Utils.edge(String.format("(%s^+;%s^+)", name, name),e1,e2, ctx), ctx.mkGt(Utils.intCount(String.format("%s^+", name),e1,e2, ctx), Utils.intCount(String.format("(%s^+;%s^+)", name, name),e1,e2, ctx))))));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(String.format("(%s^+;%s^+)", processName, processName), e1, e2, ctx), orClause));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(String.format("%s^+", processName),e1,e2, ctx), ctx.mkOr(
+                        ctx.mkAnd(Utils.edge(processName,e1,e2, ctx), ctx.mkGt(Utils.intCount(String.format("%s^+", processName),e1,e2, ctx), Utils.intCount(processName,e1,e2, ctx))),
+                        ctx.mkAnd(Utils.edge(String.format("(%s^+;%s^+)", processName, processName),e1,e2, ctx), ctx.mkGt(Utils.intCount(String.format("%s^+", processName),e1,e2, ctx), Utils.intCount(String.format("(%s^+;%s^+)", processName, processName),e1,e2, ctx))))));
 
             }
         }
@@ -218,40 +218,40 @@ public class Encodings {
         return enc;
     }
 
-    public static BoolExpr satTransRef(String name, Set<Event> events, Context ctx) {
-        BoolExpr enc = satTransFixPoint(name, events, ctx);
-        enc = ctx.mkAnd(enc, satUnion(String.format("(%s)*", name), "id", String.format("%s^+", name), events, ctx));
+    public static BoolExpr satTransRef(String processName, Set<Event> events, Context ctx) {
+        BoolExpr enc = satTransFixPoint(processName, events, ctx);
+        enc = ctx.mkAnd(enc, satUnion(String.format("(%s)*", processName), "id", String.format("%s^+", processName), events, ctx));
         return enc;
     }
 
-    public static BoolExpr satTransRefIDL(String name, Set<Event> events, Context ctx) {
-        BoolExpr enc = satTransIDL(name, events, ctx);
-        enc = ctx.mkAnd(enc, satUnion(String.format("(%s)*", name), "id", String.format("%s^+", name), events, ctx));
+    public static BoolExpr satTransRefIDL(String processName, Set<Event> events, Context ctx) {
+        BoolExpr enc = satTransIDL(processName, events, ctx);
+        enc = ctx.mkAnd(enc, satUnion(String.format("(%s)*", processName), "id", String.format("%s^+", processName), events, ctx));
         return enc;
     }
 
-    public static BoolExpr satTransRef2(String name, Set<Event> events, Context ctx) {
+    public static BoolExpr satTransRef2(String processName, Set<Event> events, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         for(Event e : events) {
-            enc = ctx.mkAnd(enc, Utils.edge(String.format("(%s)", name), e, e, ctx));
+            enc = ctx.mkAnd(enc, Utils.edge(String.format("(%s)", processName), e, e, ctx));
         }
         for(Event e1 : events) {
             for(Event e2 : events) {
-                enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.edge(name, e1, e2, ctx), Utils.edge(String.format("(%s)*", name), e1, e2, ctx)));
+                enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.edge(processName, e1, e2, ctx), Utils.edge(String.format("(%s)*", processName), e1, e2, ctx)));
                 BoolExpr orClause = ctx.mkFalse();
                 for(Event e3 : events) {
-                    orClause = ctx.mkOr(orClause, ctx.mkAnd(Utils.edge(String.format("(%s)*", name), e1, e3, ctx), Utils.edge(String.format("(%s)*", name), e3, e2, ctx)));
+                    orClause = ctx.mkOr(orClause, ctx.mkAnd(Utils.edge(String.format("(%s)*", processName), e1, e3, ctx), Utils.edge(String.format("(%s)*", processName), e3, e2, ctx)));
                 }
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(String.format("(%s)*", name), e1, e2, ctx), orClause));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(String.format("(%s)*", processName), e1, e2, ctx), orClause));
             }
         }
         return enc;
     }
 
-    public static BoolExpr satIrref(String name, Set<Event> events, Context ctx) {
+    public static BoolExpr satIrref(String processName, Set<Event> events, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
         for(Event e : events){
-            enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge(name, e, e, ctx)));
+            enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge(processName, e, e, ctx)));
         }
         return enc;
     }

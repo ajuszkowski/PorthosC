@@ -11,19 +11,19 @@ import static mousquetaires.utils.Utils.ssaReg;
 
 public class Register extends AExpr {
 
-    private String name;
+    private String processName;
     private Integer mainThread;
 
-    public Register(String name) {
-        this.name = name;
+    public Register(String processName) {
+        this.processName = processName;
     }
 
     public String getName() {
-        return name;
+        return processName;
     }
 
     public String toString() {
-        return String.format("%s", name);
+        return String.format("%s", processName);
         }
 
     public Register clone() {

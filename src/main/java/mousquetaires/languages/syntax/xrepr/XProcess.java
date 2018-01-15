@@ -1,8 +1,11 @@
 package mousquetaires.languages.syntax.xrepr;
 
 import com.google.common.collect.ImmutableSet;
+import mousquetaires.languages.converters.toxrepr.XProcessBuilder;
 import mousquetaires.languages.syntax.xrepr.events.XBarrierEvent;
-import mousquetaires.languages.syntax.xrepr.events.memory.XMemoryEvent;
+import mousquetaires.languages.syntax.xrepr.events.controlflow.XControlFlowEvent;
+import mousquetaires.languages.syntax.xrepr.events.memory.XLocalMemoryEvent;
+import mousquetaires.languages.syntax.xrepr.events.memory.XSharedMemoryEvent;
 
 
 public class XProcess {
@@ -15,18 +18,19 @@ public class XProcess {
     //protected Integer mainThread;
     //protected Integer tid;
 
-    private final ImmutableSet<XMemoryEvent> memoryEvents;
+    private final ImmutableSet<XLocalMemoryEvent> initialWriteEvents;
+    private final ImmutableSet<XLocalMemoryEvent> localMemoryEvents;
+    private final ImmutableSet<XSharedMemoryEvent> sharedMemoryEvents;
     private final ImmutableSet<XBarrierEvent> barrierEvents;
-    private final ImmutableSet<XControlFlowEvent> callEvents;
+    private final ImmutableSet<XControlFlowEvent> controlFlowEvents;
 
-    public XProcess(String name,
-                    ImmutableSet<XMemoryEvent> memoryEvents,
-                    ImmutableSet<XBarrierEvent> barrierEvents,
-                    ImmutableSet<XControlFlowEvent> callEvents) {
-        this.name = name;
-        this.memoryEvents = memoryEvents;
-        this.barrierEvents = barrierEvents;
-        this.callEvents = callEvents;
+    public XProcess(XProcessBuilder builder) {
+        this.name = builder.getProcessName();
+        this.initialWriteEvents = builder.buildInitialWriteEvents();
+        this.localMemoryEvents = builder.buildLocalMemoryEvents();
+        this.sharedMemoryEvents = builder.buildSharedMemoryEvents();
+        this.barrierEvents = builder.buildBarrierEvents();
+        this.controlFlowEvents = builder.buildControlFlowEvents();
     }
 
     //public int getCondLevel() {

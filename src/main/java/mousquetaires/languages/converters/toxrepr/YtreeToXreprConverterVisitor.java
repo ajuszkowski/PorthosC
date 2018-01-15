@@ -1,13 +1,13 @@
 package mousquetaires.languages.converters.toxrepr;
 
+import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.converters.toytree.cmin.temporaries.YTempEntity;
-import mousquetaires.languages.types.YXType;
-import mousquetaires.languages.types.YXTypeName;
-import mousquetaires.languages.types.YXTypeSpecifier;
-import mousquetaires.languages.visitors.YtreeBaseVisitor;
 import mousquetaires.languages.syntax.xrepr.XEntity;
-import mousquetaires.languages.syntax.xrepr.XValue;
-import mousquetaires.languages.syntax.xrepr.memory.XMemoryUnit;
+import mousquetaires.languages.syntax.xrepr.XProgram;
+import mousquetaires.languages.syntax.xrepr.datamodels.DataModel;
+import mousquetaires.languages.syntax.xrepr.memories.XLocalMemoryUnit;
+import mousquetaires.languages.syntax.xrepr.memories.XMemoryUnit;
+import mousquetaires.languages.syntax.xrepr.memories.XSharedMemoryUnit;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.expressions.*;
 import mousquetaires.languages.syntax.ytree.expressions.invocation.YFunctionArgument;
@@ -16,18 +16,32 @@ import mousquetaires.languages.syntax.ytree.signatures.YFunctionParameter;
 import mousquetaires.languages.syntax.ytree.statements.*;
 import mousquetaires.languages.syntax.ytree.statements.artificial.YBugonStatement;
 import mousquetaires.languages.syntax.ytree.statements.artificial.YProcess;
-import mousquetaires.utils.exceptions.NotImplementedException;
+import mousquetaires.languages.types.YXType;
+import mousquetaires.languages.types.YXTypeName;
+import mousquetaires.languages.types.YXTypeSpecifier;
+import mousquetaires.languages.visitors.YtreeBaseVisitor;
 import mousquetaires.utils.exceptions.xrepr.InvalidLvalueException;
 import mousquetaires.utils.exceptions.xrepr.InvalidRvalueException;
+import mousquetaires.utils.exceptions.xrepr.UnallowedMemoryOperation;
 
 
 class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
 
-    private final XCompiler interpreter;
+    //private final XCompiler interpreter;
+    private final XProgramBuilder programBuilder;
+    private final XMemoryManager memoryManager;
 
-    YtreeToXreprConverterVisitor(XCompiler interpreter) {
-        this.interpreter = interpreter;
+    YtreeToXreprConverterVisitor(ProgramLanguage language, DataModel dataModel) {
+        //this.interpreter = interpreter;
+        this.programBuilder = new XProgramBuilder();
+        this.memoryManager = new XMemoryManager(language, dataModel);
     }
+
+    public XProgram getProgram() {
+        return programBuilder.build();
+    }
+
+    // TODO: All expressions must return XMemoryUnit instances, tentatively generating write events to them.
 
     @Override
     public XEntity visit(YSyntaxTree node) {
@@ -36,9 +50,9 @@ class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
 
     @Override
     public XEntity visit(YProcess node) {
-        interpreter.startProcessDefinition(node.name);
+        programBuilder.startProcessDefinition(node.name);
         visit(node.body);
-        interpreter.endProcessDefinition();
+        programBuilder.endProcessDefinition();
         return null;
     }
 
@@ -109,7 +123,7 @@ class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
 
     @Override
     public XEntity visit(YAssignmentExpression node) {
-        // todo: dont forget to process operator
+        XEntity operator = visit(node.operator);  // TODO: process non-trivial assignment operators here!
         XEntity destinationEntity = visit(node.assignee);
         XMemoryUnit destination;
         try {
@@ -118,21 +132,49 @@ class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
             throw new InvalidLvalueException(destinationEntity);
         }
         XEntity sourceEntity = visit(node.expression);
-        // todo: instanceof : value / other location / ..?
-        // todo: if pure value, firstly write it to registry?
-        XValue source;
+        XMemoryUnit source;
         try {
-            source = (XValue) sourceEntity;
+            source = (XMemoryUnit) sourceEntity;
         } catch (ClassCastException e) {
             throw new InvalidRvalueException(destinationEntity);
         }
-        //return programBuilder;
-        throw new NotImplementedException();
+
+        XLocalMemoryUnit sourceLocal = (source instanceof XLocalMemoryUnit)
+                ? (XLocalMemoryUnit) source
+                : null;
+        XSharedMemoryUnit sourceShared = (source instanceof XSharedMemoryUnit)
+                ? (XSharedMemoryUnit) source
+                : null;
+        XLocalMemoryUnit destinationLocal = (destination instanceof XLocalMemoryUnit)
+                ? (XLocalMemoryUnit) destination
+                : null;
+        XSharedMemoryUnit destinationShared = (destination instanceof XSharedMemoryUnit)
+                ? (XSharedMemoryUnit) destination
+                : null;
+
+        if (destinationShared != null) {
+            if (sourceShared != null) {
+                throw new UnallowedMemoryOperation("Writes from shared memories unit to shared memories unit are not allowed");
+            }
+            if (sourceLocal != null) {
+                return programBuilder.processSharedMemoryEvent(destinationShared, sourceLocal);
+            }
+        }
+        if (destinationLocal != null) {
+            if (sourceLocal != null) {
+                return programBuilder.processLocalMemoryEvent(destinationLocal, sourceLocal);
+            }
+            if (sourceShared != null) {
+                return programBuilder.processSharedMemoryEvent(destinationLocal, sourceShared);
+            }
+        }
+
+        throw new IllegalStateException();
     }
 
     @Override
     public XEntity visit(YAssignmentExpression.Operator node) {
-        return super.visit(node);
+        return super.visit(node); // TODO: convert to temp operator x-entity
     }
 
     @Override
@@ -142,8 +184,8 @@ class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
 
     @Override
     public XEntity visit(YVariableDeclarationStatement node) {
-        // TODO: determine type of memory here !!!
-        return interpreter.declareSharedMemoryUnit(node.variable.name, node.type);
+        // TODO: determine type (kind) of memories unit here !!!
+        return memoryManager.declareSharedMemoryUnit(node.variable.name, node.type);
     }
 
     @Override
@@ -165,9 +207,9 @@ class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
     public XEntity visit(YVariableRef node) {
         switch (node.kind) {
             case Local:
-                return interpreter.getLocalMemoryUnit(node.name);
+                return memoryManager.getLocalMemoryUnit(node.name);
             case Global:
-                return interpreter.getSharedMemoryUnit(node.name);
+                return memoryManager.getSharedMemoryUnit(node.name);
             default:
                 throw new IllegalArgumentException(node.kind.name());
         }
@@ -175,7 +217,24 @@ class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
 
     @Override
     public XEntity visit(YBranchingStatement node) {
-        return super.visit(node);
+        XMemoryUnit condition  = (XMemoryUnit) visit(node.condition);
+        XLocalMemoryUnit conditionLocal;
+        if (condition instanceof XSharedMemoryUnit) {
+            conditionLocal = memoryManager.newTempLocalMemoryUnit();
+        }
+        else if (condition instanceof XLocalMemoryUnit) {
+            conditionLocal = (XLocalMemoryUnit) condition;
+        }
+        else {
+            throw new IllegalStateException();
+        }
+
+        XEntity thenBranch = visit(node.thenBranch);
+        XEntity elseBranch = visit(node.elseBranch);
+
+        // TODO: finish jump events structure
+
+        return programBuilder.processControlFlowEvent();
     }
 
     @Override

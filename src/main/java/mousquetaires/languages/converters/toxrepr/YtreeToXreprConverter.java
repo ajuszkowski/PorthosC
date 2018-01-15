@@ -8,20 +8,17 @@ import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 
 public class YtreeToXreprConverter {
 
-    private boolean finished = false;
-    private final XCompiler interpreter;
+    private final ProgramLanguage language;
+    private final DataModel dataModel;
 
     public YtreeToXreprConverter(ProgramLanguage language, DataModel dataModel) {
-        this.interpreter = new XCompiler(language, dataModel);
+        this.language = language;
+        this.dataModel = dataModel;
     }
 
     public XProgram convert(YSyntaxTree internalSyntaxTree) {
-        if (finished) {
-            throw new IllegalStateException("Cannot re-use " + getClass().getName());
-        }
-        YtreeToXreprConverterVisitor visitor = new YtreeToXreprConverterVisitor(interpreter);
-        XProgram result = (XProgram) internalSyntaxTree.accept(visitor);
-        finished = true;
-        return result;
+        YtreeToXreprConverterVisitor visitor = new YtreeToXreprConverterVisitor(language, dataModel);
+        internalSyntaxTree.accept(visitor);
+        return visitor.getProgram();
     }
 }

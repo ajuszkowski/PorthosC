@@ -1,12 +1,12 @@
 package mousquetaires.languages.syntax.xrepr.events.memory;
 
+import mousquetaires.languages.converters.toxrepr.XEventInfo;
 import mousquetaires.languages.syntax.xrepr.events.XEvent;
-import mousquetaires.languages.syntax.xrepr.events.XEventInfo;
 
 
 public abstract class XMemoryEvent extends XEvent {
 
-    public XMemoryEvent(XEventInfo info) {
+    XMemoryEvent(XEventInfo info) {
         super(info);
     }
 

@@ -25,8 +25,8 @@ public class RelDummy extends Relation{
         this.dummyOf = dummyOf;
     }
     
-    public RelDummy(String name) {
-        super(name);
+    public RelDummy(String processName) {
+        super(processName);
         containsRec=true;
     }
 

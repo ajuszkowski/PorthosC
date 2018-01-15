@@ -17,40 +17,40 @@ import java.util.Set;
  * @author Florian Furbach
  */
 public abstract class Relation {
-    protected String name;
+    protected String processName;
     protected boolean containsRec;
     protected boolean isnamed=false;
     protected String term;
     protected Set<Relation> namedRelations;
     public String write(){
-        if(isnamed) return String.format("%s := %s", name, term);
-        else return String.format("%s", name);
+        if(isnamed) return String.format("%s := %s", processName, term);
+        else return String.format("%s", processName);
     }
     
     /*
     Only use this method befoe relations depending on this one are encoded!!!
     */
-    public void setName(String name){
-        this.name=name;
+    public void setName(String processName){
+        this.processName=processName;
         if (!namedRelations.contains(this))namedRelations.add(this);
         isnamed=true;
     }
 
-    public Relation(String name) {
+    public Relation(String processName) {
         this.namedRelations = new HashSet<>();
-        this.name = name;
-        this.term = name;
+        this.processName = processName;
+        this.term = processName;
     }
-    public Relation(String name, String term) {
+    public Relation(String processName, String term) {
         this.namedRelations = new HashSet<>();
         namedRelations.add(this);
-        this.name = name;
+        this.processName = processName;
         this.term = term;
         isnamed=true;
     }
 
     public String getName() {
-        return name;
+        return processName;
     }
 
     public Set<Relation> getNamedRelations() {

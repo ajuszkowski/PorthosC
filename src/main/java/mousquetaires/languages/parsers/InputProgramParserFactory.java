@@ -31,7 +31,7 @@ class InputProgramParserFactory {
             //case Litmus: {
             //    LitmusLexer lexer = new LitmusLexer(charStream);
             //    CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-            //    return new LitmusParser(tokenStream)    .program(programFile.getName()).p;
+            //    return new LitmusParser(tokenStream)    .program(programFile.getProcessName()).p;
             //}
             default:
                 throw new IllegalArgumentException(language.name());

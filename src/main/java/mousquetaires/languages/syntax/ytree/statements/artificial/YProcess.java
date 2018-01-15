@@ -12,7 +12,7 @@ import java.util.Objects;
 
 
 /**
- * Temporary class representing explicitly defined process in c-like code.
+ * Temporary class representing explicitly defined processName in c-like code.
  */
 public class YProcess extends YStatement {
 
@@ -47,7 +47,7 @@ public class YProcess extends YStatement {
 
     @Override
     public String toString() {
-        return "process " + name + " " + body;
+        return "processName " + name + " " + body;
     }
 
     @Override

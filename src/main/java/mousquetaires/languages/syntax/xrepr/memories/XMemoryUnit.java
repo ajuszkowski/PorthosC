@@ -1,4 +1,4 @@
-package mousquetaires.languages.syntax.xrepr.memory;
+package mousquetaires.languages.syntax.xrepr.memories;
 
 
 import mousquetaires.languages.syntax.xrepr.XEntity;
@@ -6,8 +6,8 @@ import mousquetaires.languages.types.YXType;
 
 import java.util.Objects;
 
-// Note: here the 'memory' does not signifies the RAM memory, it's just a storage
-// containing some value (e.g. shared memory = RAM, or local memory = register)
+// Note: here the 'memoryevents' does not signifies the RAM memoryevents, it's just a storage
+// containing some value (e.g. shared memoryevents = RAM, or local memoryevents = register)
 public abstract class XMemoryUnit implements XEntity {
 
     public final String name;

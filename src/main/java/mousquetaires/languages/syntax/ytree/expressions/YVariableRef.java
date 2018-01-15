@@ -41,7 +41,7 @@ public class YVariableRef extends YExpression {
 
     @Override
     public YVariableRef copy() {
-        return create(name); // TODO: process kind here also
+        return create(name); // TODO: processName kind here also
     }
 
     @Override

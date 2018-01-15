@@ -23,8 +23,8 @@ public class RelComposition extends Relation {
     private Relation r1;
     private Relation r2;
 
-    public RelComposition(Relation r1, Relation r2, String name) {
-        super(name, String.format("(%s;%s)", r1.getName(), r2.getName()));
+    public RelComposition(Relation r1, Relation r2, String processName) {
+        super(processName, String.format("(%s;%s)", r1.getName(), r2.getName()));
         this.r1 = r1;
         this.r2 = r2;
         containsRec = r1.containsRec || r2.containsRec;
@@ -62,7 +62,7 @@ public class RelComposition extends Relation {
                     orClause = ctx.mkOr(orClause, ctx.mkAnd(opt1,opt2));
 
                 }
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(name, e1, e2, ctx), orClause));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge(processName, e1, e2, ctx), orClause));
             }
         }
         return enc;

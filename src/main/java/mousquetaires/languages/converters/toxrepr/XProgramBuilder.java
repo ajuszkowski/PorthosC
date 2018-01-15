@@ -1,22 +1,23 @@
 package mousquetaires.languages.converters.toxrepr;
 
 import com.google.common.collect.ImmutableSet;
-import mousquetaires.languages.ProgramLanguage;
-import mousquetaires.languages.syntax.xrepr.XControlFlowEvent;
 import mousquetaires.languages.syntax.xrepr.XProcess;
 import mousquetaires.languages.syntax.xrepr.XProgram;
 import mousquetaires.languages.syntax.xrepr.events.XBarrierEvent;
+import mousquetaires.languages.syntax.xrepr.events.controlflow.XControlFlowEvent;
 import mousquetaires.languages.syntax.xrepr.events.memory.XMemoryEvent;
-import mousquetaires.languages.syntax.xrepr.datamodels.DataModel;
+import mousquetaires.languages.syntax.xrepr.memories.XLocalMemoryUnit;
+import mousquetaires.languages.syntax.xrepr.memories.XSharedMemoryUnit;
+import mousquetaires.languages.syntax.xrepr.memories.XValue;
+import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.patterns.Builder;
 
-// Interpreter of event representation
-public class XProgramBuilder extends Builder<XProgram> {
+class XProgramBuilder extends Builder<XProgram> {
 
-    private XProcessBuilder currentBuilder;
+    private XProcessBuilder processBuilder;
     private final ImmutableSet.Builder<XProcess> processes;
 
-    XProgramBuilder(ProgramLanguage language, DataModel dataModel) {
+    XProgramBuilder() {
         this.processes = new ImmutableSet.Builder<>();
     }
 
@@ -25,36 +26,57 @@ public class XProgramBuilder extends Builder<XProgram> {
         if (isBuilt()) {
             throw new IllegalStateException(getAlreadyFinishedMessage());
         }
-        setBuilt();
+        finish();
         return new XProgram(processes.build());
     }
 
     public void startProcessDefinition(String name) {
-        if (currentBuilder != null) {
-            throw new IllegalStateException("Cannot start new process definition while another process " +
-                    currentBuilder.getName() + " is being constructed");
+        if (processBuilder != null) {
+            throw new IllegalStateException("Cannot start new processName definition while another processName " +
+                    processBuilder.getProcessName() + " is being constructed");
         }
-        currentBuilder = new XProcessBuilder(name);
+        processBuilder = new XProcessBuilder(name);
     }
 
     public void endProcessDefinition() {
-        if (currentBuilder == null) {
-            throw new IllegalStateException("Attempt to end process definition without starting it");
+        if (processBuilder == null) {
+            throw new IllegalStateException("Attempt to end processName definition without starting it");
         }
-        processes.add(currentBuilder.build());
-        currentBuilder = null;
+        processes.add(processBuilder.build());
+        processBuilder = null;
     }
 
-    public void addMemoryEvent(XMemoryEvent event) {
-        currentBuilder.addMemoryEvent(event);
+    // TODO: add registers initialisation to Cmin syntax
+    public XMemoryEvent processInitialMemoryEvent(XLocalMemoryUnit destination, XValue source) {
+        return processBuilder.addInitialWriteEvent(destination, source);
     }
 
-    public void addCallEvent(XControlFlowEvent event) {
-        currentBuilder.addCallEvent(event);
+    public XMemoryEvent processLocalMemoryEvent(XLocalMemoryUnit destination, XLocalMemoryUnit source) {
+        return processBuilder.addLocalMemoryEvent(destination, source);
     }
 
-    public void addBarrierEvent(XBarrierEvent event) {
-        currentBuilder.addBarrierEvent(event);
+    public XMemoryEvent processSharedMemoryEvent(XLocalMemoryUnit destination, XSharedMemoryUnit source) {
+        return processBuilder.addSharedMemoryEvent(destination, source);
     }
+
+    public XMemoryEvent processSharedMemoryEvent(XSharedMemoryUnit destination, XLocalMemoryUnit source) {
+        return processBuilder.addSharedMemoryEvent(destination, source);
+    }
+
+    public XControlFlowEvent processControlFlowEvent() {
+        throw new NotImplementedException();
+    }
+
+    public XBarrierEvent processBarrierEvent() {
+        throw new NotImplementedException();
+    }
+
+    //public void addCallEvent(XControlFlowEvent event) {
+    //    processBuilder.addCallEvent(event);
+    //}
+    //
+    //public void addBarrierEvent(XBarrierEvent event) {
+    //    processBuilder.addBarrierEvent(event);
+    //}
 
 }

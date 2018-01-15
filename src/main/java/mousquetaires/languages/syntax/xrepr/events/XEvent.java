@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.xrepr.events;
 
+import mousquetaires.languages.converters.toxrepr.XEventInfo;
 import mousquetaires.languages.syntax.xrepr.XEntity;
 
 import java.util.Objects;
