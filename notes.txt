@@ -42,7 +42,30 @@ i try to write scalable code, but sometimes it's hard (i changed the grammar).
 10. Find appropriate simple code excrepts of kernel.
 most of the problems - any symbolic exec tool faces. take a look at SAGE by microsft
 
+z3 array theory http://fmv.jku.at/rerise14/rerise14-smt-slides-1.pdf
+C32SAT: Checking C Expressions http://fmv.jku.at/papers/brummayerbiere-cav07.pdf
+
 next meeting: Mon 15.01 13:00
 
+--
+Notes:
+- I'm doing SSA on the level of xrepr (events): on ytree level must be only shared/local variables (separate analysis stage after parsing to YTree), on xrepr level must be 'register' and 'location', without SSA form -- those who are directly encoded to smt formula. The SSA will be done as one of the analysis stage on the level of xrepr after parsing to xrepr before smt encoding.
+- On xrepr level, I operate not registry and location, but XLocalStorage and XSharedStorage.
+
+Questions:
+- Is assembly level still enough? e.g. 'mov eax, 1' -- here '1' is also stored in some register. TODO: check if these operations are memoryOrder so that we can model events in assembly level.
+
+
+== meeting Monday 15.01.2018
+1) lcr programs - EACH line has only one assignment to shared vars.
+2) figure out the min set of nodes in event repr
+3) THINK about loop unrolling (but firstly no loops in programs)
+4) we'll need fences in the event level, impl as interrupters (type processors)
+5) see kernel parallelisation in boot procedure . TODO: see presentation of 'black' slides (Linux Kernel Memory Ordering , by Paul McKenney). See his 'litmus' repository on github -- additional litmus tests, test generator. Google: "SMP Scalability Papers", link #2.
+6) Out tool -- do things in Herd way, so that its users can easily adapt.
+7) start writing on what are wmm, why are they interesting
+8) aalto into : latex template, aalto msters thesis at aaltodoc
+
+next meeting:  22 Jan, 13:00
 
 ==
