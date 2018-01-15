@@ -1,7 +1,7 @@
 package mousquetaires.tests.unit.languages.parsers.cmin;
 
-import mousquetaires.languages.ytree.YSyntaxTree;
-import mousquetaires.languages.ytree.statements.YStatement;
+import mousquetaires.languages.syntax.ytree.YSyntaxTree;
+import mousquetaires.languages.syntax.ytree.statements.YStatement;
 import mousquetaires.tests.unit.languages.parsers.AbstractParserUnitTest;
 
 import java.util.List;

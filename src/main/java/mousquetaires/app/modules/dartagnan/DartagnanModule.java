@@ -4,15 +4,14 @@ import mousquetaires.app.errors.AppError;
 import mousquetaires.app.errors.IOError;
 import mousquetaires.app.errors.UnrecognisedError;
 import mousquetaires.app.modules.AppModule;
-import mousquetaires.interpretation.Interpreter;
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
-import mousquetaires.languages.common.parsers.YtreeParser;
-import mousquetaires.languages.common.transformers.ytree.YtreeToXreprConverter;
-import mousquetaires.languages.xrepr.XProgram;
-import mousquetaires.languages.xrepr.memory.datamodels.DataModel;
-import mousquetaires.languages.xrepr.memory.datamodels.DataModelLP64;
-import mousquetaires.languages.ytree.YSyntaxTree;
+import mousquetaires.languages.parsers.YtreeParser;
+import mousquetaires.languages.converters.toxrepr.YtreeToXreprConverter;
+import mousquetaires.languages.syntax.xrepr.XProgram;
+import mousquetaires.languages.syntax.xrepr.datamodels.DataModel;
+import mousquetaires.languages.syntax.xrepr.datamodels.DataModelLP64;
+import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.memorymodels.old.MemoryModel;
 import mousquetaires.memorymodels.old.MemoryModelFactory;
 
@@ -44,9 +43,8 @@ public class DartagnanModule extends AppModule {
             ProgramLanguage language = ProgramExtensions.parseProgramLanguage(inputProgramFile.getName());
             YSyntaxTree internalRepr = YtreeParser.parse(inputProgramFile, language);
             DataModel dataModel = new DataModelLP64(); // TODO: pass as cli-option
-            Interpreter interpreter = new Interpreter(language, dataModel);
 
-            YtreeToXreprConverter converter = new YtreeToXreprConverter(interpreter);
+            YtreeToXreprConverter converter = new YtreeToXreprConverter(language, dataModel);
             XProgram program = converter.convert(internalRepr);
 
             // SmtEncoder.encode(program) ...

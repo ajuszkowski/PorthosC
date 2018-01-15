@@ -1,11 +1,11 @@
 package mousquetaires.tests.unit.languages.parsers.cmin.statements;
 
-import mousquetaires.languages.common.types.YXType;
-import mousquetaires.languages.ytree.expressions.YConstant;
-import mousquetaires.languages.ytree.expressions.YConstantFactory;
-import mousquetaires.languages.ytree.expressions.YVariableRef;
-import mousquetaires.languages.common.types.YXTypeName;
-import mousquetaires.languages.common.types.YXTypeFactory;
+import mousquetaires.languages.types.YXType;
+import mousquetaires.languages.syntax.ytree.expressions.YConstant;
+import mousquetaires.languages.syntax.ytree.expressions.YConstantFactory;
+import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
+import mousquetaires.languages.types.YXTypeName;
+import mousquetaires.languages.types.YXTypeFactory;
 import mousquetaires.tests.unit.languages.parsers.cmin.CminParseTest;
 
 
