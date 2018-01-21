@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.xrepr.events.memory;
 
-import mousquetaires.languages.converters.toxrepr.XEventInfo;
+import mousquetaires.languages.syntax.xrepr.processes.XEventInfo;
 import mousquetaires.languages.syntax.xrepr.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xrepr.memories.XSharedMemoryUnit;
 import mousquetaires.languages.syntax.xrepr.memories.XValue;
@@ -10,24 +10,27 @@ import mousquetaires.languages.syntax.xrepr.memories.XValue;
  * to local storage (registry, {@link XLocalMemoryUnit}) */
 public class XLoadMemoryEvent extends XSharedMemoryEvent {
 
-    public final XSharedMemoryUnit source;
-    public final XLocalMemoryUnit destination;
-    //public final XMemoryOrder memoryOrder;
-
     public XLoadMemoryEvent(XEventInfo info, XLocalMemoryUnit destination, XSharedMemoryUnit source/*, XMemoryOrder memoryOrder*/) {
-        super(info);
+        super(info, destination, source);
         if (destination instanceof XValue) {
             throw new IllegalArgumentException("Memory event with assignment to " + XValue.class.getName()
                     + " is not allowed");
         }
-        this.destination = destination;
-        this.source = source;
-        //this.memoryOrder = memoryOrder;
+    }
+
+    @Override
+    public XSharedMemoryUnit getDestination() {
+        return (XSharedMemoryUnit) super.getDestination();
+    }
+
+    @Override
+    public XLocalMemoryUnit getSource() {
+        return (XLocalMemoryUnit) super.getSource();
     }
 
     @Override
     public String toString() {
-        return destination + "<- load(" + source /*+ ", " + memoryOrder*/ + ")";
+        return getDestination() + "<- load(" + getSource() /*+ ", " + memoryOrder*/ + ")";
     }
 
     //private Register reg;

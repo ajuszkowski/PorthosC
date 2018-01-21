@@ -27,8 +27,8 @@
 //        return eid;
 //    }
 //
-//    public void setHLId(Integer id) {
-//        this.hlId = id;
+//    public void setHLId(Integer processId) {
+//        this.hlId = processId;
 //    }
 //
 //    public Integer getHLId() {

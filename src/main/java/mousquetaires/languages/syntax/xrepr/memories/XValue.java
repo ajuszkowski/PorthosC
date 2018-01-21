@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.xrepr.memories;
 
-import mousquetaires.languages.types.YXType;
+import mousquetaires.types.ZType;
 
 import java.util.Objects;
 
@@ -13,14 +13,18 @@ public class XValue extends XLocalMemoryUnit {
 
     public final Object value;
 
-    public XValue(Object value, YXType type) {
-        super("const", type);
+    public XValue(Object value, ZType type) {
+        super("(const)", type);
         this.value = value;
+    }
+
+    public Object getValue() {
+        return value;
     }
 
     @Override
     public String toString() {
-        return "$" + value + ":" + type;
+        return "$" + getValue() + ":" + getType();
     }
 
     @Override
@@ -29,12 +33,11 @@ public class XValue extends XLocalMemoryUnit {
         if (!(o instanceof XValue)) return false;
         if (!super.equals(o)) return false;
         XValue xValue = (XValue) o;
-        return Objects.equals(value, xValue.value);
+        return Objects.equals(getValue(), xValue.getValue());
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(super.hashCode(), value);
+        return Objects.hash(super.hashCode(), getValue());
     }
 }

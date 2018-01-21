@@ -2,10 +2,12 @@ package mousquetaires.languages.converters.toxrepr;
 
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.syntax.xrepr.datamodels.DataModel;
+import mousquetaires.languages.syntax.xrepr.memories.XLocalMemoryUnit;
+import mousquetaires.languages.syntax.xrepr.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xrepr.memories.XSharedMemoryUnit;
 import mousquetaires.languages.syntax.xrepr.memories.XValue;
-import mousquetaires.languages.types.YXType;
-import mousquetaires.languages.syntax.xrepr.memories.XLocalMemoryUnit;
+import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
+import mousquetaires.types.ZType;
 import mousquetaires.utils.exceptions.xrepr.MemoryUnitDoubleDeclarationException;
 import mousquetaires.utils.exceptions.xrepr.UndeclaredMemoryUnitException;
 
@@ -15,7 +17,7 @@ import java.util.Map;
 /**
  * This class is responsible for virtual memoryevents adresation (by variable names) and allocation.
  */
-class XMemoryManager {
+public final class XMemoryManager {
 
     private final Map<String, XLocalMemoryUnit> localLocations;
     private final Map<String, XSharedMemoryUnit> sharedLocations;
@@ -26,7 +28,7 @@ class XMemoryManager {
         this.sharedLocations = new HashMap<>();
     }
 
-    public XValue getConstantValue(Object value, YXType type) {
+    public XValue getConstantValue(Object value, ZType type) {
         return new XValue(value, type);
     }
 
@@ -35,7 +37,7 @@ class XMemoryManager {
         while (localLocations.containsKey(name)) {
             name = newTempLocalName();
         }
-        // TODO: consider type here!!!
+        // TODO: consider returnType here!!!
         return declareLocalMemoryUnit(name, null);
     }
 
@@ -58,29 +60,42 @@ class XMemoryManager {
     }
 
     // TODO: do we really need to declare local memory units? or we have infinitely many registers in our model?
-    public XLocalMemoryUnit declareLocalMemoryUnit(String name, YXType type) {
+    public XLocalMemoryUnit declareLocalMemoryUnit(String name, ZType type) {
         if (isLocalMemoryDeclared(name)) {
             throw new MemoryUnitDoubleDeclarationException(name, true);
         }
         return newLocalMemory(name, type);
     }
 
-    public XSharedMemoryUnit declareSharedMemoryUnit(String name, YXType type) {
+    public XSharedMemoryUnit declareSharedMemoryUnit(String name, ZType type) {
         if (isSharedMemoryDeclared(name)) {
             throw new MemoryUnitDoubleDeclarationException(name, false);
         }
         return newSharedMemory(name, type);
     }
 
-    //private String defineMemory(String name, YXType type, boolean isLocal) {
-    //    String baseName = name;
+    public XMemoryUnit declareMemoryUnit(YVariableRef variable, ZType type) {
+        YVariableRef.Kind kind = variable.getKind();
+        String name = variable.getName();
+        switch (kind) {
+            case Local:
+                return declareLocalMemoryUnit(name, type);
+            case Global:
+                return declareSharedMemoryUnit(name, type);
+            default:
+                throw new IllegalArgumentException(kind.name());
+        }
+    }
+
+    //private String defineMemory(String postProcessId, ZType returnType, boolean isLocal) {
+    //    String baseName = postProcessId;
     //    int count = 1;
     //    XMemoryUnit location = null;
     //    while (location == null) {
-    //        location = isLocal ? getLocalMemory(name) : tryFindSharedMemory(name);
-    //        name = getNewName(baseName, count++);
+    //        location = isLocal ? getLocalMemory(postProcessId) : tryFindSharedMemory(postProcessId);
+    //        postProcessId = getNewName(baseName, count++);
     //    }
-    //    return name;
+    //    return postProcessId;
     //}
     //
 
@@ -92,13 +107,13 @@ class XMemoryManager {
         return sharedLocations.containsKey(name);
     }
 
-    private XLocalMemoryUnit newLocalMemory(String name, YXType type) {
+    private XLocalMemoryUnit newLocalMemory(String name, ZType type) {
         XLocalMemoryUnit location = new XLocalMemoryUnit(name, type);
         localLocations.put(name, location);
         return location;
     }
 
-    private XSharedMemoryUnit newSharedMemory(String name, YXType type) {
+    private XSharedMemoryUnit newSharedMemory(String name, ZType type) {
         XSharedMemoryUnit location = new XSharedMemoryUnit(name, type);
         sharedLocations.put(name, location);
         return location;

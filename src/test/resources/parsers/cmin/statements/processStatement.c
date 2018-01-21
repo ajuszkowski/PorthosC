@@ -1,7 +1,7 @@
-process pX {
+PROCESS pX {
     int a = 1;
 }
-bug_on(a == 2);
+BUG_ON (a == 2);
 //process p0 {
 //    rcu_read_lock();
 //    r1 = READ_ONCE(y);

@@ -1,10 +1,10 @@
 package mousquetaires.languages.syntax.xrepr.memories;
 
-import mousquetaires.languages.types.YXType;
+import mousquetaires.types.ZType;
 
 
 public class XSharedMemoryUnit extends XMemoryUnit {
-    public XSharedMemoryUnit(String name, YXType type) {
+    public XSharedMemoryUnit(String name, ZType type) {
         super(name, type);
     }
 

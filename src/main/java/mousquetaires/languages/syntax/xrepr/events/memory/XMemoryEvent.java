@@ -1,16 +1,30 @@
 package mousquetaires.languages.syntax.xrepr.events.memory;
 
-import mousquetaires.languages.converters.toxrepr.XEventInfo;
-import mousquetaires.languages.syntax.xrepr.events.XEvent;
+import mousquetaires.languages.syntax.xrepr.events.XEventBase;
+import mousquetaires.languages.syntax.xrepr.processes.XEventInfo;
+import mousquetaires.languages.syntax.xrepr.memories.XMemoryUnit;
 
 
-public abstract class XMemoryEvent extends XEvent {
+public abstract class XMemoryEvent extends XEventBase {
 
-    XMemoryEvent(XEventInfo info) {
+    private final XMemoryUnit destination;
+    private final XMemoryUnit source;
+
+    XMemoryEvent(XEventInfo info, XMemoryUnit destination, XMemoryUnit source) {
         super(info);
+        this.destination = destination;
+        this.source = source;
     }
 
-    //public XMemoryEvent(XEventInfo info, XMemoryUnit loc) {
+    public XMemoryUnit getDestination() {
+        return destination;
+    }
+
+    public XMemoryUnit getSource() {
+        return source;
+    }
+
+//public XMemoryEvent(XEventInfo info, XMemoryUnit loc) {
     //    super(info);
     //    this.loc = loc;
     //}

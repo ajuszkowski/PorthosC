@@ -1,14 +1,15 @@
 package mousquetaires.languages.syntax.ytree.expressions;
 
-import mousquetaires.languages.visitors.YtreeVisitor;
 import mousquetaires.languages.syntax.ytree.YEntity;
+import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
+import mousquetaires.languages.visitors.YtreeVisitor;
 import mousquetaires.utils.YtreeUtils;
 
 import java.util.Iterator;
 import java.util.Objects;
 
 
-public class YVariableRef extends YExpression {
+public class YVariableRef implements YAssignee {
 
     // TODO: add kind
     public enum Kind {
@@ -17,12 +18,24 @@ public class YVariableRef extends YExpression {
         ;
     }
 
-    public final Kind kind = Kind.Local;
-    public final String name;
+    private final Kind kind = Kind.Local;
+    private final String name;
 
     protected YVariableRef(String name) {
         // TODO: pass kind here also
         this.name = name;
+    }
+
+    public Kind getKind() {
+        return kind;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isGlobal() {
+        return getKind() == Kind.Global;
     }
 
     public static YVariableRef create(String name) {

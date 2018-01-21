@@ -103,7 +103,7 @@ public class Write extends MemEvent {
             }
         }
 
-        else System.out.println(String.format("Error in the memoryOrder operation type of", this));
+        else System.out.println(String.format("Error in the memoryOrder operation returnType of", this));
         return null;
     }
 
@@ -131,7 +131,7 @@ public class Write extends MemEvent {
         if(memoryOrder.equals("_rel")) {
             return new Seq(lwsync, st);
         }
-        else System.out.println(String.format("Error in the memoryOrder operation type of", this));
+        else System.out.println(String.format("Error in the memoryOrder operation returnType of", this));
         return null;
     }
 

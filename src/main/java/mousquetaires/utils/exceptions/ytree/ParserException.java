@@ -16,4 +16,9 @@ public class ParserException extends RuntimeException {
         super(message);
         this.context = context;
     }
+
+    public ParserException(String message) {
+        super(message);
+        this.context = null;
+    }
 }

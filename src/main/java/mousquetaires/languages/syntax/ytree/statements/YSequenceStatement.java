@@ -10,49 +10,48 @@ import java.util.Objects;
 
 public class YSequenceStatement extends YStatement {
 
-    public final ImmutableList<YStatement> statements;
+    private final boolean hasBraces; // defines whether sequence of statements has surrounding braces '{' '}'
+    private final ImmutableList<YStatement> statements;
 
-    public YSequenceStatement(YStatement... statements) {
-        this(null, ImmutableList.copyOf(statements));
+    public YSequenceStatement(boolean hasBraces, YStatement... statements) {
+        this(hasBraces, ImmutableList.copyOf(statements));
     }
 
-    public YSequenceStatement(ImmutableList<YStatement> statements) {
-        this(null, statements);
-    }
-
-    protected YSequenceStatement(String label, ImmutableList<YStatement> statements) {
-        super(label);
-        if (statements.size() == 0) {
-            throw new IllegalArgumentException();
-        }
+    public YSequenceStatement(boolean hasBraces, ImmutableList<YStatement> statements) {
         this.statements = statements;
+        this.hasBraces = hasBraces;
     }
 
-    @Override
-    public YSequenceStatement withLabel(String newLabel) {
-        return new YSequenceStatement(newLabel, this.statements);
+    public ImmutableList<YStatement> getStatements() {
+        return statements;
     }
 
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
-        return statements.iterator();
+        return getStatements().iterator();
     }
 
     @Override
     public <T> T accept(YtreeVisitor<T> visitor) {
-        throw new IllegalStateException("The constructed tree must have be no " + getClass().getName() + " nodes.");
+        return visitor.visit(this);
     }
 
     @Override
     public YSequenceStatement copy() {
-        return new YSequenceStatement(label, statements);
+        return new YSequenceStatement(hasBraces, getStatements());
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        for (YStatement statement : statements) {
+        if (hasBraces) {
+            builder.append('{');
+        }
+        for (YStatement statement : getStatements()) {
             builder.append(statement.toString()).append(" ");
+        }
+        if (hasBraces) {
+            builder.append('}');
         }
         return builder.toString();
     }
@@ -62,11 +61,11 @@ public class YSequenceStatement extends YStatement {
         if (this == o) return true;
         if (!(o instanceof YSequenceStatement)) return false;
         YSequenceStatement that = (YSequenceStatement) o;
-        return Objects.equals(statements, that.statements);
+        return Objects.equals(getStatements(), that.getStatements());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(statements);
+        return Objects.hash(getStatements());
     }
 }

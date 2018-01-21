@@ -1,26 +1,43 @@
 package mousquetaires.languages.converters.toytree.cmin;
 
-import mousquetaires.utils.exceptions.ytree.ParserException;
+import mousquetaires.languages.converters.toytree.cmin.helpers.YSequenceStatementBuilder;
+import mousquetaires.languages.converters.toytree.cmin.temporaries.YExpressionListTemp;
+import mousquetaires.languages.converters.toytree.cmin.temporaries.YVariableInitialiserListTemp;
 import mousquetaires.languages.parsers.CminParser;
 import mousquetaires.languages.parsers.CminVisitor;
-import mousquetaires.languages.converters.toytree.cmin.temporaries.YFunctionArgumentListTemp;
-import mousquetaires.languages.converters.toytree.cmin.temporaries.YVariableInitialiserListTemp;
-import mousquetaires.languages.converters.toytree.cmin.temporaries.YVariableInitialiserTemp;
-import mousquetaires.languages.types.YXType;
-import mousquetaires.languages.types.YXTypeFactory;
-import mousquetaires.languages.types.YXTypeName;
-import mousquetaires.languages.types.YXTypeSpecifier;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.YSyntaxTreeBuilder;
-import mousquetaires.languages.syntax.ytree.expressions.*;
-import mousquetaires.languages.syntax.ytree.expressions.invocation.YFunctionArgument;
-import mousquetaires.languages.syntax.ytree.expressions.invocation.YFunctionInvocationExpression;
-import mousquetaires.languages.syntax.ytree.statements.*;
-import mousquetaires.languages.syntax.ytree.statements.artificial.YBugonStatement;
-import mousquetaires.languages.syntax.ytree.statements.artificial.YProcess;
+import mousquetaires.languages.syntax.ytree.expressions.YConstant;
+import mousquetaires.languages.syntax.ytree.expressions.YExpression;
+import mousquetaires.languages.syntax.ytree.expressions.YTernaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
+import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
+import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
+import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
+import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
+import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
+import mousquetaires.languages.syntax.ytree.expressions.assignments.YVariableAssignmentExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerPostfixUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
+import mousquetaires.languages.syntax.ytree.specific.YAssertionStatement;
+import mousquetaires.languages.syntax.ytree.specific.YPreludeStatement;
+import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
+import mousquetaires.languages.syntax.ytree.specific.YVariableAssertion;
+import mousquetaires.languages.syntax.ytree.statements.YSequenceStatement;
+import mousquetaires.languages.syntax.ytree.statements.YStatement;
+import mousquetaires.languages.syntax.ytree.statements.labeled.*;
+import mousquetaires.types.ZType;
+import mousquetaires.types.ZTypeFactory;
+import mousquetaires.types.ZTypeName;
+import mousquetaires.types.ZTypeSpecifier;
+import mousquetaires.utils.CastHelper;
 import mousquetaires.utils.exceptions.ArgumentNullException;
 import mousquetaires.utils.exceptions.NotImplementedException;
+import mousquetaires.utils.exceptions.ytree.ParserException;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -36,7 +53,7 @@ class CminToYtreeConverterVisitor
     /**
      * main
      * :   statement+
-     * |   processStatement+ // temporary
+     * |   initialWriteStatement? processStatement+
      * ;
      */
     public YSyntaxTree visitMain(CminParser.MainContext ctx) {
@@ -50,36 +67,179 @@ class CminToYtreeConverterVisitor
         return syntaxTreeBuilder.build();
     }
 
-    // Temporary: explicitly specified processes
+    // -- Litmus-specific syntax ---------------------------------------------------------------------------------------
+
+    /**
+     * litmusSpecificSyntax
+     * :   initialWriteStatement? processStatement+ assertionStatement
+     * ;
+     */
+    public YEntity visitLitmusSpecificSyntax(CminParser.LitmusSpecificSyntaxContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    /**
+     * initialWriteStatement
+     * :   '{' variableDeclarationStatement* '}'
+     * ;
+     */
+    public YPreludeStatement visitInitialWriteStatement(CminParser.InitialWriteStatementContext ctx) {
+        YSequenceStatementBuilder builder = new YSequenceStatementBuilder();
+        for (CminParser.VariableDeclarationStatementContext declarationCtx : ctx.variableDeclarationStatement()) {
+            YStatement declaration = visitVariableDeclarationStatement(declarationCtx);
+            // caution: bad design
+            if (declaration instanceof YSequenceStatement) {
+                builder.addStatements((YSequenceStatement) declaration);
+            } else {
+                builder.add(declaration);
+            }
+        }
+        return new YPreludeStatement(builder.build());
+    }
 
     /**
      * processStatement
-     * :   'process' Identifier blockStatement
-     * |   bugonStatement
+     * :   'P' ProcessId blockStatement
      * ;
      */
-    public YStatement visitProcessStatement(CminParser.ProcessStatementContext ctx) {
+    public YEntity visitProcessStatement(CminParser.ProcessStatementContext ctx) {
         CminParser.BlockStatementContext blockStatementCtx = ctx.blockStatement();
         if (blockStatementCtx != null) {
-            YBlockStatement blockStatement = visitBlockStatement(blockStatementCtx);
-            String processName = ctx.Identifier().getText();
-            return new YProcess(processName, blockStatement);
+            int processId = parseProcessId(ctx.ProcessId());
+            YSequenceStatement blockStatement = visitBlockStatement(blockStatementCtx);
+            return new YProcessStatement(processId, blockStatement);
         }
-        CminParser.BugonStatementContext bugonStatementCtx = ctx.bugonStatement();
-        if (bugonStatementCtx != null) {
-            return visitBugonStatement(bugonStatementCtx);
+
+        throw new IllegalStateException();
+    }
+
+    private static int parseProcessId(TerminalNode processIdNode) {
+        String processIdText = processIdNode.getSymbol().getText();
+        try {
+            return Integer.parseInt(processIdText);
+        } catch (NumberFormatException e) {
+            throw new ParserException("Invalid process postProcessId '" + processIdText + "'");
+        }
+    }
+
+    /**
+     * blockStatement
+     * :   LeftBrace statement* RightBrace
+     * ;
+     */
+    public YSequenceStatement visitBlockStatement(CminParser.BlockStatementContext ctx) {
+        YSequenceStatementBuilder builder = new YSequenceStatementBuilder(true);
+        for (CminParser.StatementContext statementContext : ctx.statement()) {
+            YStatement statement = visitStatement(statementContext);
+            builder.add(statement);
+        }
+        return builder.build();
+    }
+
+    /**
+     * statement
+     * :   variableDeclarationStatement
+     * |   expressionStatement
+     * |   labeledStatement
+     * |   blockStatement
+     * |   branchingStatement
+     * |   loopStatement
+     * |   jumpStatement
+     * ;
+     */
+    public YStatement visitStatement(CminParser.StatementContext ctx) {
+        int childrenCount = ctx.getChildCount();
+        if (childrenCount == 0) {
+            return YLinearStatement.createEmptyStatement();
+        }
+        assert childrenCount == 1 : childrenCount;
+        return (YStatement) visit(ctx.getChild(0));
+    }
+
+    /**
+     * assertionStatement
+     * :   'exists' '(' assertionExpression ')' ';'
+     * ;
+     */
+    public YEntity visitAssertionStatement(CminParser.AssertionStatementContext ctx) {
+        CminParser.AssertionExpressionContext assertionExpressionCtx = ctx.assertionExpression();
+        if (assertionExpressionCtx != null) {
+            YExpression assertionExpression = visitAssertionExpression(assertionExpressionCtx);
+            return new YAssertionStatement(assertionExpression);
         }
         throw new IllegalStateException();
     }
 
     /**
-     * bugOnStatement
-     * :   'bug_on' '(' expression ')'
+     * assertionExpression
+     * :   '(' assertionOrExpression ')'
+     * |   assertionOrExpression
      * ;
      */
-    public YBugonStatement visitBugonStatement(CminParser.BugonStatementContext ctx) {
-        YExpression expression = visitExpression(ctx.expression());
-        return new YBugonStatement(expression);
+    public YExpression visitAssertionExpression(CminParser.AssertionExpressionContext ctx) {
+        CminParser.AssertionOrExpressionContext assertionOrExpressionCtx = ctx.assertionOrExpression();
+        if (assertionOrExpressionCtx != null) {
+            return visitAssertionOrExpression(assertionOrExpressionCtx);
+        }
+        throw new IllegalStateException();
+    }
+
+    // -- END OF Litmus-specific syntax --------------------------------------------------------------------------------
+
+    /**
+     * assertionOrExpression
+     * :   assertionAndExpression
+     * |   assertionOrExpression (OrOr|DisjunctionOperator) assertionAndExpression
+     * ;
+     */
+    public YExpression visitAssertionOrExpression(CminParser.AssertionOrExpressionContext ctx) {
+        CminParser.AssertionAndExpressionContext assertionAndExpressionCtx = ctx.assertionAndExpression();
+        if (assertionAndExpressionCtx != null) {
+            YExpression rightExpression = visitAssertionAndExpression(assertionAndExpressionCtx);
+            CminParser.AssertionOrExpressionContext assertionOrExpressionCtx = ctx.assertionOrExpression();
+            if (assertionOrExpressionCtx != null) {
+                YExpression leftExpression = visitAssertionAndExpression(assertionAndExpressionCtx);
+                return YLogicalBinaryExpression.Kind.Disjunction.createExpression(leftExpression, rightExpression);
+            }
+            return rightExpression;
+        }
+        throw new IllegalStateException();
+    }
+
+    /**
+     * assertionAndExpression
+     * :   assertion
+     * |   assertionAndExpression (AndAnd|ConjunctionOperator) assertion
+     * ;
+     */
+    public YExpression visitAssertionAndExpression(CminParser.AssertionAndExpressionContext ctx) {
+        CminParser.AssertionContext assertionCtx = ctx.assertion();
+        if (assertionCtx != null) {
+            YRelativeBinaryExpression rightExpression = visitAssertion(assertionCtx);
+            CminParser.AssertionAndExpressionContext assertionAndExpressionCtx = ctx.assertionAndExpression();
+            if (assertionAndExpressionCtx != null) {
+                YExpression leftExpression = visitAssertionAndExpression(assertionAndExpressionCtx);
+                return YLogicalBinaryExpression.Kind.Conjunction.createExpression(leftExpression, rightExpression);
+            }
+            return rightExpression;
+        }
+        throw new IllegalStateException();
+    }
+
+    /**
+     * assertion
+     * :   (ProcessId ':')? variableName Equals constant
+     * ;
+     */
+    public YRelativeBinaryExpression visitAssertion(CminParser.AssertionContext ctx) {
+        Integer processId = null;
+        TerminalNode processIdNode = ctx.ProcessId();
+        if (processIdNode != null) {
+            processId = parseProcessId(processIdNode);
+        }
+        YVariableRef variableRef = visitVariableName(ctx.variableName());
+        YConstant constant = visitConstant(ctx.constant());
+        return new YVariableAssertion(processId, variableRef, constant);
     }
 
     /**
@@ -89,14 +249,13 @@ class CminToYtreeConverterVisitor
      * ;
      */
     public YExpression visitPrimaryExpression(CminParser.PrimaryExpressionContext ctx) {
-        assert ctx != null;
-        YVariableRef variableRef = visitVariableName(ctx.variableName());
-        if (variableRef != null) {
-            return variableRef;
+        CminParser.VariableNameContext variableNameCtx = ctx.variableName();
+        if (variableNameCtx != null) {
+            return visitVariableName(variableNameCtx);
         }
-        YConstant constant = visitConstant(ctx.constant());
-        if (constant != null) {
-            return constant;
+        CminParser.ConstantContext constantCtx = ctx.constant();
+        if (constantCtx != null) {
+            return visitConstant(constantCtx);
         }
         throw new IllegalStateException();
     }
@@ -107,10 +266,7 @@ class CminToYtreeConverterVisitor
      * ;
      */
     public YVariableRef visitVariableName(CminParser.VariableNameContext ctx) {
-        if (ctx == null) {
-            return null;
-        }
-        String name = ctx.Identifier().getText(); // todo: get token name correctly
+        String name = ctx.Identifier().getText(); // todo: get token postProcessId correctly
         return YVariableRef.create(name);
     }
 
@@ -128,20 +284,22 @@ class CminToYtreeConverterVisitor
             String constantText = literal.getText();  // todo: get token symbol text properly here
             YConstant parsedConstant = YConstant.tryParse(constantText);
             if (parsedConstant == null) {
-                throw new ParserException(ctx, "Could not parse string constant " + constantText);
+                throw new ParserException(ctx, "Could not parse constant " + constantText);
             }
             return parsedConstant;
         }
         throw new IllegalStateException();
     }
 
-    /**
-     * postfixExpression
-     * :   primaryExpression
-     * |   postfixExpression '(' functionArgumentExpressionList? ')'
+    /** postfixExpression
+     * :   postfixExpression
+     * |   postfixExpression LeftBracket expression RightBracket
+     * |   postfixExpression LeftParen argumentExpressionList? RightParen
+     * |   postfixExpression (Dot | Arrow) Identifier
      * |   postfixExpression (PlusPlus | MinusMinus)
      * ;
      */
+    @Override
     public YExpression visitPostfixExpression(CminParser.PostfixExpressionContext ctx) {
         CminParser.PrimaryExpressionContext primaryExpressionCtx = ctx.primaryExpression();
         if (primaryExpressionCtx != null) {
@@ -150,49 +308,49 @@ class CminToYtreeConverterVisitor
         CminParser.PostfixExpressionContext postfixExpressionCtx = ctx.postfixExpression();
         if (postfixExpressionCtx != null) {
             YExpression baseExpression = visitPostfixExpression(postfixExpressionCtx);
-            CminParser.FunctionArgumentExpressionListContext funArgumentsCtx = ctx.functionArgumentExpressionList();
-            if (funArgumentsCtx != null) {
-                YFunctionArgumentListTemp argumentsList = visitFunctionArgumentExpressionList(funArgumentsCtx);
-                argumentsList.reverse();
-                return new YFunctionInvocationExpression(baseExpression, argumentsList);
+            // indexer:
+            if (ctx.LeftBracket() != null) {
+                YExpression indexExpression = visitExpression(ctx.expression());
+                return new YIndexerExpression(baseExpression, indexExpression);
             }
+            // function invocation:
+            if (ctx.LeftParen() != null) {
+                YExpressionListTemp argumentsList = visitArgumentExpressionList(ctx.argumentExpressionList());
+                return new YInvocationExpression(baseExpression, argumentsList.asArray());
+            }
+            // member access:
+            if (ctx.Dot() != null || ctx.Arrow() != null) {
+                String memberName = ctx.Identifier().getSymbol().getText();
+                return new YMemberAccessExpression(baseExpression, memberName);
+            }
+            // increment/decrement:
             if (ctx.PlusPlus() != null) {
-                return new YUnaryExpression(baseExpression, YUnaryExpression.Operator.IncrementPostfix);
+                return YIntegerPostfixUnaryExpression.Kind.Increment.createExpression(baseExpression);
             }
             if (ctx.MinusMinus() != null) {
-                return new YUnaryExpression(baseExpression, YUnaryExpression.Operator.DecrementPostfix);
+                return YIntegerPostfixUnaryExpression.Kind.Decrement.createExpression(baseExpression);
             }
         }
         throw new IllegalStateException();
     }
 
-    /**
-     * functionArgumentExpressionList
-     * :   functionArgumentExpression
-     * |   functionArgumentExpressionList ',' functionArgumentExpression
-     * ;
+    /** argumentExpressionList
+     *      :   assignmentExpression
+     *      |   argumentExpressionList ',' assignmentExpression
+     *      ;
      */
-    public YFunctionArgumentListTemp visitFunctionArgumentExpressionList(CminParser.FunctionArgumentExpressionListContext ctx) {
-        YFunctionArgumentListTemp argumentList = new YFunctionArgumentListTemp();
-        CminParser.FunctionArgumentExpressionContext variableArgumentCtx = ctx.functionArgumentExpression();
-        if (variableArgumentCtx != null) {
-            argumentList.add(visitFunctionArgumentExpression(variableArgumentCtx));
+    @Override
+    public YExpressionListTemp visitArgumentExpressionList(CminParser.ArgumentExpressionListContext ctx) {
+        YExpressionListTemp argumentList = new YExpressionListTemp();
+        CminParser.AssignmentExpressionContext assignmentExpressionCtx = ctx.assignmentExpression();
+        if (assignmentExpressionCtx != null) {
+            argumentList.add(visitAssignmentExpression(assignmentExpressionCtx));
         }
-        CminParser.FunctionArgumentExpressionListContext recursiveListCtx = ctx.functionArgumentExpressionList();
+        CminParser.ArgumentExpressionListContext recursiveListCtx = ctx.argumentExpressionList();
         if (recursiveListCtx != null) {
-            argumentList.addAll(visitFunctionArgumentExpressionList(recursiveListCtx));
+            argumentList.addAll(visitArgumentExpressionList(recursiveListCtx));
         }
         return argumentList;
-    }
-
-    /**
-     * functionArgumentExpression
-     * :   unaryOrNullaryExpression
-     * ;
-     */
-    public YFunctionArgument visitFunctionArgumentExpression(CminParser.FunctionArgumentExpressionContext ctx) {
-        YExpression expression = visitUnaryOrNullaryExpression(ctx.unaryOrNullaryExpression());
-        return new YFunctionArgument(expression);
     }
 
     /**
@@ -207,16 +365,6 @@ class CminToYtreeConverterVisitor
             return visitPostfixExpression(postfixExpressionCtx);
         }
         YExpression expression = visitUnaryOrNullaryExpression(ctx.unaryOrNullaryExpression());
-        YUnaryExpression.Operator operator = visitUnaryOperator(ctx.unaryOperator());
-        return new YUnaryExpression(expression, operator);
-    }
-
-    /**
-     * unaryOperator
-     * :   (And|Asterisk|Plus|Minus|Tilde|Not|PlusPlus|MinusMinus)
-     * ;
-     */
-    public YUnaryExpression.Operator visitUnaryOperator(CminParser.UnaryOperatorContext ctx) {
         if (ctx.And() != null ||
                 ctx.Asterisk() != null ||
                 ctx.Plus() != null ||
@@ -226,14 +374,20 @@ class CminToYtreeConverterVisitor
             throw new NotImplementedException();
         }
         if (ctx.Not() != null) {
-            return YUnaryExpression.Operator.Not;
+            return YLogicalUnaryExpression.Kind.Negation.createExpression(expression);
         }
+
+        // Increment / Decrement:
+        YAssignee assignee = CastHelper.castOrThrow(expression);
         if (ctx.PlusPlus() != null) {
-            return YUnaryExpression.Operator.IncrementPrefix;
+            YIntegerBinaryExpression incremented = YIntegerBinaryExpression.createIncrementExpression(assignee);
+            return new YAssignmentExpression(assignee, incremented);
         }
         if (ctx.MinusMinus() != null) {
-            return YUnaryExpression.Operator.DecrementPrefix;
+            YIntegerBinaryExpression incremented = YIntegerBinaryExpression.createDecrementExpression(assignee);
+            return new YAssignmentExpression(assignee, incremented);
         }
+
         throw new IllegalStateException();
     }
 
@@ -253,9 +407,9 @@ class CminToYtreeConverterVisitor
      * ;
      */
     public YExpression visitBinaryOrTernaryExpression(CminParser.BinaryOrTernaryExpressionContext ctx) {
-        YExpression equalityExpression = visitEqualityExpression(ctx.equalityExpression());
-        if (equalityExpression != null) {
-            return equalityExpression;
+        CminParser.RelationalExpressionContext relationalExpressionCtx = ctx.relationalExpression();
+        if (relationalExpressionCtx != null) {
+            return visitRelationalExpression(relationalExpressionCtx);
         }
         // todo: others
         throw new NotImplementedException();
@@ -298,55 +452,58 @@ class CminToYtreeConverterVisitor
     /**
      * relationalExpression
      * :   shiftExpression
-     * |   relationalExpression (Less | LessEqual | Greater | GreaterEqual) shiftExpression
+     * |   relationalExpression (Less | LessEqual | Greater | GreaterEqual | Equals | NotEquals) shiftExpression
      * ;
      */
     public YExpression visitRelationalExpression(CminParser.RelationalExpressionContext ctx) {
-        // TODO: support second rule
-        return visitShiftExpression(ctx.shiftExpression());
-    }
+        YExpression rightExpression = visitShiftExpression(ctx.shiftExpression());
 
-    /**
-     * equalityExpression
-     * :   relationalExpression
-     * |   equalityExpression (Equals | NotEquals) relationalExpression
-     * ;
-     */
-    public YExpression visitEqualityExpression(CminParser.EqualityExpressionContext ctx) {
-        //if (ctx == null) {
-        //    return null;  // recursion exit
-        //}
-        boolean isEquality = ctx.Equals() != null;
-        boolean isNonEquality = ctx.NotEquals() != null;
-        if (isEquality || isNonEquality) {
-            YExpression leftExpression = visitEqualityExpression(ctx.equalityExpression());
-            YExpression rightExpression = visitRelationalExpression(ctx.relationalExpression());
-
-            YEqualityExpression equalityExpression = new YEqualityExpression(leftExpression, rightExpression);
-            if (isEquality) {
-                return equalityExpression;
-            } else {
-                return new YUnaryExpression(equalityExpression, YUnaryExpression.Operator.Not);
+        CminParser.RelationalExpressionContext relationalExpressionCtx = ctx.relationalExpression();
+        if (relationalExpressionCtx != null) {
+            YExpression leftExpression = visitRelationalExpression(relationalExpressionCtx);
+            YRelativeBinaryExpression.Kind operator;
+            if (ctx.Less() != null) {
+                operator = YRelativeBinaryExpression.Kind.Less;
             }
+            else if (ctx.LessEqual() != null) {
+                operator = YRelativeBinaryExpression.Kind.LessOrEquals;
+            }
+            else if (ctx.Greater() != null) {
+                operator = YRelativeBinaryExpression.Kind.Greater;
+            }
+            else if (ctx.GreaterEqual() != null) {
+                operator = YRelativeBinaryExpression.Kind.GreaterOrEquals;
+            }
+            else if (ctx.Equals() != null) {
+                operator = YRelativeBinaryExpression.Kind.Equals;
+            }
+            else if (ctx.NotEquals() != null) {
+                operator = YRelativeBinaryExpression.Kind.NotEquals;
+            }
+            else {
+                throw new IllegalStateException();
+            }
+            return operator.createExpression(leftExpression, rightExpression);
         }
-
-        return visitRelationalExpression(ctx.relationalExpression());
+        else {
+            return rightExpression;
+        }
     }
 
     /**
      * andExpression
-     * :   equalityExpression
-     * |   andExpression And equalityExpression
+     * :   relationalExpression
+     * |   andExpression And relationalExpression
      * ;
      */
     public YExpression visitAndExpression(CminParser.AndExpressionContext ctx) {
-        YExpression equalityExpression = visitEqualityExpression(ctx.equalityExpression());
+        YExpression rightExpression = visitRelationalExpression(ctx.relationalExpression());
         CminParser.AndExpressionContext andExpressionCtx = ctx.andExpression();
         if (andExpressionCtx != null) {
-            YExpression andExpression = visitAndExpression(andExpressionCtx);
-            return new YBinaryExpression(andExpression, equalityExpression, YBinaryExpression.Operator.BitOr);
+            YExpression leftExpression = visitAndExpression(andExpressionCtx);
+            return YLogicalBinaryExpression.Kind.Conjunction.createExpression(leftExpression, rightExpression);
         }
-        return equalityExpression;
+        return rightExpression;
     }
 
     /**
@@ -356,13 +513,13 @@ class CminToYtreeConverterVisitor
      * ;
      */
     public YExpression visitExclusiveOrExpression(CminParser.ExclusiveOrExpressionContext ctx) {
-        YExpression andExpression = visitAndExpression(ctx.andExpression());
+        YExpression rightExpression = visitAndExpression(ctx.andExpression());
         CminParser.ExclusiveOrExpressionContext exclusiveOrCtx = ctx.exclusiveOrExpression();
         if (exclusiveOrCtx != null) {
-            YExpression exclusiveOrExpression = visitExclusiveOrExpression(exclusiveOrCtx);
-            return new YBinaryExpression(exclusiveOrExpression, andExpression, YBinaryExpression.Operator.BitOr);
+            YExpression leftExpression = visitExclusiveOrExpression(exclusiveOrCtx);
+            return YIntegerBinaryExpression.Kind.BitXor.createExpression(leftExpression, rightExpression);
         }
-        return andExpression;
+        return rightExpression;
     }
 
     /**
@@ -372,13 +529,13 @@ class CminToYtreeConverterVisitor
      * ;
      */
     public YExpression visitInclusiveOrExpression(CminParser.InclusiveOrExpressionContext ctx) {
-        YExpression exclusiveOrExpression = visitExclusiveOrExpression(ctx.exclusiveOrExpression());
+        YExpression rightExpression = visitExclusiveOrExpression(ctx.exclusiveOrExpression());
         CminParser.InclusiveOrExpressionContext inclusiveOrCtx = ctx.inclusiveOrExpression();
         if (inclusiveOrCtx != null) {
-            YExpression inclusiveOrExpression = visitInclusiveOrExpression(inclusiveOrCtx);
-            return new YBinaryExpression(exclusiveOrExpression, inclusiveOrExpression, YBinaryExpression.Operator.BitOr);
+            YExpression leftExpression = visitInclusiveOrExpression(inclusiveOrCtx);
+            return YIntegerBinaryExpression.Kind.BitOr.createExpression(rightExpression, leftExpression);
         }
-        return exclusiveOrExpression;
+        return rightExpression;
     }
 
     /**
@@ -388,13 +545,13 @@ class CminToYtreeConverterVisitor
      * ;
      */
     public YExpression visitLogicalAndExpression(CminParser.LogicalAndExpressionContext ctx) {
-        YExpression inclusiveOrExpression = visitInclusiveOrExpression(ctx.inclusiveOrExpression());
+        YExpression rightExpression = visitInclusiveOrExpression(ctx.inclusiveOrExpression());
         CminParser.LogicalAndExpressionContext logicalAndCtx = ctx.logicalAndExpression();
         if (logicalAndCtx != null) {
-            YExpression logicalAndExpression = visitLogicalAndExpression(logicalAndCtx);
-            return new YBinaryExpression(inclusiveOrExpression, logicalAndExpression, YBinaryExpression.Operator.BitOr);
+            YExpression leftExpression = visitLogicalAndExpression(logicalAndCtx);
+            return YLogicalBinaryExpression.Kind.Conjunction.createExpression(rightExpression, leftExpression);
         }
-        return inclusiveOrExpression;
+        return rightExpression;
     }
 
     /**
@@ -404,13 +561,13 @@ class CminToYtreeConverterVisitor
      * ;
      */
     public YExpression visitLogicalOrExpression(CminParser.LogicalOrExpressionContext ctx) {
-        YExpression logicalAndExpression = visitLogicalAndExpression(ctx.logicalAndExpression());
+        YExpression rightExpression = visitLogicalAndExpression(ctx.logicalAndExpression());
         CminParser.LogicalOrExpressionContext logicalOrCtx = ctx.logicalOrExpression();
         if (logicalOrCtx != null) {
-            YExpression logicalOrExpression = visitLogicalOrExpression(logicalOrCtx);
-            return new YBinaryExpression(logicalOrExpression, logicalAndExpression, YBinaryExpression.Operator.BitOr);
+            YExpression leftExpression = visitLogicalOrExpression(logicalOrCtx);
+            return YLogicalBinaryExpression.Kind.Disjunction.createExpression(leftExpression, rightExpression);
         }
-        return logicalAndExpression;
+        return rightExpression;
     }
 
     /**
@@ -440,70 +597,76 @@ class CminToYtreeConverterVisitor
     /**
      * assignmentExpression
      * :   rvalueExpression
-     * |   lvalueExpression assignmentOperator assignmentExpression
+     * |   lvalueExpression
+     *     (   Assign
+     *     |   MultiplyAssign
+     *     |   DivideAssign
+     *     |   ModuloAssign
+     *     |   PlusAssign
+     *     |   MinusAssign
+     *     |   LeftShiftAssign
+     *     |   RightShiftAssign
+     *     |   AndAssign
+     *     |   XorAssign
+     *     |   OrAssign
+     *     )
+     *     assignmentExpression
      * ;
      */
     public YExpression visitAssignmentExpression(CminParser.AssignmentExpressionContext ctx) {
-        CminParser.AssignmentOperatorContext assignmentOperatorCtx = ctx.assignmentOperator();
-        if (assignmentOperatorCtx != null) {
-            YAssignmentExpression.Operator assignmentOperator = visitAssignmentOperator(assignmentOperatorCtx);
-            YExpression leftExpression = visitLvalueExpression(ctx.lvalueExpression());
-            YExpression rightExpression = visitAssignmentExpression(ctx.assignmentExpression());
-            return new YAssignmentExpression(leftExpression, rightExpression, assignmentOperator);
+        CminParser.RvalueExpressionContext rvalueExpressionCtx = ctx.rvalueExpression();
+        if (rvalueExpressionCtx != null) {
+            return visitRvalueExpression(rvalueExpressionCtx);
         }
-        return visitRvalueExpression(ctx.rvalueExpression());
-    }
-
-    /**
-     * assignmentOperator
-     * :   Assign
-     * |   MultiplyAssign
-     * |   DivideAssign
-     * |   ModuloAssign
-     * |   PlusAssign
-     * |   MinusAssign
-     * |   LeftShiftAssign
-     * |   RightShiftAssign
-     * |   AndAssign
-     * |   OrAssign
-     * |   XorAssign
-     * ;
-     */
-    public YAssignmentExpression.Operator visitAssignmentOperator(CminParser.AssignmentOperatorContext ctx) {
-        if (ctx.Assign() != null) {
-            return YAssignmentExpression.Operator.Assign;
+        CminParser.LvalueExpressionContext lvalueExpressionCtx = ctx.lvalueExpression();
+        CminParser.AssignmentExpressionContext assignmentExpressionCtx = ctx.assignmentExpression();
+        if (lvalueExpressionCtx != null && assignmentExpressionCtx != null) {
+            YVariableRef assignee = visitLvalueExpression(lvalueExpressionCtx);
+            YExpression expressionOriginal = visitAssignmentExpression(assignmentExpressionCtx);
+            YExpression expression;
+            if (ctx.Assign() != null) {
+                expression = expressionOriginal;
+            }
+            else {
+                YIntegerBinaryExpression.Kind operator;
+                if (ctx.MultiplyAssign() != null) {
+                    operator = YIntegerBinaryExpression.Kind.Multiply;
+                }
+                else if (ctx.DivideAssign() != null) {
+                    operator = YIntegerBinaryExpression.Kind.Divide;
+                }
+                else if (ctx.ModuloAssign() != null) {
+                    operator = YIntegerBinaryExpression.Kind.Modulo;
+                }
+                else if (ctx.PlusAssign() != null) {
+                    operator = YIntegerBinaryExpression.Kind.Plus;
+                }
+                else if (ctx.MinusAssign() != null) {
+                    operator = YIntegerBinaryExpression.Kind.Minus;
+                }
+                else if (ctx.LeftShiftAssign() != null) {
+                    operator = YIntegerBinaryExpression.Kind.LeftShift;
+                }
+                else if (ctx.RightShiftAssign() != null) {
+                    operator = YIntegerBinaryExpression.Kind.RightShift;
+                }
+                else if (ctx.AndAssign() != null) {
+                    operator = YIntegerBinaryExpression.Kind.BitAnd;
+                }
+                else if (ctx.OrAssign() != null) {
+                    operator = YIntegerBinaryExpression.Kind.BitOr;
+                }
+                else if (ctx.XorAssign() != null) {
+                    operator = YIntegerBinaryExpression.Kind.BitXor;
+                }
+                else {
+                    throw new IllegalStateException();
+                }
+                expression = operator.createExpression(assignee, expressionOriginal);
+            }
+            return new YVariableAssignmentExpression(assignee, expression);
         }
-        if (ctx.MultiplyAssign() != null) {
-            return YAssignmentExpression.Operator.MultiplyAssign;
-        }
-        if (ctx.DivideAssign() != null) {
-            return YAssignmentExpression.Operator.DivideAssign;
-        }
-        if (ctx.ModuloAssign() != null) {
-            return YAssignmentExpression.Operator.ModuloAssign;
-        }
-        if (ctx.PlusAssign() != null) {
-            return YAssignmentExpression.Operator.PlusAssign;
-        }
-        if (ctx.MinusAssign() != null) {
-            return YAssignmentExpression.Operator.MinusAssign;
-        }
-        if (ctx.LeftShiftAssign() != null) {
-            return YAssignmentExpression.Operator.LeftShiftAssign;
-        }
-        if (ctx.RightShiftAssign() != null) {
-            return YAssignmentExpression.Operator.RightShiftAssign;
-        }
-        if (ctx.AndAssign() != null) {
-            return YAssignmentExpression.Operator.AndAssign;
-        }
-        if (ctx.OrAssign() != null) {
-            return YAssignmentExpression.Operator.OrAssign;
-        }
-        if (ctx.XorAssign() != null) {
-            return YAssignmentExpression.Operator.XorAssign;
-        }
-        throw new IllegalArgumentException();
+        throw new IllegalStateException();
     }
 
     /**
@@ -511,8 +674,15 @@ class CminToYtreeConverterVisitor
      * :   unaryOrNullaryExpression
      * ;
      */
-    public YExpression visitLvalueExpression(CminParser.LvalueExpressionContext ctx) {
-        return visitUnaryOrNullaryExpression(ctx.unaryOrNullaryExpression());
+    public YVariableRef visitLvalueExpression(CminParser.LvalueExpressionContext ctx) {
+        YExpression lvalue = visitUnaryOrNullaryExpression(ctx.unaryOrNullaryExpression());
+        try {
+            return (YVariableRef) lvalue;
+        }
+        catch (ClassCastException e) {
+            // TODO: support Assignments to indexers and member accesses etc...
+            throw new NotImplementedException("Assignments to indexers and member accesses are not supported yet");
+        }
     }
 
     /**
@@ -539,20 +709,21 @@ class CminToYtreeConverterVisitor
      * |   variableName '=' rvalueExpression
      * ;
      */
-    public YVariableInitialiserTemp visitVariableInitialisation(CminParser.VariableInitialisationContext ctx) {
+    public YVariableAssignmentExpression visitVariableInitialisation(CminParser.VariableInitialisationContext ctx) {
         //if (ctx == null) {
         //    return null;
         //}
         CminParser.VariableNameContext variableNameCtx = ctx.variableName();
         if (variableNameCtx == null) {
-            throw new ParserException(ctx, "Missing variable name in variable declaration");
+            throw new ParserException(ctx, "Missing variable postProcessId in variable declaration");
         }
         YVariableRef variable = visitVariableName(variableNameCtx);
         CminParser.RvalueExpressionContext expressionCtx = ctx.rvalueExpression();
         YExpression expression = expressionCtx != null
                 ? visitRvalueExpression(expressionCtx)
                 : null;
-        return new YVariableInitialiserTemp(variable, expression);
+
+        return new YVariableAssignmentExpression(variable, expression);
     }
 
     /**
@@ -574,10 +745,10 @@ class CminToYtreeConverterVisitor
      * :   primitiveTypeSpecifier? primitiveTypeKeyword
      * ;
      */
-    public YXType visitPrimitiveTypeDeclarator(CminParser.PrimitiveTypeDeclaratorContext ctx) {
-        YXTypeSpecifier typeSpecifier = visitPrimitiveTypeSpecifier(ctx.primitiveTypeSpecifier());
-        YXTypeName typeName = visitPrimitiveTypeKeyword(ctx.primitiveTypeKeyword());
-        return YXTypeFactory.getPrimitiveType(typeName, typeSpecifier);
+    public ZType visitPrimitiveTypeDeclarator(CminParser.PrimitiveTypeDeclaratorContext ctx) {
+        ZTypeSpecifier typeSpecifier = visitPrimitiveTypeSpecifier(ctx.primitiveTypeSpecifier());
+        ZTypeName typeName = visitPrimitiveTypeKeyword(ctx.primitiveTypeKeyword());
+        return ZTypeFactory.getPrimitiveType(typeName, typeSpecifier);
     }
 
     /**
@@ -586,7 +757,7 @@ class CminToYtreeConverterVisitor
      * |   Unsigned
      * ;
      */
-    public YXTypeSpecifier visitPrimitiveTypeSpecifier(CminParser.PrimitiveTypeSpecifierContext ctx) {
+    public ZTypeSpecifier visitPrimitiveTypeSpecifier(CminParser.PrimitiveTypeSpecifierContext ctx) {
         if (ctx == null) {
             return null;
         }
@@ -596,11 +767,11 @@ class CminToYtreeConverterVisitor
 
         switch (keyword) {
             case "specifier":
-                return YXTypeSpecifier.Signed;
+                return ZTypeSpecifier.Signed;
             case "unsigned":
-                return YXTypeSpecifier.Unsigned;
+                return ZTypeSpecifier.Unsigned;
             default:
-                throw new ParserException(ctx, "Unexpected primitive type specifier: " + keyword);
+                throw new ParserException(ctx, "Unexpected primitive returnType specifier: " + keyword);
         }
     }
 
@@ -620,7 +791,7 @@ class CminToYtreeConverterVisitor
      * |   Auto
      * ;
      */
-    public YXTypeName visitPrimitiveTypeKeyword(CminParser.PrimitiveTypeKeywordContext ctx) {
+    public ZTypeName visitPrimitiveTypeKeyword(CminParser.PrimitiveTypeKeywordContext ctx) {
         if (ctx == null) {
             throw new ArgumentNullException();
         }
@@ -640,13 +811,13 @@ class CminToYtreeConverterVisitor
         switch (keywordText) {
             case "short":
             case "short int":
-                return YXTypeName.Short;
+                return ZTypeName.Short;
             case "long":
             case "long int":
-                return YXTypeName.Long;
+                return ZTypeName.Long;
             case "long long":
             case "long long int":
-                return YXTypeName.LongLong;
+                return ZTypeName.LongLong;
             // TODO: process some common custom types
             //case "int8_t":
             //    this.sizeModifier = CminPrimitiveType.SizeModifier.int8_t;
@@ -661,19 +832,19 @@ class CminToYtreeConverterVisitor
             //    this.sizeModifier = CminPrimitiveType.SizeModifier.int64_t;
             //    return true;
             case "int":
-                return YXTypeName.Int;
+                return ZTypeName.Int;
             case "char":
-                return YXTypeName.Char;
+                return ZTypeName.Char;
             case "float":
-                return YXTypeName.Float;
+                return ZTypeName.Float;
             case "double":
-                return YXTypeName.Double;
+                return ZTypeName.Double;
             case "long double":
-                return YXTypeName.LongDouble;
+                return ZTypeName.LongDouble;
             case "void":
-                return YXTypeName.Void;
+                return ZTypeName.Void;
             default:
-                throw new ParserException(ctx, "Unexpected primitive type keyword: " + keywordText);
+                throw new ParserException(ctx, "Unexpected primitive returnType keyword: " + keywordText);
         }
     }
 
@@ -694,21 +865,21 @@ class CminToYtreeConverterVisitor
     public YStatement visitVariableDeclarationStatement(CminParser.VariableDeclarationStatementContext ctx) {
         CminParser.TypeDeclarationContext typeDeclarationCtx = ctx.typeDeclaration();
         if (typeDeclarationCtx != null) {
-            YXType type = visitTypeDeclaration(typeDeclarationCtx);
+            ZType type = visitTypeDeclaration(typeDeclarationCtx);
 
             YVariableInitialiserListTemp initList = visitVariableInitialisationList(ctx.variableInitialisationList());
             initList.reverse(); // initialisers are visited in reversed order
             YSequenceStatementBuilder builder = new YSequenceStatementBuilder();
-            for (YVariableInitialiserTemp initialiser : initList) {
-                YVariableRef variable = initialiser.variable;
-                YExpression initExpression = initialiser.initExpression;
+            for (YVariableAssignmentExpression initialiser : initList) {
+                YVariableRef variable = initialiser.getAssignee();
+                YExpression initExpression = initialiser.getExpression();
                 builder.add(new YVariableDeclarationStatement(type, variable));
                 if (initExpression != null) {
                     YAssignmentExpression assignmentExpression = new YAssignmentExpression(variable, initExpression);
                     builder.add(new YLinearStatement(assignmentExpression));
                 }
             }
-            return builder.build();
+            return builder.buildAndOptimise();
         }
         throw new IllegalStateException();
     }
@@ -718,10 +889,10 @@ class CminToYtreeConverterVisitor
      * :   typeSpecifier* typeDeclarator
      * ;
      */
-    public YXType visitTypeDeclaration(CminParser.TypeDeclarationContext ctx) {
+    public ZType visitTypeDeclaration(CminParser.TypeDeclarationContext ctx) {
         CminParser.TypeDeclaratorContext typeDeclaratorCtx = ctx.typeDeclarator();
         if (typeDeclaratorCtx != null) {
-            YXType type = visitTypeDeclarator(typeDeclaratorCtx);
+            ZType type = visitTypeDeclarator(typeDeclaratorCtx);
             // todo: process typeSpecifier
             return type;
         }
@@ -755,21 +926,21 @@ class CminToYtreeConverterVisitor
      * ;
      */
     // TODO: Check this method's efficiency
-    public YXType visitTypeDeclarator(CminParser.TypeDeclaratorContext ctx) {
+    public ZType visitTypeDeclarator(CminParser.TypeDeclaratorContext ctx) {
         CminParser.TypeDeclaratorContext typeDeclaratorCtx = ctx.typeDeclarator();
         if (typeDeclaratorCtx != null) {
             boolean isPointer = ctx.Asterisk() != null;
-            YXType result = visitTypeDeclarator(ctx.typeDeclarator());
+            ZType result = visitTypeDeclarator(ctx.typeDeclarator());
             if (isPointer) {
                 return result.withPointerLevel(result.pointerLevel + 1);
             }
             return result;
         }
-        YXType primitiveTypeDeclarator = visitPrimitiveTypeDeclarator(ctx.primitiveTypeDeclarator());
+        ZType primitiveTypeDeclarator = visitPrimitiveTypeDeclarator(ctx.primitiveTypeDeclarator());
         if (primitiveTypeDeclarator != null) {
             return primitiveTypeDeclarator;
         }
-        throw new ParserException(ctx, "Could not parse type declarator");
+        throw new ParserException(ctx, "Could not parse returnType declarator");
     }
 
     /**
@@ -793,50 +964,19 @@ class CminToYtreeConverterVisitor
      * |   Default ':' statement
      * ;
      */
-    public YStatement visitLabeledStatement(CminParser.LabeledStatementContext ctx) {
-        CminParser.StatementContext statementCtx = ctx.statement();
-        assert statementCtx != null;
-        YStatement statement = visitStatement(statementCtx);
-        // todo: test
-        TerminalNode identifierNode = ctx.Identifier();
-        if (identifierNode != null) {
-            String identifier = identifierNode.getSymbol().getText();  // todo: get terminal node text correctly
-            return statement.withLabel(identifier);
-        }
+    public YLabeledStatement visitLabeledStatement(CminParser.LabeledStatementContext ctx) {
+        //TODO: implement
+        //CminParser.StatementContext statementCtx = ctx.statement();
+        //assert statementCtx != null;
+        //YStatement statement = visitStatement(statementCtx);
+        //// todo: rest
+        //TerminalNode identifierNode = ctx.Identifier();
+        //if (identifierNode != null) {
+        //    String identifier = identifierNode.getSymbol().getText();  // todo: get terminal node text correctly
+        //    return statement.withLabel(identifier);
+        //}
 
-        // todo: rest
         throw new NotImplementedException();
-    }
-
-    /**
-     * statement
-     * :   variableDeclarationStatement
-     * |   expressionStatement
-     * |   labeledStatement
-     * |   blockStatement
-     * |   branchingStatement
-     * |   loopStatement
-     * |   jumpStatement
-     * ;
-     */
-    public YStatement visitStatement(CminParser.StatementContext ctx) {
-        int childrenCount = ctx.getChildCount();
-        assert childrenCount == 1 : childrenCount;
-        return (YStatement) visit(ctx.getChild(0));
-    }
-
-    /**
-     * blockStatement
-     * :   LeftBrace statement* RightBrace
-     * ;
-     */
-    public YBlockStatement visitBlockStatement(CminParser.BlockStatementContext ctx) {
-        YSequenceStatementBuilder builder = new YSequenceStatementBuilder();
-        for (CminParser.StatementContext statementContext : ctx.statement()) {
-            YStatement statement = visitStatement(statementContext);
-            builder.add(statement);
-        }
-        return YBlockStatement.create(builder.build());
     }
 
     /**

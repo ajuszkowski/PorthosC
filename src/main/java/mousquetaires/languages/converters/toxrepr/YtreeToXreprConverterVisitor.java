@@ -1,28 +1,42 @@
 package mousquetaires.languages.converters.toxrepr;
 
 import mousquetaires.languages.ProgramLanguage;
-import mousquetaires.languages.converters.toytree.cmin.temporaries.YTempEntity;
+import mousquetaires.languages.syntax.xrepr.XAssertion;
 import mousquetaires.languages.syntax.xrepr.XEntity;
 import mousquetaires.languages.syntax.xrepr.XProgram;
+import mousquetaires.languages.syntax.xrepr.XProgramBuilder;
 import mousquetaires.languages.syntax.xrepr.datamodels.DataModel;
-import mousquetaires.languages.syntax.xrepr.memories.XLocalMemoryUnit;
+import mousquetaires.languages.syntax.xrepr.events.computation.XBinaryOperationEvent;
+import mousquetaires.languages.syntax.xrepr.events.computation.XOperator;
 import mousquetaires.languages.syntax.xrepr.memories.XMemoryUnit;
-import mousquetaires.languages.syntax.xrepr.memories.XSharedMemoryUnit;
-import mousquetaires.languages.syntax.ytree.YSyntaxTree;
-import mousquetaires.languages.syntax.ytree.expressions.*;
-import mousquetaires.languages.syntax.ytree.expressions.invocation.YFunctionArgument;
-import mousquetaires.languages.syntax.ytree.expressions.invocation.YFunctionInvocationExpression;
-import mousquetaires.languages.syntax.ytree.signatures.YFunctionParameter;
-import mousquetaires.languages.syntax.ytree.statements.*;
-import mousquetaires.languages.syntax.ytree.statements.artificial.YBugonStatement;
-import mousquetaires.languages.syntax.ytree.statements.artificial.YProcess;
-import mousquetaires.languages.types.YXType;
-import mousquetaires.languages.types.YXTypeName;
-import mousquetaires.languages.types.YXTypeSpecifier;
+import mousquetaires.languages.syntax.xrepr.memories.XValue;
+import mousquetaires.languages.syntax.ytree.expressions.YConstant;
+import mousquetaires.languages.syntax.ytree.expressions.YExpression;
+import mousquetaires.languages.syntax.ytree.expressions.YTernaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
+import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
+import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
+import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
+import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
+import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerPostfixUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
+import mousquetaires.languages.syntax.ytree.specific.YPreludeStatement;
+import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
+import mousquetaires.languages.syntax.ytree.specific.YVariableAssertion;
+import mousquetaires.languages.syntax.ytree.statements.YFunctionDefinitionStatement;
+import mousquetaires.languages.syntax.ytree.statements.YSequenceStatement;
+import mousquetaires.languages.syntax.ytree.statements.YStatement;
+import mousquetaires.languages.syntax.ytree.statements.labeled.*;
 import mousquetaires.languages.visitors.YtreeBaseVisitor;
-import mousquetaires.utils.exceptions.xrepr.InvalidLvalueException;
-import mousquetaires.utils.exceptions.xrepr.InvalidRvalueException;
-import mousquetaires.utils.exceptions.xrepr.UnallowedMemoryOperation;
+import mousquetaires.types.ZType;
+import mousquetaires.types.ZTypeName;
+import mousquetaires.types.ZTypeSpecifier;
+import mousquetaires.utils.exceptions.NotImplementedException;
 
 
 class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
@@ -33,8 +47,8 @@ class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
 
     YtreeToXreprConverterVisitor(ProgramLanguage language, DataModel dataModel) {
         //this.interpreter = interpreter;
-        this.programBuilder = new XProgramBuilder();
         this.memoryManager = new XMemoryManager(language, dataModel);
+        this.programBuilder = new XProgramBuilder(memoryManager);
     }
 
     public XProgram getProgram() {
@@ -43,212 +57,178 @@ class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
 
     // TODO: All expressions must return XMemoryUnit instances, tentatively generating write events to them.
 
-    @Override
-    public XEntity visit(YSyntaxTree node) {
-        return super.visit(node);
-    }
+
+    // -- Litmus-specific elements: ------------------------------------------------------------------------------------
 
     @Override
-    public XEntity visit(YProcess node) {
-        programBuilder.startProcessDefinition(node.name);
-        visit(node.body);
+    public XEntity visit(YPreludeStatement node) {
+        programBuilder.beginPreludeDefinition();
+        visit(node.getBody());
         programBuilder.endProcessDefinition();
         return null;
     }
 
     @Override
-    public XEntity visit(YBlockStatement node) {
-        return super.visit(node);
+    public XEntity visit(YProcessStatement node) {
+        programBuilder.beginProcessDefinition(node.getProcessId());
+        visit(node.getBody());
+        programBuilder.endProcessDefinition();
+        return null;
     }
 
     @Override
-    public XEntity visit(YBugonStatement node) {
-        return super.visit(node);
+    public XAssertion visit(YVariableAssertion node) {
+        XValue constant = visit(node.getRightExpression());
+        XMemoryUnit memoryUnit = visit(node.getLeftExpression());
+        return new XAssertion(memoryUnit, constant);
+    }
+
+    // -- END OF Litmus-specific elements ------------------------------------------------------------------------------
+
+
+    @Override
+    public XMemoryUnit visit(YExpression node) {
+        return (XMemoryUnit) super.visit(node);
     }
 
     @Override
-    public XEntity visit(YConstant node) {
-        return super.visit(node);
+    public XMemoryUnit visit(YAssignee node) {
+        return (XMemoryUnit) super.visit(node);
     }
 
     @Override
-    public XEntity visit(YMemberAccess node) {
-        return super.visit(node);
+    public XValue visit(YConstant node) {
+        return new XValue(node.getValue(), node.getType());
     }
 
     @Override
-    public XEntity visit(YFunctionArgument node) {
-        return super.visit(node);
+    public XEntity visit(YIndexerExpression node) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public XEntity visit(YFunctionInvocationExpression node) {
-        return super.visit(node);
+    public XEntity visit(YMemberAccessExpression node) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public XEntity visit(YFunctionParameter node) {
-        return super.visit(node);
+    public XEntity visit(YInvocationExpression node) {
+        throw new NotImplementedException();
     }
 
     @Override
     public XEntity visit(YFunctionDefinitionStatement node) {
-        return super.visit(node);
+        throw new NotImplementedException();
     }
 
     @Override
-    public XEntity visit(YUnaryExpression node) {
-        return super.visit(node);
+    public XEntity visit(YRelativeBinaryExpression node) {
+        XMemoryUnit left = visit(node.getLeftExpression());
+        XMemoryUnit right = visit(node.getRightExpression());
+        XOperator operator = XOperatorConverter.convert(node.getKind());
+        return programBuilder.emitComputationEvent(operator, left, right);
     }
 
     @Override
-    public XEntity visit(YUnaryExpression.Operator node) {
-        return super.visit(node);
+    public XBinaryOperationEvent visit(YLogicalBinaryExpression node) {
+        XMemoryUnit left = visit(node.getLeftExpression());
+        XMemoryUnit right = visit(node.getRightExpression());
+        XOperator operator = XOperatorConverter.convert(node.getKind());
+        return programBuilder.emitComputationEvent(operator, left, right);
     }
 
     @Override
-    public XEntity visit(YBinaryExpression node) {
-        return super.visit(node);
+    public XEntity visit(YIntegerBinaryExpression node) {
+        XMemoryUnit left = visit(node.getLeftExpression());
+        XMemoryUnit right = visit(node.getRightExpression());
+        XOperator operator = XOperatorConverter.convert(node.getKind());
+        return programBuilder.emitComputationEvent(operator, left, right);
     }
 
     @Override
-    public XEntity visit(YBinaryExpression.Operator node) {
-        return super.visit(node);
+    public XEntity visit(YLogicalUnaryExpression node) {
+        //XMemoryUnit expression = visit(node.getExpression());
+        //XOperator operator = XOperatorConverter.convert(node.getKind());
+        //return programBuilder.emitComputationEvent(operator, expression);
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public XEntity visit(YPointerUnaryExpression node) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public XEntity visit(YIntegerPostfixUnaryExpression node) {
+        throw new NotImplementedException();
     }
 
     @Override
     public XEntity visit(YTernaryExpression node) {
-        return super.visit(node);
+        throw new NotImplementedException();
     }
 
     @Override
     public XEntity visit(YAssignmentExpression node) {
-        XEntity operator = visit(node.operator);  // TODO: process non-trivial assignment operators here!
-        XEntity destinationEntity = visit(node.assignee);
-        XMemoryUnit destination;
-        try {
-            destination = (XMemoryUnit) destinationEntity;
-        } catch (ClassCastException e) {
-            throw new InvalidLvalueException(destinationEntity);
-        }
-        XEntity sourceEntity = visit(node.expression);
-        XMemoryUnit source;
-        try {
-            source = (XMemoryUnit) sourceEntity;
-        } catch (ClassCastException e) {
-            throw new InvalidRvalueException(destinationEntity);
-        }
-
-        XLocalMemoryUnit sourceLocal = (source instanceof XLocalMemoryUnit)
-                ? (XLocalMemoryUnit) source
-                : null;
-        XSharedMemoryUnit sourceShared = (source instanceof XSharedMemoryUnit)
-                ? (XSharedMemoryUnit) source
-                : null;
-        XLocalMemoryUnit destinationLocal = (destination instanceof XLocalMemoryUnit)
-                ? (XLocalMemoryUnit) destination
-                : null;
-        XSharedMemoryUnit destinationShared = (destination instanceof XSharedMemoryUnit)
-                ? (XSharedMemoryUnit) destination
-                : null;
-
-        if (destinationShared != null) {
-            if (sourceShared != null) {
-                throw new UnallowedMemoryOperation("Writes from shared memories unit to shared memories unit are not allowed");
-            }
-            if (sourceLocal != null) {
-                return programBuilder.processSharedMemoryEvent(destinationShared, sourceLocal);
-            }
-        }
-        if (destinationLocal != null) {
-            if (sourceLocal != null) {
-                return programBuilder.processLocalMemoryEvent(destinationLocal, sourceLocal);
-            }
-            if (sourceShared != null) {
-                return programBuilder.processSharedMemoryEvent(destinationLocal, sourceShared);
-            }
-        }
-
-        throw new IllegalStateException();
-    }
-
-    @Override
-    public XEntity visit(YAssignmentExpression.Operator node) {
-        return super.visit(node); // TODO: convert to temp operator x-entity
+        XMemoryUnit assignee = visit(node.getAssignee());
+        XMemoryUnit expression = visit(node.getExpression());
+        return programBuilder.emitMemoryEvent(assignee, expression);
     }
 
     @Override
     public XEntity visit(YLinearStatement node) {
-        return super.visit(node);
+        throw new NotImplementedException();
     }
 
     @Override
     public XEntity visit(YVariableDeclarationStatement node) {
-        // TODO: determine type (kind) of memories unit here !!!
-        return memoryManager.declareSharedMemoryUnit(node.variable.name, node.type);
+        throw new NotImplementedException();
     }
 
     @Override
-    public XEntity visit(YXType node) {
-        return super.visit(node);
+    public XEntity visit(ZType node) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public XEntity visit(YXTypeName node) {
-        return super.visit(node);
+    public XEntity visit(ZTypeName node) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public XEntity visit(YXTypeSpecifier node) {
-        return super.visit(node);
+    public XEntity visit(ZTypeSpecifier node) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public XEntity visit(YVariableRef node) {
-        switch (node.kind) {
-            case Local:
-                return memoryManager.getLocalMemoryUnit(node.name);
-            case Global:
-                return memoryManager.getSharedMemoryUnit(node.name);
-            default:
-                throw new IllegalArgumentException(node.kind.name());
-        }
+    public XMemoryUnit visit(YVariableRef node) {
+        return node.isGlobal()
+                ? memoryManager.getSharedMemoryUnit(node.getName())
+                : memoryManager.getLocalMemoryUnit (node.getName());
+    }
+
+    @Override
+    public XEntity visit(YStatement node) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public XEntity visit(YSequenceStatement node) {
+        throw new NotImplementedException();
     }
 
     @Override
     public XEntity visit(YBranchingStatement node) {
-        XMemoryUnit condition  = (XMemoryUnit) visit(node.condition);
-        XLocalMemoryUnit conditionLocal;
-        if (condition instanceof XSharedMemoryUnit) {
-            conditionLocal = memoryManager.newTempLocalMemoryUnit();
-        }
-        else if (condition instanceof XLocalMemoryUnit) {
-            conditionLocal = (XLocalMemoryUnit) condition;
-        }
-        else {
-            throw new IllegalStateException();
-        }
-
-        XEntity thenBranch = visit(node.thenBranch);
-        XEntity elseBranch = visit(node.elseBranch);
-
-        // TODO: finish jump events structure
-
-        return programBuilder.processControlFlowEvent();
+        throw new NotImplementedException();
     }
 
     @Override
     public XEntity visit(YLoopStatement node) {
-        return super.visit(node);
+        throw new NotImplementedException();
     }
 
     @Override
     public XEntity visit(YJumpStatement node) {
-        return super.visit(node);
-    }
-
-    @Override
-    public XEntity visit(YTempEntity node) {
-        return super.visit(node);
+        throw new NotImplementedException();
     }
 }

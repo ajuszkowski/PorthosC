@@ -1,10 +1,10 @@
 package mousquetaires.tests.unit.languages.parsers.cmin.statements;
 
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
-import mousquetaires.languages.syntax.ytree.expressions.YAssignmentExpression;
-import mousquetaires.languages.syntax.ytree.statements.YBlockStatement;
-import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
-import mousquetaires.languages.syntax.ytree.statements.YVariableDeclarationStatement;
+import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
+import mousquetaires.languages.syntax.ytree.statements.YSequenceStatement;
+import mousquetaires.languages.syntax.ytree.statements.labeled.YLinearStatement;
+import mousquetaires.languages.syntax.ytree.statements.labeled.YVariableDeclarationStatement;
 import org.junit.Test;
 
 
@@ -15,18 +15,18 @@ public class CminParsePrimitiveTypeDeclarationTest extends CminParseStatementTes
     @Test
     public void test_primitiveTypeDeclaration_initialisation() {
         YSyntaxTree expectedTree = new YSyntaxTree(
-                new YBlockStatement(
+                new YSequenceStatement(true,
                         new YVariableDeclarationStatement(typeInt, variableA), // 'int a'
                         new YLinearStatement(new YAssignmentExpression(variableA, constant1)) // 'a = 1;'
                 ),
-                new YBlockStatement(
+                new YSequenceStatement(true,
                         new YVariableDeclarationStatement(typeInt, variableA), // 'int a'
                         new YVariableDeclarationStatement(typeInt, variableB), // 'int b;'
                         new YLinearStatement(new YAssignmentExpression(variableB, constant2)), // 'b = 2;'
                         new YVariableDeclarationStatement(typeInt, variableC), // 'int c;'
                         new YLinearStatement(new YAssignmentExpression(variableC, constant3)) // 'c = 3;'
                 ),
-                new YBlockStatement(
+                new YSequenceStatement(true,
                         new YVariableDeclarationStatement(typeInt, variableA), // 'int a'
                         new YLinearStatement(new YAssignmentExpression(variableA, constant1)), // 'a = 1;'
                         new YVariableDeclarationStatement(typeInt, variableB), // 'int b;'

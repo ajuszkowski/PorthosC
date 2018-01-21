@@ -17,7 +17,7 @@ public class PorthosBakeryTest extends AbstractPorthosFuncTest {
     // == Relaxed operations: ==
 
     // TODO: check results with respect to the information at p. 53 Alglave's these
-    // TODO: and create new tests that illustrate non-portability for different architectures -- will help in diploma
+    // TODO: and fromValue new tests that illustrate non-portability for different architectures -- will help in diploma
     @TestWith({
             bakery_pts_rx + ", " + "SC,    TSO,   StateInclusion, NonStatePortable",  // ~5 sec
             //bakery_pts_rx + ", " + "SC,    PSO,   StateInclusion, NonStatePortable",  // ~4 sec

@@ -87,7 +87,7 @@ public class Read extends MemEvent {
             }
         }
 
-        else System.out.println(String.format("Error in the memoryOrder operation type of %s", this));
+        else System.out.println(String.format("Error in the memoryOrder operation returnType of %s", this));
         return null;
     }
 
@@ -115,7 +115,7 @@ public class Read extends MemEvent {
         if(memoryOrder.equals("_con") || memoryOrder.equals("_acq")) {
             return new Seq(ld, lwsync);
         }
-        else System.out.println(String.format("Error in the memoryOrder operation type of %s", this));
+        else System.out.println(String.format("Error in the memoryOrder operation returnType of %s", this));
         return null;
     }
 

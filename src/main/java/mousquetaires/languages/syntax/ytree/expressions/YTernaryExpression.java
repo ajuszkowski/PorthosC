@@ -8,15 +8,27 @@ import java.util.Iterator;
 import java.util.Objects;
 
 
-public class YTernaryExpression extends YExpression {
-    public final YExpression condition;
-    public final YExpression trueExpression;
-    public final YExpression falseExpression;
+public class YTernaryExpression implements YExpression {
+    private final YExpression condition;
+    private final YExpression trueExpression;
+    private final YExpression falseExpression;
 
     public YTernaryExpression(YExpression condition, YExpression trueExpression, YExpression falseExpression) {
         this.condition = condition;
         this.trueExpression = trueExpression;
         this.falseExpression = falseExpression;
+    }
+
+    public YExpression getCondition() {
+        return condition;
+    }
+
+    public YExpression getTrueExpression() {
+        return trueExpression;
+    }
+
+    public YExpression getFalseExpression() {
+        return falseExpression;
     }
 
     @Override

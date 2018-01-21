@@ -1,28 +1,29 @@
 package mousquetaires.languages.syntax.ytree.statements;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.syntax.ytree.signatures.MethodSignature;
 import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.types.signatures.ZMethodSignature;
 import mousquetaires.utils.YtreeUtils;
-import mousquetaires.utils.exceptions.NotSupportedException;
 
 import java.util.Iterator;
 
 
 public class YFunctionDefinitionStatement extends YStatement {
 
-    private final MethodSignature signature;
-    private final YBlockStatement body;
+    private final ZMethodSignature signature;
+    private final YSequenceStatement body;
 
-    public YFunctionDefinitionStatement(MethodSignature signature, YBlockStatement body) {
-        super(null);
+    public YFunctionDefinitionStatement(ZMethodSignature signature, YSequenceStatement body) {
         this.signature = signature;
         this.body = body;
     }
 
-    @Override
-    public YStatement withLabel(String newLabel) {
-        throw new NotSupportedException();
+    public ZMethodSignature getSignature() {
+        return signature;
+    }
+
+    public YSequenceStatement getBody() {
+        return body;
     }
 
     @Override

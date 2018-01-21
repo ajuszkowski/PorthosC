@@ -7,9 +7,9 @@
 //
 //
 ///**
-// * Note, this class implements YEntity, although it does not belongs to the type system of Internal language.
-// * This is done in order to simplify parsing types in CminToInternalTransformer visitor, where this Cmin-type will be
-// * converted to Internal-type on the last stage, when the assignee identifier is determined.
+// * Note, this class implements YEntity, although it does not belongs to the returnType system of Internal language.
+// * This is done in order to simplify parsing types in CminToInternalTransformer visitor, where this Cmin-returnType will be
+// * converted to Internal-returnType on the last stage, when the assignee identifier is determined.
 // */
 //public enum CminKeyword implements YEntity {
 //    // typeSpecifier:
@@ -67,7 +67,7 @@
 //    public static YType convert(CminKeyword keyword) {
 //        YType result = tryConvert(keyword);
 //        if (result == null) {
-//            throw new IllegalArgumentException(keyword.name());
+//            throw new IllegalArgumentException(keyword.id());
 //        }
 //        return result;
 //    }

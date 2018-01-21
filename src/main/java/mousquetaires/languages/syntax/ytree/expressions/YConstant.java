@@ -1,21 +1,44 @@
 package mousquetaires.languages.syntax.ytree.expressions;
 
-import mousquetaires.languages.types.YXType;
+import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.types.ZType;
+import mousquetaires.types.ZTypeFactory;
+import mousquetaires.types.ZTypeName;
+import mousquetaires.utils.YtreeUtils;
 import mousquetaires.utils.exceptions.ArgumentNullException;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 
-public class YConstant extends YExpression {
+public class YConstant implements YExpression {
 
-    protected final Object value;
-    protected final YXType type;
+    private final Object value;
+    private final ZType type;
 
-    YConstant(Object value, YXType type) {
+    YConstant(Object value, ZType type) {
         this.value = value;
         this.type = type;
     }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public ZType getType() {
+        return type;
+    }
+
+    public static YConstant fromValue(int value) {
+        return new YConstant(value, ZTypeFactory.getPrimitiveType(ZTypeName.Int));
+    }
+
+    public static YConstant fromValue(boolean value) {
+        return new YConstant(value, ZTypeFactory.getPrimitiveType(ZTypeName.Bool));
+    }
+
+    // ... todo: others...
 
     public static YConstant tryParse(String text) {
         if (text == null) {
@@ -24,8 +47,7 @@ public class YConstant extends YExpression {
 
         // Integer:
         try {
-            int value = Integer.parseInt(text);
-            return YConstantFactory.newIntConstant(value);
+            fromValue(Integer.parseInt(text));
         } catch (NumberFormatException e) {
         }
 
@@ -44,6 +66,11 @@ public class YConstant extends YExpression {
     @Override
     public YConstant copy() {
         return new YConstant(value, type);
+    }
+
+    @Override
+    public Iterator<? extends YEntity> getChildrenIterator() {
+        return YtreeUtils.createIteratorFrom();
     }
 
     @Override
@@ -73,4 +100,13 @@ public class YConstant extends YExpression {
     //    return new HashSet<Register>();
     //}
 
+    // boolean constant:
+        //public BoolExpr toZ3(MapSSA map, Context ctx) {
+    //    //    if(bitness) {
+    //    //        return ctx.mkTrue();
+    //    //    }
+    //    //    else {
+    //    //        return ctx.mkFalse();
+    //    //    }
+    //    //}
 }

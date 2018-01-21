@@ -34,19 +34,49 @@ grammar Cmin;
 main
     :   statement+
     // todo: function definition statement
-    // temporaries:
-    |   processStatement+
+    |   litmusSpecificSyntax
     ;
 
-// Temporary: explicitly specify processes
-processStatement
-    :   'process' Identifier blockStatement
-    |   bugonStatement
+// Specific litmus-like statements: -------------------------------------
+
+litmusSpecificSyntax
+    :   initialWriteStatement? processStatement+ assertionStatement // litmus-like statement
     ;
-// Temporary: explicitly specify processes
-bugonStatement
-    :   'bug_on' '(' expression ')' ';'
+
+initialWriteStatement
+    :   '{' variableDeclarationStatement* '}'
     ;
+
+processStatement // todo: as function? in litmus thus.
+    :   'P' ProcessId blockStatement
+    ;
+
+assertionStatement
+    :   'exists' '(' assertionExpression ')' ';'
+    ;
+
+assertionExpression
+    :   '(' assertionOrExpression ')'
+    |   assertionOrExpression
+    ;
+
+assertionOrExpression
+    :   assertionAndExpression
+    |   assertionOrExpression (OrOr|DisjunctionOperator) assertionAndExpression
+    ;
+
+assertionAndExpression
+    :   assertion
+    |   assertionAndExpression (AndAnd|ConjunctionOperator) assertion
+    ;
+
+assertion
+    :   (ProcessId ':')? variableName Equals constant
+    ;
+
+// -----------------------------------------------------------------------
+
+// C minimal grammar:
 
 primaryExpression
     :   variableName
@@ -60,34 +90,28 @@ constant
 
 postfixExpression
     :   primaryExpression
-    |   postfixExpression '(' functionArgumentExpressionList? ')'
+    |   postfixExpression LeftBracket expression RightBracket
+    |   postfixExpression LeftParen argumentExpressionList? RightParen
+    |   postfixExpression (Dot | Arrow) Identifier
     |   postfixExpression (PlusPlus | MinusMinus)
     ;
 
-functionArgumentExpressionList
-    :   functionArgumentExpression
-    |   functionArgumentExpressionList ',' functionArgumentExpression
-    ;
-
-functionArgumentExpression
-    :   unaryOrNullaryExpression
+argumentExpressionList
+    :   assignmentExpression
+    |   argumentExpressionList ',' assignmentExpression
     ;
 
 unaryOrNullaryExpression
     :   postfixExpression
-    |   unaryOperator unaryOrNullaryExpression
+    |   (And|Asterisk|Plus|Minus|Tilde|Not|PlusPlus|MinusMinus) unaryOrNullaryExpression
     ;
 
-unaryOperator
-    :   (And|Asterisk|Plus|Minus|Tilde|Not|PlusPlus|MinusMinus)
-    ;
-
+// TODO: perhaps this rule is ineffective, remove it (operate on logicalOrExpression)
 binaryOrTernaryExpression
     :   multiplicativeExpression
     |   additiveExpression
     |   shiftExpression
     |   relationalExpression
-    |   equalityExpression
     |   andExpression
     |   exclusiveOrExpression
     |   inclusiveOrExpression
@@ -101,7 +125,6 @@ multiplicativeExpression
     |   multiplicativeExpression (Asterisk | Div | Mod) unaryOrNullaryExpression
     ;
 
-
 additiveExpression
     :   multiplicativeExpression
     |   additiveExpression (Plus | Minus) multiplicativeExpression
@@ -114,17 +137,12 @@ shiftExpression
 
 relationalExpression
     :   shiftExpression
-    |   relationalExpression (Less | LessEqual | Greater | GreaterEqual) shiftExpression
-    ;
-
-equalityExpression
-    :   relationalExpression
-    |   equalityExpression (Equals | NotEquals) relationalExpression
+    |   relationalExpression (Less | LessEqual | Greater | GreaterEqual | Equals | NotEquals) shiftExpression
     ;
 
 andExpression
-    :   equalityExpression
-    |   andExpression And equalityExpression
+    :   relationalExpression
+    |   andExpression And relationalExpression
     ;
 
 exclusiveOrExpression
@@ -168,22 +186,20 @@ rvalueExpression
 // todo: check syntax 'a = b = c = 3;'
 assignmentExpression
     :   rvalueExpression
-    |   lvalueExpression assignmentOperator assignmentExpression
-    // ternaryExpression as one of the most general expression definitions. better 'expression' ?
-    ;
-
-assignmentOperator
-    :   Assign
-    |   MultiplyAssign
-    |   DivideAssign
-    |   ModuloAssign
-    |   PlusAssign
-    |   MinusAssign
-    |   LeftShiftAssign
-    |   RightShiftAssign
-    |   AndAssign
-    |   XorAssign
-    |   OrAssign
+    |   lvalueExpression
+        (   Assign
+        |   MultiplyAssign
+        |   DivideAssign
+        |   ModuloAssign
+        |   PlusAssign
+        |   MinusAssign
+        |   LeftShiftAssign
+        |   RightShiftAssign
+        |   AndAssign
+        |   XorAssign
+        |   OrAssign
+        )
+        assignmentExpression
     ;
 
 variableDeclarationStatement
@@ -362,6 +378,12 @@ Directive
 
 // -- LEXER --
 
+// Litmus-specifix syntax:
+ProcessId
+    :   DigitSequence+
+    ;
+// END OF Litmus-specifix syntax
+
 Auto : 'auto';
 Break : 'break';
 Case : 'case';
@@ -442,6 +464,9 @@ Xor : '^';
 Not : '!';
 Tilde : '~';
 
+ConjunctionOperator : '/\\';
+DisjunctionOperator : '\\/';
+
 Question : '?';
 Colon : ':';
 Semicolon : ';';
@@ -466,7 +491,7 @@ Arrow : '->';
 Dot : '.';
 Ellipsis : '...';
 
-Identifier
+    Identifier
     :   IdentifierNondigit
         (   IdentifierNondigit
         |   Digit
@@ -744,6 +769,11 @@ Newline
 
 BlockComment
     :   '/*' .*? '*/'
+        -> skip
+    ;
+
+OcamlBlockComment
+    :   '(*' .*? '*)'
         -> skip
     ;
 

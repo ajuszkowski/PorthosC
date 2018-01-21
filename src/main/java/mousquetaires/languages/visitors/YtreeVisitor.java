@@ -1,76 +1,88 @@
 package mousquetaires.languages.visitors;
 
-import mousquetaires.languages.converters.toytree.cmin.temporaries.YTempEntity;
-import mousquetaires.languages.types.YXType;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
-import mousquetaires.languages.syntax.ytree.expressions.*;
-import mousquetaires.languages.syntax.ytree.expressions.invocation.YFunctionArgument;
-import mousquetaires.languages.syntax.ytree.expressions.invocation.YFunctionInvocationExpression;
-import mousquetaires.languages.syntax.ytree.signatures.YFunctionParameter;
-import mousquetaires.languages.syntax.ytree.statements.*;
-import mousquetaires.languages.syntax.ytree.statements.artificial.YBugonStatement;
-import mousquetaires.languages.syntax.ytree.statements.artificial.YProcess;
-import mousquetaires.languages.types.YXTypeName;
-import mousquetaires.languages.types.YXTypeSpecifier;
+import mousquetaires.languages.syntax.ytree.expressions.YConstant;
+import mousquetaires.languages.syntax.ytree.expressions.YExpression;
+import mousquetaires.languages.syntax.ytree.expressions.YTernaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
+import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
+import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
+import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
+import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
+import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerPostfixUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
+import mousquetaires.languages.syntax.ytree.specific.YPostludeStatement;
+import mousquetaires.languages.syntax.ytree.specific.YPreludeStatement;
+import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
+import mousquetaires.languages.syntax.ytree.specific.YVariableAssertion;
+import mousquetaires.languages.syntax.ytree.statements.YFunctionDefinitionStatement;
+import mousquetaires.languages.syntax.ytree.statements.YSequenceStatement;
+import mousquetaires.languages.syntax.ytree.statements.YStatement;
+import mousquetaires.languages.syntax.ytree.statements.labeled.*;
+import mousquetaires.types.ZType;
+import mousquetaires.types.ZTypeName;
+import mousquetaires.types.ZTypeSpecifier;
 
 
 public interface YtreeVisitor<T> {
 
     T visit(YSyntaxTree node);
 
-    T visit(YProcess node);
+    // -- Litmus-specific elements: ------------------------------------------------------------------------------------
 
-    T visit(YBugonStatement node);
+    T visit(YPreludeStatement node);
+    T visit(YProcessStatement node);
+    T visit(YPostludeStatement node);
+    T visit(YVariableAssertion node);
+
+    // -- END OF Litmus-specific elements ------------------------------------------------------------------------------
+
+    // general nodes:
+    T visit(YExpression node);
+    T visit(YStatement node);
+    T visit(YAssignee node);
 
     T visit(YConstant node);
 
-    T visit(YMemberAccess node);
-
-    T visit(YFunctionArgument node);
-
-    T visit(YFunctionInvocationExpression node);
-
-    T visit(YFunctionParameter node);
+    // accesses:
+    T visit(YIndexerExpression node);
+    T visit(YMemberAccessExpression node);
+    T visit(YInvocationExpression node);
 
     T visit(YFunctionDefinitionStatement node);
 
-    T visit(YUnaryExpression node);
+    // binary expressions:
+    T visit(YRelativeBinaryExpression node);
+    T visit(YLogicalBinaryExpression node);
+    T visit(YIntegerBinaryExpression node);
 
-    T visit(YUnaryExpression.Operator node);
-
-    T visit(YBinaryExpression node);
-
-    T visit(YBinaryExpression.Operator node);
+    // unary expressions:
+    T visit(YLogicalUnaryExpression node);
+    T visit(YPointerUnaryExpression node);
+    T visit(YIntegerPostfixUnaryExpression node);
 
     T visit(YTernaryExpression node);
 
     T visit(YAssignmentExpression node);
 
-    T visit(YAssignmentExpression.Operator node);
+    T visit(YSequenceStatement node);
 
     T visit(YLinearStatement node);
 
     T visit(YVariableDeclarationStatement node);
 
-    T visit(YXType node);
+    T visit(ZType node);
 
-    T visit(YXTypeName node);
+    T visit(ZTypeName node);
 
-    T visit(YXTypeSpecifier node);
-
-    //T visit(StorageClassSpecifier node);
-    //
-    //T visit(PrimitiveTypeDeclarator node);
-    //
-    //T visit(PrimitiveTypeSpecifier node);
+    T visit(ZTypeSpecifier node);
 
     T visit(YVariableRef node);
-
-    T visit(YStatement node);
-
-    T visit(YBlockStatement node);
-
-    T visit(YExpression node);
 
     T visit(YBranchingStatement node);
 
@@ -79,5 +91,5 @@ public interface YtreeVisitor<T> {
     T visit(YJumpStatement node);
 
     // Temp node:
-    T visit(YTempEntity node);
+    //T visit(YTempEntity node);
 }

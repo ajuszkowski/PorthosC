@@ -1,6 +1,6 @@
 package mousquetaires.utils.patterns;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 
 
 public abstract class Builder<T> {
@@ -10,6 +10,9 @@ public abstract class Builder<T> {
     public abstract T build();
 
     protected void finish() {
+        if (isBuilt()) {
+            throw new RuntimeException(getAlreadyFinishedMessage());
+        }
         isBuilt = true;
     }
 
@@ -18,7 +21,7 @@ public abstract class Builder<T> {
     }
 
     // TODO : check this method and re-implement other builders
-    protected <S> void add(S element, ImmutableSet.Builder<S> set) {
+    protected <S> void add(S element, ImmutableList.Builder<S> set) {
         if (isBuilt()) {
             throw new RuntimeException(getAlreadyFinishedMessage());
         }

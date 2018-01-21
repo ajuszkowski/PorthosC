@@ -1,24 +1,42 @@
 package mousquetaires.languages.syntax.xrepr;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
+import mousquetaires.languages.syntax.xrepr.processes.XParallelProcess;
+import mousquetaires.languages.syntax.xrepr.processes.XPostProcess;
+import mousquetaires.languages.syntax.xrepr.processes.XPreProcess;
 
 
-public class XProgram {
+public final class XProgram {
 
-    private ImmutableSet<XProcess> processes;
+    private final XPreProcess prelude;
+    private final ImmutableList<XParallelProcess> processes;
+    private final XPostProcess postlude;
 
-    public XProgram(ImmutableSet<XProcess> processes) {
+    XProgram(XPreProcess prelude, ImmutableList<XParallelProcess> processes, XPostProcess postlude) {
+        this.prelude = prelude;
         this.processes = processes;
+        this.postlude = postlude;
     }
 
+    public XPreProcess getPrelude() {
+        return prelude;
+    }
 
-    //public String name;
+    public ImmutableList<XParallelProcess> getProcesses() {
+        return processes;
+    }
+
+    public XPostProcess getPostlude() {
+        return postlude;
+    }
+
+    //public String postProcessId;
     //public Assert ass;
     //private List<XProcess> processes;
     //public MapSSA lastMap;
 
-    //public XProgram(String name) {
-    //    this.name = name;
+    //public XProgram(String postProcessId) {
+    //    this.postProcessId = postProcessId;
     //    this.processes = new ArrayList<>();
     //}
 
@@ -29,7 +47,7 @@ public class XProgram {
     //public String toString() {
     //
     //    ListIterator<XProcess> iter = processes.listIterator();
-    //    String output = name + "\n";
+    //    String output = postProcessId + "\n";
     //    while (iter.hasNext()) {
     //        XProcess next = iter.next();
     //        if(next instanceof Init) {
@@ -48,7 +66,7 @@ public class XProgram {
     //        XProcess t = iter.next();
     //        newProcesses.add(t.clone());
     //    }
-    //    XProgram newP = new XProgram(name);
+    //    XProgram newP = new XProgram(postProcessId);
     //    newP.setProcesses(newProcesses);
     //    return newP;
     //}

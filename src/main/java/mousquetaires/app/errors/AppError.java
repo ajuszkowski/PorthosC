@@ -16,13 +16,13 @@ public abstract class AppError {
 
     AppError(Severity severity, String message, String additionalInfo) {
         this.severity = severity;
-        this.message = getClass().getName() + ": " + StringUtils.notNull(message);
-        this.additionalInfo = StringUtils.notNull(additionalInfo);
+        this.message = getClass().getName() + ": " + StringUtils.nonNull(message);
+        this.additionalInfo = StringUtils.nonNull(additionalInfo);
     }
 
     AppError(Severity severity, Exception e) {
         this.severity = severity;
-        this.message = StringUtils.notNull(e.getMessage());
+        this.message = StringUtils.nonNull(e.getMessage());
         this.additionalInfo = ExceptionUtils.getStackTrace(e);
     }
 

@@ -1,7 +1,7 @@
 package mousquetaires.utils;
 
 public class StringUtils {
-    public static String notNull(String value) {
+    public static String nonNull(String value) {
         if (value == null) {
             return "";
         }

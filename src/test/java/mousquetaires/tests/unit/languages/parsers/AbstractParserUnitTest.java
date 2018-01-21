@@ -20,11 +20,10 @@ public abstract class AbstractParserUnitTest extends AbstractTest {
         try {
             File file = new File(filePath);
             ProgramLanguage language = ProgramExtensions.parseProgramLanguage(file.getName());
-            internalRepr = YtreeParser.parse(file, language);
+            return YtreeParser.parse(file, language);
         } catch (IOException e) {
             e.printStackTrace();
             throw new TestFailedException(e);
         }
-        return internalRepr;
     }
 }
