@@ -65,7 +65,7 @@ ext.antlr4 = [
 ]
 
 generateGrammarSource {
-    arguments = (["-visitor", "-listener", "-package", antlr4.resultPackage] + arguments)
+    arguments = (["-visitor", "-package", antlr4.resultPackage] + arguments)
     outputDirectory = file("${antlr4.generatedSourceDir}/${antlr4.resultPackage.replaceAll("\\.", "/")}")
 }
 

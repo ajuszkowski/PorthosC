@@ -16,10 +16,10 @@ class InputProgramParserFactory {
         CharStream charStream = FileUtils.getFileCharStream(programFile);
 
         switch (language) {
-            case Cmin: {
-                CminLexer lexer = new CminLexer(charStream);
+            case C11: {
+                C11Lexer lexer = new C11Lexer(charStream);
                 CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-                CminParser parser = new CminParser(tokenStream);
+                C11Parser parser = new C11Parser(tokenStream);
                 return parser.main();
             }
             //case Porthos: {

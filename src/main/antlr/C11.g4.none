@@ -30,9 +30,11 @@ grammar C11;
 
 
 // Entry point
-main
-    :   declaration
-    ;
+//main
+//    :   declaration
+//    |   compilationUnit
+//    |   statement
+//    ;
 
 primaryExpression
     :   Identifier
@@ -181,13 +183,10 @@ constantExpression
     :   conditionalExpression
     ;
 
-
-// Entry point?
 declaration
     :   declarationSpecifiers initDeclaratorList ';'
 	| 	declarationSpecifiers ';'
     |   staticAssertDeclaration
-    |   functionDefinition
     ;
 
 declarationSpecifiers
@@ -705,7 +704,7 @@ HexQuad
 Constant
     :   IntegerConstant
     |   FloatingConstant
-    //|   EnumerationConstant
+//    |   EnumerationConstant
     |   CharacterConstant
     ;
 

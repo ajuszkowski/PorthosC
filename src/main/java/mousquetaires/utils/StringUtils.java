@@ -7,4 +7,8 @@ public class StringUtils {
         }
         return value;
     }
+
+    public static String wrap(String value) {
+        return "`" + value + "'";
+    }
 }

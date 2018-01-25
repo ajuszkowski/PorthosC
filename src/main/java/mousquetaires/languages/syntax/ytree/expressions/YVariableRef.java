@@ -8,7 +8,7 @@ import mousquetaires.utils.YtreeUtils;
 import java.util.Iterator;
 import java.util.Objects;
 
-
+// TODO: NOTE!!! IN FUNCTION INVOCATION FUNC. NAME IS YVariableRef!
 public class YVariableRef implements YAssignee {
 
     // TODO: add kind
@@ -21,7 +21,7 @@ public class YVariableRef implements YAssignee {
     private final Kind kind = Kind.Local;
     private final String name;
 
-    protected YVariableRef(String name) {
+    public YVariableRef(String name) {
         // TODO: pass kind here also
         this.name = name;
     }

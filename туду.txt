@@ -1,0 +1,24 @@
++1. базовый визитор для трансляции в xrepr
++2. function call в синт дерево 
+
+// plan on Sunday 14.
+-> encoding of basic structures
+-> least documentation
+-> merge branch to master and answer Florian
+-> tests on parsing (as illustration for guys)
+-> save original code citations //coordinates
+
+// todo: cleanup
+3. Make all fields final and private.
+4. Don't allow subclasses to override methods. The simplest way to do this is to declare the class as final
+5. the class itself is declared final.
+6. расставить всем нодам final
+- getters+setters
+- снизить требования по версии джавы
+- изменить конструкторы, принимающие в аргументы билдер -- во время cleanup.
+- переделать типы, разделить Y и X
+
+- поправить грамматику
+- исправить ошибки
+- encoding
+- 

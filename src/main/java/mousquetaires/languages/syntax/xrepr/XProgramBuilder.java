@@ -90,10 +90,10 @@ public class XProgramBuilder extends Builder<XProgram> {
     public XBinaryOperationEvent emitComputationEvent(XOperator operator, XMemoryUnit leftOperand, XMemoryUnit rightOperand) {
         XLocalMemoryUnit left = leftOperand instanceof XLocalMemoryUnit
                 ? (XLocalMemoryUnit) leftOperand
-                : moveToLocalMemory((XSharedMemoryUnit) leftOperand);
+                : moveToLocalMemoryIfNecessary((XSharedMemoryUnit) leftOperand);
         XLocalMemoryUnit right = rightOperand instanceof XLocalMemoryUnit
                 ? (XLocalMemoryUnit) rightOperand
-                : moveToLocalMemory((XSharedMemoryUnit) rightOperand);
+                : moveToLocalMemoryIfNecessary((XSharedMemoryUnit) rightOperand);
         return currentBuilder.emitComputationEvent(operator, left, right);
     }
 
@@ -124,17 +124,24 @@ public class XProgramBuilder extends Builder<XProgram> {
                 return currentBuilder.emitMemoryEvent(destinationShared, sourceLocal);
             }
             if (sourceShared != null) {
-                XLocalMemoryUnit tempLocal = moveToLocalMemory(sourceShared);
+                XLocalMemoryUnit tempLocal = moveToLocalMemoryIfNecessary(sourceShared);
                 return currentBuilder.emitMemoryEvent(destinationShared, tempLocal);
             }
         }
         throw new IllegalStateException();
     }
 
-    public XLocalMemoryUnit moveToLocalMemory(XSharedMemoryUnit shared) {
-        XLocalMemoryUnit tempLocal = memoryManager.newTempLocalMemoryUnit();
-        currentBuilder.emitMemoryEvent(tempLocal, shared);
-        return tempLocal;
+    public XLocalMemoryUnit moveToLocalMemoryIfNecessary(XMemoryUnit sharedOrLocal) {
+        if (sharedOrLocal instanceof XSharedMemoryUnit) {
+            XSharedMemoryUnit shared = (XSharedMemoryUnit) sharedOrLocal;
+            XLocalMemoryUnit tempLocal = memoryManager.newTempLocalMemoryUnit();
+            currentBuilder.emitMemoryEvent(tempLocal, shared);
+            return tempLocal;
+        }
+        if (sharedOrLocal instanceof XLocalMemoryUnit) {
+            return (XLocalMemoryUnit) sharedOrLocal;
+        }
+        throw new IllegalArgumentException(sharedOrLocal.getClass().getName());
     }
 
     public XControlFlowEvent emitControlFlowEvent() {

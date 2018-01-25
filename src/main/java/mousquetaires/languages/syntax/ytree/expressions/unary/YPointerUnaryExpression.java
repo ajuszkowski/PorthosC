@@ -2,11 +2,12 @@ package mousquetaires.languages.syntax.ytree.expressions.unary;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
+import mousquetaires.languages.syntax.ytree.expressions.YMemoryLocation;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
 import mousquetaires.languages.visitors.YtreeVisitor;
 
 
-public class YPointerUnaryExpression extends YUnaryPrefixExpression implements YAssignee {
+public class YPointerUnaryExpression extends YUnaryPrefixExpression implements YAssignee, YMemoryLocation {
     public enum Kind implements YUnaryExpression.Kind {
         Reference,
         Dereference,

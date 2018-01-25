@@ -1,10 +1,7 @@
 package mousquetaires.languages.visitors;
 
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
-import mousquetaires.languages.syntax.ytree.expressions.YConstant;
-import mousquetaires.languages.syntax.ytree.expressions.YExpression;
-import mousquetaires.languages.syntax.ytree.expressions.YTernaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
+import mousquetaires.languages.syntax.ytree.expressions.*;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
@@ -45,6 +42,7 @@ public interface YtreeVisitor<T> {
     // general nodes:
     T visit(YExpression node);
     T visit(YStatement node);
+    T visit(YMemoryLocation node);
     T visit(YAssignee node);
 
     T visit(YConstant node);

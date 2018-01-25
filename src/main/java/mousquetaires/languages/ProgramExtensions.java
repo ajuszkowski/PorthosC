@@ -8,8 +8,8 @@ import java.util.HashMap;
 public class ProgramExtensions {
     private static final HashMap<String, ProgramLanguage> inputProgramExtensionsMap =
             new HashMap<>() {{
-                put("cmin", ProgramLanguage.Cmin);
-                put("c", ProgramLanguage.Cmin);
+                put("c11", ProgramLanguage.C11);
+                put("c", ProgramLanguage.C11);
                 //put("pts", ProgramLanguage.Porthos);
                 put("litmus", ProgramLanguage.Litmus);
             }};

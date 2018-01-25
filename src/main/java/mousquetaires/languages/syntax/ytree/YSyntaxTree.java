@@ -1,7 +1,6 @@
 package mousquetaires.languages.syntax.ytree;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.syntax.ytree.statements.YStatement;
 import mousquetaires.languages.visitors.YtreeVisitor;
 
 import java.util.Collection;
@@ -11,26 +10,26 @@ import java.util.List;
 
 public class YSyntaxTree implements YEntity {
 
-    private final ImmutableList<YStatement> roots;
+    private final ImmutableList<YEntity> roots;
 
-    public YSyntaxTree(ImmutableList<YStatement> roots) {
+    public YSyntaxTree(ImmutableList<YEntity> roots) {
         this.roots = roots;
     }
 
-    public YSyntaxTree(YStatement... statements) {
+    public YSyntaxTree(YEntity... statements) {
         this.roots = ImmutableList.copyOf(statements);
     }
 
-    public YSyntaxTree(Collection<YStatement> statements) {
+    public YSyntaxTree(Collection<YEntity> statements) {
         this.roots = ImmutableList.copyOf(statements);
     }
 
     @Override
-    public Iterator<YStatement> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         return roots.iterator();
     }
 
-    public List<YStatement> getRoots() {
+    public List<YEntity> getRoots() {
         return roots;
     }
 

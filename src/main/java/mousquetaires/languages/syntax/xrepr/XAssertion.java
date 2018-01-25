@@ -1,14 +1,14 @@
 package mousquetaires.languages.syntax.xrepr;
 
+import mousquetaires.languages.syntax.xrepr.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xrepr.memories.XMemoryUnit;
-import mousquetaires.languages.syntax.xrepr.memories.XValue;
 
 
 public class XAssertion implements XEntity {
     private final XMemoryUnit memoryUnit;
-    private final XValue value;
+    private final XLocalMemoryUnit value;
 
-    public XAssertion(XMemoryUnit memoryUnit, XValue value) {
+    public XAssertion(XMemoryUnit memoryUnit, XLocalMemoryUnit value) {
         this.memoryUnit = memoryUnit;
         this.value = value;
     }
@@ -17,7 +17,7 @@ public class XAssertion implements XEntity {
         return memoryUnit;
     }
 
-    public XValue getValue() {
+    public XLocalMemoryUnit getValue() {
         return value;
     }
 }

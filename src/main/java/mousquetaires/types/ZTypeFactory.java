@@ -16,8 +16,8 @@ public class ZTypeFactory {
 
     public static ZType getPrimitiveType(ZTypeName name, ZTypeSpecifier typeSpecifier, int pointerLevel) {
         if (typeSpecifier == null) {
-            return new ZType(name.toString(), pointerLevel);
+            return new ZType(name.getText(), pointerLevel);
         }
-        return new ZType(name.toString(), typeSpecifier, pointerLevel);
+        return new ZType(name.getText(), typeSpecifier, pointerLevel);
     }
 }

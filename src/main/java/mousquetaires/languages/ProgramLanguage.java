@@ -1,7 +1,7 @@
 package mousquetaires.languages;
 
 public enum ProgramLanguage {
-    Cmin,
+    C11,
     //Porthos,
     Litmus,
 }

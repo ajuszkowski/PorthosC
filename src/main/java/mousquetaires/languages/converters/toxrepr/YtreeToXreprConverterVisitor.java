@@ -8,12 +8,10 @@ import mousquetaires.languages.syntax.xrepr.XProgramBuilder;
 import mousquetaires.languages.syntax.xrepr.datamodels.DataModel;
 import mousquetaires.languages.syntax.xrepr.events.computation.XBinaryOperationEvent;
 import mousquetaires.languages.syntax.xrepr.events.computation.XOperator;
+import mousquetaires.languages.syntax.xrepr.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xrepr.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xrepr.memories.XValue;
-import mousquetaires.languages.syntax.ytree.expressions.YConstant;
-import mousquetaires.languages.syntax.ytree.expressions.YExpression;
-import mousquetaires.languages.syntax.ytree.expressions.YTernaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
+import mousquetaires.languages.syntax.ytree.expressions.*;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
@@ -78,9 +76,10 @@ class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
 
     @Override
     public XAssertion visit(YVariableAssertion node) {
-        XValue constant = visit(node.getRightExpression());
         XMemoryUnit memoryUnit = visit(node.getLeftExpression());
-        return new XAssertion(memoryUnit, constant);
+        XMemoryUnit value = visit(node.getRightExpression());
+        XLocalMemoryUnit localValue = programBuilder.moveToLocalMemoryIfNecessary(value);
+        return new XAssertion(memoryUnit, localValue);
     }
 
     // -- END OF Litmus-specific elements ------------------------------------------------------------------------------
@@ -88,6 +87,11 @@ class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
 
     @Override
     public XMemoryUnit visit(YExpression node) {
+        return (XMemoryUnit) super.visit(node);
+    }
+
+    @Override
+    public XMemoryUnit visit(YMemoryLocation node) {
         return (XMemoryUnit) super.visit(node);
     }
 

@@ -31,6 +31,6 @@ public class YAssertionStatement extends YPostludeStatement {
 
     @Override
     public String toString() {
-        return "exists( " + super.toString() + " )";
+        return "exists( " + expression + " )";
     }
 }

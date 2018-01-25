@@ -3,8 +3,6 @@ package mousquetaires.utils;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
-import mousquetaires.utils.exceptions.ytree.InvalidLvalueException;
 
 import java.util.Arrays;
 import java.util.Collections;

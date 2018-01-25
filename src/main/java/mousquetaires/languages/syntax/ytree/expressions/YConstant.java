@@ -12,12 +12,12 @@ import java.util.Iterator;
 import java.util.Objects;
 
 
-public class YConstant implements YExpression {
+public class YConstant implements YMemoryLocation {
 
     private final Object value;
     private final ZType type;
 
-    YConstant(Object value, ZType type) {
+    private YConstant(Object value, ZType type) {
         this.value = value;
         this.type = type;
     }
@@ -37,6 +37,9 @@ public class YConstant implements YExpression {
     public static YConstant fromValue(boolean value) {
         return new YConstant(value, ZTypeFactory.getPrimitiveType(ZTypeName.Bool));
     }
+    public static YConstant fromValue(float value) {
+        return new YConstant(value, ZTypeFactory.getPrimitiveType(ZTypeName.Float));
+    }
 
     // ... todo: others...
 
@@ -47,7 +50,17 @@ public class YConstant implements YExpression {
 
         // Integer:
         try {
-            fromValue(Integer.parseInt(text));
+            return fromValue(Integer.parseInt(text));
+        } catch (NumberFormatException e) {
+        }
+        // Float:
+        try {
+            return fromValue(Float.parseFloat(text));
+        } catch (NumberFormatException e) {
+        }
+        // Bool:
+        try {
+            return fromValue(Boolean.parseBoolean(text));
         } catch (NumberFormatException e) {
         }
 
@@ -75,7 +88,7 @@ public class YConstant implements YExpression {
 
     @Override
     public String toString() {
-        return value + ":" + type;
+        return "(" + type + ")" + value;
     }
 
     @Override

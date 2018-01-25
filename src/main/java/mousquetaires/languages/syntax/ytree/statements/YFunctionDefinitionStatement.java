@@ -1,6 +1,7 @@
 package mousquetaires.languages.syntax.ytree.statements;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
+import mousquetaires.languages.syntax.ytree.definitions.YDefinition;
 import mousquetaires.languages.visitors.YtreeVisitor;
 import mousquetaires.types.signatures.ZMethodSignature;
 import mousquetaires.utils.YtreeUtils;
@@ -8,7 +9,7 @@ import mousquetaires.utils.YtreeUtils;
 import java.util.Iterator;
 
 
-public class YFunctionDefinitionStatement extends YStatement {
+public class YFunctionDefinitionStatement implements YDefinition {
 
     private final ZMethodSignature signature;
     private final YSequenceStatement body;

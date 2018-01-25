@@ -1,21 +1,14 @@
 package mousquetaires.languages.syntax.ytree.specific;
 
-import mousquetaires.languages.syntax.ytree.expressions.YConstant;
+import mousquetaires.languages.syntax.ytree.expressions.YMemoryLocation;
 import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
 
 
 public class YVariableAssertion extends YRelativeBinaryExpression {
 
-    public final Integer processId;
-
-    public YVariableAssertion(Integer processId, YVariableRef variable, YConstant value) {
+    public YVariableAssertion(YVariableRef variable, YMemoryLocation value) {
         super(Kind.Equals, variable, value);
-        this.processId = processId;
-    }
-
-    public YVariableAssertion(YVariableRef variable, YConstant value) {
-        this(null, variable, value);
     }
 
     @Override
@@ -24,13 +17,13 @@ public class YVariableAssertion extends YRelativeBinaryExpression {
     }
 
     @Override
-    public YConstant getRightExpression() {
-        return (YConstant) super.getRightExpression();
+    public YMemoryLocation getRightExpression() {
+        return (YMemoryLocation) super.getRightExpression();
     }
 
     @Override
     public YVariableAssertion copy() {
-        return new YVariableAssertion(processId, getLeftExpression(), getRightExpression());
+        return new YVariableAssertion(getLeftExpression(), getRightExpression());
     }
 
 }

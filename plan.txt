@@ -1,0 +1,4 @@
+kernel: ориентироваться на ссылки из links.txt
+- include/rcupdate.h
+- ACCESS_ONCE - in linux/compiler.h
+- kernel/mutex.c

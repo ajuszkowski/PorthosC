@@ -20,10 +20,7 @@ public enum ZTypeName implements YEntity {
     Bool,
     ;
 
-
-
-    @Override
-    public String toString() {
+    public String getText() {
         final StringBuilder builder = new StringBuilder();
         String space = "";
         for (char c : this.name().toCharArray()) {
@@ -35,6 +32,11 @@ public enum ZTypeName implements YEntity {
             }
         }
         return builder.toString();
+    }
+
+    @Override
+    public String toString() {
+        return getText();
     }
 
     // TODO: refactor type system, it should be separate intsance, with no relations to X and Y
