@@ -26,6 +26,7 @@
 
 /** C 2011 grammar built from the C11 Spec */
 /** source: https://github.com/antlr/grammars-v4/ */
+// checked with accordance to draft ISO/IEC 9899:201x http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf
 
 grammar C11;
 
@@ -37,12 +38,9 @@ main
 primaryExpression
     :   Identifier
     |   Constant
-    |   StringLiteral+
+    |   StringLiteral+  // TODO: NOTE: In C11 draft, there is just 'StringLiteral'
     |   '(' expression ')'
     |   genericSelection
-    |   '__extension__'? '(' compoundStatement ')' // Blocks (GCC extension)
-    |   '__builtin_va_arg' '(' unaryExpression ',' typeName ')'
-    |   '__builtin_offsetof' '(' typeName ',' unaryExpression ')'
     ;
 
 genericSelection
@@ -69,8 +67,6 @@ postfixExpression
     |   postfixExpression '--'
     |   '(' typeName ')' '{' initializerList '}'
     |   '(' typeName ')' '{' initializerList ',' '}'
-    |   '__extension__' '(' typeName ')' '{' initializerList '}'
-    |   '__extension__' '(' typeName ')' '{' initializerList ',' '}'
     ;
 
 argumentExpressionList
@@ -86,7 +82,6 @@ unaryExpression
     |   'sizeof' unaryExpression
     |   'sizeof' '(' typeName ')'
     |   '_Alignof' '(' typeName ')'
-    |   '&&' Identifier // GCC extension address of label
     ;
 
 unaryOperator
@@ -96,8 +91,6 @@ unaryOperator
 castExpression
     :   unaryExpression
     |   '(' typeName ')' castExpression
-    |   '__extension__' '(' typeName ')' castExpression
-    |   DigitSequence // for
     ;
 
 multiplicativeExpression
@@ -165,7 +158,6 @@ conditionalExpression
 assignmentExpression
     :   conditionalExpression
     |   unaryExpression assignmentOperator assignmentExpression
-    |   DigitSequence // for
     ;
 
 assignmentOperator
@@ -181,9 +173,10 @@ constantExpression
     :   conditionalExpression
     ;
 
+// Declarations
+
 declaration
-    :   declarationSpecifiers initDeclaratorList ';'
-	| 	declarationSpecifiers ';'
+    :   declarationSpecifiers initDeclaratorList? ';'
     |   staticAssertDeclaration
     ;
 
@@ -233,16 +226,11 @@ typeSpecifier
     |   'signed'
     |   'unsigned'
     |   '_Bool'
-    |   '_Complex'
-    |   '__m128'
-    |   '__m128d'
-    |   '__m128i')
-    |   '__extension__' '(' ('__m128' | '__m128d' | '__m128i') ')'
+    |   '_Complex')
     |   atomicTypeSpecifier
     |   structOrUnionSpecifier
     |   enumSpecifier
     |   typedefName
-    |   '__typeof__' '(' constantExpression ')' // GCC extension
     ;
 
 structOrUnionSpecifier
@@ -312,12 +300,8 @@ typeQualifier
     ;
 
 functionSpecifier
-    :   ('inline'
+    :   'inline'
     |   '_Noreturn'
-    |   '__inline__' // GCC extension
-    |   '__stdcall')
-    |   gccAttributeSpecifier
-    |   '__declspec' '(' Identifier ')'
     ;
 
 alignmentSpecifier
@@ -326,7 +310,7 @@ alignmentSpecifier
     ;
 
 declarator
-    :   pointer? directDeclarator gccDeclaratorExtension*
+    :   pointer? directDeclarator
     ;
 
 directDeclarator
@@ -338,41 +322,17 @@ directDeclarator
     |   directDeclarator '[' typeQualifierList? '*' ']'
     |   directDeclarator '(' parameterTypeList ')'
     |   directDeclarator '(' identifierList? ')'
-    |   Identifier ':' DigitSequence  // bit field
-    ;
-
-gccDeclaratorExtension
-    :   '__asm' '(' StringLiteral+ ')'
-    |   gccAttributeSpecifier
-    ;
-
-gccAttributeSpecifier
-    :   '__attribute__' '(' '(' gccAttributeList ')' ')'
-    ;
-
-gccAttributeList
-    :   gccAttribute (',' gccAttribute)*
-    |   // empty
-    ;
-
-gccAttribute
-    :   ~(',' | '(' | ')') // relaxed def for "identifier or reserved word"
-        ('(' argumentExpressionList? ')')?
-    |   // empty
-    ;
-
-nestedParenthesesBlock
-    :   (   ~('(' | ')')
-        |   '(' nestedParenthesesBlock ')'
-        )*
     ;
 
 pointer
-    :   '*' typeQualifierList?
-    |   '*' typeQualifierList? pointer
-    |   '^' typeQualifierList? // Blocks language extension
-    |   '^' typeQualifierList? pointer // Blocks language extension
+    :   ('*' | '&') typeQualifierList?
+    |   ('*' | '&') typeQualifierList? pointer
     ;
+// NOTE: Original C11 standard rule:
+//pointer
+//    :   '*' typeQualifierList?
+//    |   '*' typeQualifierList? pointer
+//    ;
 
 typeQualifierList
     :   typeQualifier
@@ -405,21 +365,22 @@ typeName
 
 abstractDeclarator
     :   pointer
-    |   pointer? directAbstractDeclarator gccDeclaratorExtension*
+    |   pointer? directAbstractDeclarator
     ;
 
+// see (6.7.7)
 directAbstractDeclarator
-    :   '(' abstractDeclarator ')' gccDeclaratorExtension*
+    :   '(' abstractDeclarator ')'
     |   '[' typeQualifierList? assignmentExpression? ']'
     |   '[' 'static' typeQualifierList? assignmentExpression ']'
     |   '[' typeQualifierList 'static' assignmentExpression ']'
     |   '[' '*' ']'
-    |   '(' parameterTypeList? ')' gccDeclaratorExtension*
+    |   '(' parameterTypeList? ')'
     |   directAbstractDeclarator '[' typeQualifierList? assignmentExpression? ']'
     |   directAbstractDeclarator '[' 'static' typeQualifierList? assignmentExpression ']'
     |   directAbstractDeclarator '[' typeQualifierList 'static' assignmentExpression ']'
     |   directAbstractDeclarator '[' '*' ']'
-    |   directAbstractDeclarator '(' parameterTypeList? ')' gccDeclaratorExtension*
+    |   directAbstractDeclarator '(' parameterTypeList? ')'
     ;
 
 typedefName
@@ -455,6 +416,8 @@ staticAssertDeclaration
     :   '_Static_assert' '(' constantExpression ',' StringLiteral+ ')' ';'
     ;
 
+// Statements
+
 statement
     :   labeledStatement
     |   compoundStatement
@@ -462,7 +425,6 @@ statement
     |   selectionStatement
     |   iterationStatement
     |   jumpStatement
-    |   ('__asm' | '__asm__') ('volatile' | '__volatile__') '(' (logicalOrExpression (',' logicalOrExpression)*)? (':' (logicalOrExpression (',' logicalOrExpression)*)?)* ')' ';'
     ;
 
 labeledStatement
@@ -500,6 +462,7 @@ iterationStatement
     |   For '(' forCondition ')' statement
     ;
 
+// in C11 standard:
 //    |   'for' '(' expression? ';' expression?  ';' forUpdate? ')' statement
 //    |   For '(' declaration  expression? ';' expression? ')' statement
 
@@ -523,8 +486,9 @@ jumpStatement
     |   'continue' ';'
     |   'break' ';'
     |   'return' expression? ';'
-    |   'goto' unaryExpression ';' // GCC extension
     ;
+
+// External definitions:
 
 compilationUnit
     :   translationUnit? EOF
@@ -538,10 +502,11 @@ translationUnit
 externalDeclaration
     :   functionDefinition
     |   declaration
-    |   ';' // stray ;
     ;
 
 functionDefinition
+    // in C11 standard: 'declarationSpecifiers declarator declarationList? compoundStatement'
+    //:   declarationSpecifiers? declarator declarationList? compoundStatement
     :   declarationSpecifiers? declarator declarationList? compoundStatement
     ;
 
