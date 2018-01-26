@@ -31,19 +31,13 @@ import dartagnan.PorthosParser;
 import dartagnan.program.Program;
 import dartagnan.wmm.Domain;
 import dartagnan.wmm.Wmm;
-import dartagnan.wmm.BasicRelation;
 import dartagnan.wmm.CandidateAxiom;
-import dartagnan.wmm.RelComposition;
-import dartagnan.wmm.RelInterSect;
-import dartagnan.wmm.RelMinus;
-import dartagnan.wmm.RelTrans;
-import dartagnan.wmm.RelTransRef;
-import dartagnan.wmm.RelUnion;
-import dartagnan.wmm.Relation;
+import dartagnan.wmm.CandidateModel;
+import dartagnan.wmm.Consistent;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Stack;
 
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
@@ -54,7 +48,9 @@ import org.apache.commons.cli.*;
 @SuppressWarnings("deprecation")
 public class Aramis {
 
-    private static final Logger log = Logger.getLogger(Aramis.class.getName());
+    private static final Logger Log = Logger.getLogger(Aramis.class.getName());
+    private static CandidateAxiom[] firstCandidates;
+    private static CandidateAxiom[] lastNegCandidates;
 
     private static Program parseProgramFile(String inputFilePath, String target) throws IOException {
         File file = new File(inputFilePath);
@@ -82,18 +78,21 @@ public class Aramis {
         p.compile(target, false, true);
         return p;
     }
-    private static int unchecked = 0;
-    private static final ArrayList<CandidateAxiom> candidates = new ArrayList<>();
-    private static ArrayList<Program> posPrograms;
-    private static ArrayList<Program> negPrograms;
+    private static final ListOfRels candidates = new ListOfRels();
+    public static ArrayList<Program> posPrograms;
+    public static ArrayList<Program> negPrograms;
     private static ArrayList<Solver> posSolvers;
     private static ArrayList<Solver> negSolvers;
-    private static HashMap<Program, Solver> solvers = new HashMap<>();
+    private static final HashMap<Program, Solver> solvers = new HashMap<>();
     private static final Context ctx = new Context();
     private static int[] current;
-    private static Wmm currentCandidate;
+    private static Wmm ModelCandidate;
+    private static CandidateModel model=new CandidateModel();
+    //private static ArrayList<CandidateAxiom> currentAxioms;
 
     /**
+     *
+     * The main sketch based synthesis algorithm.
      *
      * @param unchecked index of the first unchecked candidate
      * @param end the the last checked index+1
@@ -103,7 +102,7 @@ public class Aramis {
     private static boolean CheckingCandidates(int unchecked, int end, int currentAxiom) {
         //if we have set all candidates
         if (currentAxiom < 0) {
-            return checkCurrent();
+            return checkStaticCurrent();
         }
         //if we have not enough candidates for the axioms left
         if (end - unchecked < currentAxiom + 1) {
@@ -123,129 +122,49 @@ public class Aramis {
         return temp;
     }
 
-    private static void add(Relation rel) {
-        CandidateAxiom ax = new CandidateAxiom(rel);
-        ax.consistent = checkCandidate(ax);
-        candidates.add(ax);
-        log.fine("Adding and Checking" + rel.getName()+". Consistent: "+ax.consistent);
-    }
-    
-        private static void add(Relation rel, HashMap<Program, Boolean> map) {
-        CandidateAxiom ax = new CandidateAxiom(rel);
-        ax.consProg=map;
-        ax.consistent = checkCandidate(ax);
-        candidates.add(ax);
-        log.fine("Adding and Checking" + rel.getName()+". Consistent: "+ax.consistent);
-    }
-
-    private static void add(Relation rel, boolean cons) {
-        CandidateAxiom ax = new CandidateAxiom(rel);
-        ax.consistent = cons;
-        candidates.add(ax);
-        log.fine("Adding " + rel.getName() + ", Consistent: " + cons);
-    }
-
-    private static void addCandidates() {
-        int oldsize = candidates.size();
-        for (int j = unchecked; j < oldsize; j++) {
-            Relation r1 = candidates.get(j).getRel();
-            //candidates.get(j).consProg.fir
-            boolean consr1 = candidates.get(j).consistent;
-            Map<Program, Boolean> r1consProg = candidates.get(j).consProg;
-            if (!(r1 instanceof RelTransRef)) {
-                //add(new RelTransRef(r1), consr1);
-            }
-            if (!(r1 instanceof RelTransRef) && !(r1 instanceof RelTrans)) {
-                //add(new RelTrans(r1), consr1);
-            }
-            if (!(r1 instanceof RelMinus)) {
-                add(new RelMinus(r1, new BasicRelation("WR")), consr1);
-            }
-
-            for (int i = 0; i < j; i++) {
-                //       if(i!=j){
-                Relation r2 = candidates.get(i).getRel();
-                boolean consr2 = candidates.get(i).consistent;
-                Map<Program, Boolean> r2consProg = candidates.get(i).consProg;
-
-                //unions are always added from the left    
-                if (!(r2 instanceof RelUnion)) {
-                    if (!consr1 || !consr2) {
-                        
-                        add(new RelUnion(r1, r2), false);
+    /**
+     * Checks which Negs fail ax and updates the pointer.
+     *
+     * @param ax
+     */
+    protected static void computeNegs(CandidateAxiom ax) {
+        if (ax.consistent) {
+            for (int negPr = 0; negPr < negPrograms.size(); negPr++) {
+                Program negProgram = negPrograms.get(negPr);
+                if (!checkCandidate(ax, negProgram)) {
+                    ax.neg[negPr]=Consistent.INCONSISTENT;
+                    ax.relevant = true;
+                    if (firstCandidates[negPr] == null) {
+                        firstCandidates[negPr] = ax;
                     } else {
-                        add(new RelUnion(r1, r2));
+                        lastNegCandidates[negPr].next[negPr]=ax;
                     }
+                    lastNegCandidates[negPr] = ax;
+                } else{
+                    ax.neg[negPr]= Consistent.CONSISTENT;
                 }
-                boolean unionCons = candidates.get(candidates.size() - 1).consistent;
-                HashMap<Program, Boolean> unionProgCons =candidates.get(candidates.size() - 1).consProg;
-
-                //intersections are always added from the left    
-                if (!(r2 instanceof RelInterSect)) {
-                    if (consr1 && consr2) {
-                        add(new RelInterSect(r1, r2), true);
-                    } else {
-                        HashMap<Program, Boolean> tempmap =new HashMap<>(posPrograms.size());
-                        for (Map.Entry<Program, Boolean> entry : r2consProg.entrySet()) {
-                            Program key = entry.getKey();
-                            Boolean value = entry.getValue();
-                            if(value=Boolean.TRUE){
-                                if(r1consProg.get(key)==Boolean.TRUE)
-                                    tempmap.put(key, Boolean.TRUE);
-                            }
-                        }
-                        add(new RelInterSect(r1, r2),tempmap);
-                    }
-                }
-                boolean intersectCons = candidates.get(candidates.size() - 1).consistent;
-
-                if (!(r2 instanceof RelComposition)) {
-                    if (unionCons) {
-                        add(new RelComposition(r1, r2), true);
-                        add(new RelComposition(r2, r1), true);
-
-                    } else if (!intersectCons) {
-                        add(new RelComposition(r1, r2), false);//add unionProgCons
-                        add(new RelComposition(r2, r1), false);//add unionProgCons
-                    } else {
-                        add(new RelComposition(r1, r2));
-                        add(new RelComposition(r2, r1));
-                    }
-                }
-                //  }
             }
         }
-        unchecked = oldsize;
-    }
-
-    private static void addBasicrels() {
-        add(new BasicRelation("co"));
-        add(new BasicRelation("po"));
-        add(new BasicRelation("fr"));
-        add(new BasicRelation("rf"));
-        //add(new BasicRelation("poloc"));
-        //add(new BasicRelation("mfence"));
-        //add(new BasicRelation("rfe"));
-        //add(new BasicRelation("WR")));
-
     }
 
     public static void main(String[] args) throws Z3Exception, IOException {
-        log.setLevel(Level.FINEST);
+        Log.setLevel(Level.FINEST);
         ConsoleHandler handler = new ConsoleHandler();
         ctx.setPrintMode(Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL);
 
-        // PUBLISH this level
+        // Publish this level
         handler.setLevel(Level.FINEST);
-        log.addHandler(handler);
-        log.info("Starting...");
+        Log.addHandler(handler);
+        Log.info("Starting...");
+
+        //Command line options:
         Options options = new Options();
 
-        Option pos = new Option("p", "positive", true, "Directory of program files that should pass the reachability src.mousquetaires.tests");
+        Option pos = new Option("p", "positive", true, "Directory of program files that should pass the reachability tests");
         pos.setRequired(true);
         options.addOption(pos);
 
-        Option neg = new Option("n", "negative", true, "Directory of program files that should fail the reachability src.mousquetaires.tests");
+        Option neg = new Option("n", "negative", true, "Directory of program files that should fail the reachability tests");
         neg.setRequired(true);
         options.addOption(neg);
 
@@ -278,6 +197,8 @@ public class Aramis {
             System.exit(0);
             return;
         }
+
+        //parse pos tests
         File positiveDir = new File(cmd.getOptionValue("positive"));
         posPrograms = new ArrayList<>(positiveDir.listFiles().length);
         posSolvers = new ArrayList<>(positiveDir.listFiles().length);
@@ -285,10 +206,10 @@ public class Aramis {
             String string = listFile.getPath();
 
             if (!string.endsWith("pts") && !string.endsWith("litmus")) {
-                log.warning("Unrecognized program format for " + string);
+                Log.warning("Unrecognized program format for " + string);
 
             } else {
-                log.fine("Positive litmus test: " + string);
+                Log.fine("Positive litmus test: " + string);
                 Program p = parseProgramFile(string, target);
                 posPrograms.add(p);
                 solvers.put(p, ctx.mkSolver());
@@ -302,15 +223,16 @@ public class Aramis {
 
         }
 
+        //parse neg tests
         File negativeDir = new File(cmd.getOptionValue("negative"));
         negPrograms = new ArrayList<>(negativeDir.listFiles().length);
         for (File listFile : negativeDir.listFiles()) {
             String string = listFile.getPath();
             if (!string.endsWith("pts") && !string.endsWith("litmus")) {
-                log.warning("Unrecognized program format for " + string);
+                Log.warning("Unrecognized program format for " + string);
 
             } else {
-                log.fine("Negative litmus test: " + string);
+                Log.fine("Negative litmus test: " + string);
                 Program p = parseProgramFile(string, target);
                 negPrograms.add(p);
                 solvers.put(p, ctx.mkSolver());
@@ -323,54 +245,113 @@ public class Aramis {
             }
 
         }
+        
+        firstCandidates=new CandidateAxiom[negPrograms.size()];
+        lastNegCandidates=new CandidateAxiom[negPrograms.size()];
 
+        //Sketch based synthesis:
         if (cmd.hasOption("ax")) {
             int nrOfAxioms = Integer.parseInt(cmd.getOptionValue("ax"));
             current = new int[nrOfAxioms];
-            log.fine("Axiom: " + nrOfAxioms + ". Pos: " + posPrograms.size() + ". Neg: " + negPrograms.size());
-            addBasicrels();
+            Log.log(Level.FINE, "Axiom: {0}. Pos: {1}. Neg: {2}", new Object[]{nrOfAxioms, posPrograms.size(), negPrograms.size()});
+            candidates.addBasicrels();
             boolean temp = false;
             while (!temp) {
-                if (CheckingCandidates(unchecked, candidates.size(), current.length - 1)) {
-                    System.out.println("Found Model: " + currentCandidate.write());
-                    log.info("Number of enumerated relations: "+candidates.size());
+                if (CheckingCandidates(candidates.unchecked, candidates.size(), current.length - 1)) {
+                    System.out.println("Found Model: " + ModelCandidate.write());
+                    Log.log(Level.INFO, "Number of enumerated relations: {0}", candidates.size());
                     temp = true;
                 } else {
-
-                    addCandidates();
+                    //expand list:
+                    candidates.addCandidates();
                 }
             }
-        } else {
-            log.fine("Pos: " + posPrograms.size() + ". Neg: " + negPrograms.size());
-            addBasicrels();
+        } //Dynamic synthesis:
+        else {
+            //currentAxioms = new ArrayList<CandidateAxiom>(negPrograms.size());
+            Log.log(Level.WARNING, "Dynamic Synthesis:  Pos: {0}. Neg: {1}", new Object[]{posPrograms.size(), negPrograms.size()});
+            candidates.addBasicrels();
             boolean temp = false;
+            //repeatedly check and expand list:
             while (!temp) {
-                if (CheckingCandidates(unchecked, candidates.size(), current.length - 1)) {
-                    System.out.println("Found Model: " + currentCandidate.write());
-                    temp = true;
-                } else {
-
-                    addCandidates();
+                //use all new relations as potential starting points for dyn. synthesis
+                for (int startingpoint = candidates.size()-1; startingpoint >= candidates.unchecked; startingpoint--) {
+                    CandidateAxiom ax = candidates.get(startingpoint);
+                    //only use relations that pass all POS and fail at least one NEG
+                    if (ax.consistent && ax.relevant) {
+                        model.push(ax);
+                        //try out all relevant models with that relation:
+                        if (dynamicSynthesis(startingpoint)) {
+                            System.out.println("Found Model: " + ModelCandidate.write());
+                            Log.log(Level.INFO, "Number of enumerated relations: {0}", candidates.size());
+                            temp = true;
+                        } else {
+                            //get the stack empty again:
+                            model.pop();
+                        }
+                    }
+                }
+                //expand list:
+                if (!temp) {
+                    candidates.addCandidates();
                 }
             }
 
         }
     }
 
-    private static boolean checkCandidate(CandidateAxiom ax) {
+    /**
+     * 
+     * @param startingpoint 
+     * @return 
+     */
+    private static boolean dynamicSynthesis(int startingpoint) {
+        int firstUncovered=model.getNextPassingNeg();
+        if (firstUncovered >= negPrograms.size()) {
+            return checkDynamicCurrent();
+        }
+        CandidateAxiom addingax = firstCandidates[firstUncovered];
+        while (addingax != null) {
+            if(addingax.position>=startingpoint) return false;
+            if(!model.redundand(addingax)){
+            model.push(addingax);
+            if (dynamicSynthesis(startingpoint)) {
+                return true;
+            }
+            model.pop();
+            }
+            addingax = addingax.next[firstUncovered];
+        }
+        return false;
+    }
+
+    /**
+     * Checks ax for consistency against all progs.
+     *
+     * @param ax
+     * @return true if all pos pass and all neg fail
+     */
+    protected static boolean checkCandidate(CandidateAxiom ax) {
         for (Program posProgram : posPrograms) {
             if (!Objects.equals(ax.consProg.get(posProgram), Boolean.TRUE)) {
                 if (!checkCandidate(ax, posProgram)) {
-                    ax.consProg.put(posProgram, Boolean.FALSE);
+                    ax.consistent = false;
                     return false;
-                } else {
-                    ax.consProg.put(posProgram, Boolean.TRUE);
                 }
             }
         }
+        ax.consistent = true;
         return true;
     }
+    
 
+    /**
+     * Checks ax for consistency against the given prog.
+     *
+     * @param ax
+     * @param p
+     * @return
+     */
     private static boolean checkCandidate(CandidateAxiom ax, Program p) {
         Wmm tempmodel = new Wmm();
         tempmodel.addAxiom(ax);
@@ -380,15 +361,22 @@ public class Aramis {
         s.add(tempmodel.Consistent(p, ctx));
         Status sat = s.check();
         s.pop();
+        ax.consProg.put(p, sat == Status.SATISFIABLE);
         return (sat == Status.SATISFIABLE);
     }
 
-    private static boolean checkCurrent() {
-        currentCandidate = new Wmm();
+    /**
+     * Sketch based synthesis: Checks the current model for consistency. TODO:
+     * make sure some preprocessed neg cases get left out.
+     *
+     * @return
+     */
+    private static boolean checkStaticCurrent() {
+        ModelCandidate = new Wmm();
         for (int i : current) {
-            currentCandidate.addAxiom(candidates.get(i));
+            ModelCandidate.addAxiom(candidates.get(i));
         }
-        log.fine("Checking " + currentCandidate.write());
+        Log.fine("Checking " + ModelCandidate.write());
         for (Program p : negPrograms) {
             //check if p is already knwon to be inconsistent with one of the axioms, if so we can skip it.
             boolean cons = true;
@@ -398,11 +386,11 @@ public class Aramis {
                 }
             }
             if (cons) {
-                log.finer("Checking neg " + p.name);
+                Log.finer("Checking neg " + p.name);
                 Solver s = solvers.get(p);
                 s.push();
-                s.add(currentCandidate.encode(p, ctx));
-                s.add(currentCandidate.Consistent(p, ctx));
+                s.add(ModelCandidate.encode(p, ctx));
+                s.add(ModelCandidate.Consistent(p, ctx));
                 Status sat = s.check();
                 s.pop();
                 if (sat == Status.SATISFIABLE) {
@@ -412,11 +400,11 @@ public class Aramis {
 
         }
         for (Program p : posPrograms) {
-            log.finer("Checking pos " + p.name);
+            Log.finer("Checking pos " + p.name);
             Solver s = solvers.get(p);
             s.push();
-            s.add(currentCandidate.encode(p, ctx));
-            s.add(currentCandidate.Consistent(p, ctx));
+            s.add(ModelCandidate.encode(p, ctx));
+            s.add(ModelCandidate.Consistent(p, ctx));
             Status sat = s.check();
             s.pop();
             if (sat != Status.SATISFIABLE) {
@@ -425,6 +413,28 @@ public class Aramis {
 
         }
         return true;
+    }
 
+    /**
+     * Dynamic synthesis: Checks the current model for consistency.
+     *
+     * @return true if all POS tests pass.
+     */
+    private static boolean checkDynamicCurrent() {
+        Log.log(Level.FINE, "Checking {0}", model.write());
+        for (Program p : posPrograms) {
+            Log.log(Level.FINER, "Checking pos {0}", p.name);
+            Solver s = solvers.get(p);
+            s.push();
+            s.add(model.encode(p, ctx));
+            s.add(model.Consistent(p, ctx));
+            Status sat = s.check();
+            s.pop();
+            if (sat != Status.SATISFIABLE) {
+                return false;
+            }
+
+        }
+        return true;
     }
 }

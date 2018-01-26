@@ -54,7 +54,7 @@ public class Wmm {
     }
        
     
-    private Vector<Axiom> axioms=new Vector<>();
+    protected Vector<Axiom> axioms=new Vector<>();
     private Vector<Relation> namedrels=new Vector<>();
     
     public void addAxiom(Axiom ax){
