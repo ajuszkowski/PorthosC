@@ -11,34 +11,34 @@ public abstract class Builder<T> {
     public abstract T build();
 
     protected void finish() {
-        if (isBuilt()) {
+        if (isBuilt) {
             throw new BuilderException(getAlreadyFinishedMessage());
         }
         isBuilt = true;
     }
 
-    protected boolean isBuilt() {
-        return isBuilt;
+    // TODO : check this method and re-implement other builders
+    protected <S> void add(S element, ImmutableList.Builder<S> collection) {
+        throwIfAlreadyBuilt();
+        collection.add(element);
     }
 
-    // TODO : check this method and re-implement other builders
-    protected <S> void add(S element, ImmutableList.Builder<S> set) {
+    protected <S> void addAll(Iterable<S> from, ImmutableList.Builder<S> to) {
         throwIfAlreadyBuilt();
-        set.add(element);
+        to.addAll(from);
     }
 
     protected void throwIfAlreadyBuilt() {
-        if (isBuilt()) {
+        if (isBuilt) {
             throw new BuilderException(getAlreadyFinishedMessage());
         }
     }
 
-    protected final String getAlreadyFinishedMessage() {
+    private final String getAlreadyFinishedMessage() {
         return getClass().getName() + " has already finished.";
     }
 
-    protected final String getNotYetFinishedMessage() {
+    private final String getNotYetFinishedMessage() {
         return getClass().getName() + " is not yet finished.";
     }
-
 }

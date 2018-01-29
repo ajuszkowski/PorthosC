@@ -44,10 +44,4 @@ public class YLogicalUnaryExpression extends YUnaryExpression {
     public YEntity copy() {
         return new YLogicalUnaryExpression(getKind(), getExpression());
     }
-
-    @Override
-    public String toString() {
-        return "" + getKind() + getExpression();
-    }
-
 }

@@ -1,26 +1,30 @@
 package mousquetaires.languages.syntax.ytree.expressions;
 
+import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.utils.YtreeUtils;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 
 
 public abstract class YMultiExpression implements YExpression {
 
-    private final YExpression[] elements;
+    private final ImmutableList<YExpression> elements;
 
-    public YMultiExpression(YExpression... arguments) {
-        this.elements = arguments;
+    public YMultiExpression(YExpression... elements) {
+        this.elements = ImmutableList.copyOf(elements);
     }
 
-    protected YMultiExpression(Collection<YExpression> arguments) {
-        this.elements = arguments.toArray(new YExpression[0]);
+    protected YMultiExpression(ImmutableList<YExpression> elements) {
+        this.elements = elements;
     }
 
-    protected YExpression[] getElements() {
+    //protected YMultiExpression(Collection<YExpression> elements) {
+    //    this.elements = ImmutableList.copyOf(elements);
+    //}
+
+    protected ImmutableList<YExpression> getElements() {
         return elements;
     }
 
@@ -34,11 +38,11 @@ public abstract class YMultiExpression implements YExpression {
         if (this == o) return true;
         if (!(o instanceof YMultiExpression)) return false;
         YMultiExpression that = (YMultiExpression) o;
-        return Arrays.equals(elements, that.elements);
+        return Objects.equals(getElements(), that.getElements());
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(getElements());
+        return Objects.hash(getElements());
     }
 }

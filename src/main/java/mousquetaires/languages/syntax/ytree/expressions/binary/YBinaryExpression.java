@@ -16,9 +16,7 @@ public abstract class YBinaryExpression extends YMultiExpression {
 
     private final YBinaryExpression.Kind kind;
 
-    YBinaryExpression(YBinaryExpression.Kind kind,
-                             YExpression leftExpression,
-                             YExpression rightExpression) {
+    YBinaryExpression(YBinaryExpression.Kind kind, YExpression leftExpression, YExpression rightExpression) {
         super(leftExpression, rightExpression);
         this.kind = kind;
     }
@@ -33,11 +31,11 @@ public abstract class YBinaryExpression extends YMultiExpression {
     }
 
     public YExpression getLeftExpression() {
-        return getElements()[0];
+        return getElements().get(0);
     }
 
     public YExpression getRightExpression() {
-        return getElements()[1];
+        return getElements().get(1);
     }
 
     //public String toString() {

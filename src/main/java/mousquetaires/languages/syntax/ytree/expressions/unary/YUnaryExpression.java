@@ -25,11 +25,15 @@ public abstract class YUnaryExpression extends YMultiExpression {
     }
 
     public YExpression getExpression() {
-        return getElements()[0];
+        return getElements().get(0);
     }
 
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
         return YtreeUtils.createIteratorFrom(getExpression());
+    }
+
+    public String toString() {
+        return "" + getKind() + getExpression();
     }
 }

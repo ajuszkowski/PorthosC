@@ -27,7 +27,7 @@ public class YMemberAccessExpression extends YMultiExpression implements YAssign
     }
 
     public YExpression getBaseExpression() {
-        return getElements()[0];
+        return getElements().get(0);
     }
 
     public String getMemberName() {

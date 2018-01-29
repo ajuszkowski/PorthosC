@@ -24,11 +24,11 @@ public class YIndexerExpression extends YMultiExpression implements YAssignee {
     }
 
     public YExpression getBaseExpression() {
-        return getElements()[0];
+        return getElements().get(0);
     }
 
     public YExpression getIndexExpression() {
-        return getElements()[1];
+        return getElements().get(1);
     }
 
     // todo: override hashCode?

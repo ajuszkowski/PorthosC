@@ -7,6 +7,8 @@ import mousquetaires.languages.parsers.YtreeParser;
 import mousquetaires.languages.syntax.xrepr.XProgram;
 import mousquetaires.languages.syntax.xrepr.datamodels.DataModel;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
+import mousquetaires.languages.syntax.ytree.expressions.YConstant;
+import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
 import mousquetaires.tests.AbstractTest;
 import mousquetaires.tests.TestFailedException;
 

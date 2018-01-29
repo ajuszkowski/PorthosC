@@ -3,15 +3,15 @@ package mousquetaires.languages.syntax.ytree.expressions.assignments;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
+import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
 import mousquetaires.languages.visitors.YtreeVisitor;
 import mousquetaires.utils.YtreeUtils;
 
 import java.util.Iterator;
-import java.util.Objects;
 
 
-public class YAssignmentExpression implements YExpression {
-    // TODO
+public class YAssignmentExpression extends YMultiExpression {
+    // TODO: implement in visitor, not heres
     //public enum Kind implements YEntity {
     //    Assign,           // '='
     //    MultiplyAssign,   // '*='
@@ -43,25 +43,22 @@ public class YAssignmentExpression implements YExpression {
     //}
 
     // TODO: Add fences / atomic/ ...
-    private final YAssignee assignee;
-    private final YExpression expression;
 
     public YAssignmentExpression(YAssignee assignee, YExpression expression) {
-        this.assignee = assignee;
-        this.expression = expression;
+        super(assignee, expression);
     }
 
     public YAssignee getAssignee() {
-        return assignee;
+        return (YAssignee) getElements().get(0);
     }
 
     public YExpression getExpression() {
-        return expression;
+        return getElements().get(1);
     }
 
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
-        return YtreeUtils.createIteratorFrom(assignee, expression);
+        return YtreeUtils.createIteratorFrom(getAssignee(), getExpression());
     }
 
     @Override
@@ -71,25 +68,12 @@ public class YAssignmentExpression implements YExpression {
 
     @Override
     public YAssignmentExpression copy() {
-        return new YAssignmentExpression(assignee, expression);
+        return new YAssignmentExpression(getAssignee(), getExpression());
     }
 
     @Override
     public String toString() {
-        return assignee + " := " + expression;
+        return getAssignee() + " := " + getExpression();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof YAssignmentExpression)) return false;
-        YAssignmentExpression that = (YAssignmentExpression) o;
-        return Objects.equals(assignee, that.assignee) &&
-                Objects.equals(expression, that.expression);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(assignee, expression);
-    }
 }

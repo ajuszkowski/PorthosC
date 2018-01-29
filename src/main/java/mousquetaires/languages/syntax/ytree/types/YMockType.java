@@ -45,4 +45,9 @@ public class YMockType implements YType {
         throw new NotImplementedException();
     }
 
+
+    @Override
+    public String toString() {
+        return "(mock_type)";
+    }
 }

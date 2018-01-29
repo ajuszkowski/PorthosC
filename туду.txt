@@ -22,3 +22,5 @@
 - исправить ошибки
 - encoding
 - убрать субпакет 'syntax' (types does not conform)
+- переназвать yrepr -> ytree, xrepr -> xgraph
+- 

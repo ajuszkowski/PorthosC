@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Objects;
 
 
-public class YBranchingStatement extends YStatement {
+public class YBranchingStatement extends YStatement {  // TODO: inherit from YJumpStatement
 
     private final YExpression condition;
     private final YStatement thenBranch;

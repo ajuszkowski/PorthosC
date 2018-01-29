@@ -8,6 +8,7 @@ import mousquetaires.utils.YtreeUtils;
 import java.util.Iterator;
 
 
+// NOTE: immutability of this class is emulated manually!
 public class YJumpStatement extends YStatement {
 
     private final YJumpLabel jumpLabel; // label of statement to which we jump
@@ -20,6 +21,14 @@ public class YJumpStatement extends YStatement {
         super(selfLabel);
         this.jumpLabel = jumpLabel;
     }
+
+    //protected void setJumpLabel(YJumpLabel jumpLabel) {
+    //    if (getJumpLabel() != null) {
+    //        throw new IllegalStateException("Jump label has already been set to the value: " +
+    //                StringUtils.wrap(getJumpLabel().getValue()));
+    //    }
+    //    this.jumpLabel = jumpLabel;
+    //}
 
     public YJumpLabel getJumpLabel() {
         return jumpLabel;

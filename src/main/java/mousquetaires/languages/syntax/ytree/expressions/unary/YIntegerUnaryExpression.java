@@ -74,4 +74,18 @@ public class YIntegerUnaryExpression extends YUnaryExpression {
     public YEntity copy() {
         return new YIntegerUnaryExpression(getKind(), getExpression());
     }
+
+    @Override
+    public String toString() {
+        switch (getKind()) {
+            case PrefixIncrement:
+            case PrefixDecrement:
+                return "" + getKind() + getExpression();
+            case PostfixIncrement:
+            case PostfixDecrement:
+                return "" + getExpression() + getKind();
+            default:
+                throw new IllegalArgumentException(getKind().name());
+        }
+    }
 }

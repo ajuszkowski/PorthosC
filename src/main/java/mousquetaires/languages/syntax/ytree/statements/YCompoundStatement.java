@@ -1,9 +1,8 @@
 package mousquetaires.languages.syntax.ytree.statements;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
-import mousquetaires.languages.visitors.YtreeVisitor;
 import mousquetaires.languages.syntax.ytree.YEntity;
+import mousquetaires.languages.visitors.YtreeVisitor;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -13,26 +12,19 @@ public class YCompoundStatement extends YStatement {
 
     private final boolean hasBraces; // defines whether sequence of statements has surrounding braces '{' '}'
     private final ImmutableList<YStatement> statements; // <- recursive
-    private final ImmutableList<YJumpStatement> outerJumpStatements;
 
     public YCompoundStatement(boolean hasBraces, YStatement... statements) {
-        this(hasBraces, ImmutableList.copyOf(statements), ImmutableList.of());
+        this(hasBraces, ImmutableList.copyOf(statements));
     }
 
-    public YCompoundStatement(boolean hasBraces,
-                              ImmutableList<YStatement> statements,
-                              ImmutableList<YJumpStatement> outerJumpStatements) {
-        this(newLabel(), hasBraces, statements, outerJumpStatements);
+    public YCompoundStatement(boolean hasBraces, ImmutableList<YStatement> statements) {
+        this(newLabel(), hasBraces, statements);
     }
 
-    private YCompoundStatement(String label,
-                               boolean hasBraces,
-                               ImmutableList<YStatement> statements,
-                               ImmutableList<YJumpStatement> outerJumpStatements) {
+    private YCompoundStatement(String label, boolean hasBraces, ImmutableList<YStatement> statements) {
         super(label);
         this.statements = statements;
         this.hasBraces = hasBraces;
-        this.outerJumpStatements = outerJumpStatements;
     }
 
     public ImmutableList<YStatement> getStatements() {
@@ -43,13 +35,9 @@ public class YCompoundStatement extends YStatement {
         return hasBraces;
     }
 
-    public Iterator<YJumpStatement> getOuterJumpStatementsIterator() {
-        return outerJumpStatements.iterator();
-    }
-
     @Override
     public YCompoundStatement withLabel(String newLabel) {
-        return new YCompoundStatement(newLabel, hasBraces, statements, outerJumpStatements);
+        return new YCompoundStatement(newLabel, hasBraces, statements);
     }
 
 
@@ -65,7 +53,7 @@ public class YCompoundStatement extends YStatement {
 
     @Override
     public YCompoundStatement copy() {
-        return new YCompoundStatement(hasBraces(), getStatements(), outerJumpStatements);
+        return new YCompoundStatement(hasBraces(), getStatements());
     }
 
     @Override

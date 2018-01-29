@@ -3,11 +3,11 @@ package mousquetaires.languages.syntax.ytree.statements;
 import mousquetaires.languages.syntax.ytree.YEntity;
 
 
-public abstract class YStatement implements YEntity {
+public abstract class YStatement implements YEntity {  // TODO: implement all as YJumpStatement
     private final String label;
 
     protected YStatement() {
-        this.label = "";
+        this("_");
     }
 
     protected YStatement(String label) {

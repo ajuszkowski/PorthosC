@@ -1,6 +1,8 @@
-void P9 (int a) {} //nested declarator
+//void P9 (int a) {} //nested declarator
 
-void P0(spinlock_t *sl, long long *x0, int& x1, char c) {
+void P1(spinlock_t *sl, long long *x0, int& x1, char c) {
+    lll int r0;
+    void* a, b, c ,d, e;
 	if (sl == 1)
 	    if (sl2 == 2)
 	        {
@@ -15,33 +17,27 @@ void P0(spinlock_t *sl, long long *x0, int& x1, char c) {
         sp( &a);
     }
     do {
-    	spin_lock(sl);
+    	function_1_1(sl);
     } while (true);
 
 	if (x) goto lbl;
 
-	WRITE_ONCE(*x0, 1);
-	r1 = READ_ONCE(*x1);
-	spin_unlock(sl);
+	function_1_2(*x0, 1);
+	r1 = function_1_3(*x1);
+	function_1_4(sl);
 }
 
-P0 {
-	int r1;
-	spin_lock(sl);
-	WRITE_ONCE(*x0, 1);
-	r1 = READ_ONCE(*x1);
-	spin_unlock(sl);
+P2 {
+	int r2 ;//= function_2_1(sl);
+	function_2_2(*x0, 1);
 }
 
-int** P1(spinlock_t *sl, int *x0, int *x1)
+int** P3(type_3 *sl, int *x0, int *x1)
 {
-	int r1;
-
-	spin_lock(sl);
-	WRITE_ONCE(*x1, 1);
-	r1 = READ_ONCE(*x0);
-	spin_unlock(sl);
+	int r3;
+	function_3_1(sl);
 }
+
 /*
 //exists(y == 22.3 \/ ( 0 :y == 1 /\ 2:x == 3:y /\ 4:x == 5:y \/ 100:a==0 )  );
 //exists (r1=0 /\ 1:r1=0)

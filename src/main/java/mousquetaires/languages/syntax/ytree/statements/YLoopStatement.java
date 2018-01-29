@@ -14,6 +14,7 @@ public class YLoopStatement extends YStatement {
     private final YExpression condition;
     private final YStatement body;
 
+
     public YLoopStatement(YExpression condition, YStatement body) {
         this(newLabel(), condition, body);
     }

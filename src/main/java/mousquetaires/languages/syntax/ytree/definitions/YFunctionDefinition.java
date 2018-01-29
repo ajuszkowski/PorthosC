@@ -1,10 +1,8 @@
 package mousquetaires.languages.syntax.ytree.definitions;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.visitors.YtreeVisitor;
-import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
 import mousquetaires.utils.YtreeUtils;
 
 import java.util.Iterator;
@@ -12,26 +10,22 @@ import java.util.Iterator;
 
 public class YFunctionDefinition implements YDefinition {
 
-    private final YMethodSignature signature;
+    //private final YMethodSignature signature;
     private final YCompoundStatement body;
-    private final YLinearStatement exitStatement;  // statement to which all 'return' values will be connected
 
-    public YFunctionDefinition(YMethodSignature signature, YCompoundStatement body, YLinearStatement exitStatement) {
-        this.signature = signature;
+    //public YFunctionDefinition(YMethodSignature signature, YCompoundStatement body) {
+    public YFunctionDefinition(YCompoundStatement body) {
+        //this.signature = signature;
+        // TODO: Signature: necessary for binding!
         this.body = body;
-        this.exitStatement = exitStatement;
     }
 
-    public YMethodSignature getSignature() {
-        return signature;
-    }
+    //public YMethodSignature getSignature() {
+    //    return signature;
+    //}
 
     public YCompoundStatement getBody() {
         return body;
-    }
-
-    public YLinearStatement getExitStatement() {
-        return exitStatement;
     }
 
     @Override
@@ -46,6 +40,6 @@ public class YFunctionDefinition implements YDefinition {
 
     @Override
     public YFunctionDefinition copy() {
-        return new YFunctionDefinition(signature, body, exitStatement);
+        return new YFunctionDefinition(body);
     }
 }
