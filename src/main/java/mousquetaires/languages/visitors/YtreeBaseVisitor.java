@@ -2,6 +2,7 @@ package mousquetaires.languages.visitors;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
+import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
 import mousquetaires.languages.syntax.ytree.expressions.*;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
@@ -11,19 +12,18 @@ import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentE
 import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerPostfixUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.specific.YPostludeStatement;
 import mousquetaires.languages.syntax.ytree.specific.YPreludeStatement;
 import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
 import mousquetaires.languages.syntax.ytree.specific.YVariableAssertion;
-import mousquetaires.languages.syntax.ytree.statements.YFunctionDefinitionStatement;
-import mousquetaires.languages.syntax.ytree.statements.YSequenceStatement;
-import mousquetaires.languages.syntax.ytree.statements.YStatement;
-import mousquetaires.languages.syntax.ytree.statements.labeled.*;
-import mousquetaires.types.ZType;
-import mousquetaires.types.ZTypeSpecifier;
+import mousquetaires.languages.syntax.ytree.statements.*;
+import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
+import mousquetaires.languages.syntax.ytree.types.YType;
+import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
+import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
 
 import java.util.Iterator;
 
@@ -114,7 +114,7 @@ public abstract class YtreeBaseVisitor<T> implements YtreeVisitor<T> {
     }
 
     @Override
-    public T visit(YFunctionDefinitionStatement node) {
+    public T visit(YFunctionDefinition node) {
         visitChildren(node);
         throw new IllegalStateException(getExceptionMessage(node));
     }
@@ -150,7 +150,7 @@ public abstract class YtreeBaseVisitor<T> implements YtreeVisitor<T> {
     }
 
     @Override
-    public T visit(YIntegerPostfixUnaryExpression node) {
+    public T visit(YIntegerUnaryExpression node) {
         visitChildren(node);
         throw new IllegalStateException(getExceptionMessage(node));
     }
@@ -174,7 +174,7 @@ public abstract class YtreeBaseVisitor<T> implements YtreeVisitor<T> {
     }
 
     @Override
-    public T visit(YSequenceStatement node) {
+    public T visit(YCompoundStatement node) {
         visitChildren(node);
         throw new IllegalStateException(getExceptionMessage(node));
     }
@@ -186,13 +186,7 @@ public abstract class YtreeBaseVisitor<T> implements YtreeVisitor<T> {
     }
 
     @Override
-    public T visit(ZType node) {
-        visitChildren(node);
-        throw new IllegalStateException(getExceptionMessage(node));
-    }
-
-    @Override
-    public T visit(ZTypeSpecifier node) {
+    public T visit(YType node) {
         visitChildren(node);
         throw new IllegalStateException(getExceptionMessage(node));
     }
@@ -223,6 +217,18 @@ public abstract class YtreeBaseVisitor<T> implements YtreeVisitor<T> {
 
     @Override
     public T visit(YJumpStatement node) {
+        visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
+    }
+
+    @Override
+    public T visit(YMethodSignature node) {
+        visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
+    }
+
+    @Override
+    public T visit(YParameter node) {
         visitChildren(node);
         throw new IllegalStateException(getExceptionMessage(node));
     }

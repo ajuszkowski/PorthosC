@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.xrepr.memories;
 
 
 import mousquetaires.languages.syntax.xrepr.XEntity;
-import mousquetaires.types.ZType;
+import mousquetaires.languages.syntax.xrepr.types.XType;
 
 import java.util.Objects;
 
@@ -12,9 +12,9 @@ import java.util.Objects;
 public abstract class XMemoryUnit implements XEntity {
 
     private final String name;
-    private final ZType type;
+    private final XType type;
 
-    public XMemoryUnit(String name, ZType type) {
+    public XMemoryUnit(String name, XType type) {
         this.name = name;
         this.type = type;
     }
@@ -23,7 +23,7 @@ public abstract class XMemoryUnit implements XEntity {
         return name;
     }
 
-    public ZType getType() {
+    public XType getType() {
         return type;
     }
 

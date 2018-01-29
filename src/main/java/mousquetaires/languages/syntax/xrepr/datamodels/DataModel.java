@@ -1,9 +1,5 @@
 package mousquetaires.languages.syntax.xrepr.datamodels;
 
-import mousquetaires.types.ZTypeName;
-import mousquetaires.utils.exceptions.NotImplementedException;
-
-
 // NOTE: NOT USED YET
 
 /**
@@ -13,32 +9,32 @@ import mousquetaires.utils.exceptions.NotImplementedException;
  */
 public abstract class DataModel {
 
-    /** Returns the size of primitive returnType in bytes
-     */
-    public int getPrimitiveTypeSize(ZTypeName typeName) {
-        switch (typeName) {
-            case Void:
-                return getPointerSize();
-            case Char:
-                return getCharSize();
-            case Short:
-                return getShortSize();
-            case Int:
-                return getIntSize();
-            case Long:
-                return getLongSize();
-            case LongLong:
-                return getLongLongSize();
-            case Float:
-            case Double:
-            case LongDouble:
-                throw new NotImplementedException();
-            case Bool:
-                return getBoolSize();
-            default:
-                throw new IllegalArgumentException(typeName.name());
-        }
-    }
+    ///** Returns the size of primitive returnType in bytes
+    // */
+    //public int getPrimitiveTypeSize(YType type) {
+    //    switch (typeName) {
+    //        case Void:
+    //            return getPointerSize();
+    //        case Char:
+    //            return getCharSize();
+    //        case Short:
+    //            return getShortSize();
+    //        case Int:
+    //            return getIntSize();
+    //        case Long:
+    //            return getLongSize();
+    //        case LongLong:
+    //            return getLongLongSize();
+    //        case Float:
+    //        case Double:
+    //        case LongDouble:
+    //            throw new NotImplementedException();
+    //        case Bool:
+    //            return getBoolSize();
+    //        default:
+    //            throw new IllegalArgumentException(typeName.name());
+    //    }
+    //}
 
     protected abstract int getIntSize();
     protected abstract int getPointerSize();

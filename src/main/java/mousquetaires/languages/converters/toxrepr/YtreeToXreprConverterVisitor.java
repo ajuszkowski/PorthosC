@@ -11,6 +11,8 @@ import mousquetaires.languages.syntax.xrepr.events.computation.XOperator;
 import mousquetaires.languages.syntax.xrepr.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xrepr.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xrepr.memories.XValue;
+import mousquetaires.languages.syntax.xrepr.types.XMockType;
+import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
 import mousquetaires.languages.syntax.ytree.expressions.*;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
@@ -20,20 +22,16 @@ import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentE
 import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerPostfixUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.specific.YPreludeStatement;
 import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
 import mousquetaires.languages.syntax.ytree.specific.YVariableAssertion;
-import mousquetaires.languages.syntax.ytree.statements.YFunctionDefinitionStatement;
-import mousquetaires.languages.syntax.ytree.statements.YSequenceStatement;
-import mousquetaires.languages.syntax.ytree.statements.YStatement;
-import mousquetaires.languages.syntax.ytree.statements.labeled.*;
+import mousquetaires.languages.syntax.ytree.statements.*;
+import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
+import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.visitors.YtreeBaseVisitor;
-import mousquetaires.types.ZType;
-import mousquetaires.types.ZTypeName;
-import mousquetaires.types.ZTypeSpecifier;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
 
@@ -102,7 +100,8 @@ class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
 
     @Override
     public XValue visit(YConstant node) {
-        return new XValue(node.getValue(), node.getType());
+        // TODO: convert type Y -> X
+        return new XValue(node.getValue(), new XMockType()); //node.getType());
     }
 
     @Override
@@ -121,7 +120,7 @@ class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
     }
 
     @Override
-    public XEntity visit(YFunctionDefinitionStatement node) {
+    public XEntity visit(YFunctionDefinition node) {
         throw new NotImplementedException();
     }
 
@@ -163,7 +162,7 @@ class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
     }
 
     @Override
-    public XEntity visit(YIntegerPostfixUnaryExpression node) {
+    public XEntity visit(YIntegerUnaryExpression node) {
         throw new NotImplementedException();
     }
 
@@ -190,17 +189,7 @@ class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
     }
 
     @Override
-    public XEntity visit(ZType node) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public XEntity visit(ZTypeName node) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public XEntity visit(ZTypeSpecifier node) {
+    public XEntity visit(YType node) {
         throw new NotImplementedException();
     }
 
@@ -217,7 +206,7 @@ class YtreeToXreprConverterVisitor extends YtreeBaseVisitor<XEntity> {
     }
 
     @Override
-    public XEntity visit(YSequenceStatement node) {
+    public XEntity visit(YCompoundStatement node) {
         throw new NotImplementedException();
     }
 

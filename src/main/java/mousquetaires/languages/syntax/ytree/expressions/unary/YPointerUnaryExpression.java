@@ -7,18 +7,21 @@ import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
 import mousquetaires.languages.visitors.YtreeVisitor;
 
 
-public class YPointerUnaryExpression extends YUnaryPrefixExpression implements YAssignee, YMemoryLocation {
+public class YPointerUnaryExpression extends YUnaryExpression implements YAssignee, YMemoryLocation {
     public enum Kind implements YUnaryExpression.Kind {
-        Reference,
-        Dereference,
+        Reference,   // &
+        Dereference, // *
         ;
 
         @Override
         public String toString() {
             switch (this) {
-                case Reference:   return "&";
-                case Dereference: return "*";
-                default: throw new IllegalArgumentException(this.name());
+                case Reference:
+                    return "&";
+                case Dereference:
+                    return "*";
+                default:
+                    throw new IllegalArgumentException(this.name());
             }
         }
 

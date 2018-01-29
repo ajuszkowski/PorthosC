@@ -179,7 +179,7 @@ private static String DOT = configFile.getProperty("dotFor" + osName);
  /**
   * Returns the graph as an image in binary format.
   * @param dot_source Source of the graph to be drawn.
-  * @param type YType of the output image to be produced, e.g.: gif, dot, fig, pdf, ps, svg, png.
+  * @param type YPrimitiveType of the output image to be produced, e.g.: gif, dot, fig, pdf, ps, svg, png.
   * @return A byte array containing the image of the graph.
   */
  public byte[] getGraph(String dot_source, String type)
@@ -232,7 +232,7 @@ private static String DOT = configFile.getProperty("dotFor" + osName);
   * It will call the external dot program, and return the image in
   * binary format.
   * @param dot Source of the graph (in dot language).
-  * @param type YType of the output image to be produced, e.g.: gif, dot, fig, pdf, ps, svg, png.
+  * @param type YPrimitiveType of the output image to be produced, e.g.: gif, dot, fig, pdf, ps, svg, png.
   * @return The image of the graph in .gif format.
   */
  private byte[] get_img_stream(File dot, String type)

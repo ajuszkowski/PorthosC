@@ -5,7 +5,7 @@ import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.visitors.YtreeVisitor;
 
 
-public class YLogicalUnaryExpression extends YUnaryPrefixExpression {
+public class YLogicalUnaryExpression extends YUnaryExpression {
     public enum Kind implements YUnaryExpression.Kind {
         Negation,
         ;
@@ -13,8 +13,10 @@ public class YLogicalUnaryExpression extends YUnaryPrefixExpression {
         @Override
         public String toString() {
             switch (this) {
-                case Negation: return "!";
-                default: throw new IllegalArgumentException(this.name());
+                case Negation:
+                    return "!";
+                default:
+                    throw new IllegalArgumentException(this.name());
             }
         }
 

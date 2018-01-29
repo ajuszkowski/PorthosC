@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.xrepr.events.computation;
 
 import mousquetaires.languages.syntax.xrepr.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xrepr.processes.XEventInfo;
-import mousquetaires.types.ZType;
+import mousquetaires.languages.syntax.xrepr.types.XType;
 
 
 public class XUnaryOperationEvent extends XComputationEvent {
@@ -14,7 +14,7 @@ public class XUnaryOperationEvent extends XComputationEvent {
         this(info, operand1.getType(), operator, operand1);
     }
 
-    protected XUnaryOperationEvent(XEventInfo info, ZType resultType, XOperator operator, XLocalMemoryUnit operand1) {
+    protected XUnaryOperationEvent(XEventInfo info, XType resultType, XOperator operator, XLocalMemoryUnit operand1) {
         super(info, resultType);
         this.operator = operator;
         this.operand1 = operand1;

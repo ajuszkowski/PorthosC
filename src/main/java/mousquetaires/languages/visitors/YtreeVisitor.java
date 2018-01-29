@@ -1,6 +1,7 @@
 package mousquetaires.languages.visitors;
 
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
+import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
 import mousquetaires.languages.syntax.ytree.expressions.*;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
@@ -10,20 +11,18 @@ import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentE
 import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerPostfixUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.specific.YPostludeStatement;
 import mousquetaires.languages.syntax.ytree.specific.YPreludeStatement;
 import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
 import mousquetaires.languages.syntax.ytree.specific.YVariableAssertion;
-import mousquetaires.languages.syntax.ytree.statements.YFunctionDefinitionStatement;
-import mousquetaires.languages.syntax.ytree.statements.YSequenceStatement;
-import mousquetaires.languages.syntax.ytree.statements.YStatement;
-import mousquetaires.languages.syntax.ytree.statements.labeled.*;
-import mousquetaires.types.ZType;
-import mousquetaires.types.ZTypeName;
-import mousquetaires.types.ZTypeSpecifier;
+import mousquetaires.languages.syntax.ytree.statements.*;
+import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
+import mousquetaires.languages.syntax.ytree.types.YType;
+import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
+import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
 
 
 public interface YtreeVisitor<T> {
@@ -52,7 +51,7 @@ public interface YtreeVisitor<T> {
     T visit(YMemberAccessExpression node);
     T visit(YInvocationExpression node);
 
-    T visit(YFunctionDefinitionStatement node);
+    T visit(YFunctionDefinition node);
 
     // binary expressions:
     T visit(YRelativeBinaryExpression node);
@@ -62,23 +61,19 @@ public interface YtreeVisitor<T> {
     // unary expressions:
     T visit(YLogicalUnaryExpression node);
     T visit(YPointerUnaryExpression node);
-    T visit(YIntegerPostfixUnaryExpression node);
+    T visit(YIntegerUnaryExpression node);
 
     T visit(YTernaryExpression node);
 
     T visit(YAssignmentExpression node);
 
-    T visit(YSequenceStatement node);
+    T visit(YCompoundStatement node);
 
     T visit(YLinearStatement node);
 
     T visit(YVariableDeclarationStatement node);
 
-    T visit(ZType node);
-
-    T visit(ZTypeName node);
-
-    T visit(ZTypeSpecifier node);
+    T visit(YType node);
 
     T visit(YVariableRef node);
 
@@ -90,4 +85,6 @@ public interface YtreeVisitor<T> {
 
     // Temp node:
     //T visit(YTempEntity node);
+    T visit(YMethodSignature node);
+    T visit(YParameter node);
 }

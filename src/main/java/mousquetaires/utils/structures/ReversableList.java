@@ -5,15 +5,15 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class ReversableList<T> extends ListWrapperBase<T> {
+public abstract class ReversableList<T> extends ListWrapperBase<T> {
 
-    public ReversableList(List<T> value) {
+    ReversableList(List<T> value) {
         super(value);
     }
 
     private boolean reversed = false;
 
-    public boolean reverse() {
+    public boolean reverseIfNotYet() {
         if (!reversed) {
             Collections.reverse(value);
             reversed = true;

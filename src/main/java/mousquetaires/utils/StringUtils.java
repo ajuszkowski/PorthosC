@@ -9,6 +9,6 @@ public class StringUtils {
     }
 
     public static String wrap(String value) {
-        return "`" + value + "'";
+        return "`" + value + "`";
     }
 }

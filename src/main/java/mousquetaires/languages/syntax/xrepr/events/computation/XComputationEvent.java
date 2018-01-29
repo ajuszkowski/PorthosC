@@ -3,14 +3,14 @@ package mousquetaires.languages.syntax.xrepr.events.computation;
 import mousquetaires.languages.syntax.xrepr.events.XLocalEvent;
 import mousquetaires.languages.syntax.xrepr.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xrepr.processes.XEventInfo;
-import mousquetaires.types.ZType;
+import mousquetaires.languages.syntax.xrepr.types.XType;
 
 
 public abstract class XComputationEvent extends XLocalMemoryUnit implements XLocalEvent {
 
     public final XEventInfo info;
 
-    XComputationEvent(XEventInfo info, ZType type) {
+    XComputationEvent(XEventInfo info, XType type) {
         super("(compute)", type);
         this.info = info;
     }

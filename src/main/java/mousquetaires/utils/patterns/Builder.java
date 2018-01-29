@@ -1,6 +1,7 @@
 package mousquetaires.utils.patterns;
 
 import com.google.common.collect.ImmutableList;
+import mousquetaires.utils.exceptions.BuilderException;
 
 
 public abstract class Builder<T> {
@@ -11,7 +12,7 @@ public abstract class Builder<T> {
 
     protected void finish() {
         if (isBuilt()) {
-            throw new RuntimeException(getAlreadyFinishedMessage());
+            throw new BuilderException(getAlreadyFinishedMessage());
         }
         isBuilt = true;
     }
@@ -22,10 +23,14 @@ public abstract class Builder<T> {
 
     // TODO : check this method and re-implement other builders
     protected <S> void add(S element, ImmutableList.Builder<S> set) {
-        if (isBuilt()) {
-            throw new RuntimeException(getAlreadyFinishedMessage());
-        }
+        throwIfAlreadyBuilt();
         set.add(element);
+    }
+
+    protected void throwIfAlreadyBuilt() {
+        if (isBuilt()) {
+            throw new BuilderException(getAlreadyFinishedMessage());
+        }
     }
 
     protected final String getAlreadyFinishedMessage() {
@@ -35,4 +40,5 @@ public abstract class Builder<T> {
     protected final String getNotYetFinishedMessage() {
         return getClass().getName() + " is not yet finished.";
     }
+
 }

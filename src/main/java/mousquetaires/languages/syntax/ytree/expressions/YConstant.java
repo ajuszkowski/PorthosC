@@ -1,10 +1,9 @@
 package mousquetaires.languages.syntax.ytree.expressions;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
+import mousquetaires.languages.syntax.ytree.types.YMockType;
+import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.visitors.YtreeVisitor;
-import mousquetaires.types.ZType;
-import mousquetaires.types.ZTypeFactory;
-import mousquetaires.types.ZTypeName;
 import mousquetaires.utils.YtreeUtils;
 import mousquetaires.utils.exceptions.ArgumentNullException;
 
@@ -15,9 +14,9 @@ import java.util.Objects;
 public class YConstant implements YMemoryLocation {
 
     private final Object value;
-    private final ZType type;
+    private final YType type;
 
-    private YConstant(Object value, ZType type) {
+    private YConstant(Object value, YType type) {
         this.value = value;
         this.type = type;
     }
@@ -26,22 +25,22 @@ public class YConstant implements YMemoryLocation {
         return value;
     }
 
-    public ZType getType() {
+    public YType getType() {
         return type;
     }
 
     public static YConstant fromValue(int value) {
-        return new YConstant(value, ZTypeFactory.getPrimitiveType(ZTypeName.Int));
+        return new YConstant(value, new YMockType()); //YTypeFactory.getPrimitiveType(YTypeName.Int));
     }
 
     public static YConstant fromValue(boolean value) {
-        return new YConstant(value, ZTypeFactory.getPrimitiveType(ZTypeName.Bool));
+        return new YConstant(value, new YMockType()); //YTypeFactory.getPrimitiveType(YTypeName.Bool));
     }
     public static YConstant fromValue(float value) {
-        return new YConstant(value, ZTypeFactory.getPrimitiveType(ZTypeName.Float));
+        return new YConstant(value, new YMockType()); //YTypeFactory.getPrimitiveType(YTypeName.Float));
     }
 
-    // ... todo: others...
+    // ... todo: other types...
 
     public static YConstant tryParse(String text) {
         if (text == null) {

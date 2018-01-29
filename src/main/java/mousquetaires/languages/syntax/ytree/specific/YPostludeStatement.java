@@ -1,10 +1,10 @@
 package mousquetaires.languages.syntax.ytree.specific;
 
-import mousquetaires.languages.syntax.ytree.statements.YStatement;
+import mousquetaires.languages.syntax.ytree.statements.YUnlabeledStatement;
 import mousquetaires.languages.visitors.YtreeVisitor;
 
 
-public abstract class YPostludeStatement extends YStatement {
+public abstract class YPostludeStatement extends YUnlabeledStatement {
 
     @Override
     public <T> T accept(YtreeVisitor<T> visitor) {

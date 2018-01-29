@@ -1,6 +1,6 @@
 package mousquetaires.languages.converters.toytree.c11;
 
-import mousquetaires.languages.converters.toytree.c11.temporaries.YExpressionReversableList;
+import mousquetaires.languages.converters.toytree.c11.helpers.C11TokensHelper;
 import mousquetaires.languages.parsers.C11Parser;
 import mousquetaires.languages.parsers.C11Visitor;
 import mousquetaires.languages.syntax.ytree.YEntity;
@@ -12,12 +12,31 @@ import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerPostfixUnaryExpression;
-import mousquetaires.languages.syntax.ytree.statements.YStatement;
+import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
+import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
+import mousquetaires.languages.syntax.ytree.expressions.assignments.YVariableAssignmentExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
+import mousquetaires.languages.syntax.ytree.statements.*;
+import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpLabel;
+import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
+import mousquetaires.languages.syntax.ytree.statements.jumps.temporaries.YBreakStatementTemp;
+import mousquetaires.languages.syntax.ytree.statements.jumps.temporaries.YContinueStatementTemp;
+import mousquetaires.languages.syntax.ytree.statements.jumps.temporaries.YReturnStatementTemp;
+import mousquetaires.languages.syntax.ytree.temporaries.YCompoundStatementBuilder;
+import mousquetaires.languages.syntax.ytree.temporaries.YExpressionReversableList;
+import mousquetaires.languages.syntax.ytree.temporaries.YUnaryOperatorKindTemp;
+import mousquetaires.languages.syntax.ytree.types.YMockType;
+import mousquetaires.languages.syntax.ytree.types.YType;
+import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
+import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
+import mousquetaires.languages.syntax.ytree.types.signatures.YParameterListBuilder;
 import mousquetaires.utils.StringUtils;
-import mousquetaires.utils.exceptions.ytree.ParserException;
-import mousquetaires.utils.exceptions.ytree.ParserIllegalStateException;
-import mousquetaires.utils.exceptions.ytree.ParserNotImplementedException;
+import mousquetaires.utils.exceptions.NotImplementedException;
+import mousquetaires.utils.exceptions.ytree.YParserException;
+import mousquetaires.utils.exceptions.ytree.YParserNotImplementedException;
+import mousquetaires.utils.exceptions.ytree.YParserUnintendedStateException;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -54,9 +73,6 @@ class C11ToYtreeConverterVisitor
      * |   StringLiteral+
      * |   '(' expression ')'
      * |   genericSelection
-     * |   '__extension__'? '(' compoundStatement ')'
-     * |   '__builtin_va_arg' '(' unaryExpression ',' typeName ')'
-     * |   '__builtin_offsetof' '(' typeName ',' unaryExpression ')'
      * ;
      */
     @Override
@@ -69,11 +85,11 @@ class C11ToYtreeConverterVisitor
         if (constantNode != null) {
             YConstant constant = YConstant.tryParse(constantNode.getText());
             if (constant == null) {
-                throw new ParserException(ctx, "Could not parse constant: " + StringUtils.wrap(constantNode.getText()));
+                throw new YParserException(ctx, "Could not parse constant: " + StringUtils.wrap(constantNode.getText()));
             }
             return constant;
         }
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -83,7 +99,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitGenericSelection(C11Parser.GenericSelectionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -94,7 +110,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitGenericAssocList(C11Parser.GenericAssocListContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -105,7 +121,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitGenericAssociation(C11Parser.GenericAssociationContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -119,8 +135,6 @@ class C11ToYtreeConverterVisitor
      * |   postfixExpression '--'
      * |   '(' typeName ')' '{' initializerList '}'
      * |   '(' typeName ')' '{' initializerList ',' '}'
-     * |   '__extension__' '(' typeName ')' '{' initializerList '}'
-     * |   '__extension__' '(' typeName ')' '{' initializerList ',' '}'
      * ;
      */
     @Override
@@ -136,7 +150,7 @@ class C11ToYtreeConverterVisitor
             if (ctx.getTokens(C11Parser.LeftBracket).size() > 0 && ctx.getTokens(C11Parser.RightBracket).size() > 0) {
                 C11Parser.ExpressionContext expressionContext = ctx.expression();
                 if (expressionContext == null) {
-                    throw new ParserException(ctx, "Missing indexer expression");
+                    throw new YParserException(ctx, "Missing indexer expression");
                 }
                 YExpression indexerExpression = visitExpression(expressionContext);
                 return new YIndexerExpression(baseExpression, indexerExpression);
@@ -153,20 +167,20 @@ class C11ToYtreeConverterVisitor
             if (ctx.getTokens(C11Parser.Arrow).size() > 0 || ctx.getTokens(C11Parser.Dot).size() > 0) {
                 TerminalNode identifierNode = ctx.Identifier();
                 if (identifierNode == null) {
-                    throw new ParserException(ctx, "Missing member name while parsing member access expression");
+                    throw new YParserException(ctx, "Missing member name while parsing member access expression");
                 }
                 return new YMemberAccessExpression(baseExpression, identifierNode.getText());
             }
             // case (increment):
             if (ctx.getTokens(C11Parser.PlusPlus).size() > 0) {
-                return YIntegerPostfixUnaryExpression.Kind.Increment.createExpression(baseExpression);
+                return YIntegerUnaryExpression.Kind.PrefixIncrement.createExpression(baseExpression);
             }
             // case (decrement):
             if (ctx.getTokens(C11Parser.MinusMinus).size() > 0) {
-                return YIntegerPostfixUnaryExpression.Kind.Decrement.createExpression(baseExpression);
+                return YIntegerUnaryExpression.Kind.PrefixDecrement.createExpression(baseExpression);
             }
         }
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -187,7 +201,7 @@ class C11ToYtreeConverterVisitor
             }
             return result;
         }
-        throw new ParserIllegalStateException(ctx);
+        throw new YParserException(ctx);
     }
 
     /**
@@ -199,12 +213,57 @@ class C11ToYtreeConverterVisitor
      * |   'sizeof' unaryExpression
      * |   'sizeof' '(' typeName ')'
      * |   '_Alignof' '(' typeName ')'
-     * |   '&&' Identifier
      * ;
      */
     @Override
-    public YEntity visitUnaryExpression(C11Parser.UnaryExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YExpression visitUnaryExpression(C11Parser.UnaryExpressionContext ctx) {
+        // postfixExpression:
+        C11Parser.PostfixExpressionContext postfixExpressionContext = ctx.postfixExpression();
+        if (postfixExpressionContext != null) {
+            return visitPostfixExpression(postfixExpressionContext);
+        }
+        C11Parser.UnaryExpressionContext unaryExpressionContext = ctx.unaryExpression();
+        if (unaryExpressionContext != null) {
+            YExpression baseExpression = visitUnaryExpression(unaryExpressionContext);
+            // '++' unaryExpression:
+            if (C11TokensHelper.hasToken(ctx, C11Parser.PlusPlus)) {
+                return YIntegerUnaryExpression.Kind.PrefixIncrement.createExpression(baseExpression);
+            }
+            // '--' unaryExpression:
+            if (C11TokensHelper.hasToken(ctx, C11Parser.MinusMinus)) {
+                return YIntegerUnaryExpression.Kind.PrefixDecrement.createExpression(baseExpression);
+            }
+            // 'sizeof' unaryExpression:
+            if (C11TokensHelper.hasToken(ctx, C11Parser.Sizeof)) {
+                throw new YParserNotImplementedException(ctx, "Cast operation is not implemented yet");
+            }
+        }
+        C11Parser.UnaryOperatorContext unaryOperatorContext = ctx.unaryOperator();
+        C11Parser.CastExpressionContext castExpressionContext = ctx.castExpression();
+        if (unaryOperatorContext != null) {
+            if (castExpressionContext == null) {
+                throw new YParserException(ctx, "Missing unary operand");
+            }
+            YUnaryOperatorKindTemp operator = visitUnaryOperator(unaryOperatorContext);
+            YExpression operand = visitCastExpression(castExpressionContext);
+            switch (operator) {
+                case Ampersand:
+                    return YPointerUnaryExpression.Kind.Reference.createExpression(operand);
+                case Asterisk:
+                    return YPointerUnaryExpression.Kind.Dereference.createExpression(operand);
+                case Plus:
+                    return operand; // TODO: check whether expression '+2' really equals to '2' in C
+                case Minus:
+                    return YIntegerUnaryExpression.Kind.IntegerNegation.createExpression(operand);
+                case Tilde:
+                    return YIntegerUnaryExpression.Kind.BitwiseComplement.createExpression(operand);
+                case Exclamation:
+                    return YLogicalUnaryExpression.Kind.Negation.createExpression(operand);
+                default:
+                    throw new YParserNotImplementedException(ctx, "Unsupported unary operator: " + operator.name());
+            }
+        }
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -213,21 +272,32 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitUnaryOperator(C11Parser.UnaryOperatorContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YUnaryOperatorKindTemp visitUnaryOperator(C11Parser.UnaryOperatorContext ctx) {
+        assert ctx.getChildCount() == 1: ctx.getChildCount();
+        String tokenText = ctx.getChild(0).getText();
+        YUnaryOperatorKindTemp operator = YUnaryOperatorKindTemp.tryParse(tokenText);
+        if (operator == null) {
+            throw new YParserException(ctx, "Could not parse unary operator " + StringUtils.wrap(tokenText));
+        }
+        return operator;
     }
 
     /**
      * castExpression
      * :   unaryExpression
      * |   '(' typeName ')' castExpression
-     * |   '__extension__' '(' typeName ')' castExpression
-     * |   DigitSequence
      * ;
      */
     @Override
-    public YEntity visitCastExpression(C11Parser.CastExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YExpression visitCastExpression(C11Parser.CastExpressionContext ctx) {
+        C11Parser.UnaryExpressionContext unaryExpressionContext = ctx.unaryExpression();
+        if (unaryExpressionContext != null) {
+            return visitUnaryExpression(unaryExpressionContext);
+        }
+        // TODO: type cast!
+        C11Parser.TypeNameContext typeNameContext = ctx.typeName();
+        C11Parser.CastExpressionContext castExpressionContext = ctx.castExpression();
+        throw new YParserNotImplementedException(ctx, "Type cast is not implemented yet");
     }
 
     /**
@@ -239,8 +309,14 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitMultiplicativeExpression(C11Parser.MultiplicativeExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YExpression visitMultiplicativeExpression(C11Parser.MultiplicativeExpressionContext ctx) {
+        C11Parser.CastExpressionContext castExpressionContext = ctx.castExpression();
+        C11Parser.MultiplicativeExpressionContext multiplicativeExpressionContext = ctx.multiplicativeExpression();
+        if (castExpressionContext != null) {
+            // todo: others
+            return visitCastExpression(castExpressionContext);
+        }
+        throw new YParserUnintendedStateException(ctx);
     }
 
     /**
@@ -251,8 +327,14 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitAdditiveExpression(C11Parser.AdditiveExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YExpression visitAdditiveExpression(C11Parser.AdditiveExpressionContext ctx) {
+        C11Parser.MultiplicativeExpressionContext multiplicativeExpressionContext = ctx.multiplicativeExpression();
+        C11Parser.AdditiveExpressionContext additiveExpressionContext = ctx.additiveExpression();
+        if (multiplicativeExpressionContext != null) {
+            // todo: others
+            return visitMultiplicativeExpression(multiplicativeExpressionContext);
+        }
+        throw new YParserUnintendedStateException(ctx);
     }
 
     /**
@@ -263,8 +345,14 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitShiftExpression(C11Parser.ShiftExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YExpression visitShiftExpression(C11Parser.ShiftExpressionContext ctx) {
+        C11Parser.AdditiveExpressionContext additiveExpressionContext = ctx.additiveExpression();
+        C11Parser.ShiftExpressionContext shiftExpressionContext = ctx.shiftExpression();
+        if (additiveExpressionContext != null) {
+            // todo: others
+            return visitAdditiveExpression(additiveExpressionContext);
+        }
+        throw new YParserUnintendedStateException(ctx);
     }
 
     /**
@@ -277,8 +365,14 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitRelationalExpression(C11Parser.RelationalExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YExpression visitRelationalExpression(C11Parser.RelationalExpressionContext ctx) {
+        C11Parser.ShiftExpressionContext shiftExpressionContext = ctx.shiftExpression();
+        C11Parser.RelationalExpressionContext relationalExpressionContext = ctx.relationalExpression();
+        if (shiftExpressionContext != null) {
+            // todo: others
+            return visitShiftExpression(shiftExpressionContext);
+        }
+        throw new YParserUnintendedStateException(ctx);
     }
 
     /**
@@ -289,8 +383,14 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitEqualityExpression(C11Parser.EqualityExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YExpression visitEqualityExpression(C11Parser.EqualityExpressionContext ctx) {
+        C11Parser.RelationalExpressionContext relationalExpressionContext = ctx.relationalExpression();
+        C11Parser.EqualityExpressionContext equalityExpressionContext = ctx.equalityExpression();
+        if (relationalExpressionContext != null) {
+            // todo: others
+            return visitRelationalExpression(relationalExpressionContext);
+        }
+        throw new YParserUnintendedStateException(ctx);
     }
 
     /**
@@ -300,8 +400,14 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitAndExpression(C11Parser.AndExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YExpression visitAndExpression(C11Parser.AndExpressionContext ctx) {
+        C11Parser.EqualityExpressionContext equalityExpressionContext = ctx.equalityExpression();
+        C11Parser.AndExpressionContext andExpressionContext = ctx.andExpression();
+        if (equalityExpressionContext != null) {
+            // todo: others
+            return visitEqualityExpression(equalityExpressionContext);
+        }
+        throw new YParserUnintendedStateException(ctx);
     }
 
     /**
@@ -311,8 +417,14 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitExclusiveOrExpression(C11Parser.ExclusiveOrExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YExpression visitExclusiveOrExpression(C11Parser.ExclusiveOrExpressionContext ctx) {
+        C11Parser.AndExpressionContext andExpressionContext = ctx.andExpression();
+        C11Parser.ExclusiveOrExpressionContext exclusiveOrExpressionContext = ctx.exclusiveOrExpression();
+        if (andExpressionContext != null) {
+            // todo: others
+            return visitAndExpression(andExpressionContext);
+        }
+        throw new YParserUnintendedStateException(ctx);
     }
 
     /**
@@ -322,8 +434,14 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitInclusiveOrExpression(C11Parser.InclusiveOrExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YExpression visitInclusiveOrExpression(C11Parser.InclusiveOrExpressionContext ctx) {
+        C11Parser.ExclusiveOrExpressionContext exclusiveOrExpressionContext = ctx.exclusiveOrExpression();
+        C11Parser.InclusiveOrExpressionContext inclusiveOrExpressionContext = ctx.inclusiveOrExpression();
+        if (exclusiveOrExpressionContext != null) {
+            // todo: others
+            return visitExclusiveOrExpression(exclusiveOrExpressionContext);
+        }
+        throw new YParserUnintendedStateException(ctx);
     }
 
     /**
@@ -333,8 +451,14 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitLogicalAndExpression(C11Parser.LogicalAndExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YExpression visitLogicalAndExpression(C11Parser.LogicalAndExpressionContext ctx) {
+        C11Parser.InclusiveOrExpressionContext inclusiveOrExpressionContext = ctx.inclusiveOrExpression();
+        C11Parser.LogicalAndExpressionContext logicalAndExpressionContext = ctx.logicalAndExpression();
+        if (inclusiveOrExpressionContext != null) {
+            // todo: others
+            return visitInclusiveOrExpression(inclusiveOrExpressionContext);
+        }
+        throw new YParserUnintendedStateException(ctx);
     }
 
     /**
@@ -344,8 +468,14 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitLogicalOrExpression(C11Parser.LogicalOrExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YExpression visitLogicalOrExpression(C11Parser.LogicalOrExpressionContext ctx) {
+        C11Parser.LogicalAndExpressionContext logicalAndExpressionContext = ctx.logicalAndExpression();
+        C11Parser.LogicalOrExpressionContext logicalOrExpressionContext = ctx.logicalOrExpression();
+        if (logicalAndExpressionContext != null) {
+            // todo: others
+            return visitLogicalAndExpression(logicalAndExpressionContext);
+        }
+        throw new YParserUnintendedStateException(ctx);
     }
 
     /**
@@ -354,20 +484,50 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitConditionalExpression(C11Parser.ConditionalExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YExpression visitConditionalExpression(C11Parser.ConditionalExpressionContext ctx) {
+        C11Parser.LogicalOrExpressionContext logicalOrExpressionContext = ctx.logicalOrExpression();
+        if (logicalOrExpressionContext != null) {
+            return visitLogicalOrExpression(logicalOrExpressionContext);
+            // todo: others
+        }
+        throw new YParserUnintendedStateException(ctx);
     }
 
     /**
      * assignmentExpression
      * :   conditionalExpression
      * |   unaryExpression assignmentOperator assignmentExpression
-     * |   DigitSequence
      * ;
      */
     @Override
     public YExpression visitAssignmentExpression(C11Parser.AssignmentExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        C11Parser.ConditionalExpressionContext conditionalExpressionContext = ctx.conditionalExpression();
+        C11Parser.UnaryExpressionContext unaryExpressionContext = ctx.unaryExpression();
+        C11Parser.AssignmentOperatorContext assignmentOperatorContext = ctx.assignmentOperator();
+        C11Parser.AssignmentExpressionContext assignmentExpressionContext = ctx.assignmentExpression();
+        if (conditionalExpressionContext != null) {
+            return visitConditionalExpression(conditionalExpressionContext);
+        }
+        if (assignmentOperatorContext != null) {
+            // TODO: process non-trivial assignments
+            //YEntity operator = visitAssignmentOperator(assignmentOperatorContext);
+            if (unaryExpressionContext == null) {
+                throw new YParserException(ctx, "Missing assignee expression");
+            }
+            if (assignmentExpressionContext == null) {
+                throw new YParserException(ctx, "Missing assigner expression");
+            }
+            YExpression assigneeEntity = visitUnaryExpression(unaryExpressionContext);
+            if (!(assigneeEntity instanceof YAssignee)) {
+                throw new YParserException(ctx, "Invalid assignee " + StringUtils.wrap(assigneeEntity.toString())
+                        + " of type " + assigneeEntity.getClass().getSimpleName());
+            }
+            YAssignee assignee = (YAssignee) assigneeEntity;
+            YExpression expression = visitAssignmentExpression(assignmentExpressionContext);
+            return new YAssignmentExpression(assignee, expression);
+
+        }
+        throw new YParserUnintendedStateException(ctx);
     }
 
     /**
@@ -377,7 +537,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitAssignmentOperator(C11Parser.AssignmentOperatorContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -388,7 +548,16 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YExpression visitExpression(C11Parser.ExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        C11Parser.ExpressionContext expressionContext = ctx.expression();
+        if (expressionContext != null) {
+            // evaluate, discard return value
+            throw new YParserNotImplementedException(ctx, "Comma-operator is not supported yet");
+        }
+        C11Parser.AssignmentExpressionContext assignmentExpressionContext = ctx.assignmentExpression();
+        if (assignmentExpressionContext != null) {
+            return visitAssignmentExpression(assignmentExpressionContext);
+        }
+        throw new YParserUnintendedStateException(ctx);
     }
 
     /**
@@ -398,19 +567,56 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitConstantExpression(C11Parser.ConstantExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
      * declaration
      * :   declarationSpecifiers initDeclaratorList ';'
-     * | 	declarationSpecifiers ';'
      * |   staticAssertDeclaration
      * ;
      */
     @Override
-    public YEntity visitDeclaration(C11Parser.DeclarationContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YStatement visitDeclaration(C11Parser.DeclarationContext ctx) {
+        C11Parser.DeclarationSpecifiersContext declarationSpecifiersContext = ctx.declarationSpecifiers();
+        if (declarationSpecifiersContext != null) {
+            //A declaration other than a static_assert declaration shall declare at least a declarator
+            //(other than the parameters of a function or the members of a structure or union), a tag, or
+            //the members of an enumeration.
+            YCompoundStatementBuilder statementBuilder = new YCompoundStatementBuilder();
+
+            YType type = new YMockType();
+            C11Parser.InitDeclaratorListContext initDeclaratorListContext = ctx.initDeclaratorList();
+            if (initDeclaratorListContext == null) {
+                throw new YParserNotImplementedException(ctx, "Missing variable declarator");
+            }
+            YExpressionReversableList declarationList = visitInitDeclaratorList(initDeclaratorListContext);
+            declarationList.reverseIfNotYet();
+            for (YExpression declarationExpression : declarationList) {
+                if (declarationExpression instanceof YVariableRef) {
+                    YVariableRef variable = (YVariableRef) declarationExpression;
+                    statementBuilder.addStatement(new YVariableDeclarationStatement(type, variable));
+                }
+                else if (declarationExpression instanceof YVariableAssignmentExpression) {
+                    YVariableAssignmentExpression assignment = (YVariableAssignmentExpression) declarationExpression;
+                    YVariableRef variable = assignment.getAssignee();
+                    YExpression value = assignment.getExpression();
+                    statementBuilder.addStatement(new YVariableDeclarationStatement(type, variable));
+                    statementBuilder.addLinearStatement(new YVariableAssignmentExpression(variable, value));
+                }
+                else { //if (declarationExpression instanceof )
+                    throw new YParserNotImplementedException(ctx, "Not supported variable declaration " +
+                            StringUtils.wrap(declarationExpression.toString()) + " of type " +
+                            declarationExpression.getClass().getSimpleName());
+                }
+            }
+            return statementBuilder.build();
+        }
+        C11Parser.StaticAssertDeclarationContext staticAssertDeclarationContext = ctx.staticAssertDeclaration();
+        if (staticAssertDeclarationContext != null) {
+            throw new YParserNotImplementedException(ctx);
+        }
+        throw new YParserException(ctx);
     }
 
     /**
@@ -420,7 +626,8 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitDeclarationSpecifiers(C11Parser.DeclarationSpecifiersContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        return visitChildren(ctx);
+        //throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -430,7 +637,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitDeclarationSpecifiers2(C11Parser.DeclarationSpecifiers2Context ctx) {
-        throw new ParserNotImplementedException(ctx);
+        return visitChildren(ctx);
     }
 
     /**
@@ -444,7 +651,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitDeclarationSpecifier(C11Parser.DeclarationSpecifierContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        return visitChildren(ctx);
     }
 
     /**
@@ -454,8 +661,17 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitInitDeclaratorList(C11Parser.InitDeclaratorListContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YExpressionReversableList visitInitDeclaratorList(C11Parser.InitDeclaratorListContext ctx) {
+        YExpressionReversableList result = new YExpressionReversableList();
+        C11Parser.InitDeclaratorContext initDeclaratorContext = ctx.initDeclarator();
+        if (initDeclaratorContext != null) {
+            result.add(visitInitDeclarator(initDeclaratorContext));
+        }
+        C11Parser.InitDeclaratorListContext recursiveListContext = ctx.initDeclaratorList();
+        if (recursiveListContext != null) {
+            result.addAll(visitInitDeclaratorList(recursiveListContext));
+        }
+        return result;
     }
 
     /**
@@ -465,8 +681,26 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitInitDeclarator(C11Parser.InitDeclaratorContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YExpression visitInitDeclarator(C11Parser.InitDeclaratorContext ctx) {
+        C11Parser.DeclaratorContext declaratorContext = ctx.declarator();
+        if (declaratorContext != null) {
+            YEntity declaratorEntity = visitDeclarator(declaratorContext);
+            if (!(declaratorEntity instanceof YExpression)) {
+                throw new YParserException(ctx, "Initializer may be only an expression");
+            }
+            YExpression declarator = (YExpression) declaratorEntity;
+            C11Parser.InitializerContext initializerContext = ctx.initializer();
+            if (initializerContext == null) {
+                return declarator;
+            }
+            YExpression initializer = visitInitializer(initializerContext);
+            if (declarator instanceof YVariableRef) {
+                return new YVariableAssignmentExpression((YVariableRef) declarator, initializer);
+            }
+            //if (declarator instanceof ...)
+            throw new YParserNotImplementedException(ctx);
+        }
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -481,7 +715,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitStorageClassSpecifier(C11Parser.StorageClassSpecifierContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -496,21 +730,38 @@ class C11ToYtreeConverterVisitor
      * |   'signed'
      * |   'unsigned'
      * |   '_Bool'
-     * |   '_Complex'
-     * |   '__m128'
-     * |   '__m128d'
-     * |   '__m128i')
-     * |   '__extension__' '(' ('__m128' | '__m128d' | '__m128i') ')'
+     * |   '_Complex')
      * |   atomicTypeSpecifier
      * |   structOrUnionSpecifier
      * |   enumSpecifier
      * |   typedefName
-     * |   '__typeof__' '(' constantExpression ')'
      * ;
      */
     @Override
     public YEntity visitTypeSpecifier(C11Parser.TypeSpecifierContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        // atomicTypeSpecifier:
+        C11Parser.AtomicTypeSpecifierContext atomicTypeSpecifierContext = ctx.atomicTypeSpecifier();
+        if (atomicTypeSpecifierContext != null) {
+            throw new YParserNotImplementedException(ctx);
+        }
+        // structOrUnionSpecifier:
+        C11Parser.StructOrUnionSpecifierContext structOrUnionSpecifierContext = ctx.structOrUnionSpecifier();
+        if (structOrUnionSpecifierContext != null) {
+            throw new YParserNotImplementedException(ctx);
+        }
+        // enumSpecifier:
+        C11Parser.EnumSpecifierContext enumSpecifierContext = ctx.enumSpecifier();
+        if (enumSpecifierContext != null) {
+            throw new YParserNotImplementedException(ctx);
+        }
+        // typedefName
+        C11Parser.TypedefNameContext typedefNameContext = ctx.typedefName();
+        if (typedefNameContext != null) {
+            throw new YParserNotImplementedException(ctx);
+        }
+        // Token:
+        return visitChildren(ctx);
+        //throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -521,7 +772,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitStructOrUnionSpecifier(C11Parser.StructOrUnionSpecifierContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -532,7 +783,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitStructOrUnion(C11Parser.StructOrUnionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -543,7 +794,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitStructDeclarationList(C11Parser.StructDeclarationListContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -554,7 +805,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitStructDeclaration(C11Parser.StructDeclarationContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -565,7 +816,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitSpecifierQualifierList(C11Parser.SpecifierQualifierListContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -576,7 +827,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitStructDeclaratorList(C11Parser.StructDeclaratorListContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -587,7 +838,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitStructDeclarator(C11Parser.StructDeclaratorContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -599,7 +850,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitEnumSpecifier(C11Parser.EnumSpecifierContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -610,7 +861,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitEnumeratorList(C11Parser.EnumeratorListContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -621,7 +872,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitEnumerator(C11Parser.EnumeratorContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -631,7 +882,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitEnumerationConstant(C11Parser.EnumerationConstantContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -641,7 +892,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitAtomicTypeSpecifier(C11Parser.AtomicTypeSpecifierContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -654,22 +905,18 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitTypeQualifier(C11Parser.TypeQualifierContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
      * functionSpecifier
-     * :   ('inline'
+     * :   'inline'
      * |   '_Noreturn'
-     * |   '__inline__'
-     * |   '__stdcall')
-     * |   gccAttributeSpecifier
-     * |   '__declspec' '(' Identifier ')'
      * ;
      */
     @Override
     public YEntity visitFunctionSpecifier(C11Parser.FunctionSpecifierContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -680,17 +927,22 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitAlignmentSpecifier(C11Parser.AlignmentSpecifierContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
      * declarator
-     * :   pointer? directDeclarator gccDeclaratorExtension*
+     * :   pointer? directDeclarator
      * ;
      */
     @Override
     public YEntity visitDeclarator(C11Parser.DeclaratorContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        // TODO: process pointer
+        C11Parser.DirectDeclaratorContext directDeclaratorContext = ctx.directDeclarator();
+        if (directDeclaratorContext != null) {
+            return visitDirectDeclarator(directDeclaratorContext);
+        }
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -703,81 +955,58 @@ class C11ToYtreeConverterVisitor
      * |   directDeclarator '[' typeQualifierList? '*' ']'
      * |   directDeclarator '(' parameterTypeList ')'
      * |   directDeclarator '(' identifierList? ')'
-     * |   Identifier ':' DigitSequence
      * ;
      */
     @Override
     public YEntity visitDirectDeclarator(C11Parser.DirectDeclaratorContext ctx) {
-        throw new ParserNotImplementedException(ctx);
-    }
+        TerminalNode identifier;
+        C11Parser.DeclaratorContext declaratorContext;
+        C11Parser.DirectDeclaratorContext directDeclaratorContext;
+        C11Parser.TypeQualifierListContext typeQualifierListContext;
+        C11Parser.AssignmentExpressionContext assignmentExpressionContext;
+        C11Parser.ParameterTypeListContext parameterTypeListContext;
+        C11Parser.IdentifierListContext identifierListContext;
 
-    /**
-     * gccDeclaratorExtension
-     * :   '__asm' '(' StringLiteral+ ')'
-     * |   gccAttributeSpecifier
-     * ;
-     */
-    @Override
-    public YEntity visitGccDeclaratorExtension(C11Parser.GccDeclaratorExtensionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
-    }
-
-    /**
-     * gccAttributeSpecifier
-     * :   '__attribute__' '(' '(' gccAttributeList ')' ')'
-     * ;
-     */
-    @Override
-    public YEntity visitGccAttributeSpecifier(C11Parser.GccAttributeSpecifierContext ctx) {
-        throw new ParserNotImplementedException(ctx);
-    }
-
-    /**
-     * gccAttributeList
-     * :   gccAttribute (',' gccAttribute)*
-     * |
-     * ;
-     */
-    @Override
-    public YEntity visitGccAttributeList(C11Parser.GccAttributeListContext ctx) {
-        throw new ParserNotImplementedException(ctx);
-    }
-
-    /**
-     * gccAttribute
-     * :   ~(',' | '(' | ')')
-     * ('(' argumentExpressionList? ')')?
-     * |
-     * ;
-     */
-    @Override
-    public YEntity visitGccAttribute(C11Parser.GccAttributeContext ctx) {
-        throw new ParserNotImplementedException(ctx);
-    }
-
-    /**
-     * nestedParenthesesBlock
-     * :   (   ~('(' | ')')
-     * |   '(' nestedParenthesesBlock ')'
-     * )*
-     * ;
-     */
-    @Override
-    public YEntity visitNestedParenthesesBlock(C11Parser.NestedParenthesesBlockContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        if ((identifier = ctx.Identifier()) != null) {
+            return new YVariableRef(identifier.getText());
+        }
+        boolean hasParentheses = C11TokensHelper.hasParentheses(ctx);
+        if (hasParentheses) {
+            if ((declaratorContext = ctx.declarator()) != null) {
+                return visitDeclarator(declaratorContext);
+            }
+        }
+        if ((directDeclaratorContext = ctx.directDeclarator()) != null) {
+            YEntity directDeclarator = visitDirectDeclarator(directDeclaratorContext);
+            // '['
+            // ...
+            if (hasParentheses) {
+                if ((parameterTypeListContext = ctx.parameterTypeList()) != null) {
+                    YParameterListBuilder parameterTypeList = visitParameterTypeList(parameterTypeListContext);
+                    YParameter[] parameters = parameterTypeList.build();
+                    if (directDeclarator instanceof YVariableRef) {
+                        YVariableRef methodVariable = (YVariableRef) directDeclarator;
+                        // todo: parse return type
+                        return new YMethodSignature(methodVariable.getName(), new YMockType(), parameters);
+                    }
+                    throw new YParserException(ctx, "For now, only simple name-based method definitions are supported");
+                }
+                throw new YParserException(ctx);
+            }
+        }
+        // todo: some others
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
      * pointer
-     * :   '*' typeQualifierList?
-     * |   '*' typeQualifierList? pointer
-     * |   '^' typeQualifierList?
-     * |   '^' typeQualifierList? pointer
+     * :   ('*' | '&') typeQualifierList?
+     * |   ('*' | '&') typeQualifierList? pointer
      * ;
      */
     @Override
     public YEntity visitPointer(C11Parser.PointerContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -788,7 +1017,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitTypeQualifierList(C11Parser.TypeQualifierListContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -798,8 +1027,12 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitParameterTypeList(C11Parser.ParameterTypeListContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YParameterListBuilder visitParameterTypeList(C11Parser.ParameterTypeListContext ctx) {
+        C11Parser.ParameterListContext parameterListContext = ctx.parameterList();
+        if (parameterListContext != null) {
+            return visitParameterList(parameterListContext);
+        }
+        throw new YParserException(ctx);
     }
 
     /**
@@ -809,8 +1042,17 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitParameterList(C11Parser.ParameterListContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YParameterListBuilder visitParameterList(C11Parser.ParameterListContext ctx) {
+        C11Parser.ParameterDeclarationContext parameterDeclarationContext;
+        C11Parser.ParameterListContext parameterListContext;
+        YParameterListBuilder builder = new YParameterListBuilder();
+        if ((parameterDeclarationContext = ctx.parameterDeclaration()) != null) {
+            builder.add(visitParameterDeclaration(parameterDeclarationContext));
+        }
+        if ((parameterListContext = ctx.parameterList()) != null) {
+            builder.addAll(visitParameterList(parameterListContext));
+        }
+        return builder;
     }
 
     /**
@@ -820,8 +1062,25 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitParameterDeclaration(C11Parser.ParameterDeclarationContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YParameter visitParameterDeclaration(C11Parser.ParameterDeclarationContext ctx) {
+        C11Parser.DeclarationSpecifiersContext declarationSpecifiersContext;
+        C11Parser.DeclarationSpecifiers2Context declarationSpecifiers2Context;
+        C11Parser.DeclaratorContext declaratorContext;
+        C11Parser.AbstractDeclaratorContext abstractDeclaratorContext;
+        if ((declaratorContext = ctx.declarator()) != null) {
+            if ((declarationSpecifiersContext = ctx.declarationSpecifiers()) != null) {
+                // todo: parse type in specifiers
+                YEntity declarator = visitDeclarator(declaratorContext);
+                if (!(declarator instanceof YVariableRef)) {
+                    throw new YParserException(ctx, "Only identifier is allowed as function parameter name");
+                }
+                YVariableRef parameterEntity = (YVariableRef) declarator;
+                return new YParameter(new YMockType(), parameterEntity.getName());
+            }
+            throw new YParserException(ctx, "Could not find parameter type specifiers");
+        }
+
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -832,7 +1091,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitIdentifierList(C11Parser.IdentifierListContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -842,38 +1101,38 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitTypeName(C11Parser.TypeNameContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
      * abstractDeclarator
      * :   pointer
-     * |   pointer? directAbstractDeclarator gccDeclaratorExtension*
+     * |   pointer? directAbstractDeclarator
      * ;
      */
     @Override
     public YEntity visitAbstractDeclarator(C11Parser.AbstractDeclaratorContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
      * directAbstractDeclarator
-     * :   '(' abstractDeclarator ')' gccDeclaratorExtension*
+     * :   '(' abstractDeclarator ')'
      * |   '[' typeQualifierList? assignmentExpression? ']'
      * |   '[' 'static' typeQualifierList? assignmentExpression ']'
      * |   '[' typeQualifierList 'static' assignmentExpression ']'
      * |   '[' '*' ']'
-     * |   '(' parameterTypeList? ')' gccDeclaratorExtension*
+     * |   '(' parameterTypeList? ')'
      * |   directAbstractDeclarator '[' typeQualifierList? assignmentExpression? ']'
      * |   directAbstractDeclarator '[' 'static' typeQualifierList? assignmentExpression ']'
      * |   directAbstractDeclarator '[' typeQualifierList 'static' assignmentExpression ']'
      * |   directAbstractDeclarator '[' '*' ']'
-     * |   directAbstractDeclarator '(' parameterTypeList? ')' gccDeclaratorExtension*
+     * |   directAbstractDeclarator '(' parameterTypeList? ')'
      * ;
      */
     @Override
     public YEntity visitDirectAbstractDeclarator(C11Parser.DirectAbstractDeclaratorContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -883,7 +1142,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitTypedefName(C11Parser.TypedefNameContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -894,8 +1153,8 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitInitializer(C11Parser.InitializerContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YExpression visitInitializer(C11Parser.InitializerContext ctx) {
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -906,7 +1165,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitInitializerList(C11Parser.InitializerListContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -916,7 +1175,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitDesignation(C11Parser.DesignationContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -927,7 +1186,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitDesignatorList(C11Parser.DesignatorListContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -938,7 +1197,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitDesignator(C11Parser.DesignatorContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -948,7 +1207,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitStaticAssertDeclaration(C11Parser.StaticAssertDeclarationContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -959,12 +1218,35 @@ class C11ToYtreeConverterVisitor
      * |   selectionStatement
      * |   iterationStatement
      * |   jumpStatement
-     * |   ('__asm' | '__asm__') ('volatile' | '__volatile__') '(' (logicalOrExpression (',' logicalOrExpression)*)? (':' (logicalOrExpression (',' logicalOrExpression)*)?)* ')' ';'
      * ;
      */
     @Override
-    public YEntity visitStatement(C11Parser.StatementContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YStatement visitStatement(C11Parser.StatementContext ctx) {
+        C11Parser.LabeledStatementContext labeledStatementContext = ctx.labeledStatement();
+        if (labeledStatementContext != null) {
+            return visitLabeledStatement(labeledStatementContext);
+        }
+        C11Parser.CompoundStatementContext compoundStatementContext = ctx.compoundStatement();
+        if (compoundStatementContext != null) {
+            return visitCompoundStatement(compoundStatementContext);
+        }
+        C11Parser.ExpressionStatementContext expressionStatementContext = ctx.expressionStatement();
+        if (expressionStatementContext != null) {
+            return visitExpressionStatement(expressionStatementContext);
+        }
+        C11Parser.SelectionStatementContext selectionStatementContext = ctx.selectionStatement();
+        if (selectionStatementContext != null) {
+            return visitSelectionStatement(selectionStatementContext);
+        }
+        C11Parser.IterationStatementContext iterationStatementContext = ctx.iterationStatement();
+        if (iterationStatementContext != null) {
+            return visitIterationStatement(iterationStatementContext);
+        }
+        C11Parser.JumpStatementContext jumpStatementContext = ctx.jumpStatement();
+        if (jumpStatementContext != null) {
+            return visitJumpStatement(jumpStatementContext);
+        }
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -975,8 +1257,9 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitLabeledStatement(C11Parser.LabeledStatementContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YStatement visitLabeledStatement(C11Parser.LabeledStatementContext ctx) {
+        // TODO
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -985,8 +1268,13 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitCompoundStatement(C11Parser.CompoundStatementContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YCompoundStatement visitCompoundStatement(C11Parser.CompoundStatementContext ctx) {
+        C11Parser.BlockItemListContext blockItemListContext = ctx.blockItemList();
+        YCompoundStatementBuilder builder = blockItemListContext != null
+                ? visitBlockItemList(blockItemListContext)
+                : new YCompoundStatementBuilder();
+        builder.markHasBraces();
+        return builder.build();
     }
 
     /**
@@ -996,8 +1284,17 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitBlockItemList(C11Parser.BlockItemListContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YCompoundStatementBuilder visitBlockItemList(C11Parser.BlockItemListContext ctx) {
+        YCompoundStatementBuilder builder = new YCompoundStatementBuilder();
+        C11Parser.BlockItemContext blockItemContext = ctx.blockItem();
+        if (blockItemContext != null) {
+            builder.addStatement(visitBlockItem(blockItemContext));
+        }
+        C11Parser.BlockItemListContext blockItemListContext = ctx.blockItemList();
+        if (blockItemListContext != null) {
+            builder.addAll(visitBlockItemList(blockItemListContext));
+        }
+        return builder;
     }
 
     /**
@@ -1007,8 +1304,16 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitBlockItem(C11Parser.BlockItemContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YStatement visitBlockItem(C11Parser.BlockItemContext ctx) {
+        C11Parser.DeclarationContext declarationContext = ctx.declaration();
+        if (declarationContext != null) {
+            return visitDeclaration(declarationContext);
+        }
+        C11Parser.StatementContext statementContext = ctx.statement();
+        if (statementContext != null) {
+            return visitStatement(statementContext);
+        }
+        throw new YParserException(ctx);
     }
 
     /**
@@ -1017,8 +1322,11 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitExpressionStatement(C11Parser.ExpressionStatementContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YLinearStatement visitExpressionStatement(C11Parser.ExpressionStatementContext ctx) {
+        C11Parser.ExpressionContext expressionContext = ctx.expression();
+        return expressionContext != null
+                ? new YLinearStatement(visitExpression(expressionContext))
+                : YLinearStatement.createEmptyStatement();
     }
 
     /**
@@ -1028,8 +1336,30 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitSelectionStatement(C11Parser.SelectionStatementContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YStatement visitSelectionStatement(C11Parser.SelectionStatementContext ctx) {
+        C11Parser.ExpressionContext expressionContext = ctx.expression();
+        C11Parser.StatementContext statement1Context = ctx.statement(0);
+        C11Parser.StatementContext statement2Context = ctx.statement(1);
+        if (expressionContext != null) {
+            YExpression expression = visitExpression(expressionContext);
+            if (statement1Context != null) {
+                YStatement statement1 = visitStatement(statement1Context);
+                if (C11TokensHelper.hasToken(ctx, C11Parser.If)) {
+                    YStatement statement2 = null;
+                    if (C11TokensHelper.hasToken(ctx, C11Parser.Else)) {
+                        if (statement2Context == null) {
+                            throw new YParserException(ctx, "Empty 'else' statement");
+                        }
+                        statement2 = visitStatement(statement2Context);
+                    }
+                    return new YBranchingStatement(expression, statement1, statement2);
+                }
+                if (C11TokensHelper.hasToken(ctx, C11Parser.Switch)) {
+                    throw new YParserNotImplementedException(ctx, "Switch is not implemented yet");
+                }
+            }
+        }
+        throw new YParserUnintendedStateException(ctx);
     }
 
     /**
@@ -1040,8 +1370,37 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitIterationStatement(C11Parser.IterationStatementContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YStatement visitIterationStatement(C11Parser.IterationStatementContext ctx) {
+        C11Parser.ExpressionContext expressionContext = ctx.expression();
+        C11Parser.StatementContext statementContext = ctx.statement();
+        C11Parser.ForConditionContext forConditionContext = ctx.forCondition();
+
+        YStatement statement = visitStatement(statementContext);
+        if (statementContext == null) {
+            throw new YParserException(ctx, "Missing loop statement");
+        }
+        boolean isDoWhile = C11TokensHelper.hasToken(ctx, C11Parser.Do);
+        boolean isWhile = !isDoWhile && C11TokensHelper.hasToken(ctx, C11Parser.While);
+        boolean isFor = C11TokensHelper.hasToken(ctx, C11Parser.For);
+
+        if (isDoWhile || isWhile) {
+            YExpression expression = visitExpression(expressionContext);
+            if (expression == null) {
+                throw new YParserException(ctx, "Missing loop expression");
+            }
+            YStatement loopStatement = new YLoopStatement(expression, statement);
+            if (isDoWhile) {
+                YCompoundStatementBuilder builder = new YCompoundStatementBuilder();
+                builder.addStatement(statement); //first iteration
+                builder.addStatement(loopStatement);
+                return builder.build();
+            }
+            return loopStatement;
+        }
+        if (isFor) {
+            throw new YParserNotImplementedException(ctx);
+        }
+        throw new YParserException(ctx);
     }
 
     /**
@@ -1052,7 +1411,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitForDeclaration(C11Parser.ForDeclarationContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -1063,7 +1422,8 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitForCondition(C11Parser.ForConditionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        return visitChildren(ctx);
+        //throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -1074,7 +1434,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitForExpression(C11Parser.ForExpressionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -1083,12 +1443,33 @@ class C11ToYtreeConverterVisitor
      * |   'continue' ';'
      * |   'break' ';'
      * |   'return' expression? ';'
-     * |   'goto' unaryExpression ';'
      * ;
      */
     @Override
-    public YEntity visitJumpStatement(C11Parser.JumpStatementContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+    public YJumpStatement visitJumpStatement(C11Parser.JumpStatementContext ctx) {
+        if (C11TokensHelper.hasToken(ctx, C11Parser.Goto)) {
+            TerminalNode identifier = ctx.Identifier();
+            if (identifier == null) {
+                throw new YParserException(ctx, "Missing goto label in jump statement");
+            }
+            YJumpLabel jumpToLabel = new YJumpLabel(identifier.getText());
+            return new YJumpStatement(jumpToLabel);
+        }
+        if (C11TokensHelper.hasToken(ctx, C11Parser.Continue)) {
+            return new YContinueStatementTemp();
+        }
+        if (C11TokensHelper.hasToken(ctx, C11Parser.Break)) {
+            return new YBreakStatementTemp();
+        }
+        if (C11TokensHelper.hasToken(ctx, C11Parser.Return)) {
+            C11Parser.ExpressionContext expressionContext = ctx.expression();
+            if (expressionContext != null) {
+                // TODO: process return value
+                throw new NotImplementedException("For now, return values are not supported");
+            }
+            return new YReturnStatementTemp();
+        }
+        throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -1131,7 +1512,10 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitFunctionDefinition(C11Parser.FunctionDefinitionContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        return visitChildren(ctx);
+        // iter over all return statements BUILDERS of 'compoundStatement' set exit statement to them
+        // return YFunctionDefinition
+        //throw new YParserNotImplementedException(ctx);
     }
 
     /**
@@ -1142,6 +1526,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitDeclarationList(C11Parser.DeclarationListContext ctx) {
-        throw new ParserNotImplementedException(ctx);
+        return visitChildren(ctx);
+        //throw new YParserNotImplementedException(ctx);
     }
 }

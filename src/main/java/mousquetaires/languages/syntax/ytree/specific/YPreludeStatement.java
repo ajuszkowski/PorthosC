@@ -1,23 +1,23 @@
 package mousquetaires.languages.syntax.ytree.specific;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.syntax.ytree.statements.YSequenceStatement;
-import mousquetaires.languages.syntax.ytree.statements.YStatement;
+import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
+import mousquetaires.languages.syntax.ytree.statements.YUnlabeledStatement;
 import mousquetaires.languages.visitors.YtreeVisitor;
 import mousquetaires.utils.YtreeUtils;
 
 import java.util.Iterator;
 
 
-public final class YPreludeStatement extends YStatement {
+public final class YPreludeStatement extends YUnlabeledStatement {
 
-    private final YSequenceStatement body;
+    private final YCompoundStatement body;
 
-    public YPreludeStatement(YSequenceStatement body) {
+    public YPreludeStatement(YCompoundStatement body) {
         this.body = body;
     }
 
-    public YSequenceStatement getBody() {
+    public YCompoundStatement getBody() {
         return body;
     }
 

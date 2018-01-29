@@ -1,8 +1,8 @@
 package mousquetaires.languages.syntax.ytree.specific;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.syntax.ytree.statements.YSequenceStatement;
-import mousquetaires.languages.syntax.ytree.statements.YStatement;
+import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
+import mousquetaires.languages.syntax.ytree.statements.YUnlabeledStatement;
 import mousquetaires.languages.visitors.YtreeVisitor;
 import mousquetaires.utils.YtreeUtils;
 
@@ -13,12 +13,12 @@ import java.util.Objects;
 /**
  * Temporary class representing explicitly defined processName in c-like code.
  */
-public class YProcessStatement extends YStatement {
+public class YProcessStatement extends YUnlabeledStatement {
 
     private final int processId;
-    private final YSequenceStatement body;
+    private final YCompoundStatement body;
 
-    public YProcessStatement(int processId, YSequenceStatement body) {
+    public YProcessStatement(int processId, YCompoundStatement body) {
         this.processId = processId;
         this.body = body;
     }
@@ -27,7 +27,7 @@ public class YProcessStatement extends YStatement {
         return processId;
     }
 
-    public YSequenceStatement getBody() {
+    public YCompoundStatement getBody() {
         return body;
     }
 

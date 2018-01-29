@@ -1,10 +1,9 @@
 package mousquetaires.tests.unit.languages.parsers.c11.statements;
 
-import mousquetaires.types.ZType;
 import mousquetaires.languages.syntax.ytree.expressions.YConstant;
 import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
-import mousquetaires.types.ZTypeName;
-import mousquetaires.types.ZTypeFactory;
+import mousquetaires.languages.syntax.ytree.types.YMockType;
+import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.tests.unit.languages.parsers.c11.C11ParseTest;
 
 
@@ -23,11 +22,11 @@ public abstract class C11ParseStatementTest extends C11ParseTest {
     protected YConstant constant2 = YConstant.fromValue(2);
     protected YConstant constant3 = YConstant.fromValue(3);
 
-    protected ZType typeInt = ZTypeFactory.getPrimitiveType(ZTypeName.Int);
-    protected ZType typeChar = ZTypeFactory.getPrimitiveType(ZTypeName.Char);
-    protected ZType typeShort = ZTypeFactory.getPrimitiveType(ZTypeName.Short);
-    protected ZType typeLong = ZTypeFactory.getPrimitiveType(ZTypeName.Long);
-    protected ZType typeLongLong = ZTypeFactory.getPrimitiveType(ZTypeName.LongLong);
-    protected ZType typeVoidPointer = ZTypeFactory.getPrimitiveType(ZTypeName.Void, 1);
+    protected YType typeInt = new YMockType();  //YPrimitiveTypeFactory.getPrimitiveType(YTypeName.Int);
+    protected YType typeChar = new YMockType();  //YPrimitiveTypeFactory.getPrimitiveType(YTypeName.Char);
+    protected YType typeShort = new YMockType();  //YPrimitiveTypeFactory.getPrimitiveType(YTypeName.Short);
+    protected YType typeLong = new YMockType();  //YPrimitiveTypeFactory.getPrimitiveType(YTypeName.Long);
+    protected YType typeLongLong = new YMockType();  //YPrimitiveTypeFactory.getPrimitiveType(YTypeName.LongLong);
+    protected YType typeVoidPointer = new YMockType();  //YPrimitiveTypeFactory.getPrimitiveType(YTypeName.Void, 1);
 
 }
