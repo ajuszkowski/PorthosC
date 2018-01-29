@@ -164,6 +164,7 @@ assignmentOperator
     :   '=' | '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '&=' | '^=' | '|='
     ;
 
+// (6.5.17)
 expression
     :   assignmentExpression
     |   expression ',' assignmentExpression
@@ -176,9 +177,16 @@ constantExpression
 // Declarations
 
 declaration
-    :   declarationSpecifiers initDeclaratorList? ';'
+    :   declarationSpecifiers initDeclaratorList ';'
     |   staticAssertDeclaration
     ;
+// original in C11 standard:
+//declaration
+//    :   declarationSpecifiers initDeclaratorList? ';'
+//    |   staticAssertDeclaration
+//    ;
+// I changed it because in statements like `label int a;` all the tokens are
+// matched as declarationSpecifiers, while 'a' must be matched as initDeclaratorList
 
 declarationSpecifiers
     :   declarationSpecifier+
@@ -219,10 +227,15 @@ typeSpecifier
     :   ('void'
     |   'char'
     |   'short'
+//    |   'short int'
     |   'int'
     |   'long'
+//    |   'long int'
+//    |   'long long'
+//    |   'long long int'
     |   'float'
     |   'double'
+//    |   'long double'
     |   'signed'
     |   'unsigned'
     |   '_Bool'
@@ -313,9 +326,10 @@ declarator
     :   pointer? directDeclarator
     ;
 
+// (6.7.6)
 directDeclarator
     :   Identifier
-    |   '(' declarator ')'
+    |   '(' declarator ')' //what is this for? pointer to a function?
     |   directDeclarator '[' typeQualifierList? assignmentExpression? ']'
     |   directDeclarator '[' 'static' typeQualifierList? assignmentExpression ']'
     |   directDeclarator '[' typeQualifierList 'static' assignmentExpression ']'
@@ -333,6 +347,7 @@ pointer
 //    :   '*' typeQualifierList?
 //    |   '*' typeQualifierList? pointer
 //    ;
+// I changed it to be able to process pointer references as function parameters (e.g. `void fun(int& a) {...}`)
 
 typeQualifierList
     :   typeQualifier
@@ -443,9 +458,15 @@ blockItemList
     ;
 
 blockItem
-    :   declaration
-    |   statement
+    :   statement
+    |   declaration
     ;
+// originally in C11 standard:
+//blockItem
+//    :   statement
+//    |   declaration
+//    ;
+// but this recognises the statement `{ fun_call(); }` as a decalaration
 
 expressionStatement
     :   expression? ';'
@@ -505,8 +526,7 @@ externalDeclaration
     ;
 
 functionDefinition
-    // in C11 standard: 'declarationSpecifiers declarator declarationList? compoundStatement'
-    //:   declarationSpecifiers? declarator declarationList? compoundStatement
+    // in C11 standard: `declarationSpecifiers declarator declarationList? compoundStatement`
     :   declarationSpecifiers? declarator declarationList? compoundStatement
     ;
 
