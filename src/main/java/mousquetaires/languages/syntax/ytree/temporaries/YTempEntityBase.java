@@ -11,16 +11,16 @@ public abstract class YTempEntityBase implements YTempEntity {
 
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
-        throw new NotSupportedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public <S> S accept(YtreeVisitor<S> visitor) {
-        throw new NotSupportedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public YEntity copy() {
-        throw new NotSupportedException();
+        throw new UnsupportedOperationException();
     }
 }

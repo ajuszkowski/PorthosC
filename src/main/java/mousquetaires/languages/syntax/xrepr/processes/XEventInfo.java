@@ -17,6 +17,7 @@ public class XEventInfo {
 
     /** ensures that events in a trace are unique */
     private final int stamp;
+    // todo: perhaps add nullable labels to the event info - for jumps // <- ??
 
     XEventInfo(int processId) {
         this.processId = processId;

@@ -24,17 +24,17 @@ public enum YUnaryOperatorKindTemp implements YTempEntity {
 
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
-        throw new NotSupportedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public <T> T accept(YtreeVisitor<T> visitor) {
-        throw new NotSupportedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public YEntity copy() {
-        throw new NotSupportedException();
+        throw new UnsupportedOperationException();
     }
 
     public static YUnaryOperatorKindTemp tryParse(String value) {

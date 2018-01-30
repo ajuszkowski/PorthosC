@@ -21,7 +21,7 @@ public class YFakeStatement extends YStatement {
 
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
-        throw new NotSupportedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override

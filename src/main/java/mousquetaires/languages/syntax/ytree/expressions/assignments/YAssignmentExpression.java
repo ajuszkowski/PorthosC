@@ -33,7 +33,7 @@ public class YAssignmentExpression extends YMultiExpression {
     //
     //    @Override
     //    public <T> T accept(YtreeVisitor<T> visitor) {
-    //        throw new NotSupportedException();
+    //        throw new UnsupportedOperationException();
     //    }
     //
     //    @Override
