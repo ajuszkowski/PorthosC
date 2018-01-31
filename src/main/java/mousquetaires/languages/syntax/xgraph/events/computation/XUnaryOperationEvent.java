@@ -9,11 +9,16 @@ public class XUnaryOperationEvent extends XNullaryComputationEvent {
     private final XOperator operator;
 
     public XUnaryOperationEvent(XEventInfo info, XOperator operator, XLocalMemoryUnit operand1) {
-        super(info, operator.getBitness(), operand1);
+        super(info, operand1);
         this.operator = operator;
     }
 
     public XOperator getOperator() {
         return operator;
+    }
+
+    @Override
+    public String toString() {
+        return "eval(" + getOperator() + " " + getFirstOperand() + ")";
     }
 }

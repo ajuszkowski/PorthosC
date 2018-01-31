@@ -234,7 +234,7 @@ class C11ToYtreeConverterVisitor
             }
             // 'sizeof' unaryExpression:
             if (C11ParserHelper.hasToken(ctx, C11Parser.Sizeof)) {
-                throw new YParserNotImplementedException(ctx, "Cast operation is not implemented yet");
+                throw new YParserNotImplementedException(ctx);
             }
         }
         C11Parser.UnaryOperatorContext unaryOperatorContext = ctx.unaryOperator();

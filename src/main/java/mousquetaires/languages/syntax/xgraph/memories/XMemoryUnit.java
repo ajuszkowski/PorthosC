@@ -1,38 +1,13 @@
 package mousquetaires.languages.syntax.xgraph.memories;
 
-
 import mousquetaires.languages.syntax.xgraph.XEntity;
 
 
-// Note: here the 'memoryevents' does not signifies the RAM memoryevents, it's just a storage
-// containing some value (e.g. shared memoryevents = RAM, or local memoryevents = register)
-public abstract class XMemoryUnit implements XEntity {
+public interface XMemoryUnit extends XEntity {
 
-    private final String name;
-    private final Bitness bitness;
+    Bitness getBitness();
 
-    XMemoryUnit(String name, Bitness bitness) {
-        this.name = name;
-        this.bitness = bitness;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Bitness getBitness() {
-        return bitness;
-    }
-
-    @Override
-    public String toString() {
-        return getName() + " " + getBitness();
-    }
-
-    // todo: hashcode
-    
-
-    public enum Bitness {
+    enum Bitness {
         bit1,
         bit16,
         bit32,
@@ -49,8 +24,6 @@ public abstract class XMemoryUnit implements XEntity {
                     throw new IllegalArgumentException(this.name());
             }
         }
-
-
 
         public static Bitness parseInt(int bitness) {
             for (Bitness bit : values()) {

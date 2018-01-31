@@ -1,13 +1,20 @@
 //void P9 (int a) {} //nested declarator
 
 void P1(spinlock_t *sl, long long *x0, int& x1, char c) {
-    if (x0 == 1) {
-        x = 1;
-        a = 0;
+//    while (1) {
+//        x++;
+//        y--;
+//    }
+    y = 1;
+    if (x == 100) {
+        a = 1;
+        b = 0;
     }
     else {
-        x = 2;
+        c = 2;
     }
+
+    d = 3;
 
 //    lll int r0;
 //    void* a, b, c ,d, e;

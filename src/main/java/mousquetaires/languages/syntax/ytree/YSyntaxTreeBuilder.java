@@ -1,18 +1,14 @@
 package mousquetaires.languages.syntax.ytree;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.syntax.ytree.statements.YFakeStatement;
-import mousquetaires.utils.Pair;
 import mousquetaires.utils.patterns.Builder;
-
-import java.util.Stack;
 
 
 public class YSyntaxTreeBuilder extends Builder<YSyntaxTree> {
 
     private final ImmutableList.Builder<YEntity> roots;
-    private final Stack<Pair<YFakeStatement, YFakeStatement>> loopContextStack = new Stack<>();
-    private YFakeStatement currentFunctionExitNode;
+    //private final Stack<Pair<YFakeStatement, YFakeStatement>> loopContextStack = new Stack<>();
+    //private YFakeStatement currentFunctionExitNode;
 
     public YSyntaxTreeBuilder() {
         this.roots = new ImmutableList.Builder<>();

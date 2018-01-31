@@ -1,15 +1,15 @@
 //package mousquetaires.languages.syntax.xrepr.events.memory;
 //
 //import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
-//import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
+//import mousquetaires.languages.syntax.xgraph.memories.XRegister;
 //import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 //import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 //
 //
 ///** Initial write event to any kind of memoryevents location ({@link XMemoryUnit}) */
-//public class XInitialWriteEvent extends XLocalMemoryEvent {
+//public class XInitialWriteEvent extends XRegisterMemoryEvent {
 //
-//    public XInitialWriteEvent(XEventInfo info, XLocalMemoryUnit destination, XConstant value) {
+//    public XInitialWriteEvent(XEventInfo info, XRegister destination, XConstant value) {
 //        super(info, destination, value);
 //    }
 //

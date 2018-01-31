@@ -6,4 +6,8 @@ import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
 
 public interface XEvent extends XEntity {
     XEventInfo getInfo();
+
+    void setNextEvent(XEvent next);
+
+    XEvent getNextEvent();
 }

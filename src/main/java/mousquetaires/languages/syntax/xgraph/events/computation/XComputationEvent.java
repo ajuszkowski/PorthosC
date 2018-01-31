@@ -1,20 +1,21 @@
 package mousquetaires.languages.syntax.xgraph.events.computation;
 
-import mousquetaires.languages.syntax.xgraph.events.memory.XLocalEvent;
+import mousquetaires.languages.syntax.xgraph.events.XEventBase;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
 
 
-public abstract class XComputationEvent extends XLocalMemoryUnit implements XLocalEvent {
-    private final XEventInfo info;
+public abstract class XComputationEvent extends XEventBase implements XLocalMemoryUnit {
 
-    XComputationEvent(Bitness bitness, XEventInfo info) {
-        super("comp" + info.getStamp(), bitness);
-        this.info = info;
+    private final Bitness bitness;
+
+    public XComputationEvent(XEventInfo info, Bitness bitness) {
+        super(info);
+        this.bitness = bitness;
     }
 
     @Override
-    public XEventInfo getInfo() {
-        return info;
+    public Bitness getBitness() {
+        return bitness;
     }
 }

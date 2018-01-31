@@ -5,34 +5,6 @@ import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 
 
 public class YRelativeBinaryExpression extends YBinaryExpression {
-    public enum Kind implements YBinaryExpression.Kind {
-        Equals,
-        NotEquals,
-        Greater,
-        GreaterOrEquals,
-        Less,
-        LessOrEquals,
-        ;
-
-        @Override
-        public String toString() {
-            switch (this) {
-                case Equals:          return "==";
-                case NotEquals:       return "!=";
-                case Greater:         return ">";
-                case GreaterOrEquals: return ">=";
-                case Less:            return "<";
-                case LessOrEquals:    return "<=";
-                default:
-                    throw new IllegalArgumentException(this.name());
-            }
-        }
-
-        @Override
-        public YRelativeBinaryExpression createExpression(YExpression leftExpression, YExpression rightExpression) {
-            return new YRelativeBinaryExpression(this, leftExpression, rightExpression);
-        }
-    }
 
     protected YRelativeBinaryExpression(Kind operator, YExpression leftExpression, YExpression rightExpression) {
         super(operator, leftExpression, rightExpression);
@@ -114,5 +86,32 @@ public class YRelativeBinaryExpression extends YBinaryExpression {
     //    return setRegs;
     //}
 
+    public enum Kind implements YBinaryExpression.Kind {
+        Equals,
+        NotEquals,
+        Greater,
+        GreaterOrEquals,
+        Less,
+        LessOrEquals,
+        ;
 
+        @Override
+        public String toString() {
+            switch (this) {
+                case Equals:          return "==";
+                case NotEquals:       return "!=";
+                case Greater:         return ">";
+                case GreaterOrEquals: return ">=";
+                case Less:            return "<";
+                case LessOrEquals:    return "<=";
+                default:
+                    throw new IllegalArgumentException(this.name());
+            }
+        }
+
+        @Override
+        public YRelativeBinaryExpression createExpression(YExpression leftExpression, YExpression rightExpression) {
+            return new YRelativeBinaryExpression(this, leftExpression, rightExpression);
+        }
+    }
 }

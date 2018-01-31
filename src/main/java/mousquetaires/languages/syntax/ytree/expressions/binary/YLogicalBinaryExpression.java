@@ -5,25 +5,6 @@ import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 
 
 public class YLogicalBinaryExpression extends YBinaryExpression {
-    public enum Kind implements YBinaryExpression.Kind {
-        Conjunction,
-        Disjunction,
-        ;
-
-        @Override
-        public String toString() {
-            switch (this) {
-                case Conjunction:     return "&&";
-                case Disjunction:     return "||";
-                default:
-                    throw new IllegalArgumentException(this.name());
-            }
-        }
-
-        public YLogicalBinaryExpression createExpression(YExpression leftExpression, YExpression rightExpression) {
-            return new YLogicalBinaryExpression(this, leftExpression, rightExpression);
-        }
-    }
 
     //public static YLogicalBinaryExpression createConjunction() {
     //    return new YLogicalBinaryExpression(Kind.Conjunction, leftExpression, rightExpression);
@@ -55,5 +36,25 @@ public class YLogicalBinaryExpression extends YBinaryExpression {
     @Override
     public String toString() {
         return getLeftExpression() + " " + getKind() + " " + getRightExpression();
+    }
+
+    public enum Kind implements YBinaryExpression.Kind {
+        Conjunction,
+        Disjunction,
+        ;
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case Conjunction:     return "&&";
+                case Disjunction:     return "||";
+                default:
+                    throw new IllegalArgumentException(this.name());
+            }
+        }
+
+        public YLogicalBinaryExpression createExpression(YExpression leftExpression, YExpression rightExpression) {
+            return new YLogicalBinaryExpression(this, leftExpression, rightExpression);
+        }
     }
 }

@@ -1,23 +1,23 @@
 package mousquetaires.languages.syntax.xgraph;
 
-import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XRegister;
+import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnitBase;
 
 
 public class XAssertion implements XEntity {
-    private final XMemoryUnit memoryUnit;
-    private final XLocalMemoryUnit value;
+    private final XMemoryUnitBase memoryUnit;
+    private final XRegister value;
 
-    public XAssertion(XMemoryUnit memoryUnit, XLocalMemoryUnit value) {
+    public XAssertion(XMemoryUnitBase memoryUnit, XRegister value) {
         this.memoryUnit = memoryUnit;
         this.value = value;
     }
 
-    public XMemoryUnit getMemoryUnit() {
+    public XMemoryUnitBase getMemoryUnit() {
         return memoryUnit;
     }
 
-    public XLocalMemoryUnit getValue() {
+    public XRegister getValue() {
         return value;
     }
 }

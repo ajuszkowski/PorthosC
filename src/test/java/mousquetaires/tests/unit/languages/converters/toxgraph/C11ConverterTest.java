@@ -4,8 +4,7 @@ import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.processes.XProcess;
 import mousquetaires.tests.unit.languages.converters.AbstractConverterUnitTest;
-
-import static org.junit.Assert.assertEquals;
+import mousquetaires.utils.exceptions.NotImplementedException;
 
 
 public abstract class C11ConverterTest extends AbstractConverterUnitTest {
@@ -19,11 +18,12 @@ public abstract class C11ConverterTest extends AbstractConverterUnitTest {
         //assertEquals("preludes:", expected.getPrelude(), actual.getPrelude());
 
         ImmutableList<XProcess> actualProcesses = actual.getProcesses();
-        ImmutableList<XProcess> expectedProcesses = expected.getProcesses();
-        assertEquals("processes number does mismatch:", expectedProcesses.size(), actualProcesses.size());
-        for (int i = 0; i < expectedProcesses.size(); ++i) {
-            assertEquals("mismatch in " + i + "th statement:", expectedProcesses.get(i), actualProcesses.get(i));
-        }
+        throw new NotImplementedException();
+        //ImmutableList<XProcess> expectedProcesses = expected.getProcesses();
+        //assertEquals("processes number does mismatch:", expectedProcesses.size(), actualProcesses.size());
+        //for (int i = 0; i < expectedProcesses.size(); ++i) {
+        //    assertEquals("mismatch in " + i + "th statement:", expectedProcesses.get(i), actualProcesses.get(i));
+        //}
     }
 
 }

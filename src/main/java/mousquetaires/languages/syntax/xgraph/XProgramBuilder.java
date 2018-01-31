@@ -1,10 +1,10 @@
 package mousquetaires.languages.syntax.xgraph;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XRegister;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
-import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnitBase;
+import mousquetaires.languages.syntax.xgraph.memories.XLocation;
 import mousquetaires.languages.syntax.xgraph.processes.XProcess;
 import mousquetaires.languages.syntax.xgraph.processes.XProcessBuilder;
 import mousquetaires.utils.patterns.Builder;
@@ -87,47 +87,47 @@ public class XProgramBuilder extends Builder<XProgram> {
     }
 
     //public XBinaryOperationEvent emitComputationEvent(XOperator operator, XMemoryUnit leftOperand, XMemoryUnit rightOperand) {
-    //    XLocalMemoryUnit left = leftOperand instanceof XLocalMemoryUnit
-    //            ? (XLocalMemoryUnit) leftOperand
+    //    XRegister left = leftOperand instanceof XRegister
+    //            ? (XRegister) leftOperand
     //            : copyToLocalMemoryIfNecessary(leftOperand);
-    //    XLocalMemoryUnit right = rightOperand instanceof XLocalMemoryUnit
-    //            ? (XLocalMemoryUnit) rightOperand
+    //    XRegister right = rightOperand instanceof XRegister
+    //            ? (XRegister) rightOperand
     //            : copyToLocalMemoryIfNecessary(rightOperand);
     //    return currentProcess.emitComputationEvent(operator, left, right);
     //}
 
-    public XLocalMemoryUnit copyToLocalMemory(XSharedMemoryUnit shared) {
-        XLocalMemoryUnit tempLocal = memoryManager.newLocalMemoryUnit();
+    public XRegister copyToLocalMemory(XLocation shared) {
+        XRegister tempLocal = memoryManager.newLocalMemoryUnit();
         currentProcess.emitMemoryEvent(tempLocal, shared);
         return tempLocal;
     }
 
-    public XLocalMemoryUnit copyToLocalMemoryIfNecessary(XMemoryUnit sharedOrLocal) {
-        if (sharedOrLocal instanceof XSharedMemoryUnit) {
-            copyToLocalMemory((XSharedMemoryUnit) sharedOrLocal);
+    public XRegister copyToLocalMemoryIfNecessary(XMemoryUnitBase sharedOrLocal) {
+        if (sharedOrLocal instanceof XLocation) {
+            copyToLocalMemory((XLocation) sharedOrLocal);
         }
-        else if (sharedOrLocal instanceof XLocalMemoryUnit) {
-            return (XLocalMemoryUnit) sharedOrLocal;
+        else if (sharedOrLocal instanceof XRegister) {
+            return (XRegister) sharedOrLocal;
         }
         throw new IllegalArgumentException(sharedOrLocal.getClass().getName());
     }
 
-    //public XMemoryEvent emitMemoryEvent(XMemoryUnit source) {
+    //public XMemoryEventBase emitMemoryEvent(XMemoryUnit source) {
     //    return emitMemoryEvent(memoryManager.newLocalMemoryUnit(), source);
     //}
     //
-    //public XMemoryEvent emitMemoryEvent(XMemoryUnit destination, XMemoryUnit source) {
-    //    XLocalMemoryUnit destinationLocal = destination instanceof XLocalMemoryUnit
-    //            ? (XLocalMemoryUnit) destination
+    //public XMemoryEventBase emitMemoryEvent(XMemoryUnit destination, XMemoryUnit source) {
+    //    XRegister destinationLocal = destination instanceof XRegister
+    //            ? (XRegister) destination
     //            : null;
-    //    XLocalMemoryUnit sourceLocal = source instanceof XLocalMemoryUnit
-    //            ? (XLocalMemoryUnit) source
+    //    XRegister sourceLocal = source instanceof XRegister
+    //            ? (XRegister) source
     //            : null;
-    //    XLocalMemoryUnit destinationShared = destination instanceof XLocalMemoryUnit
-    //            ? (XLocalMemoryUnit) destination
+    //    XRegister destinationShared = destination instanceof XRegister
+    //            ? (XRegister) destination
     //            : null;
-    //    XLocalMemoryUnit sourceShared = source instanceof XLocalMemoryUnit
-    //            ? (XLocalMemoryUnit) source
+    //    XRegister sourceShared = source instanceof XRegister
+    //            ? (XRegister) source
     //            : null;
     //
     //    if (destinationLocal != null) {
@@ -143,7 +143,7 @@ public class XProgramBuilder extends Builder<XProgram> {
     //            return currentProcess.emitMemoryEvent(destinationShared, sourceLocal);
     //        }
     //        if (sourceShared != null) {
-    //            XLocalMemoryUnit tempLocal = copyToLocalMemoryIfNecessary(sourceShared);
+    //            XRegister tempLocal = copyToLocalMemoryIfNecessary(sourceShared);
     //            return currentProcess.emitMemoryEvent(destinationShared, tempLocal);
     //        }
     //    }

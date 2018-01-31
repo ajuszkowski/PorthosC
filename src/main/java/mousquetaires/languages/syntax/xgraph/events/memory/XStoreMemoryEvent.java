@@ -5,9 +5,9 @@ import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
 
 
-/** Write event from local memoryevents (registry, {@link XLocalMemoryUnit})
- * to the shared memoryevents ({@link XLocalMemoryUnit}) */
-public class XStoreMemoryEvent extends XSharedMemoryEvent {
+/** Write event from local memory (registry, {@link XLocalMemoryUnit})
+ * to the shared memory ({@link XLocalMemoryUnit}) */
+public class XStoreMemoryEvent extends XMemoryEventBase implements XSharedMemoryEvent {
 
     //public final XMemoryOrder memoryOrder;
 
@@ -27,6 +27,6 @@ public class XStoreMemoryEvent extends XSharedMemoryEvent {
 
     @Override
     public String toString() {
-        return getDestination() + "<- store(" + getSource() + ", " + /*memoryOrder +*/ ")";
+        return getDestination() + ":=store(" + getSource() + /*", " + memoryOrder +*/ ")";
     }
 }

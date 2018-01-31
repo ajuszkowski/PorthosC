@@ -1,22 +1,19 @@
 package mousquetaires.languages.syntax.xgraph.processes;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import mousquetaires.languages.syntax.xgraph.XEntity;
-import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XControlFlowEvent;
-import mousquetaires.languages.syntax.xgraph.events.memory.XLocalMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
 
 
 public class XProcess implements XEntity {
 
-    private final ImmutableList<XLocalMemoryEvent> localMemoryEvents;
+    private final ImmutableList<XRegisterMemoryEvent> localMemoryEvents;
     private final ImmutableList<XSharedMemoryEvent> sharedMemoryEvents;
     private final ImmutableList<XComputationEvent> computationEvents;
-    private final ImmutableList<XControlFlowEvent> jumpEvents;
-    private final ImmutableMap<XEvent, XEvent> nextEvents;
+    private final ImmutableList<XControlFlowEvent> controlFlowEvents;
     public final String processId;
 
     public String getProcessId() {
@@ -28,8 +25,7 @@ public class XProcess implements XEntity {
         this.localMemoryEvents = builder.buildLocalMemoryEvents();
         this.sharedMemoryEvents = builder.buildSharedMemoryEvents();
         this.computationEvents = builder.buildComputationEvents();
-        this.jumpEvents = builder.buildJumpEvents();
-        this.nextEvents = builder.buildNextEvents();
+        this.controlFlowEvents = builder.buildControlFlowEvents();
     }
 
 

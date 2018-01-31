@@ -1,15 +1,15 @@
 //package mousquetaires.languages.structure.xrepr.events.memory;
 //
 //import mousquetaires.languages.toxgraph.events.XEventInfo;
-//import mousquetaires.languages.toxgraph.memoryevents.XLocalMemoryUnit;
+//import mousquetaires.languages.toxgraph.memoryevents.XRegister;
 //
-//public class XReadEvent extends XMemoryEvent {
+//public class XReadEvent extends XMemoryEventBase {
 //
-//    public final XLocalMemoryUnit memoryUnit;
+//    public final XRegister memoryUnit;
 //
 //    // todo: value - ?
 //
-//    public XReadEvent(XEventInfo info, XLocalMemoryUnit memoryUnit) {
+//    public XReadEvent(XEventInfo info, XRegister memoryUnit) {
 //        super(info);
 //        this.memoryUnit = memoryUnit;
 //    }

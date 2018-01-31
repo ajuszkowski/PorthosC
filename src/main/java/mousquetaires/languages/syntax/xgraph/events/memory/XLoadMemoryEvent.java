@@ -6,9 +6,9 @@ import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
 
 
-/** Load event from shared memoryevents ({@link XLocalMemoryUnit})
+/** Load event from shared memory ({@link XLocalMemoryUnit})
  * to local storage (registry, {@link XLocalMemoryUnit}) */
-public class XLoadMemoryEvent extends XSharedMemoryEvent {
+public class XLoadMemoryEvent extends XMemoryEventBase implements XSharedMemoryEvent {
 
     public XLoadMemoryEvent(XEventInfo info, XLocalMemoryUnit destination, XSharedMemoryUnit source/*, XMemoryOrder memoryOrder*/) {
         super(info, destination, source);
@@ -30,6 +30,6 @@ public class XLoadMemoryEvent extends XSharedMemoryEvent {
 
     @Override
     public String toString() {
-        return getDestination() + ":= load(" + getSource() /*+ ", " + memoryOrder*/ + ")";
+        return getDestination() + ":=load(" + getSource() /*+ ", " + memoryOrder*/ + ")";
     }
 }

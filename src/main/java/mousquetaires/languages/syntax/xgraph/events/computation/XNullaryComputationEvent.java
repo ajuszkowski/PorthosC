@@ -9,15 +9,16 @@ public class XNullaryComputationEvent extends XComputationEvent {
     private final XLocalMemoryUnit firstOperand;
 
     public XNullaryComputationEvent(XEventInfo info, XLocalMemoryUnit firstOperand) {
-        this(info, firstOperand.getBitness(), firstOperand);
-    }
-
-    protected XNullaryComputationEvent(XEventInfo info, Bitness bitness, XLocalMemoryUnit firstOperand) {
-        super(bitness, info);
+        super(info, firstOperand.getBitness());
         this.firstOperand = firstOperand;
     }
 
     public XLocalMemoryUnit getFirstOperand() {
         return firstOperand;
+    }
+
+    @Override
+    public String toString() {
+        return "eval(" + getFirstOperand() + ")";
     }
 }

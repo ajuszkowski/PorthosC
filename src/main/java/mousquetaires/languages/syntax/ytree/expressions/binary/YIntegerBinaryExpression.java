@@ -6,6 +6,34 @@ import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 
 
 public class YIntegerBinaryExpression extends YBinaryExpression {
+
+    public static YIntegerBinaryExpression createIncrementExpression(YExpression leftExpression) {
+        return new YIntegerBinaryExpression(Kind.Plus, leftExpression, YConstant.fromValue(1));
+    }
+
+    public static YIntegerBinaryExpression createDecrementExpression(YExpression leftExpression) {
+        return new YIntegerBinaryExpression(Kind.Minus, leftExpression, YConstant.fromValue(1));
+    }
+
+    private YIntegerBinaryExpression(Kind kind, YExpression leftExpression, YExpression rightExpression) {
+        super(kind, leftExpression, rightExpression);
+    }
+
+    @Override
+    public YIntegerBinaryExpression.Kind getKind() {
+        return (YIntegerBinaryExpression.Kind) super.getKind();
+    }
+
+    @Override
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public YIntegerBinaryExpression copy() {
+        return new YIntegerBinaryExpression(getKind(), getLeftExpression(), getRightExpression());
+    }
+
     public enum Kind implements YBinaryExpression.Kind {
         Plus,
         Minus,
@@ -43,32 +71,5 @@ public class YIntegerBinaryExpression extends YBinaryExpression {
         public YIntegerBinaryExpression createExpression(YExpression leftExpression, YExpression rightExpression) {
             return new YIntegerBinaryExpression(this, leftExpression, rightExpression);
         }
-    }
-
-    public static YIntegerBinaryExpression createIncrementExpression(YExpression leftExpression) {
-        return new YIntegerBinaryExpression(Kind.Plus, leftExpression, YConstant.fromValue(1));
-    }
-
-    public static YIntegerBinaryExpression createDecrementExpression(YExpression leftExpression) {
-        return new YIntegerBinaryExpression(Kind.Minus, leftExpression, YConstant.fromValue(1));
-    }
-
-    private YIntegerBinaryExpression(Kind kind, YExpression leftExpression, YExpression rightExpression) {
-        super(kind, leftExpression, rightExpression);
-    }
-
-    @Override
-    public YIntegerBinaryExpression.Kind getKind() {
-        return (YIntegerBinaryExpression.Kind) super.getKind();
-    }
-
-    @Override
-    public <T> T accept(YtreeVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
-
-    @Override
-    public YIntegerBinaryExpression copy() {
-        return new YIntegerBinaryExpression(getKind(), getLeftExpression(), getRightExpression());
     }
 }

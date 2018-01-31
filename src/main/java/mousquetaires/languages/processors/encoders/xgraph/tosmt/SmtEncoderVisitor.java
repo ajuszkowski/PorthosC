@@ -6,13 +6,12 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputat
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperationEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XConditionalJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XMethodCallEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XUnconditionalJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
-import mousquetaires.languages.syntax.xgraph.events.memory.XLocalMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XConstant;
-import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XRegister;
+import mousquetaires.languages.syntax.xgraph.memories.XLocation;
 import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
@@ -20,12 +19,12 @@ import mousquetaires.utils.exceptions.NotImplementedException;
 public class SmtEncoderVisitor implements XgraphVisitor<String> {
 
     @Override
-    public String visit(XLocalMemoryUnit node) {
+    public String visit(XRegister node) {
         throw new NotImplementedException();
     }
 
     @Override
-    public String visit(XSharedMemoryUnit node) {
+    public String visit(XLocation node) {
         throw new NotImplementedException();
     }
 
@@ -50,7 +49,7 @@ public class SmtEncoderVisitor implements XgraphVisitor<String> {
     }
 
     @Override
-    public String visit(XLocalMemoryEvent node) {
+    public String visit(XRegisterMemoryEvent node) {
         throw new NotImplementedException();
     }
 
@@ -66,11 +65,6 @@ public class SmtEncoderVisitor implements XgraphVisitor<String> {
 
     @Override
     public String visit(XConditionalJumpEvent node) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public String visit(XUnconditionalJumpEvent node) {
         throw new NotImplementedException();
     }
 

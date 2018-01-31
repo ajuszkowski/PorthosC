@@ -9,7 +9,7 @@ import java.util.Iterator;
 
 
 public abstract class YUnaryExpression extends YMultiExpression {
-    protected interface Kind {
+    public interface Kind {
         YUnaryExpression createExpression(YExpression baseExpression);
     }
 

@@ -5,7 +5,7 @@ package mousquetaires.languages.syntax.xgraph.memories;
  * For example, the code 'r1 <- 1' is syntactic sugar for 'r1 <- m1' where the memoryevents location 'm1'
  * contains value '1', though it does not need to be considered in weak memoryevents model, as there are
  * no writes to that location, therefore we model it as a local storage. */
-public class XConstant extends XLocalMemoryUnit {
+public class XConstant extends XRegister {
 
     public final Object value;
 

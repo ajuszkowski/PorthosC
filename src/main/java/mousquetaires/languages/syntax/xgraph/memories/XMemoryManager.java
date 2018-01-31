@@ -12,8 +12,8 @@ import java.util.Map;
  */
 public final class XMemoryManager {
 
-    private final Map<String, XLocalMemoryUnit> localLocations;
-    private final Map<String, XSharedMemoryUnit> sharedLocations;
+    private final Map<String, XRegister> localLocations;
+    private final Map<String, XLocation> sharedLocations;
 
     public XMemoryManager(ProgramLanguage language, DataModel dataModel) {
         // todo: use parameters for better memoryevents allocation
@@ -26,21 +26,22 @@ public final class XMemoryManager {
     //    return new XConstant(value, type);
     //}
 
-    public XLocalMemoryUnit newLocalMemoryUnit() {
+    public XRegister newLocalMemoryUnit() {
         String name = newTempLocalName();
         while (localLocations.containsKey(name)) {
             name = newTempLocalName();
         }
         //return declareLocalMemoryUnit(name, null);
-        return new XLocalMemoryUnit(name, XMemoryUnit.Bitness.bit16);// TODO: process bitness!!
+        return new XRegister(name, XMemoryUnitBase.Bitness.bit16);// TODO: process bitness!!
     }
 
-    public XConstant getConstant(Object value, XMemoryUnit.Bitness bitness) {
-        return new XConstant(value, bitness);
+    // TODO: process bitness
+    public XConstant getConstant(Object value) {//, XMemoryUnit.Bitness bitness) {
+        return new XConstant(value, XMemoryUnitBase.Bitness.bit16); //bitness);
     }
 
-    public XLocalMemoryUnit getLocalMemoryUnit(String name) {
-        XLocalMemoryUnit result = localLocations.get(name);
+    public XRegister getLocalMemoryUnit(String name) {
+        XRegister result = localLocations.get(name);
         if (result == null) {
             // todo: probably, do not need to declare local memoryevents (registers)
             //throw new UndeclaredMemoryUnitException(name);
@@ -49,8 +50,8 @@ public final class XMemoryManager {
         return result;
     }
 
-    public XSharedMemoryUnit getSharedMemoryUnit(String name) {
-        XSharedMemoryUnit result = sharedLocations.get(name);
+    public XLocation getSharedMemoryUnit(String name) {
+        XLocation result = sharedLocations.get(name);
         if (result == null) {
             // todo: probably processName undeclared shared memoryevents units as well
             throw new UndeclaredMemoryUnitException(name);
@@ -59,14 +60,14 @@ public final class XMemoryManager {
     }
 
     //// TO-DO: do we really need to declare local memory units? or we have infinitely many registers in our model?
-    //public XLocalMemoryUnit declareLocalMemoryUnit(String name, XType type) {
+    //public XRegister declareLocalMemoryUnit(String name, XType type) {
     //    if (isLocalMemoryDeclared(name)) {
     //        throw new MemoryUnitDoubleDeclarationException(name, true);
     //    }
     //    return newLocalMemoryUnit(name, type);
     //}
     //
-    //public XLocalMemoryUnit declareSharedMemoryUnit(String name, XType type) {
+    //public XRegister declareSharedMemoryUnit(String name, XType type) {
     //    if (isSharedMemoryDeclared(name)) {
     //        throw new MemoryUnitDoubleDeclarationException(name, false);
     //    }
@@ -93,14 +94,14 @@ public final class XMemoryManager {
     //    return sharedLocations.containsKey(name);
     //}
 
-    public XLocalMemoryUnit newLocalMemoryUnit(String name) {// type) {
-        XLocalMemoryUnit location = new XLocalMemoryUnit(name, XMemoryUnit.Bitness.bit16); //todo:bitness
+    public XRegister newLocalMemoryUnit(String name) {// type) {
+        XRegister location = new XRegister(name, XMemoryUnitBase.Bitness.bit16); //todo:bitness
         localLocations.put(name, location);
         return location;
     }
 
-    public XSharedMemoryUnit newSharedMemory(String name) {
-        XSharedMemoryUnit location = new XSharedMemoryUnit(name, XMemoryUnit.Bitness.bit16); //todo:bitness
+    public XLocation newSharedMemory(String name) {
+        XLocation location = new XLocation(name, XMemoryUnitBase.Bitness.bit16); //todo:bitness
         sharedLocations.put(name, location);
         return location;
     }

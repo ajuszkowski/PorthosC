@@ -11,7 +11,7 @@ public interface YEntity extends Cloneable {
 
     Iterator<? extends YEntity> getChildrenIterator();
 
-    <T> T accept(YtreeVisitor<T> visitor);
-
     YEntity copy();
+
+    <T> T accept(YtreeVisitor<T> visitor);
 }
