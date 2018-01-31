@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.ytree.expressions.unary;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 
 
 public class YLogicalUnaryExpression extends YUnaryExpression {

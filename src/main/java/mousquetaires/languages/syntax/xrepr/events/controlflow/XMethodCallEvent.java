@@ -1,11 +1,13 @@
 package mousquetaires.languages.syntax.xrepr.events.controlflow;
 
+import mousquetaires.languages.syntax.xrepr.events.XEvent;
 import mousquetaires.languages.syntax.xrepr.processes.XEventInfo;
 
 
-public class XMethodCallEvent extends XControlFlowEvent {
+public class XMethodCallEvent extends XUnconditionalJumpEvent {
 
-    public XMethodCallEvent(XEventInfo info) {
-        super(info);
+    // todo
+    public XMethodCallEvent(XEventInfo info, XEvent fromEvent, XEvent toEvent) {
+        super(info, fromEvent, toEvent);
     }
 }

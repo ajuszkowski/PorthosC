@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.ytree;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 
 import java.util.Collection;
 import java.util.Iterator;

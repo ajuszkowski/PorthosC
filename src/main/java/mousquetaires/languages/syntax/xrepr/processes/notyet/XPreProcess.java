@@ -1,4 +1,7 @@
-package mousquetaires.languages.syntax.xrepr.processes;
+package mousquetaires.languages.syntax.xrepr.processes.notyet;
+
+
+import mousquetaires.languages.syntax.xrepr.processes.XProcess;
 
 
 public class XPreProcess extends XProcess {

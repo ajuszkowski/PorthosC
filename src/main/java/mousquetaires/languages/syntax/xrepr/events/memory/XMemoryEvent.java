@@ -23,22 +23,4 @@ public abstract class XMemoryEvent extends XEventBase {
     public XMemoryUnit getSource() {
         return source;
     }
-
-//public XMemoryEvent(XEventInfo info, XMemoryUnit loc) {
-    //    super(info);
-    //    this.loc = loc;
-    //}
-    //
-    //protected XMemoryUnit loc;  // todo: wh'is't?
-    //
-    //
-    //
-    //// Used by DF_RF to know what SSA number was assigned to the event location
-    //public Expr ssaLoc;
-    //
-    //
-    //public XMemoryUnit getLoc() {
-    //    return loc;
-    //}
-
 }

@@ -1,15 +1,13 @@
 package mousquetaires.languages.syntax.xrepr.memories;
 
-import mousquetaires.languages.syntax.xrepr.types.XType;
-
-
 public class XSharedMemoryUnit extends XMemoryUnit {
-    public XSharedMemoryUnit(String name, XType type) {
-        super(name, type);
+
+    XSharedMemoryUnit(String name, Bitness bitness) {
+        super(name, bitness);
     }
 
     @Override
     public String toString() {
-        return "@" + super.toString();
+        return "shared " + super.toString();
     }
 }

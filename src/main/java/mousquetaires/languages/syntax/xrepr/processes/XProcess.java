@@ -1,48 +1,35 @@
 package mousquetaires.languages.syntax.xrepr.processes;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import mousquetaires.languages.syntax.xrepr.XEntity;
+import mousquetaires.languages.syntax.xrepr.events.XEvent;
 import mousquetaires.languages.syntax.xrepr.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xrepr.events.controlflow.XControlFlowEvent;
 import mousquetaires.languages.syntax.xrepr.events.memory.XLocalMemoryEvent;
 import mousquetaires.languages.syntax.xrepr.events.memory.XSharedMemoryEvent;
 
 
-public abstract class XProcess implements XEntity {
-
-    public final int processId;
+public class XProcess implements XEntity {
 
     private final ImmutableList<XLocalMemoryEvent> localMemoryEvents;
     private final ImmutableList<XSharedMemoryEvent> sharedMemoryEvents;
     private final ImmutableList<XComputationEvent> computationEvents;
-    private final ImmutableList<XControlFlowEvent> controlFlowEvents;
+    private final ImmutableList<XControlFlowEvent> jumpEvents;
+    private final ImmutableMap<XEvent, XEvent> nextEvents;
+    public final String processId;
+
+    public String getProcessId() {
+        return processId;
+    }
 
     XProcess(XProcessBuilder builder) {
         this.processId = builder.getProcessId();
         this.localMemoryEvents = builder.buildLocalMemoryEvents();
         this.sharedMemoryEvents = builder.buildSharedMemoryEvents();
-        this.controlFlowEvents = builder.buildControlFlowEvents();
         this.computationEvents = builder.buildComputationEvents();
-    }
-
-    public int getProcessId() {
-        return processId;
-    }
-
-    public ImmutableList<XLocalMemoryEvent> getLocalMemoryEvents() {
-        return localMemoryEvents;
-    }
-
-    public ImmutableList<XSharedMemoryEvent> getSharedMemoryEvents() {
-        return sharedMemoryEvents;
-    }
-
-    public ImmutableList<XComputationEvent> getComputationEvents() {
-        return computationEvents;
-    }
-
-    public ImmutableList<XControlFlowEvent> getControlFlowEvents() {
-        return controlFlowEvents;
+        this.jumpEvents = builder.buildJumpEvents();
+        this.nextEvents = builder.buildNextEvents();
     }
 
 
@@ -50,7 +37,6 @@ public abstract class XProcess implements XEntity {
     // Main thread where this XEvent, Seq, etc belongs
     //protected Integer mainThread;
     //protected Integer tid;
-
 
 
     //public int getCondLevel() {

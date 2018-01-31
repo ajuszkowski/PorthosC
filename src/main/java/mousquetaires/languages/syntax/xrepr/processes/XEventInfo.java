@@ -6,7 +6,7 @@ import java.util.Objects;
 public class XEventInfo {
 
     /** identifier of the process that event comes from */
-    private final int processId;
+    private final String processId;
 
     // TODO: code origin
     //public final String controlLabel;
@@ -19,12 +19,12 @@ public class XEventInfo {
     private final int stamp;
     // todo: perhaps add nullable labels to the event info - for jumps // <- ??
 
-    XEventInfo(int processId) {
+    XEventInfo(String processId) {
         this.processId = processId;
         this.stamp = newStamp();
     }
 
-    public int getProcessId() {
+    public String getProcessId() {
         return processId;
     }
 

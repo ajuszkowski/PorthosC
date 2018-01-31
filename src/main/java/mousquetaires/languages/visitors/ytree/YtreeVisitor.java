@@ -1,19 +1,17 @@
-package mousquetaires.languages.visitors;
+package mousquetaires.languages.visitors.ytree;
 
+import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
-import mousquetaires.languages.syntax.ytree.expressions.*;
+import mousquetaires.languages.syntax.ytree.expressions.YConstant;
+import mousquetaires.languages.syntax.ytree.expressions.YTernaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
-import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YUnaryExpression;
 import mousquetaires.languages.syntax.ytree.specific.YPostludeStatement;
 import mousquetaires.languages.syntax.ytree.specific.YPreludeStatement;
 import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
@@ -27,6 +25,7 @@ import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
 
 public interface YtreeVisitor<T> {
 
+    T visit(YEntity node);
     T visit(YSyntaxTree node);
 
     // -- Litmus-specific elements: ------------------------------------------------------------------------------------
@@ -39,10 +38,9 @@ public interface YtreeVisitor<T> {
     // -- END OF Litmus-specific elements ------------------------------------------------------------------------------
 
     // general nodes:
-    T visit(YExpression node);
-    T visit(YStatement node);
-    T visit(YMemoryLocation node);
-    T visit(YAssignee node);
+    //T visit(YExpression node);
+    //T visit(YStatement node);
+    //T visit(YAssignee node);
 
     T visit(YConstant node);
 
@@ -54,15 +52,17 @@ public interface YtreeVisitor<T> {
     T visit(YFunctionDefinition node);
 
     // binary expressions:
-    T visit(YRelativeBinaryExpression node);
-    T visit(YLogicalBinaryExpression node);
-    T visit(YIntegerBinaryExpression node);
+    //T visit(YRelativeBinaryExpression node);
+    //T visit(YLogicalBinaryExpression node);
+    //T visit(YIntegerBinaryExpression node);
 
     // unary expressions:
-    T visit(YLogicalUnaryExpression node);
-    T visit(YPointerUnaryExpression node);
-    T visit(YIntegerUnaryExpression node);
+    //T visit(YLogicalUnaryExpression node);
+    //T visit(YPointerUnaryExpression node);
+    //T visit(YIntegerUnaryExpression node);
 
+    T visit(YUnaryExpression node);
+    T visit(YBinaryExpression node);
     T visit(YTernaryExpression node);
 
     T visit(YAssignmentExpression node);

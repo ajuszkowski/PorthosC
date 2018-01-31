@@ -2,9 +2,6 @@ package mousquetaires.languages.syntax.xrepr.memories;
 
 
 import mousquetaires.languages.syntax.xrepr.XEntity;
-import mousquetaires.languages.syntax.xrepr.types.XType;
-
-import java.util.Objects;
 
 
 // Note: here the 'memoryevents' does not signifies the RAM memoryevents, it's just a storage
@@ -12,37 +9,61 @@ import java.util.Objects;
 public abstract class XMemoryUnit implements XEntity {
 
     private final String name;
-    private final XType type;
+    private final Bitness bitness;
 
-    public XMemoryUnit(String name, XType type) {
+    XMemoryUnit(String name, Bitness bitness) {
         this.name = name;
-        this.type = type;
+        this.bitness = bitness;
     }
 
     public String getName() {
         return name;
     }
 
-    public XType getType() {
-        return type;
+    public Bitness getBitness() {
+        return bitness;
     }
 
     @Override
     public String toString() {
-        return getName() + ":" + getType();
+        return getName() + " " + getBitness();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof XMemoryUnit)) return false;
-        XMemoryUnit that = (XMemoryUnit) o;
-        return Objects.equals(getName(), that.getName()) &&
-                Objects.equals(getType(), that.getType());
-    }
+    // todo: hashcode
+    
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getName(), getType());
+    public enum Bitness {
+        bit1,
+        bit16,
+        bit32,
+        bit64,
+        ;
+
+        public int toInt() {
+            switch (this) {
+                case bit1:  return 1;
+                case bit16: return 16;
+                case bit32: return 32;
+                case bit64: return 64;
+                default:
+                    throw new IllegalArgumentException(this.name());
+            }
+        }
+
+
+
+        public static Bitness parseInt(int bitness) {
+            for (Bitness bit : values()) {
+                if (bit.toInt() == bitness) {
+                    return bit;
+                }
+            }
+            throw new IllegalArgumentException("" + bitness);
+        }
+
+        @Override
+        public String toString() {
+            return toInt() + "bit";
+        }
     }
 }

@@ -1,20 +1,17 @@
-package mousquetaires.languages.visitors;
+package mousquetaires.languages.visitors.ytree;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
-import mousquetaires.languages.syntax.ytree.expressions.*;
+import mousquetaires.languages.syntax.ytree.expressions.YConstant;
+import mousquetaires.languages.syntax.ytree.expressions.YTernaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
-import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YUnaryExpression;
 import mousquetaires.languages.syntax.ytree.specific.YPostludeStatement;
 import mousquetaires.languages.syntax.ytree.specific.YPreludeStatement;
 import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
@@ -24,6 +21,7 @@ import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
 import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
+import mousquetaires.utils.StringUtils;
 
 import java.util.Iterator;
 
@@ -35,6 +33,11 @@ public abstract class YtreeBaseVisitor<T> implements YtreeVisitor<T> {
             YEntity child = iterator.next();
             child.accept(this);
         }
+    }
+
+    @Override
+    public T visit(YEntity node) {
+        return node.accept(this);
     }
 
     @Override
@@ -71,23 +74,11 @@ public abstract class YtreeBaseVisitor<T> implements YtreeVisitor<T> {
 
     // -- END OF Litmus-specific elements ------------------------------------------------------------------------------
 
-    @Override
-    public T visit(YExpression node) {
-        visitChildren(node);
-        throw new IllegalStateException(getExceptionMessage(node));
-    }
-
-    @Override
-    public T visit(YMemoryLocation node) {
-        visitChildren(node);
-        throw new IllegalStateException(getExceptionMessage(node));
-    }
-
-    @Override
-    public T visit(YAssignee node) {
-        visitChildren(node);
-        throw new IllegalStateException(getExceptionMessage(node));
-    }
+    //@Override
+    //public T visit(YExpression node) {
+    //    //visitChildren(node);
+    //    throw new IllegalStateException(getExceptionMessage(node));
+    //}
 
     @Override
     public T visit(YConstant node) {
@@ -119,38 +110,50 @@ public abstract class YtreeBaseVisitor<T> implements YtreeVisitor<T> {
         throw new IllegalStateException(getExceptionMessage(node));
     }
 
+    //@Override
+    //public T visit(YRelativeBinaryExpression node) {
+    //    visitChildren(node);
+    //    throw new IllegalStateException(getExceptionMessage(node));
+    //}
+    //
+    //@Override
+    //public T visit(YLogicalBinaryExpression node) {
+    //    visitChildren(node);
+    //    throw new IllegalStateException(getExceptionMessage(node));
+    //}
+    //
+    //@Override
+    //public T visit(YIntegerBinaryExpression node) {
+    //    visitChildren(node);
+    //    throw new IllegalStateException(getExceptionMessage(node));
+    //}
+    //
+    //@Override
+    //public T visit(YLogicalUnaryExpression node) {
+    //    visitChildren(node);
+    //    throw new IllegalStateException(getExceptionMessage(node));
+    //}
+    //
+    //@Override
+    //public T visit(YPointerUnaryExpression node) {
+    //    visitChildren(node);
+    //    throw new IllegalStateException(getExceptionMessage(node));
+    //}
+    //
+    //@Override
+    //public T visit(YIntegerUnaryExpression node) {
+    //    visitChildren(node);
+    //    throw new IllegalStateException(getExceptionMessage(node));
+    //}
+
     @Override
-    public T visit(YRelativeBinaryExpression node) {
+    public T visit(YUnaryExpression node) {
         visitChildren(node);
         throw new IllegalStateException(getExceptionMessage(node));
     }
 
     @Override
-    public T visit(YLogicalBinaryExpression node) {
-        visitChildren(node);
-        throw new IllegalStateException(getExceptionMessage(node));
-    }
-
-    @Override
-    public T visit(YIntegerBinaryExpression node) {
-        visitChildren(node);
-        throw new IllegalStateException(getExceptionMessage(node));
-    }
-
-    @Override
-    public T visit(YLogicalUnaryExpression node) {
-        visitChildren(node);
-        throw new IllegalStateException(getExceptionMessage(node));
-    }
-
-    @Override
-    public T visit(YPointerUnaryExpression node) {
-        visitChildren(node);
-        throw new IllegalStateException(getExceptionMessage(node));
-    }
-
-    @Override
-    public T visit(YIntegerUnaryExpression node) {
+    public T visit(YBinaryExpression node) {
         visitChildren(node);
         throw new IllegalStateException(getExceptionMessage(node));
     }
@@ -197,11 +200,17 @@ public abstract class YtreeBaseVisitor<T> implements YtreeVisitor<T> {
         throw new IllegalStateException(getExceptionMessage(node));
     }
 
-    @Override
-    public T visit(YStatement node) {
-        visitChildren(node);
-        throw new IllegalStateException(getExceptionMessage(node));
-    }
+    //@Override
+    //public T visit(YStatement node) {
+    //    //visitChildren(node);
+    //    throw new IllegalStateException(getExceptionMessage(node));
+    //}
+    //
+    //@Override
+    //public T visit(YAssignee node) {
+    //    visitChildren(node);
+    //    throw new IllegalStateException(getExceptionMessage(node));
+    //}
 
     @Override
     public T visit(YBranchingStatement node) {
@@ -234,6 +243,7 @@ public abstract class YtreeBaseVisitor<T> implements YtreeVisitor<T> {
     }
 
     private String getExceptionMessage(YEntity node) {
-        return "Visit action for node returnType " + node.getClass().getName() + " is not defined";
+        return "Visit action for node (" + node.getClass().getSimpleName() + ")" +
+                StringUtils.wrap(node.toString()) + " is not defined";
     }
 }

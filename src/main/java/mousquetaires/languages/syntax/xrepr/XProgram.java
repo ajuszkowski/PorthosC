@@ -1,33 +1,24 @@
 package mousquetaires.languages.syntax.xrepr;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.syntax.xrepr.processes.XParallelProcess;
-import mousquetaires.languages.syntax.xrepr.processes.XPostProcess;
-import mousquetaires.languages.syntax.xrepr.processes.XPreProcess;
+import mousquetaires.languages.syntax.xrepr.processes.XProcess;
 
 
 public final class XProgram {
 
-    private final XPreProcess prelude;
-    private final ImmutableList<XParallelProcess> processes;
-    private final XPostProcess postlude;
+    //private final XPreProcess prelude;
+    private final ImmutableList<XProcess> processes;
+    //private final XPostProcess postlude;
 
-    XProgram(XPreProcess prelude, ImmutableList<XParallelProcess> processes, XPostProcess postlude) {
-        this.prelude = prelude;
+    //XProgram(XPreProcess prelude, ImmutableList<XParallelProcess> processes, XPostProcess postlude) {
+    XProgram(ImmutableList<XProcess> processes) {
+        //this.prelude = prelude;
         this.processes = processes;
-        this.postlude = postlude;
+        //this.postlude = postlude;
     }
 
-    public XPreProcess getPrelude() {
-        return prelude;
-    }
-
-    public ImmutableList<XParallelProcess> getProcesses() {
+    public ImmutableList<XProcess> getProcesses() {
         return processes;
-    }
-
-    public XPostProcess getPostlude() {
-        return postlude;
     }
 
     //public String postProcessId;

@@ -1,9 +1,8 @@
 package mousquetaires.languages.syntax.xrepr.events.memory;
 
-import mousquetaires.languages.syntax.xrepr.events.XLocalEvent;
-import mousquetaires.languages.syntax.xrepr.processes.XEventInfo;
 import mousquetaires.languages.syntax.xrepr.memories.XLocalMemoryUnit;
-import mousquetaires.languages.syntax.xrepr.memories.XValue;
+import mousquetaires.languages.syntax.xrepr.processes.XEventInfo;
+import mousquetaires.languages.syntax.xrepr.memories.XConstant;
 
 
 /**
@@ -13,8 +12,8 @@ public class XLocalMemoryEvent extends XMemoryEvent implements XLocalEvent {
 
     public XLocalMemoryEvent(XEventInfo info, XLocalMemoryUnit destination, XLocalMemoryUnit source) {
         super(info, destination, source);
-        if (destination instanceof XValue) {
-            throw new IllegalArgumentException("Memory event with assignment to " + XValue.class.getName()
+        if (destination instanceof XConstant) {
+            throw new IllegalArgumentException("Memory event with assignment to " + XConstant.class.getName()
                     + " is not allowed");
         }
     }
@@ -31,6 +30,6 @@ public class XLocalMemoryEvent extends XMemoryEvent implements XLocalEvent {
 
     @Override
     public String toString() {
-        return getDestination() + " <- " + getSource();
+        return getDestination() + " := " + getSource();
     }
 }

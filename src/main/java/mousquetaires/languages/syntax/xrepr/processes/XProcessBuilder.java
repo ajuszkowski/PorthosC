@@ -1,73 +1,123 @@
 package mousquetaires.languages.syntax.xrepr.processes;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.converters.toxrepr.XMemoryManager;
-import mousquetaires.languages.syntax.xrepr.events.barrier.XBarrierEvent;
-import mousquetaires.languages.syntax.xrepr.events.computation.XBinaryOperationEvent;
-import mousquetaires.languages.syntax.xrepr.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xrepr.events.computation.XOperator;
-import mousquetaires.languages.syntax.xrepr.events.computation.XUnaryOperationEvent;
+import com.google.common.collect.ImmutableMap;
+import mousquetaires.languages.syntax.xrepr.events.XEvent;
+import mousquetaires.languages.syntax.xrepr.events.computation.*;
+import mousquetaires.languages.syntax.xrepr.events.controlflow.XConditionalJumpEvent;
 import mousquetaires.languages.syntax.xrepr.events.controlflow.XControlFlowEvent;
+import mousquetaires.languages.syntax.xrepr.events.controlflow.XUnconditionalJumpEvent;
 import mousquetaires.languages.syntax.xrepr.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xrepr.events.memory.XLocalMemoryEvent;
 import mousquetaires.languages.syntax.xrepr.events.memory.XSharedMemoryEvent;
 import mousquetaires.languages.syntax.xrepr.events.memory.XStoreMemoryEvent;
 import mousquetaires.languages.syntax.xrepr.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xrepr.memories.XSharedMemoryUnit;
-import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.patterns.Builder;
 
 
-public abstract class XProcessBuilder extends Builder<XProcess> {
+public class XProcessBuilder extends Builder<XProcess> {
 
-    private final XMemoryManager memoryManager;
+    private final String processId;
 
-    private final int processId;
-    // data-flow events:
     private final ImmutableList.Builder<XLocalMemoryEvent> localMemoryEvents;
     private final ImmutableList.Builder<XSharedMemoryEvent> sharedMemoryEvents;
-    // control-flow events:
-    private final ImmutableList.Builder<XControlFlowEvent> controlFlowEvents;
-    // computation events:
     private final ImmutableList.Builder<XComputationEvent> computationEvents;
+    private final ImmutableList.Builder<XControlFlowEvent> jumpEvents;
+    private final ImmutableMap.Builder<XEvent, XEvent> nextEvents;
 
-    // todo: relations
+    private XEvent currentEvent;
 
-    XProcessBuilder(int processId, XMemoryManager memoryManager) {
-        this.memoryManager = memoryManager;
+    public XProcessBuilder(String processId) {
         this.processId = processId;
-        // todo: initial capacity, load factor ...
-        this.localMemoryEvents = new ImmutableList.Builder<>();
+        this.localMemoryEvents  = new ImmutableList.Builder<>();
         this.sharedMemoryEvents = new ImmutableList.Builder<>();
-        this.computationEvents = new ImmutableList.Builder<>();
-        this.controlFlowEvents = new ImmutableList.Builder<>();
+        this.computationEvents  = new ImmutableList.Builder<>();
+        this.jumpEvents = new ImmutableList.Builder<>();
+        this.nextEvents = new ImmutableMap.Builder<>();
     }
+
+    @Override
+    public XProcess build() {
+        return new XProcess(this);
+    }
+
+    // --
+
+    public XComputationEvent emitComputationEvent(XLocalMemoryUnit operand) {
+        XComputationEvent event = new XNullaryComputationEvent(newEventInfo(), operand);
+        add(event, computationEvents);
+        setNextEvent(event);
+        return event;
+    }
+
+    public XComputationEvent emitComputationEvent(XOperator operator, XLocalMemoryUnit operand) {
+        XComputationEvent event = new XUnaryOperationEvent(newEventInfo(), operator, operand);
+        add(event, computationEvents);
+        setNextEvent(event);
+        return event;
+    }
+
+    public XComputationEvent emitComputationEvent(XOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand) {
+        XComputationEvent event = new XBinaryOperationEvent(newEventInfo(), operator, firstOperand, secondOperand);
+        add(event, computationEvents);
+        setNextEvent(event);
+        return event;
+    }
+
+    // --
 
     public XLocalMemoryEvent emitMemoryEvent(XLocalMemoryUnit destination, XLocalMemoryUnit source) {
         XLocalMemoryEvent event = new XLocalMemoryEvent(newEventInfo(), destination, source);
         add(event, localMemoryEvents);
+        setNextEvent(event);
         return event;
     }
 
     public XSharedMemoryEvent emitMemoryEvent(XLocalMemoryUnit destination, XSharedMemoryUnit source) {
         XLoadMemoryEvent event = new XLoadMemoryEvent(newEventInfo(), destination, source);
         add(event, sharedMemoryEvents);
+        setNextEvent(event);
         return event;
     }
 
-    public XStoreMemoryEvent emitMemoryEvent(XSharedMemoryUnit destination, XLocalMemoryUnit source) {
+    public XSharedMemoryEvent emitMemoryEvent(XSharedMemoryUnit destination, XLocalMemoryUnit source) {
         XStoreMemoryEvent event = new XStoreMemoryEvent(newEventInfo(), destination, source);
         add(event, sharedMemoryEvents);
+        setNextEvent(event);
         return event;
     }
 
+    // --
+
+    public XUnconditionalJumpEvent emitUnconditionalJumpEvent(XEvent fromEvent, XEvent toEvent) {
+        XUnconditionalJumpEvent event = new XUnconditionalJumpEvent(newEventInfo(), fromEvent, toEvent);
+        add(event, jumpEvents);
+        setNextEvent(event);
+        return event;
+    }
+
+    public XConditionalJumpEvent emitConditionalJumpEvent(XComputationEvent condition, XEvent fromEvent, XEvent toEvent) {
+        XConditionalJumpEvent event = new XConditionalJumpEvent(newEventInfo(), condition, fromEvent, toEvent);
+        add(event, jumpEvents);
+        setNextEvent(event);
+        return event;
+    }
+
+    //methodCall
+
+    // --
+
+
+
+/*
     public XControlFlowEvent emitControlFlowEvent() {
-        //add(event, controlFlowEvents);
+        //add(event, jumpEvents);
         throw new NotImplementedException();
     }
 
-    public XUnaryOperationEvent emitComputationEvent(XOperator operator, XSharedMemoryUnit memoryUnit) {
-        XLocalMemoryUnit tempRegister = memoryManager.newTempLocalMemoryUnit();
+    public XUnaryOperationEvent emitComputationEvent(XOperator operator, XLocalMemoryUnit memoryUnit) {
+        XLocalMemoryUnit tempRegister = memoryManager.newLocalMemoryUnit();
         emitMemoryEvent(tempRegister, memoryUnit);  // `r := memoryUnit`
         return emitComputationEvent(operator, tempRegister);
     }
@@ -78,8 +128,8 @@ public abstract class XProcessBuilder extends Builder<XProcess> {
         return event;
     }
 
-    public XBinaryOperationEvent emitComputationEvent(XOperator operator, XSharedMemoryUnit left, XLocalMemoryUnit right) {
-        XLocalMemoryUnit tempRegister = memoryManager.newTempLocalMemoryUnit();
+    public XBinaryOperationEvent emitComputationEvent(XOperator operator, XLocalMemoryUnit left, XLocalMemoryUnit right) {
+        XLocalMemoryUnit tempRegister = memoryManager.newLocalMemoryUnit();
         emitMemoryEvent(tempRegister, left); // `r := left`
         return emitComputationEvent(operator, tempRegister, right);
     }
@@ -95,9 +145,6 @@ public abstract class XProcessBuilder extends Builder<XProcess> {
         throw new NotImplementedException();
     }
 
-    public int getProcessId() {
-        return processId;
-    }
 
     public ImmutableList<XComputationEvent> buildComputationEvents() {
         return computationEvents.build();
@@ -112,10 +159,43 @@ public abstract class XProcessBuilder extends Builder<XProcess> {
     }
 
     public ImmutableList<XControlFlowEvent> buildControlFlowEvents() {
-        return controlFlowEvents.build();
+        return jumpEvents.build();
+    }
+
+    */
+
+    public String getProcessId() {
+        return processId;
     }
 
     private XEventInfo newEventInfo() {
-        return new XEventInfo(processId);
+        return new XEventInfo(getProcessId());
+    }
+
+    private void setNextEvent(XEvent nextEvent) {
+        if (currentEvent != null) {
+            nextEvents.put(currentEvent, nextEvent);
+        }
+        currentEvent = nextEvent;
+    }
+
+    public ImmutableList<XLocalMemoryEvent> buildLocalMemoryEvents() {
+        return localMemoryEvents.build();
+    }
+
+    public ImmutableList<XSharedMemoryEvent> buildSharedMemoryEvents() {
+        return sharedMemoryEvents.build();
+    }
+
+    public ImmutableList<XComputationEvent> buildComputationEvents() {
+        return computationEvents.build();
+    }
+
+    public ImmutableList<XControlFlowEvent> buildJumpEvents() {
+        return jumpEvents.build();
+    }
+
+    public ImmutableMap<XEvent, XEvent> buildNextEvents() {
+        return nextEvents.build();
     }
 }

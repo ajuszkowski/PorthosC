@@ -1,23 +1,23 @@
-package mousquetaires.languages.syntax.xrepr.processes;
+package mousquetaires.languages.syntax.xrepr.processes.notyet;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.converters.toxrepr.XMemoryManager;
 import mousquetaires.languages.syntax.xrepr.events.barrier.XBarrierEvent;
+import mousquetaires.languages.syntax.xrepr.processes.XProcessBuilder;
 
 
 public class XParallelProcessBuilder extends XProcessBuilder {
 
     private final ImmutableList.Builder<XBarrierEvent> barrierEvents;
 
-    public XParallelProcessBuilder(int processId, XMemoryManager memoryManager) {
-        super(processId, memoryManager);
+    public XParallelProcessBuilder(String processId) {
+        super(processId);
         // todo: initial capacity, load factor ...
         this.barrierEvents = new ImmutableList.Builder<>();
     }
 
     @Override
     public XParallelProcess build() {
-        finish();
+        finishBuilding();
         return new XParallelProcess(this);
     }
 

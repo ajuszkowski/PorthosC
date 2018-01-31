@@ -1,12 +1,11 @@
 package mousquetaires.languages.syntax.xrepr.events.controlflow;
 
-import mousquetaires.languages.syntax.xrepr.events.XEventBase;
-import mousquetaires.languages.syntax.xrepr.processes.XEventInfo;
+import mousquetaires.languages.syntax.xrepr.events.XEvent;
 
 
-public abstract class XControlFlowEvent extends XEventBase {
+public interface XControlFlowEvent extends XEvent {
 
-    XControlFlowEvent(XEventInfo info) {
-        super(info);
-    }
+    XEvent getFromEvent();
+
+    XEvent getToEvent();
 }

@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.ytree.specific;
 
 import mousquetaires.languages.syntax.ytree.statements.YUnlabeledStatement;
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 
 
 public abstract class YPostludeStatement extends YUnlabeledStatement {

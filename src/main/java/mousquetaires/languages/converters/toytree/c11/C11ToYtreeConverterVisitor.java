@@ -1,7 +1,7 @@
 package mousquetaires.languages.converters.toytree.c11;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.converters.toytree.c11.helpers.C11TokensHelper;
+import mousquetaires.languages.converters.toytree.c11.helpers.C11ParserHelper;
 import mousquetaires.languages.parsers.C11Parser;
 import mousquetaires.languages.parsers.C11Visitor;
 import mousquetaires.languages.syntax.ytree.YEntity;
@@ -17,19 +17,16 @@ import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessEx
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YVariableAssignmentExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.statements.*;
-import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpLabel;
-import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
-import mousquetaires.languages.syntax.ytree.statements.jumps.YBreakStatement;
-import mousquetaires.languages.syntax.ytree.statements.jumps.YContinueStatement;
-import mousquetaires.languages.syntax.ytree.statements.jumps.YReturnStatement;
+import mousquetaires.languages.syntax.ytree.statements.jumps.*;
+import mousquetaires.languages.syntax.ytree.temporaries.YCompoundStatementBuilder;
 import mousquetaires.languages.syntax.ytree.temporaries.YEntityListBuilder;
 import mousquetaires.languages.syntax.ytree.temporaries.YExpressionListBuilder;
 import mousquetaires.languages.syntax.ytree.temporaries.YUnaryOperatorKindTemp;
-import mousquetaires.languages.syntax.ytree.temporaries.YCompoundStatementBuilder;
 import mousquetaires.languages.syntax.ytree.types.YMockType;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
@@ -228,15 +225,15 @@ class C11ToYtreeConverterVisitor
         if (unaryExpressionContext != null) {
             YExpression baseExpression = visitUnaryExpression(unaryExpressionContext);
             // '++' unaryExpression:
-            if (C11TokensHelper.hasToken(ctx, C11Parser.PlusPlus)) {
+            if (C11ParserHelper.hasToken(ctx, C11Parser.PlusPlus)) {
                 return YIntegerUnaryExpression.Kind.PrefixIncrement.createExpression(baseExpression);
             }
             // '--' unaryExpression:
-            if (C11TokensHelper.hasToken(ctx, C11Parser.MinusMinus)) {
+            if (C11ParserHelper.hasToken(ctx, C11Parser.MinusMinus)) {
                 return YIntegerUnaryExpression.Kind.PrefixDecrement.createExpression(baseExpression);
             }
             // 'sizeof' unaryExpression:
-            if (C11TokensHelper.hasToken(ctx, C11Parser.Sizeof)) {
+            if (C11ParserHelper.hasToken(ctx, C11Parser.Sizeof)) {
                 throw new YParserNotImplementedException(ctx, "Cast operation is not implemented yet");
             }
         }
@@ -388,8 +385,23 @@ class C11ToYtreeConverterVisitor
     public YExpression visitEqualityExpression(C11Parser.EqualityExpressionContext ctx) {
         C11Parser.RelationalExpressionContext relationalExpressionContext = ctx.relationalExpression();
         C11Parser.EqualityExpressionContext equalityExpressionContext = ctx.equalityExpression();
+        boolean isEquality = C11ParserHelper.hasToken(ctx, C11Parser.Equal);
+        boolean isInequality = C11ParserHelper.hasToken(ctx, C11Parser.NotEqual);
+        if (isEquality || isInequality) {
+            if (equalityExpressionContext == null) {
+                throw new YParserException(ctx, "Missing left part of equality");
+            }
+            if (relationalExpressionContext == null) {
+                throw new YParserException(ctx, "Missing right part of equality");
+            }
+            YExpression left = visitEqualityExpression(equalityExpressionContext);
+            YExpression right = visitRelationalExpression(relationalExpressionContext);
+            YRelativeBinaryExpression.Kind operator = isEquality
+                    ? YRelativeBinaryExpression.Kind.Equals
+                    : YRelativeBinaryExpression.Kind.NotEquals;
+            return operator.createExpression(left, right);
+        }
         if (relationalExpressionContext != null) {
-            // todo: others
             return visitRelationalExpression(relationalExpressionContext);
         }
         throw new YParserUnintendedStateException(ctx);
@@ -971,7 +983,7 @@ class C11ToYtreeConverterVisitor
         if ((identifier = ctx.Identifier()) != null) {
             return new YVariableRef(identifier.getText());
         }
-        boolean hasParentheses = C11TokensHelper.hasParentheses(ctx);
+        boolean hasParentheses = C11ParserHelper.hasParentheses(ctx);
         if (hasParentheses) {
             if ((declaratorContext = ctx.declarator()) != null) {
                 return visitDeclarator(declaratorContext);
@@ -1349,9 +1361,9 @@ class C11ToYtreeConverterVisitor
             YExpression expression = visitExpression(expressionContext);
             if (statement1Context != null) {
                 YStatement statement1 = visitStatement(statement1Context);
-                if (C11TokensHelper.hasToken(ctx, C11Parser.If)) {
+                if (C11ParserHelper.hasToken(ctx, C11Parser.If)) {
                     YStatement statement2 = null;
-                    if (C11TokensHelper.hasToken(ctx, C11Parser.Else)) {
+                    if (C11ParserHelper.hasToken(ctx, C11Parser.Else)) {
                         if (statement2Context == null) {
                             throw new YParserException(ctx, "Empty 'else' statement");
                         }
@@ -1359,7 +1371,7 @@ class C11ToYtreeConverterVisitor
                     }
                     return new YBranchingStatement(expression, statement1, statement2);
                 }
-                if (C11TokensHelper.hasToken(ctx, C11Parser.Switch)) {
+                if (C11ParserHelper.hasToken(ctx, C11Parser.Switch)) {
                     throw new YParserNotImplementedException(ctx, "Switch is not implemented yet");
                 }
             }
@@ -1386,9 +1398,9 @@ class C11ToYtreeConverterVisitor
 
         YStatement statement = visitStatement(statementContext);
 
-        boolean isDoWhile = C11TokensHelper.hasToken(ctx, C11Parser.Do);
-        boolean isWhile = !isDoWhile && C11TokensHelper.hasToken(ctx, C11Parser.While);
-        boolean isFor = C11TokensHelper.hasToken(ctx, C11Parser.For);
+        boolean isDoWhile = C11ParserHelper.hasToken(ctx, C11Parser.Do);
+        boolean isWhile = !isDoWhile && C11ParserHelper.hasToken(ctx, C11Parser.While);
+        boolean isFor = C11ParserHelper.hasToken(ctx, C11Parser.For);
 
         if (isDoWhile || isWhile) {
             if (expressionContext == null) {
@@ -1454,7 +1466,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YJumpStatement visitJumpStatement(C11Parser.JumpStatementContext ctx) {
-        if (C11TokensHelper.hasToken(ctx, C11Parser.Goto)) {
+        if (C11ParserHelper.hasToken(ctx, C11Parser.Goto)) {
             TerminalNode identifier = ctx.Identifier();
             if (identifier == null) {
                 throw new YParserException(ctx, "Missing goto label in jump statement");
@@ -1462,13 +1474,13 @@ class C11ToYtreeConverterVisitor
             YJumpLabel jumpToLabel = new YJumpLabel(identifier.getText());
             return new YJumpStatement(jumpToLabel);
         }
-        if (C11TokensHelper.hasToken(ctx, C11Parser.Continue)) {
+        if (C11ParserHelper.hasToken(ctx, C11Parser.Continue)) {
             return new YContinueStatement();
         }
-        if (C11TokensHelper.hasToken(ctx, C11Parser.Break)) {
+        if (C11ParserHelper.hasToken(ctx, C11Parser.Break)) {
             return new YBreakStatement();
         }
-        if (C11TokensHelper.hasToken(ctx, C11Parser.Return)) {
+        if (C11ParserHelper.hasToken(ctx, C11Parser.Return)) {
             C11Parser.ExpressionContext expressionContext = ctx.expression();
             if (expressionContext != null) {
                 // TODO: process return value

@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.ytree.expressions.binary;
 
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 
 
 public class YRelativeBinaryExpression extends YBinaryExpression {
@@ -23,7 +23,8 @@ public class YRelativeBinaryExpression extends YBinaryExpression {
                 case GreaterOrEquals: return ">=";
                 case Less:            return "<";
                 case LessOrEquals:    return "<=";
-                default: throw new IllegalArgumentException(this.name());
+                default:
+                    throw new IllegalArgumentException(this.name());
             }
         }
 

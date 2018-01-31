@@ -1,169 +1,161 @@
 package mousquetaires.languages.syntax.xrepr;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.converters.toxrepr.XMemoryManager;
-import mousquetaires.languages.syntax.xrepr.events.barrier.XBarrierEvent;
-import mousquetaires.languages.syntax.xrepr.events.computation.XBinaryOperationEvent;
-import mousquetaires.languages.syntax.xrepr.events.computation.XOperator;
-import mousquetaires.languages.syntax.xrepr.events.controlflow.XControlFlowEvent;
-import mousquetaires.languages.syntax.xrepr.events.memory.XMemoryEvent;
 import mousquetaires.languages.syntax.xrepr.memories.XLocalMemoryUnit;
+import mousquetaires.languages.syntax.xrepr.memories.XMemoryManager;
 import mousquetaires.languages.syntax.xrepr.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xrepr.memories.XSharedMemoryUnit;
-import mousquetaires.languages.syntax.xrepr.processes.*;
-import mousquetaires.utils.exceptions.NotImplementedException;
+import mousquetaires.languages.syntax.xrepr.processes.XProcess;
+import mousquetaires.languages.syntax.xrepr.processes.XProcessBuilder;
 import mousquetaires.utils.patterns.Builder;
+
 
 public class XProgramBuilder extends Builder<XProgram> {
 
-    private final XMemoryManager memoryManager;
-
-    private final XPreProcessBuilder preludeBuilder;
-    private final XPostProcessBuilder postludeBuilder;
-
-    private final ImmutableList.Builder<XParallelProcess> parallelProcesses;
-    private XProcessBuilder currentBuilder;
-    private boolean startedProcessesDefinition = false;
+    public XProcessBuilder currentProcess;
+    private final ImmutableList.Builder<XProcess> processes;
+    // TODO: publish methods also!
+    public final XMemoryManager memoryManager;
 
     public XProgramBuilder(XMemoryManager memoryManager) {
         this.memoryManager = memoryManager;
-        this.parallelProcesses = new ImmutableList.Builder<>();
-        this.preludeBuilder = new XPreProcessBuilder(memoryManager);
-        this.postludeBuilder = new XPostProcessBuilder(memoryManager);
+        this.processes = new ImmutableList.Builder<>();
+        //this.preludeBuilder = new XPreProcessBuilder(memoryManager);
+        //this.postludeBuilder = new XPostProcessBuilder(memoryManager);
     }
 
     @Override
     public XProgram build() {
-        finish();
-        return new XProgram(preludeBuilder.build(), parallelProcesses.build(), postludeBuilder.build());
-    }
-
-    public void beginPreludeDefinition() {
-        if (currentBuilder != null || startedProcessesDefinition) {
-            throw new IllegalStateException("Attempt to start prelude definition while another process '"
-                    + currentBuilder.getProcessId() + "'; is being constructed");
+        finishBuilding();
+        if (currentProcess != null) {
+            processes.add(currentProcess.build());
         }
-        currentBuilder = preludeBuilder;
+        return new XProgram(processes.build()); //preludeBuilder.build(), processes.build(), postludeBuilder.build());
     }
 
-    public void endPreludeDefinition() {
-        endProcessDefinition();
-    }
+    //private final XPreProcessBuilder preludeBuilder;
+    //private final XPostProcessBuilder postludeBuilder;
+    //private boolean startedProcessesDefinition = false;
+    //public void beginPreludeDefinition() {
+    //    if (currentProcess != null || startedProcessesDefinition) {
+    //        throw new IllegalStateException("Attempt to start prelude definition while another process '"
+    //                + currentProcess.getProcessId() + "'; is being constructed");
+    //    }
+    //    currentProcess = preludeBuilder;
+    //}
+    //
+    //public void endPreludeDefinition() {
+    //    endProcessDefinition();
+    //}
+    //public void beginPostludeDefinition() {
+    //    if (currentProcess != null) {
+    //        throw new IllegalStateException("Attempt to start postlude definition while another process '"
+    //                + currentProcess.getProcessId() + "'; is being constructed");
+    //    }
+    //    if (!startedProcessesDefinition) {
+    //        throw new IllegalStateException("Attempt to start postlude definition before definition of the processes");
+    //    }
+    //    currentProcess = postludeBuilder;
+    //}
+    //
+    //public void endPostludeDefinition() {
+    //    endProcessDefinition();
+    //}
 
-    public void beginProcessDefinition(int processId) {
-        if (currentBuilder != null) {
+
+    public void startProcessDefinition(String processId) {
+        if (currentProcess != null) {
             throw new IllegalStateException("Attempt to start new process '" + processId +
-                    "' definition while another process '" + currentBuilder.getProcessId() +
+                    "' definition while another process '" + currentProcess.getProcessId() +
                     "'; is being constructed");
         }
-        currentBuilder = new XParallelProcessBuilder(processId, memoryManager);
-        startedProcessesDefinition = true;
+        currentProcess = new XProcessBuilder(processId);
     }
 
-    public void endProcessDefinition() {
-        if (currentBuilder == null) {
+    public void finishProcessDefinition() {
+        if (currentProcess == null) {
             throw new IllegalStateException("Attempt to end process definition without starting it");
         }
-        if (currentBuilder instanceof XParallelProcessBuilder) {
-            XParallelProcessBuilder currentParBuilder = (XParallelProcessBuilder) currentBuilder;
-            parallelProcesses.add(currentParBuilder.build());
-            currentBuilder = null;
-        }
+        processes.add(currentProcess.build());
+        currentProcess = null;
+        //if (currentProcess instanceof XProcessBuilder) {
+        //    XParallelProcessBuilder currentParBuilder = (XParallelProcessBuilder) currentProcess;
+        //    processes.add(currentParBuilder.build());
+        //    currentProcess = null;
+        //}
         // for pre & post do nothing, because current is a reference to it
     }
 
-    public void beginPostludeDefinition() {
-        if (currentBuilder != null) {
-            throw new IllegalStateException("Attempt to start postlude definition while another process '"
-                    + currentBuilder.getProcessId() + "'; is being constructed");
-        }
-        if (!startedProcessesDefinition) {
-            throw new IllegalStateException("Attempt to start postlude definition before definition of the processes");
-        }
-        currentBuilder = postludeBuilder;
+    //public XBinaryOperationEvent emitComputationEvent(XOperator operator, XMemoryUnit leftOperand, XMemoryUnit rightOperand) {
+    //    XLocalMemoryUnit left = leftOperand instanceof XLocalMemoryUnit
+    //            ? (XLocalMemoryUnit) leftOperand
+    //            : copyToLocalMemoryIfNecessary(leftOperand);
+    //    XLocalMemoryUnit right = rightOperand instanceof XLocalMemoryUnit
+    //            ? (XLocalMemoryUnit) rightOperand
+    //            : copyToLocalMemoryIfNecessary(rightOperand);
+    //    return currentProcess.emitComputationEvent(operator, left, right);
+    //}
+
+    public XLocalMemoryUnit copyToLocalMemory(XSharedMemoryUnit shared) {
+        XLocalMemoryUnit tempLocal = memoryManager.newLocalMemoryUnit();
+        currentProcess.emitMemoryEvent(tempLocal, shared);
+        return tempLocal;
     }
 
-    public void endPostludeDefinition() {
-        endProcessDefinition();
-    }
-
-    public XBinaryOperationEvent emitComputationEvent(XOperator operator, XMemoryUnit leftOperand, XMemoryUnit rightOperand) {
-        XLocalMemoryUnit left = leftOperand instanceof XLocalMemoryUnit
-                ? (XLocalMemoryUnit) leftOperand
-                : moveToLocalMemoryIfNecessary((XSharedMemoryUnit) leftOperand);
-        XLocalMemoryUnit right = rightOperand instanceof XLocalMemoryUnit
-                ? (XLocalMemoryUnit) rightOperand
-                : moveToLocalMemoryIfNecessary((XSharedMemoryUnit) rightOperand);
-        return currentBuilder.emitComputationEvent(operator, left, right);
-    }
-
-    public XMemoryEvent emitMemoryEvent(XMemoryUnit destination, XMemoryUnit source) {
-        XLocalMemoryUnit destinationLocal = destination instanceof XLocalMemoryUnit
-                ? (XLocalMemoryUnit) destination
-                : null;
-        XLocalMemoryUnit sourceLocal = source instanceof XLocalMemoryUnit
-                ? (XLocalMemoryUnit) source
-                : null;
-        XSharedMemoryUnit destinationShared = destination instanceof XSharedMemoryUnit
-                ? (XSharedMemoryUnit) destination
-                : null;
-        XSharedMemoryUnit sourceShared = source instanceof XSharedMemoryUnit
-                ? (XSharedMemoryUnit) source
-                : null;
-
-        if (destinationLocal != null) {
-            if (sourceLocal != null) {
-                return currentBuilder.emitMemoryEvent(destinationLocal, sourceLocal);
-            }
-            if (sourceShared != null) {
-                return currentBuilder.emitMemoryEvent(destinationLocal, sourceShared);
-            }
-        }
-        if (destinationShared != null) {
-            if (sourceLocal != null) {
-                return currentBuilder.emitMemoryEvent(destinationShared, sourceLocal);
-            }
-            if (sourceShared != null) {
-                XLocalMemoryUnit tempLocal = moveToLocalMemoryIfNecessary(sourceShared);
-                return currentBuilder.emitMemoryEvent(destinationShared, tempLocal);
-            }
-        }
-        throw new IllegalStateException();
-    }
-
-    public XLocalMemoryUnit moveToLocalMemoryIfNecessary(XMemoryUnit sharedOrLocal) {
+    public XLocalMemoryUnit copyToLocalMemoryIfNecessary(XMemoryUnit sharedOrLocal) {
         if (sharedOrLocal instanceof XSharedMemoryUnit) {
-            XSharedMemoryUnit shared = (XSharedMemoryUnit) sharedOrLocal;
-            XLocalMemoryUnit tempLocal = memoryManager.newTempLocalMemoryUnit();
-            currentBuilder.emitMemoryEvent(tempLocal, shared);
-            return tempLocal;
+            copyToLocalMemory((XSharedMemoryUnit) sharedOrLocal);
         }
-        if (sharedOrLocal instanceof XLocalMemoryUnit) {
+        else if (sharedOrLocal instanceof XLocalMemoryUnit) {
             return (XLocalMemoryUnit) sharedOrLocal;
         }
         throw new IllegalArgumentException(sharedOrLocal.getClass().getName());
     }
 
-    public XControlFlowEvent emitControlFlowEvent() {
-        throw new NotImplementedException();
-    }
-
-    public XBarrierEvent emitBarrierEvent() {
-        throw new NotImplementedException();
-    }
-
-    //public XAssertion addAssertion(XMemoryUnit memoryUnit, XValue value) {
-    //    XAssertion assertion = new XAssertion(memoryUnit, value);
-    //    postludeBuilder.emitComputationEvent()
-    //    return assertion;
-    //}
-
-    //public void addCallEvent(XControlFlowEvent event) {
-    //    currentBuilder.addCallEvent(event);
+    //public XMemoryEvent emitMemoryEvent(XMemoryUnit source) {
+    //    return emitMemoryEvent(memoryManager.newLocalMemoryUnit(), source);
     //}
     //
-    //public void addBarrierEvent(XBarrierEvent event) {
-    //    currentBuilder.addBarrierEvent(event);
+    //public XMemoryEvent emitMemoryEvent(XMemoryUnit destination, XMemoryUnit source) {
+    //    XLocalMemoryUnit destinationLocal = destination instanceof XLocalMemoryUnit
+    //            ? (XLocalMemoryUnit) destination
+    //            : null;
+    //    XLocalMemoryUnit sourceLocal = source instanceof XLocalMemoryUnit
+    //            ? (XLocalMemoryUnit) source
+    //            : null;
+    //    XLocalMemoryUnit destinationShared = destination instanceof XLocalMemoryUnit
+    //            ? (XLocalMemoryUnit) destination
+    //            : null;
+    //    XLocalMemoryUnit sourceShared = source instanceof XLocalMemoryUnit
+    //            ? (XLocalMemoryUnit) source
+    //            : null;
+    //
+    //    if (destinationLocal != null) {
+    //        if (sourceLocal != null) {
+    //            return currentProcess.emitMemoryEvent(destinationLocal, sourceLocal);
+    //        }
+    //        if (sourceShared != null) {
+    //            return currentProcess.emitMemoryEvent(destinationLocal, sourceShared);
+    //        }
+    //    }
+    //    if (destinationShared != null) {
+    //        if (sourceLocal != null) {
+    //            return currentProcess.emitMemoryEvent(destinationShared, sourceLocal);
+    //        }
+    //        if (sourceShared != null) {
+    //            XLocalMemoryUnit tempLocal = copyToLocalMemoryIfNecessary(sourceShared);
+    //            return currentProcess.emitMemoryEvent(destinationShared, tempLocal);
+    //        }
+    //    }
+    //    throw new IllegalStateException();
+    //}
+    //
+    //public XControlFlowEvent emitControlFlowEvent() {
+    //    throw new NotImplementedException();
+    //}
+    //
+    //public XBarrierEvent emitBarrierEvent() {
+    //    throw new NotImplementedException();
     //}
 
 }

@@ -1,8 +1,8 @@
-package mousquetaires.languages.syntax.xrepr.processes;
-
+package mousquetaires.languages.syntax.xrepr.processes.notyet;
 
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xrepr.events.barrier.XBarrierEvent;
+import mousquetaires.languages.syntax.xrepr.processes.XProcess;
 
 
 public class XParallelProcess extends XProcess {

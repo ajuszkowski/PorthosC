@@ -6,7 +6,7 @@ import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExp
 import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
 
 
-public class XOperatorConverter {
+public class OperatorConverter {
     public static XOperator convert(YIntegerBinaryExpression.Kind operator) {
         switch (operator) {
             case Plus:       return XOperator.IntegerPlus;

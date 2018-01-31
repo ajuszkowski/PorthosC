@@ -3,7 +3,7 @@ package mousquetaires.languages.syntax.ytree.specific;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YUnlabeledStatement;
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.YtreeUtils;
 
 import java.util.Iterator;
@@ -15,15 +15,15 @@ import java.util.Objects;
  */
 public class YProcessStatement extends YUnlabeledStatement {
 
-    private final int processId;
+    private final String processId;
     private final YCompoundStatement body;
 
-    public YProcessStatement(int processId, YCompoundStatement body) {
+    public YProcessStatement(String processId, YCompoundStatement body) {
         this.processId = processId;
         this.body = body;
     }
 
-    public int getProcessId() {
+    public String getProcessId() {
         return processId;
     }
 
@@ -48,7 +48,7 @@ public class YProcessStatement extends YUnlabeledStatement {
 
     @Override
     public String toString() {
-        return 'P' + processId + " " + body;
+        return getProcessId() + " " + getBody();
     }
 
     @Override
@@ -62,7 +62,6 @@ public class YProcessStatement extends YUnlabeledStatement {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(processId, body);
     }
 }

@@ -6,8 +6,7 @@ import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.statements.YStatement;
-import mousquetaires.languages.visitors.YtreeVisitor;
-import mousquetaires.utils.exceptions.NotSupportedException;
+import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.patterns.Builder;
 
 import java.util.Iterator;

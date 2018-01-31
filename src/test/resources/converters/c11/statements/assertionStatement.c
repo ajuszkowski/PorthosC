@@ -1,33 +1,41 @@
 //void P9 (int a) {} //nested declarator
 
 void P1(spinlock_t *sl, long long *x0, int& x1, char c) {
-    lll int r0;
-    void* a, b, c ,d, e;
-	if (sl == 1)
-	    if (sl2 == 2)
-	        {
-	            return;
-	        }
-    {
-        a[2].print(*x1, x1->x3);
-        a[i] = 3;
+    if (x0 == 1) {
+        x = 1;
+        a = 0;
     }
-	lbl int r1;
-	while ( (a == 3 && b == 3) || x) {
-        sp( &a);
+    else {
+        x = 2;
     }
-    do {
-    	function_1_1(sl);
-    } while (true);
 
-	if (x) goto lbl;
-
-	function_1_2(*x0, 1);
-	r1 = function_1_3(*x1);
-	function_1_4(sl);
+//    lll int r0;
+//    void* a, b, c ,d, e;
+//	if (sl == 1)
+//	    if (sl2 == 2)
+//	        {
+//	            return;
+//	        }
+//    {
+//        a[2].print(*x1, x1->x3);
+//        a[i] = 3;
+//    }
+//	lbl int r1;
+//	while ( (a == 3 && b == 3) || x) {
+//        sp( &a);
+//    }
+//    do {
+//    	function_1_1(sl);
+//    } while (true);
+//
+//	if (x) goto lbl;
+//
+//	function_1_2(*x0, 1);
+//	r1 = function_1_3(*x1);
+//	function_1_4(sl);
 }
 
-P2 {
+/*P2 {
 	int r2 ;//= function_2_1(sl);
 	function_2_2(*x0, 1);
 }
@@ -37,6 +45,7 @@ int** P3(type_3 *sl, int *x0, int *x1)
 	int r3;
 	function_3_1(sl);
 }
+*/
 
 /*
 //exists(y == 22.3 \/ ( 0 :y == 1 /\ 2:x == 3:y /\ 4:x == 5:y \/ 100:a==0 )  );

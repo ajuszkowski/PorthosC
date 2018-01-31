@@ -3,13 +3,13 @@
 //import mousquetaires.languages.syntax.xrepr.processes.XEventInfo;
 //import mousquetaires.languages.syntax.xrepr.memories.XLocalMemoryUnit;
 //import mousquetaires.languages.syntax.xrepr.memories.XMemoryUnit;
-//import mousquetaires.languages.syntax.xrepr.memories.XValue;
+//import mousquetaires.languages.syntax.xrepr.memories.XConstant;
 //
 //
 ///** Initial write event to any kind of memoryevents location ({@link XMemoryUnit}) */
 //public class XInitialWriteEvent extends XLocalMemoryEvent {
 //
-//    public XInitialWriteEvent(XEventInfo info, XLocalMemoryUnit destination, XValue value) {
+//    public XInitialWriteEvent(XEventInfo info, XLocalMemoryUnit destination, XConstant value) {
 //        super(info, destination, value);
 //    }
 //

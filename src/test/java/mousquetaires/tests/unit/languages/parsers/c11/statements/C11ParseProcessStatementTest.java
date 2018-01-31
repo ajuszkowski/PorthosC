@@ -16,7 +16,7 @@ public class C11ParseProcessStatementTest extends C11ParseStatementTest {
     @Test
     public void test_processStatement() {
         YSyntaxTree expected = new YSyntaxTree(
-                new YProcessStatement(1, new YCompoundStatement(true,
+                new YProcessStatement("1", new YCompoundStatement(true,
                         new YVariableDeclarationStatement(typeInt, variableA),
                         new YLinearStatement(new YAssignmentExpression(variableA, constant1)))),
                 new YAssertionStatement(

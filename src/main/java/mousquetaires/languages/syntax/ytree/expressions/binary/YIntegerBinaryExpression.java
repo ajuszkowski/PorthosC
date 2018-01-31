@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.ytree.expressions.binary;
 
 import mousquetaires.languages.syntax.ytree.expressions.YConstant;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 
 
 public class YIntegerBinaryExpression extends YBinaryExpression {
@@ -34,7 +34,8 @@ public class YIntegerBinaryExpression extends YBinaryExpression {
                 case BitOr:        return "|";
                 case BitXor:       return "^";
                 case BitNot:       return "!";
-                default: throw new IllegalArgumentException(this.name());
+                default:
+                    throw new IllegalArgumentException(this.name());
             }
         }
 

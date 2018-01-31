@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.ytree.types;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
 import java.util.Iterator;
@@ -48,6 +48,6 @@ public class YMockType implements YType {
 
     @Override
     public String toString() {
-        return "(mock_type)";
+        return "mock_type";
     }
 }

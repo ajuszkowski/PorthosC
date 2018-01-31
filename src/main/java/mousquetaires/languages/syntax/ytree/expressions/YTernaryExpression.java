@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.expressions;
 
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.utils.YtreeUtils;
 

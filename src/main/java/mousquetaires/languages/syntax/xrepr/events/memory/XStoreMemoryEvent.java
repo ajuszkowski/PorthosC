@@ -1,12 +1,12 @@
 package mousquetaires.languages.syntax.xrepr.events.memory;
 
-import mousquetaires.languages.syntax.xrepr.processes.XEventInfo;
 import mousquetaires.languages.syntax.xrepr.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xrepr.memories.XSharedMemoryUnit;
+import mousquetaires.languages.syntax.xrepr.processes.XEventInfo;
 
 
 /** Write event from local memoryevents (registry, {@link XLocalMemoryUnit})
- * to the shared memoryevents ({@link XSharedMemoryUnit}) */
+ * to the shared memoryevents ({@link XLocalMemoryUnit}) */
 public class XStoreMemoryEvent extends XSharedMemoryEvent {
 
     //public final XMemoryOrder memoryOrder;
@@ -16,8 +16,8 @@ public class XStoreMemoryEvent extends XSharedMemoryEvent {
     }
 
     @Override
-    public XSharedMemoryUnit getDestination() {
-        return (XSharedMemoryUnit) super.getDestination();
+    public XLocalMemoryUnit getDestination() {
+        return (XLocalMemoryUnit) super.getDestination();
     }
 
     @Override

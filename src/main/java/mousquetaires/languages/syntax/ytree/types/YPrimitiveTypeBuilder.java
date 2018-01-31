@@ -3,7 +3,7 @@ package mousquetaires.languages.syntax.ytree.types;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.temporaries.YTempEntity;
-import mousquetaires.languages.visitors.YtreeVisitor;
+import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.StringUtils;
 import mousquetaires.utils.exceptions.BuilderException;
 import mousquetaires.utils.exceptions.NotSupportedException;
