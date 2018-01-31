@@ -2,13 +2,11 @@ package mousquetaires.tests.unit.languages.converters;
 
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
-import mousquetaires.languages.converters.toxrepr.YtreeToXreprConverter;
+import mousquetaires.languages.converters.toxgraph.YtreeToXgraphConverter;
 import mousquetaires.languages.parsers.YtreeParser;
-import mousquetaires.languages.syntax.xrepr.XProgram;
-import mousquetaires.languages.syntax.xrepr.datamodels.DataModel;
+import mousquetaires.languages.syntax.xgraph.XProgram;
+import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
-import mousquetaires.languages.syntax.ytree.expressions.YConstant;
-import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
 import mousquetaires.tests.AbstractTest;
 import mousquetaires.tests.TestFailedException;
 
@@ -27,7 +25,7 @@ public abstract class AbstractConverterUnitTest extends AbstractTest {
             File file = new File(filePath);
             ProgramLanguage language = ProgramExtensions.parseProgramLanguage(file.getName());
             internalRepr = YtreeParser.parse(file, language);
-            YtreeToXreprConverter converter = new YtreeToXreprConverter(language, dataModel);
+            YtreeToXgraphConverter converter = new YtreeToXgraphConverter(language, dataModel);
             return converter.convert(internalRepr);
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,0 +1,23 @@
+package mousquetaires.languages.syntax.xgraph.events.computation;
+
+import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
+
+
+public class XNullaryComputationEvent extends XComputationEvent {
+
+    private final XLocalMemoryUnit firstOperand;
+
+    public XNullaryComputationEvent(XEventInfo info, XLocalMemoryUnit firstOperand) {
+        this(info, firstOperand.getBitness(), firstOperand);
+    }
+
+    protected XNullaryComputationEvent(XEventInfo info, Bitness bitness, XLocalMemoryUnit firstOperand) {
+        super(bitness, info);
+        this.firstOperand = firstOperand;
+    }
+
+    public XLocalMemoryUnit getFirstOperand() {
+        return firstOperand;
+    }
+}

@@ -7,10 +7,10 @@ import mousquetaires.app.modules.AppModule;
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.parsers.YtreeParser;
-import mousquetaires.languages.converters.toxrepr.YtreeToXreprConverter;
-import mousquetaires.languages.syntax.xrepr.XProgram;
-import mousquetaires.languages.syntax.xrepr.datamodels.DataModel;
-import mousquetaires.languages.syntax.xrepr.datamodels.DataModelLP64;
+import mousquetaires.languages.converters.toxgraph.YtreeToXgraphConverter;
+import mousquetaires.languages.syntax.xgraph.XProgram;
+import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
+import mousquetaires.languages.syntax.xgraph.datamodels.DataModelLP64;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.memorymodels.old.MemoryModel;
 import mousquetaires.memorymodels.old.MemoryModelFactory;
@@ -44,7 +44,7 @@ public class DartagnanModule extends AppModule {
             YSyntaxTree internalRepr = YtreeParser.parse(inputProgramFile, language);
             DataModel dataModel = new DataModelLP64(); // TODO: pass as cli-option
 
-            YtreeToXreprConverter converter = new YtreeToXreprConverter(language, dataModel);
+            YtreeToXgraphConverter converter = new YtreeToXgraphConverter(language, dataModel);
             XProgram program = converter.convert(internalRepr);
 
             // SmtEncoder.encode(program) ...
