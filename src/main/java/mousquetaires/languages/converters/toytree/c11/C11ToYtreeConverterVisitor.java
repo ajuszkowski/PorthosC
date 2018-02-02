@@ -1412,11 +1412,9 @@ class C11ToYtreeConverterVisitor
         C11Parser.StatementContext statementContext = ctx.statement();
         C11Parser.ForConditionContext forConditionContext = ctx.forCondition();
 
-        if (statementContext == null) {
-            throw new YParserException(ctx, "Missing loop statement");
-        }
-
-        YStatement statement = visitStatement(statementContext);
+        YStatement statement = statementContext != null
+                ? visitStatement(statementContext)
+                : YLinearStatement.createEmptyStatement();
 
         boolean isDoWhile = C11ParserHelper.hasToken(ctx, C11Parser.Do);
         boolean isWhile = !isDoWhile && C11ParserHelper.hasToken(ctx, C11Parser.While);
@@ -1427,7 +1425,7 @@ class C11ToYtreeConverterVisitor
                 throw new YParserException(ctx, "Missing loop expression");
             }
             YExpression expression = visitExpression(expressionContext);
-            YStatement loopStatement = new YLoopStatement(expression, statement);
+            YStatement loopStatement = new YWhileLoopStatement(expression, statement);
             if (isDoWhile) {
                 YCompoundStatementBuilder builder = new YCompoundStatementBuilder();
                 builder.addStatement(statement); //first iteration

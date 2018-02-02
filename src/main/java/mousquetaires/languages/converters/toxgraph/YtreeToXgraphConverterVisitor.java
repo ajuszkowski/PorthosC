@@ -20,6 +20,7 @@ import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
 import mousquetaires.languages.syntax.ytree.expressions.YConstant;
+import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YTernaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
@@ -39,6 +40,7 @@ import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
 import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
 import mousquetaires.languages.visitors.ytree.YtreeVisitorBase;
 import mousquetaires.utils.exceptions.NotImplementedException;
+import mousquetaires.utils.exceptions.xgraph.XCompilatorUsageError;
 import mousquetaires.utils.exceptions.xgraph.XInvalidTypeError;
 
 
@@ -46,6 +48,12 @@ import mousquetaires.utils.exceptions.xgraph.XInvalidTypeError;
 class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEntity> {
 
     private final XProgramBuilder program;
+
+    YtreeToXgraphConverterVisitor(ProgramLanguage language, DataModel dataModel) {
+        //this.interpreter = interpreter;
+        this.program = new XProgramBuilder(new XMemoryManager(language, dataModel));
+    }
+
 
     public XProgram getProgram() {
         return program.build();
@@ -183,15 +191,12 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEntity> {
     }
 
     @Override
-    public XEntity visit(YLinearStatement node) {
-        XEntity expression = visit(node.getExpression());
-        if (expression instanceof XRegister) {
-            return program.currentProcess.emitComputationEvent((XRegister) expression);
+    public XEvent visit(YLinearStatement node) {
+        YExpression yExpression = node.getExpression();
+        if (yExpression != null) {
+            return processExpression(visit(yExpression));
         }
-        if (expression instanceof XEvent) {
-            return (XEvent) expression;
-        }
-        throw new IllegalStateException();
+        return program.currentProcess.emitComputationEvent();
     }
 
     @Override
@@ -214,13 +219,8 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEntity> {
 
     @Override
     public XEntity visit(YBranchingStatement node) {
-
         XEntity condition = visit(node.getCondition());
-        XLocalMemoryUnit conditionLocal = TypeCastHelper.castToLocalMemoryUnitOrThrow(condition);
-        XComputationEvent conditionEvent = conditionLocal instanceof XComputationEvent
-                ? (XComputationEvent) conditionLocal
-                :  program.currentProcess.emitComputationEvent(conditionLocal);
-
+        XComputationEvent conditionEvent = evaluate(condition);
         XBranchingEvent branchingEvent = program.currentProcess.startBranching(conditionEvent);
 
         program.currentProcess.startTrueBranch();
@@ -240,31 +240,18 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEntity> {
     }
 
     @Override
-    public XEntity visit(YLoopStatement node) {
-        throw new NotImplementedException();
-        //// condition expression evaluation event
-        //XEntity condition = visit(node.getCondition());
-        //XLocalMemoryUnit conditionLocal = TypeCastHelper.castToLocalMemoryUnitOrThrow(condition);
-        //XComputationEvent conditionEvaluation = program.currentProcess.emitComputationEvent(conditionLocal);
-        //
-        //// first event in loop statement body
-        //XEvent bodyFirstEvent = visit(node.getBody());
-        //XEvent bodyLastEvent = program.currentProcess.getCurrentEventList();
-        //
-        //// loop edge: to condition evaluation
-        //program.currentProcess.emitUnconditionalJumpEvent(bodyLastEvent, conditionEvaluation);
-        //
-        //// loop condition descision 'if'-edge
-        //program.currentProcess.emitConditionalJumpEvent(conditionEvaluation, bodyFirstEvent);
-        //
-        //// loop condition descision 'else'-edge
-        //program.currentProcess.emitConditionalJumpEvent(conditionEvaluation, bodyFirstEvent);
-        //
-        //// loop condition descision 'else'-edge (exit)
-        ////todo
-        //
-        //// return first event in loop statement
-        //return conditionEvaluation;
+    public XEntity visit(YWhileLoopStatement node) {
+        XEntity condition = visit(node.getCondition());
+        XComputationEvent conditionEvent = evaluate(condition);
+        XBranchingEvent loopEvent = program.currentProcess.startLoopDefinition(conditionEvent);
+
+        program.currentProcess.startLoopBodyDefinition();
+        visit(node.getBody());
+        program.currentProcess.finishLoopBodyDefinition();
+
+        program.currentProcess.finishLoopDefinition();
+
+        return loopEvent;
     }
 
     @Override
@@ -282,9 +269,20 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEntity> {
         throw new NotImplementedException();
     }
 
-    YtreeToXgraphConverterVisitor(ProgramLanguage language, DataModel dataModel) {
-        //this.interpreter = interpreter;
-        this.program = new XProgramBuilder(new XMemoryManager(language, dataModel));
+    private XComputationEvent evaluate(XEntity expression) {
+        XLocalMemoryUnit conditionLocal = TypeCastHelper.castToLocalMemoryUnitOrThrow(expression);
+        return conditionLocal instanceof XComputationEvent
+                ? (XComputationEvent) conditionLocal
+                :  program.currentProcess.emitComputationEvent(conditionLocal);
     }
 
+    private XEvent processExpression(XEntity expression) {
+        if (expression instanceof XRegister) {
+            return program.currentProcess.emitComputationEvent((XRegister) expression);
+        }
+        if (expression instanceof XEvent) {
+            return (XEvent) expression;
+        }
+        throw new XCompilatorUsageError("Unexpected expression type: " + expression.getClass().getSimpleName());
+    }
 }

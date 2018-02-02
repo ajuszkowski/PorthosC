@@ -20,8 +20,7 @@ public class XProcessBuilder extends Builder<XProcess> {
     private enum State {
         WaitingNextLinearEvent,
 
-        WaitingNextBranchingCommand,
-        WaitingNextLoopCommand,
+        WaitingAdditionalCommand,
 
         WaitingFirstTrueBranchEvent,
         WaitingFirstFalseBranchEvent,
@@ -41,17 +40,20 @@ public class XProcessBuilder extends Builder<XProcess> {
     //private final ImmutableList.Builder<XBranchingEvent> branchingEvents;
     private final ImmutableList.Builder<XEvent> events;
 
-    //private final ImmutableMap.Builder<XEvent, XEvent> jumpsMap;
-    /*private*/ final HashMap<XEvent, XEvent> nextMap;
-    /*private*/ final HashMap<XEvent, XEvent> jumpsMap; //goto, if(true), while(true)
+    //private final ImmutableMap.Builder<XEvent, XEvent> trueBranchingJumpsMap;
+    /*private*/ final HashMap<XEvent, XEvent> nextEventMap;
+    /*private*/ final HashMap<XEvent, XEvent> trueBranchingJumpsMap; //goto, if(true), while(true)
     /*private*/ final HashMap<XBranchingEvent, XEvent> falseBranchingJumpsMap; //if(false)
 
 
     private State state = State.WaitingNextLinearEvent;
 
-    private final Stack<BranchingContext> branchingContextStack;
-    private final Set<BranchingContext> readyBranchingContextSet;
-    private final Stack<XComputationEvent> loopEntryNodesStack;
+    // todo: add add/put methods with non-null checks
+    private final Stack<BranchingBlockInfo> loopsStack;
+    private final Stack<BranchingBlockInfo> branchingsStack;
+    private final Set<BranchingBlockInfo> readyBranchings;
+    private final Set<BranchingBlockInfo> readyLoops;
+
 
     private XEvent previousEvent;
 
@@ -70,13 +72,14 @@ public class XProcessBuilder extends Builder<XProcess> {
         //this.branchingEvents = new ImmutableList.Builder<>();
         this.events = new ImmutableList.Builder<>();
 
-        nextMap = new HashMap<>();
-        jumpsMap = new HashMap<>();
+        nextEventMap = new HashMap<>();
+        trueBranchingJumpsMap = new HashMap<>();
         falseBranchingJumpsMap = new HashMap<>();
-        loopEntryNodesStack = new Stack<>();
 
-        branchingContextStack = new Stack<>();
-        readyBranchingContextSet = new HashSet<>();
+        branchingsStack = new Stack<>();
+        loopsStack = new Stack<>();
+        readyBranchings = new HashSet<>();
+        readyLoops = new HashSet<>();
     }
 
     @Override
@@ -109,6 +112,15 @@ public class XProcessBuilder extends Builder<XProcess> {
     }
 
     // --
+
+
+    /**
+     * For modelling empty statement
+     */
+    public XComputationEvent emitComputationEvent() {
+        XRegister dummyTempMemory = memoryManager.newLocalMemoryUnit();
+        return emitComputationEvent(dummyTempMemory);
+    }
 
     public XComputationEvent emitComputationEvent(XLocalMemoryUnit operand) {
         XComputationEvent event = new XNullaryComputationEvent(newEventInfo(), operand);
@@ -165,41 +177,55 @@ public class XProcessBuilder extends Builder<XProcess> {
         switch (state) {
             case WaitingNextLinearEvent:
                 if (previousEvent != null) {
-                    nextMap.put(previousEvent, nextEvent);
+                    nextEventMap.put(previousEvent, nextEvent);
                 }
             break;
 
             case WaitingFirstTrueBranchEvent:
+                branchingsStack.peek().setFirstTrueBranchEvent(nextEvent);
+            break;
+
             case WaitingFirstFalseBranchEvent:
-                //assert previousEvent != null;
-                //assert previousEvent instanceof XBranchingEvent: previousEvent.getClass().getSimpleName();
-                XBranchingEvent branchingEvent = branchingContextStack.peek().getBranchingEvent();
-                if (state == State.WaitingFirstTrueBranchEvent) {
-                    jumpsMap.put(branchingEvent, nextEvent);
-                }
-                else {
-                    falseBranchingJumpsMap.put(branchingEvent, nextEvent);
-                }
+                branchingsStack.peek().setFirstFalseBranchEvent(nextEvent);
+            break;
+
+            case WaitingFirstLoopEvent:
+                loopsStack.peek().setFirstTrueBranchEvent(nextEvent);
             break;
 
             case JustFinishedBranchingEvent:
-                for (BranchingContext readyBranchingContext : readyBranchingContextSet) {
-                    XEvent lastTrueBranchEvent = readyBranchingContext.getLastTrueBranchEvent();
-                    XEvent lastFalseBranchEvent = readyBranchingContext.getLastFalseBranchEvent();
+                for (BranchingBlockInfo readyBranching : readyBranchings) {
+                    XBranchingEvent branchingConditionEvent = readyBranching.conditionEvent;
+
+                    XEvent lastTrueBranchEvent = readyBranching.lastTrueBranchEvent;
                     if (lastTrueBranchEvent != null) {
-                        nextMap.put(lastTrueBranchEvent, nextEvent);
+                        trueBranchingJumpsMap.put(branchingConditionEvent, nextEvent);
+                        nextEventMap.put(lastTrueBranchEvent, nextEvent);
                     } else {
                         throw new XCompilatorUsageError("Attempt to finish branching definition without true-branch");
                     }
+
+                    XEvent lastFalseBranchEvent = readyBranching.lastFalseBranchEvent;
                     if (lastFalseBranchEvent != null) {
-                        nextMap.put(lastFalseBranchEvent, nextEvent);
+                        falseBranchingJumpsMap.put(branchingConditionEvent, nextEvent);
+                        nextEventMap.put(lastFalseBranchEvent, nextEvent);
                     }
                 }
-                readyBranchingContextSet.clear();
+                readyBranchings.clear();
             break;
 
             case JustFinishedLoopEvent:
-                // ...
+                for (BranchingBlockInfo readyLoop : readyLoops) {
+                    XBranchingEvent loopConditionEvent = readyLoop.conditionEvent;
+
+                    assert readyLoop.lastFalseBranchEvent == null: readyLoop.lastFalseBranchEvent.toString();
+                    assert readyLoop.firstFalseBranchEvent == null: readyLoop.firstFalseBranchEvent.toString();
+
+                    trueBranchingJumpsMap.put(loopConditionEvent, readyLoop.firstTrueBranchEvent);
+                    falseBranchingJumpsMap.put(loopConditionEvent, nextEvent);
+                    nextEventMap.put(readyLoop.lastTrueBranchEvent, loopConditionEvent);
+                }
+                readyLoops.clear();
             break;
 
             default:
@@ -207,11 +233,6 @@ public class XProcessBuilder extends Builder<XProcess> {
         }
         state = State.WaitingNextLinearEvent;
         previousEvent = nextEvent;
-    }
-
-
-    private void resetCurrentEvent() {
-        previousEvent = null;
     }
 
     private XEventInfo newEventInfo() {
@@ -223,45 +244,55 @@ public class XProcessBuilder extends Builder<XProcess> {
     // -- BRANCHING ----------------------------------------------------------------------------------------------------
 
     public XBranchingEvent startBranching(XComputationEvent condition) {
-        assert state == State.WaitingNextLinearEvent: state.name();
-        XBranchingEvent branchingEvent = new XBranchingEvent(newEventInfo(), condition);
-        processNextEvent(branchingEvent);
-        branchingContextStack.push(new BranchingContext(branchingEvent));
-        state = State.WaitingNextBranchingCommand;
-        return branchingEvent;
+        return processStartBranching(condition, branchingsStack);
     }
 
     public void startTrueBranch() {
-        assert state == State.WaitingNextBranchingCommand: state.name();
+        assert state == State.WaitingAdditionalCommand : state.name();
         state = State.WaitingFirstTrueBranchEvent;
     }
 
     public void finishTrueBranch() {
-        BranchingContext currentContext = branchingContextStack.peek();
+        BranchingBlockInfo currentContext = branchingsStack.peek();
         currentContext.setLastTrueBranchEvent(previousEvent);
-        state = State.WaitingNextBranchingCommand;
+        state = State.WaitingAdditionalCommand;
     }
 
     public void startFalseBranch() {
-        assert state == State.WaitingNextBranchingCommand: state.name();
+        assert state == State.WaitingAdditionalCommand : state.name();
         state = State.WaitingFirstFalseBranchEvent;
     }
 
     public void finishFalseBranch() {
-        BranchingContext currentContext = branchingContextStack.peek();
+        BranchingBlockInfo currentContext = branchingsStack.peek();
         currentContext.setLastFalseBranchEvent(previousEvent);
-        state = State.WaitingNextBranchingCommand;
+        state = State.WaitingAdditionalCommand;
     }
 
     public void finishBranching() {
-        readyBranchingContextSet.add(branchingContextStack.pop());
+        readyBranchings.add(branchingsStack.pop());
         state = State.JustFinishedBranchingEvent;
     }
 
     // -- LOOP ---------------------------------------------------------------------------------------------------------
 
+    public XBranchingEvent startLoopDefinition(XComputationEvent condition) {
+        return processStartBranching(condition, loopsStack);
+    }
 
+    public void startLoopBodyDefinition() {
+        assert state == State.WaitingAdditionalCommand : state.name();
+        state = State.WaitingFirstLoopEvent;
+    }
 
+    public void finishLoopBodyDefinition() {
+        loopsStack.peek().setLastTrueBranchEvent(previousEvent);
+        readyLoops.add(loopsStack.pop());
+    }
+
+    public void finishLoopDefinition() {
+        state = State.JustFinishedLoopEvent;
+    }
 
     // =================================================================================================================
 
@@ -273,25 +304,35 @@ public class XProcessBuilder extends Builder<XProcess> {
 
     // =================================================================================================================
 
-    private class BranchingContext {
-        private final XBranchingEvent branchingEvent;
+    private XBranchingEvent processStartBranching(XComputationEvent condition, Stack<BranchingBlockInfo> currentStack) {
+        assert state == State.WaitingNextLinearEvent: state.name();
+        XBranchingEvent branchingEvent = new XBranchingEvent(newEventInfo(), condition);
+        processNextEvent(branchingEvent);
+        currentStack.push(new BranchingBlockInfo(branchingEvent));
+        state = State.WaitingAdditionalCommand;
+        return branchingEvent;
+    }
+
+    // =================================================================================================================
+
+    private class BranchingBlockInfo {
+        private final XBranchingEvent conditionEvent;
+        private XEvent firstTrueBranchEvent;
+        private XEvent firstFalseBranchEvent;
+
         private XEvent lastTrueBranchEvent;
         private XEvent lastFalseBranchEvent;
 
-        public BranchingContext(XBranchingEvent branchingEvent) {
-            this.branchingEvent = branchingEvent;
+        public BranchingBlockInfo(XBranchingEvent conditionEvent) {
+            this.conditionEvent = conditionEvent;
         }
 
-        public XBranchingEvent getBranchingEvent() {
-            return branchingEvent;
+        public void setFirstTrueBranchEvent(XEvent firstTrueBranchEvent) {
+            this.firstTrueBranchEvent = firstTrueBranchEvent;
         }
 
-        public XEvent getLastTrueBranchEvent() {
-            return lastTrueBranchEvent;
-        }
-
-        public XEvent getLastFalseBranchEvent() {
-            return lastFalseBranchEvent;
+        public void setFirstFalseBranchEvent(XEvent firstFalseBranchEvent) {
+            this.firstFalseBranchEvent = firstFalseBranchEvent;
         }
 
         public void setLastTrueBranchEvent(XEvent lastTrueBranchEvent) {
@@ -304,7 +345,8 @@ public class XProcessBuilder extends Builder<XProcess> {
 
         @Override
         public String toString() {
-            return  branchingEvent + " {... " + lastTrueBranchEvent + " } else {... " + lastFalseBranchEvent + " }";
+            return  conditionEvent + " { " + firstTrueBranchEvent + "... " + lastTrueBranchEvent +
+                    " } else { " + firstFalseBranchEvent + "... " + lastFalseBranchEvent + " }";
         }
     }
 }

@@ -169,7 +169,7 @@ public abstract class YtreeVisitorBase<T> implements YtreeVisitor<T> {
     }
 
     @Override
-    public T visit(YLoopStatement node) {
+    public T visit(YWhileLoopStatement node) {
         visitChildren(node);
         throw new IllegalStateException(getExceptionMessage(node));
     }

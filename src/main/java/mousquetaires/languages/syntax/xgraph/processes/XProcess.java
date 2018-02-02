@@ -20,8 +20,8 @@ public class XProcess implements XEntity {
     XProcess(XProcessBuilder builder) {
         this.processId = builder.getProcessId();
         this.events = builder.buildEvents();
-        this.nextMap = builder.nextMap;
-        this.jumpsMap = builder.jumpsMap;
+        this.nextMap = builder.nextEventMap;
+        this.jumpsMap = builder.trueBranchingJumpsMap;
         this.falseBranchingJumpsMap = builder.falseBranchingJumpsMap;
 
 

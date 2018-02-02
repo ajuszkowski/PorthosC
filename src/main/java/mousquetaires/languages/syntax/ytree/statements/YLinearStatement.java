@@ -5,6 +5,7 @@ import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.YtreeUtils;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -22,6 +23,7 @@ public class YLinearStatement extends YStatement {
         this.expression = expression;
     }
 
+    @Nullable
     public YExpression getExpression() {
         return expression;
     }

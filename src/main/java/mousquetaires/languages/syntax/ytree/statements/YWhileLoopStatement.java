@@ -9,17 +9,18 @@ import java.util.Iterator;
 import java.util.Objects;
 
 
-public class YLoopStatement extends YStatement {
+// TODO: separate while+for and dowhile loops!
+public class YWhileLoopStatement extends YStatement {
 
     private final YExpression condition;
     private final YStatement body;
 
 
-    public YLoopStatement(YExpression condition, YStatement body) {
+    public YWhileLoopStatement(YExpression condition, YStatement body) {
         this(newLabel(), condition, body);
     }
 
-    private YLoopStatement(String label, YExpression condition, YStatement body) {
+    private YWhileLoopStatement(String label, YExpression condition, YStatement body) {
         super(label);
         this.condition = condition;
         this.body = body;
@@ -34,8 +35,8 @@ public class YLoopStatement extends YStatement {
     }
 
     @Override
-    public YLoopStatement withLabel(String newLabel) {
-        return new YLoopStatement(newLabel, getCondition(), getBody());
+    public YWhileLoopStatement withLabel(String newLabel) {
+        return new YWhileLoopStatement(newLabel, getCondition(), getBody());
     }
 
     @Override
@@ -49,8 +50,8 @@ public class YLoopStatement extends YStatement {
     }
 
     @Override
-    public YLoopStatement copy() {
-        return new YLoopStatement(getLabel(), getCondition(), getBody());
+    public YWhileLoopStatement copy() {
+        return new YWhileLoopStatement(getLabel(), getCondition(), getBody());
     }
 
     @Override
@@ -61,8 +62,8 @@ public class YLoopStatement extends YStatement {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof YLoopStatement)) return false;
-        YLoopStatement that = (YLoopStatement) o;
+        if (!(o instanceof YWhileLoopStatement)) return false;
+        YWhileLoopStatement that = (YWhileLoopStatement) o;
         return Objects.equals(getCondition(), that.getCondition()) &&
                 Objects.equals(getBody(), that.getBody());
     }

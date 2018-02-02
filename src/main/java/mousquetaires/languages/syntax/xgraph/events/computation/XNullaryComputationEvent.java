@@ -18,7 +18,6 @@ public class XNullaryComputationEvent extends XComputationEventBase {
         return firstOperand;
     }
 
-
     @Override
     public <T> T accept(XgraphVisitor<T> visitor) {
         return visitor.visit(this);

@@ -5,19 +5,20 @@ void P1(spinlock_t *sl, long long *x0, int& x1, char c) {
 //        x++;
 //        y--;
 //    }
-    y = x > 0;
-    if (x == 1) {
+    y = x > 100500;
+    while (x == 1) {
+        x = 1.1;
+        while (1.5) ;
         if (x == 2) {
-            if (3) {
+            while (3) {
                 a = 4;
             }
+//            continue;
         }
         else {
             b = 5;
+//            break;
         }
-    }
-    else {
-        c = 6;
     }
     d = 7;
 

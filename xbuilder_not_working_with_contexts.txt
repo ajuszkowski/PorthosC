@@ -146,8 +146,8 @@ public class XProcessBuilder extends Builder<XProcess> {
         //else { //if (currentNode instanceof )
         //    throw new XCompilationError("invalid state: cannot start branching definition ");
         //}
-        XBranchingEvent branchingEvent = new XBranchingEvent(newEventInfo(), condition);
-        BranchingContext branchingContext = new BranchingContext(branchingEvent);
+        XBranchingEvent conditionEvent = new XBranchingEvent(newEventInfo(), condition);
+        BranchingContext branchingContext = new BranchingContext(conditionEvent);
         contextStack.push(branchingContext);
         return branchingContext;
     }
