@@ -11,6 +11,7 @@ import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XOperator;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XBranchingEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLocalMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.types.XMockType;
@@ -36,13 +37,13 @@ import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
 import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
-import mousquetaires.languages.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.visitors.ytree.YtreeVisitorBase;
 import mousquetaires.utils.exceptions.NotImplementedException;
-import mousquetaires.utils.exceptions.xgraph.XInvalidTypeException;
+import mousquetaires.utils.exceptions.xgraph.XInvalidTypeError;
 
 
 // TODO: move this visitor to converter (replace conv. with visitor)
-class YtreeToXgraphConverterVisitor implements YtreeVisitor<XEntity> {
+class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEntity> {
 
     private final XProgramBuilder program;
 
@@ -103,7 +104,7 @@ class YtreeToXgraphConverterVisitor implements YtreeVisitor<XEntity> {
         if (result instanceof XEvent) {
             return (XEvent) result;
         }
-        throw new XInvalidTypeException(result, XEvent.class);
+        throw new XInvalidTypeError(result, XEvent.class);
     }
 
     // end of Litmus-specific visits.
@@ -213,22 +214,26 @@ class YtreeToXgraphConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XEntity visit(YBranchingStatement node) {
+
         XEntity condition = visit(node.getCondition());
         XLocalMemoryUnit conditionLocal = TypeCastHelper.castToLocalMemoryUnitOrThrow(condition);
         XComputationEvent conditionEvent = conditionLocal instanceof XComputationEvent
                 ? (XComputationEvent) conditionLocal
                 :  program.currentProcess.emitComputationEvent(conditionLocal);
-        program.currentProcess.startBranchingDefinition(conditionEvent);
 
-        XEvent thenFirstEvent = visit(node.getThenBranch());
-        program.currentProcess.finishTrueBranchDefinition(thenFirstEvent);
+        XBranchingEvent branchingEvent = program.currentProcess.startBranching(conditionEvent);
 
-        XEvent elseFirstEvent = visit(node.getElseBranch());
-        program.currentProcess.finishFalseBranchDefinition(elseFirstEvent);
+        program.currentProcess.startTrueBranch();
+        visit(node.getThenBranch());
+        program.currentProcess.finishTrueBranch();
 
-        program.currentProcess.finishBranchingEventDefinition();
+        program.currentProcess.startFalseBranch();
+        visit(node.getElseBranch());
+        program.currentProcess.finishFalseBranch();
 
-        return conditionEvent; // RETURNING ENTRY
+        program.currentProcess.finishBranching();
+
+        return branchingEvent;
     }
 
     @Override

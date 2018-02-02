@@ -1,6 +1,7 @@
 package mousquetaires.utils.patterns;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import mousquetaires.utils.exceptions.BuilderException;
 
 
@@ -21,6 +22,11 @@ public abstract class Builder<T> {
     protected <S> void add(S element, ImmutableList.Builder<S> collection) {
         throwIfAlreadyBuilt();
         collection.add(element);
+    }
+
+    protected <S, K> void put(S element1, K element2, ImmutableMap.Builder<S, K> collection) {
+        throwIfAlreadyBuilt();
+        collection.put(element1, element2);
     }
 
     protected <S> void addAll(Iterable<S> from, ImmutableList.Builder<S> to) {

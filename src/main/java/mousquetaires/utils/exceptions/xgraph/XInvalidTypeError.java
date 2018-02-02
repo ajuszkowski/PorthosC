@@ -3,9 +3,9 @@ package mousquetaires.utils.exceptions.xgraph;
 import mousquetaires.utils.StringUtils;
 
 
-public class XInvalidTypeException extends XCompilationException {
+public class XInvalidTypeError extends XCompilationError {
 
-    public XInvalidTypeException(Object node, Class<?> castToClass) {
+    public XInvalidTypeError(Object node, Class<?> castToClass) {
         super(getCastErrorMessage(node, castToClass));
     }
 

@@ -1,17 +1,16 @@
 package mousquetaires.languages.processors.encoders.xgraph.tosmt;
 
-import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperationEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XConditionalJumpEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XBranchingEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XMethodCallEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XConstant;
-import mousquetaires.languages.syntax.xgraph.memories.XRegister;
 import mousquetaires.languages.syntax.xgraph.memories.XLocation;
+import mousquetaires.languages.syntax.xgraph.memories.XRegister;
 import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
@@ -64,7 +63,7 @@ public class SmtEncoderVisitor implements XgraphVisitor<String> {
     }
 
     @Override
-    public String visit(XConditionalJumpEvent node) {
+    public String visit(XBranchingEvent node) {
         throw new NotImplementedException();
     }
 
@@ -73,8 +72,8 @@ public class SmtEncoderVisitor implements XgraphVisitor<String> {
         throw new NotImplementedException();
     }
 
-    @Override
-    public String visit(XBarrierEvent node) {
-        throw new NotImplementedException();
-    }
+    //@Override
+    //public String visit(XBarrierEvent node) {
+    //    throw new NotImplementedException();
+    //}
 }

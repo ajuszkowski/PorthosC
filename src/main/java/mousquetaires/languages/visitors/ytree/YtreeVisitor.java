@@ -1,10 +1,8 @@
 package mousquetaires.languages.visitors.ytree;
 
-import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
 import mousquetaires.languages.syntax.ytree.expressions.YConstant;
-import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YTernaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
@@ -27,16 +25,6 @@ import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
 public interface YtreeVisitor<T> {
 
     T visit(YSyntaxTree node);
-
-    default T visit(YEntity node) {
-        return node.accept(this);
-    }
-    default T visit(YExpression node) {
-        return node.accept(this);
-    }
-    default T visit(YStatement node) {
-        return node.accept(this);
-    }
 
     // -- Litmus-specific elements: ------------------------------------------------------------------------------------
 

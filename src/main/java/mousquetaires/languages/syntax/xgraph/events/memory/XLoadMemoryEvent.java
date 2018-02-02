@@ -4,6 +4,7 @@ import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
+import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
 
 
 /** Load event from shared memory ({@link XLocalMemoryUnit})
@@ -26,6 +27,11 @@ public class XLoadMemoryEvent extends XMemoryEventBase implements XSharedMemoryE
     @Override
     public XSharedMemoryUnit getSource() {
         return (XSharedMemoryUnit) super.getSource();
+    }
+
+    @Override
+    public <T> T accept(XgraphVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 
     @Override

@@ -1,10 +1,7 @@
 package mousquetaires.languages.syntax.xgraph;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.syntax.xgraph.memories.XRegister;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
-import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnitBase;
-import mousquetaires.languages.syntax.xgraph.memories.XLocation;
 import mousquetaires.languages.syntax.xgraph.processes.XProcess;
 import mousquetaires.languages.syntax.xgraph.processes.XProcessBuilder;
 import mousquetaires.utils.patterns.Builder;
@@ -69,7 +66,7 @@ public class XProgramBuilder extends Builder<XProgram> {
                     "' definition while another process '" + currentProcess.getProcessId() +
                     "'; is being constructed");
         }
-        currentProcess = new XProcessBuilder(processId);
+        currentProcess = new XProcessBuilder(processId, memoryManager);
     }
 
     public void finishProcessDefinition() {
@@ -96,21 +93,6 @@ public class XProgramBuilder extends Builder<XProgram> {
     //    return currentProcess.emitComputationEvent(operator, left, right);
     //}
 
-    public XRegister copyToLocalMemory(XLocation shared) {
-        XRegister tempLocal = memoryManager.newLocalMemoryUnit();
-        currentProcess.emitMemoryEvent(tempLocal, shared);
-        return tempLocal;
-    }
-
-    public XRegister copyToLocalMemoryIfNecessary(XMemoryUnitBase sharedOrLocal) {
-        if (sharedOrLocal instanceof XLocation) {
-            copyToLocalMemory((XLocation) sharedOrLocal);
-        }
-        else if (sharedOrLocal instanceof XRegister) {
-            return (XRegister) sharedOrLocal;
-        }
-        throw new IllegalArgumentException(sharedOrLocal.getClass().getName());
-    }
 
     //public XMemoryEventBase emitMemoryEvent(XMemoryUnit source) {
     //    return emitMemoryEvent(memoryManager.newLocalMemoryUnit(), source);

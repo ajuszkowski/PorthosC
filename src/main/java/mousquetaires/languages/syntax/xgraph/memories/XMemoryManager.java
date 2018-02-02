@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.xgraph.memories;
 
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
-import mousquetaires.utils.exceptions.xgraph.UndeclaredMemoryUnitException;
+import mousquetaires.utils.exceptions.xgraph.UndeclaredMemoryUnitError;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +44,7 @@ public final class XMemoryManager {
         XRegister result = localLocations.get(name);
         if (result == null) {
             // todo: probably, do not need to declare local memoryevents (registers)
-            //throw new UndeclaredMemoryUnitException(name);
+            //throw new UndeclaredMemoryUnitError(name);
             return newLocalMemoryUnit(name);//todo: type
         }
         return result;
@@ -54,7 +54,7 @@ public final class XMemoryManager {
         XLocation result = sharedLocations.get(name);
         if (result == null) {
             // todo: probably processName undeclared shared memoryevents units as well
-            throw new UndeclaredMemoryUnitException(name);
+            throw new UndeclaredMemoryUnitError(name);
         }
         return result;
     }
@@ -62,14 +62,14 @@ public final class XMemoryManager {
     //// TO-DO: do we really need to declare local memory units? or we have infinitely many registers in our model?
     //public XRegister declareLocalMemoryUnit(String name, XType type) {
     //    if (isLocalMemoryDeclared(name)) {
-    //        throw new MemoryUnitDoubleDeclarationException(name, true);
+    //        throw new MemoryUnitDoubleDeclarationError(name, true);
     //    }
     //    return newLocalMemoryUnit(name, type);
     //}
     //
     //public XRegister declareSharedMemoryUnit(String name, XType type) {
     //    if (isSharedMemoryDeclared(name)) {
-    //        throw new MemoryUnitDoubleDeclarationException(name, false);
+    //        throw new MemoryUnitDoubleDeclarationError(name, false);
     //    }
     //    return newSharedMemory(name, type);
     //}

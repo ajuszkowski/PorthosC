@@ -27,7 +27,7 @@ import mousquetaires.utils.StringUtils;
 import java.util.Iterator;
 
 
-public abstract class YtreeBaseVisitor<T> implements YtreeVisitor<T> {
+public abstract class YtreeVisitorBase<T> implements YtreeVisitor<T> {
     public final void visitChildren(YEntity node) {
         Iterator<? extends YEntity> iterator = node.getChildrenIterator();
         while (iterator.hasNext()) {
@@ -42,6 +42,18 @@ public abstract class YtreeBaseVisitor<T> implements YtreeVisitor<T> {
         throw new IllegalStateException(getExceptionMessage(node));
     }
 
+
+    protected T visit(YEntity node) {
+        return node.accept(this);
+    }
+
+    protected T visit(YExpression node) {
+        return node.accept(this);
+    }
+
+    protected T visit(YStatement node) {
+        return node.accept(this);
+    }
 
 
     // -- Litmus-specific elements: ------------------------------------------------------------------------------------

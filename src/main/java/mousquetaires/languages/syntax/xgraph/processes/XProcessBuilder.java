@@ -3,42 +3,76 @@ package mousquetaires.languages.syntax.xgraph.processes;
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.*;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XConditionalJumpEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XControlFlowEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XBranchingEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
-import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.*;
+import mousquetaires.utils.StringUtils;
+import mousquetaires.utils.exceptions.xgraph.XCompilatorUsageError;
 import mousquetaires.utils.patterns.Builder;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Stack;
 
 
 public class XProcessBuilder extends Builder<XProcess> {
 
+    private enum State {
+        WaitingNextLinearEvent,
+
+        WaitingNextBranchingCommand,
+        WaitingNextLoopCommand,
+
+        WaitingFirstTrueBranchEvent,
+        WaitingFirstFalseBranchEvent,
+        WaitingFirstLoopEvent,
+
+        //JustFinishedTrueBranching,
+        //JustFinishedFalseBranching,
+
+        JustFinishedBranchingEvent,
+        JustFinishedLoopEvent,
+    }
+
     private final String processId;
-    private final ImmutableList.Builder<XRegisterMemoryEvent> localMemoryEvents;
-    private final ImmutableList.Builder<XSharedMemoryEvent> sharedMemoryEvents;
-    private final ImmutableList.Builder<XComputationEvent> computationEvents;
-    private final ImmutableList.Builder<XControlFlowEvent> controlFlowEvents;
-    //private final ImmutableMap.Builder<XEvent, XEvent> nextEvents;
+    //private final ImmutableList.Builder<XLocalMemoryEvent> localMemoryEvents;
+    //private final ImmutableList.Builder<XSharedMemoryEvent> sharedMemoryEvents;
+    //private final ImmutableList.Builder<XComputationEvent> computationEvents;
+    //private final ImmutableList.Builder<XBranchingEvent> branchingEvents;
+    private final ImmutableList.Builder<XEvent> events;
 
-    private final Stack<XConditionalJumpEvent> conditionalContextStack;
-    private final List<XEvent> lastBranchEvents;
-    private final List<XEvent> currentEventList;
+    //private final ImmutableMap.Builder<XEvent, XEvent> jumpsMap;
+    /*private*/ final HashMap<XEvent, XEvent> nextMap;
+    /*private*/ final HashMap<XEvent, XEvent> jumpsMap; //goto, if(true), while(true)
+    /*private*/ final HashMap<XBranchingEvent, XEvent> falseBranchingJumpsMap; //if(false)
 
 
-    public XProcessBuilder(String processId) {
+    private State state = State.WaitingNextLinearEvent;
+
+    private final Stack<XBranchingEvent> branchingEventsStack;
+    private final Stack<XComputationEvent> loopEntryNodesStack;
+
+    private XEvent previousEvent;
+
+    private XEvent lastTrueBranchEvent;
+    private XEvent lastFalseBranchEvent;
+
+    private final XMemoryManager memoryManager;
+
+    public XProcessBuilder(String processId, XMemoryManager memoryManager) {
+        this.memoryManager = memoryManager;
+
         this.processId = processId;
-        this.localMemoryEvents = new ImmutableList.Builder<>();
-        this.sharedMemoryEvents = new ImmutableList.Builder<>();
-        this.computationEvents = new ImmutableList.Builder<>();
-        this.controlFlowEvents = new ImmutableList.Builder<>();
-        //this.nextEvents = new ImmutableMap.Builder<>();
-        conditionalContextStack = new Stack<>();
-        lastBranchEvents = new ArrayList<>(2);
-        currentEventList = new ArrayList<>(20); //init by average size of a linear block
+        //this.localMemoryEvents = new ImmutableList.Builder<>();
+        //this.sharedMemoryEvents = new ImmutableList.Builder<>();
+        //this.computationEvents = new ImmutableList.Builder<>();
+        //this.branchingEvents = new ImmutableList.Builder<>();
+        this.events = new ImmutableList.Builder<>();
+
+        nextMap = new HashMap<>();
+        jumpsMap = new HashMap<>();
+        falseBranchingJumpsMap = new HashMap<>();
+        loopEntryNodesStack = new Stack<>();
+        branchingEventsStack = new Stack<>();
     }
 
     @Override
@@ -54,9 +88,27 @@ public class XProcessBuilder extends Builder<XProcess> {
 
     // --
 
+    public XRegister copyToLocalMemory(XLocation shared) {
+        XRegister tempLocal = memoryManager.newLocalMemoryUnit();
+        emitMemoryEvent(tempLocal, shared);
+        return tempLocal;
+    }
+
+    public XRegister copyToLocalMemoryIfNecessary(XMemoryUnit sharedOrLocal) {
+        if (sharedOrLocal instanceof XLocation) {
+            copyToLocalMemory((XLocation) sharedOrLocal);
+        }
+        else if (sharedOrLocal instanceof XRegister) {
+            return (XRegister) sharedOrLocal;
+        }
+        throw new IllegalArgumentException(sharedOrLocal.getClass().getName());
+    }
+
+    // --
+
     public XComputationEvent emitComputationEvent(XLocalMemoryUnit operand) {
         XComputationEvent event = new XNullaryComputationEvent(newEventInfo(), operand);
-        processEvent(event, computationEvents);
+        processNextEvent(event);
         return event;
     }
 
@@ -70,14 +122,14 @@ public class XProcessBuilder extends Builder<XProcess> {
 
     public XComputationEvent emitComputationEvent(XOperator operator, XLocalMemoryUnit operand) {
         XComputationEvent event = new XUnaryOperationEvent(newEventInfo(), operator, operand);
-        processEvent(event, computationEvents);
+        processNextEvent(event);
         return event;
     }
 
 
     public XComputationEvent emitComputationEvent(XOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand) {
         XComputationEvent event = new XBinaryOperationEvent(newEventInfo(), operator, firstOperand, secondOperand);
-        processEvent(event, computationEvents);
+        processNextEvent(event);
         return event;
     }
 
@@ -85,177 +137,142 @@ public class XProcessBuilder extends Builder<XProcess> {
 
     public XLocalMemoryEvent emitMemoryEvent(XLocalMemoryUnit destination, XLocalMemoryUnit source) {
         XRegisterMemoryEvent event = new XRegisterMemoryEvent(newEventInfo(), destination, source);
-        processEvent(event, localMemoryEvents);
+        processNextEvent(event);
         return event;
     }
 
     public XSharedMemoryEvent emitMemoryEvent(XLocalMemoryUnit destination, XSharedMemoryUnit source) {
         XLoadMemoryEvent event = new XLoadMemoryEvent(newEventInfo(), destination, source);
-        processEvent(event, sharedMemoryEvents);
+        processNextEvent(event);
         return event;
     }
 
     public XSharedMemoryEvent emitMemoryEvent(XSharedMemoryUnit destination, XLocalMemoryUnit source) {
         XStoreMemoryEvent event = new XStoreMemoryEvent(newEventInfo(), destination, source);
-        processEvent(event, sharedMemoryEvents);
+        processNextEvent(event);
         return event;
     }
 
 
-    //methodCall
+    private void processNextEvent(XEvent nextEvent) {
+        assert nextEvent != null;
+        add(nextEvent, events);
 
-    // --
+        switch (state) {
+            case WaitingNextLinearEvent:
+                if (previousEvent != null) {
+                    nextMap.put(previousEvent, nextEvent);
+                }
+            break;
 
+            case WaitingFirstTrueBranchEvent:
+            case WaitingFirstFalseBranchEvent:
+                if (previousEvent == null) {
+                    throw new XCompilatorUsageError("Missing branching condition evaluation event");
+                }
+                if (!(previousEvent instanceof XBranchingEvent)) {
+                    throw new XCompilatorUsageError("Invalid branching condition evaluation event: " +
+                            StringUtils.wrap(previousEvent.toString()) + " of type " +
+                            StringUtils.wrap(previousEvent.getClass().getSimpleName()));
+                }
+                XBranchingEvent branchingEvent = (XBranchingEvent) previousEvent;
+                branchingEventsStack.push(branchingEvent);
+                if (state == State.WaitingFirstTrueBranchEvent) {
+                    jumpsMap.put(branchingEvent, nextEvent);
+                }
+                else {
+                    falseBranchingJumpsMap.put(branchingEvent, nextEvent);
+                }
+            break;
 
-    // -- helpers:
+            case JustFinishedBranchingEvent:
+                if (lastTrueBranchEvent != null) {
+                    nextMap.put(lastTrueBranchEvent, nextEvent);
+                    lastTrueBranchEvent = null;
+                } else {
+                    throw new XCompilatorUsageError("Attempt to finish branching definition without true-branch");
+                }
+                if (lastFalseBranchEvent != null) {
+                    nextMap.put(lastFalseBranchEvent, nextEvent);
+                    lastFalseBranchEvent = null;
+                }
+            break;
 
+            case JustFinishedLoopEvent:
+                // ...
+            break;
 
-/*
-    public XControlFlowEvent emitControlFlowEvent() {
-        //add(event, controlFlowEvents);
-        throw new NotImplementedException();
-    }
-
-    public XUnaryOperationEvent emitComputationEvent(XOperator operator, XRegister memoryUnit) {
-        XRegister tempRegister = memoryManager.newLocalMemoryUnit();
-        emitMemoryEvent(tempRegister, memoryUnit);  // `r := memoryUnit`
-        return emitComputationEvent(operator, tempRegister);
-    }
-
-    public XUnaryOperationEvent emitComputationEvent(XOperator operator, XRegister memoryUnit) {
-        XUnaryOperationEvent event = new XUnaryOperationEvent(newEventInfo(), operator, memoryUnit);
-        add(event, computationEvents);
-        return event;
-    }
-
-    public XBinaryOperationEvent emitComputationEvent(XOperator operator, XRegister left, XRegister right) {
-        XRegister tempRegister = memoryManager.newLocalMemoryUnit();
-        emitMemoryEvent(tempRegister, left); // `r := left`
-        return emitComputationEvent(operator, tempRegister, right);
-    }
-
-    public XBinaryOperationEvent emitComputationEvent(XOperator operator, XRegister left, XRegister right) {
-        XBinaryOperationEvent event = new XBinaryOperationEvent(newEventInfo(), operator, left, right);
-        add(event, computationEvents);
-        return event;
-    }
-
-    public XBarrierEvent emitBarrierEvent() {
-        //add(event, barrierEvents);
-        throw new NotImplementedException();
-    }
-
-
-    public ImmutableList<XComputationEvent> buildComputationEvents() {
-        return computationEvents.build();
-    }
-
-    public ImmutableList<XRegisterMemoryEvent> buildLocalMemoryEvents() {
-        return localMemoryEvents.build();
-    }
-
-    public ImmutableList<XSharedMemoryEvent> buildSharedMemoryEvents() {
-        return sharedMemoryEvents.build();
-    }
-
-    public ImmutableList<XControlFlowEvent> buildControlFlowEvents() {
-        return controlFlowEvents.build();
-    }
-
-    */
-
-    //public XUnconditionalJumpEvent emitUnconditionalJumpEvent(XEvent fromEvent, XEvent toEvent) {
-    //    XUnconditionalJumpEvent event = new XUnconditionalJumpEvent(newEventInfo(), fromEvent, toEvent);
-    //    processEvent(event, );
-    //    return event;
-    //}
-    //
-    //public XConditionalJumpEvent emitInvertedConditionalJumpEvent(XComputationEvent loopCondition, XEvent toEvent) {
-    //    return emitConditionalJumpEvent(not(loopCondition), toEvent);
-    //}
-    //
-    //public XConditionalJumpEvent emitConditionalJumpEvent(XComputationEvent jumpCondition, XEvent toEvent) {
-    //    XConditionalJumpEvent event = new XConditionalJumpEvent(newEventInfo(), jumpCondition, toEvent);
-    //    conditionalContextStack.push(jumpCondition);
-    //    return event;
-    //}
-
-    // TODO: break loops with contexts and exit-nodes
-    //public XConditionalJumpEvent emitBreakLoopEvent(XComputationEvent loopCondition) {
-    //    return emitConditionalJumpEvent(not(loopCondition), )
-    //}
-
-    public void startBranchingDefinition(XComputationEvent conditionEvent) {
-        XConditionalJumpEvent jumpEvent = new XConditionalJumpEvent(newEventInfo(), conditionEvent);
-        conditionalContextStack.push(jumpEvent);
-        add(jumpEvent, controlFlowEvents);
-        currentEventList.clear();
-    }
-
-    public void finishTrueBranchDefinition(XEvent firstEvent) {
-        XConditionalJumpEvent conditionalJump = conditionalContextStack.peek();
-        conditionalJump.setNextEvent(firstEvent);
-
-        assert currentEventList.size() > 0;
-        lastBranchEvents.addAll(currentEventList);
-        currentEventList.clear();
+            default:
+                throw new XCompilatorUsageError("Received new event while in invalid state: " + state.name());
+        }
+        state = State.WaitingNextLinearEvent;
+        previousEvent = nextEvent;
     }
 
 
-    public void finishFalseBranchDefinition(XEvent firstEvent) {
-        XConditionalJumpEvent conditionalJump = conditionalContextStack.peek();
-        conditionalJump.setAlternativeNext(firstEvent);
-
-        assert currentEventList.size() > 0;
-        lastBranchEvents.addAll(currentEventList);
-        currentEventList.clear();
+    private void resetCurrentEvent() {
+        previousEvent = null;
     }
-
-    public XConditionalJumpEvent finishBranchingEventDefinition() {
-        assert lastBranchEvents.size() > 0;
-        currentEventList.addAll(lastBranchEvents);
-        return conditionalContextStack.pop();
-    }
-
-    public ImmutableList<XRegisterMemoryEvent> buildLocalMemoryEvents() {
-        return localMemoryEvents.build();
-    }
-
-    public ImmutableList<XSharedMemoryEvent> buildSharedMemoryEvents() {
-        return sharedMemoryEvents.build();
-    }
-
-    public ImmutableList<XComputationEvent> buildComputationEvents() {
-        return computationEvents.build();
-    }
-
-    public ImmutableList<XControlFlowEvent> buildControlFlowEvents() {
-        return controlFlowEvents.build();
-    }
-
-
-
 
     private XEventInfo newEventInfo() {
         return new XEventInfo(getProcessId());
     }
 
-    private <T extends XEvent> void processEvent(T event, ImmutableList.Builder<T> collection) {
-        super.add(event, collection);
-        processNextEvent(event);
+    // to do: methodCall
+
+    // -- BRANCHING ----------------------------------------------------------------------------------------------------
+
+    public XBranchingEvent startBranching(XComputationEvent condition) {
+        assert state == State.WaitingNextLinearEvent: state.name();
+        XBranchingEvent branchingEvent = new XBranchingEvent(newEventInfo(), condition);
+        processNextEvent(branchingEvent);
+        state = State.WaitingNextBranchingCommand;
+        return branchingEvent;
     }
 
-    private <S extends XEvent> void processNextEvent(S nextEvent) {
-        for (XEvent currentEvent : currentEventList) {
-            if (currentEvent != null && !(currentEvent instanceof XControlFlowEvent)) {
-                currentEvent.setNextEvent(nextEvent);
-            }
+    public void startTrueBranch() {
+        if (state != State.WaitingNextBranchingCommand) {
+            throw new XCompilatorUsageError();
         }
-        setNextLinearEvent(nextEvent);
+        state = State.WaitingFirstTrueBranchEvent;
     }
 
-    private <S extends XEvent> void setNextLinearEvent(S nextEvent) {
-        currentEventList.clear();
-        currentEventList.add(nextEvent);
+    public void finishTrueBranch() {
+        assert state == State.WaitingNextLinearEvent: state.name();
+        lastTrueBranchEvent = previousEvent;
+        previousEvent = branchingEventsStack.peek();
+        state = State.WaitingNextBranchingCommand;
+    }
+
+    public void startFalseBranch() {
+        if (state != State.WaitingNextBranchingCommand) {
+            throw new XCompilatorUsageError();
+        }
+        previousEvent =  branchingEventsStack.peek();
+        state = State.WaitingFirstFalseBranchEvent;
+    }
+
+    public void finishFalseBranch() {
+        assert state == State.WaitingNextLinearEvent: state.name();
+        lastFalseBranchEvent = previousEvent;
+        resetCurrentEvent();
+        state = State.WaitingNextBranchingCommand;
+    }
+
+    public void finishBranching() {
+        assert state == State.WaitingNextBranchingCommand: state.name();
+        resetCurrentEvent();
+        state = State.JustFinishedBranchingEvent;
+    }
+
+    // -- LOOP ---------------------------------------------------------------------------------------------------------
+
+
+
+
+    // =================================================================================================================
+
+    public ImmutableList<XEvent> buildEvents() {
+        return events.build();
     }
 }

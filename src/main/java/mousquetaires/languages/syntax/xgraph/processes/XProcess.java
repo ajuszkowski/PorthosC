@@ -2,31 +2,35 @@ package mousquetaires.languages.syntax.xgraph.processes;
 
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.XEntity;
-import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XControlFlowEvent;
-import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
-import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XBranchingEvent;
+
+import java.util.HashMap;
 
 
 public class XProcess implements XEntity {
 
-    private final ImmutableList<XRegisterMemoryEvent> localMemoryEvents;
-    private final ImmutableList<XSharedMemoryEvent> sharedMemoryEvents;
-    private final ImmutableList<XComputationEvent> computationEvents;
-    private final ImmutableList<XControlFlowEvent> controlFlowEvents;
     public final String processId;
+    private final ImmutableList<XEvent> events;
+    private final HashMap<XEvent, XEvent> nextMap;
+    private final HashMap<XEvent, XEvent> jumpsMap; //goto, if(true), while(true)
+    private final HashMap<XBranchingEvent, XEvent> falseBranchingJumpsMap; //if(false)
+
+
+    XProcess(XProcessBuilder builder) {
+        this.processId = builder.getProcessId();
+        this.events = builder.buildEvents();
+        this.nextMap = builder.nextMap;
+        this.jumpsMap = builder.jumpsMap;
+        this.falseBranchingJumpsMap = builder.falseBranchingJumpsMap;
+
+
+    }
 
     public String getProcessId() {
         return processId;
     }
 
-    XProcess(XProcessBuilder builder) {
-        this.processId = builder.getProcessId();
-        this.localMemoryEvents = builder.buildLocalMemoryEvents();
-        this.sharedMemoryEvents = builder.buildSharedMemoryEvents();
-        this.computationEvents = builder.buildComputationEvents();
-        this.controlFlowEvents = builder.buildControlFlowEvents();
-    }
 
 
     //public int condLevel;

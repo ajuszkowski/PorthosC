@@ -1,13 +1,9 @@
 package mousquetaires.languages.syntax.xgraph.events.barrier;
 
-import mousquetaires.languages.syntax.xgraph.events.XEventBase;
-import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
 
 
-public class XBarrierEvent extends XEventBase {
+public interface XBarrierEvent extends XEvent {
 
     // TODO
-    public XBarrierEvent(XEventInfo info) {
-        super(info);
-    }
 }

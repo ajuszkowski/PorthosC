@@ -2,6 +2,7 @@ package mousquetaires.languages.syntax.xgraph.events.computation;
 
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
+import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
 
 
 public class XUnaryOperationEvent extends XNullaryComputationEvent {
@@ -15,6 +16,11 @@ public class XUnaryOperationEvent extends XNullaryComputationEvent {
 
     public XOperator getOperator() {
         return operator;
+    }
+
+    @Override
+    public <T> T accept(XgraphVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 
     @Override
