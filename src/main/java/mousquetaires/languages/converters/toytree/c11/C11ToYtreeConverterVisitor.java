@@ -17,6 +17,7 @@ import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessEx
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YVariableAssignmentExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
@@ -365,10 +366,29 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YExpression visitRelationalExpression(C11Parser.RelationalExpressionContext ctx) {
-        C11Parser.ShiftExpressionContext shiftExpressionContext = ctx.shiftExpression();
         C11Parser.RelationalExpressionContext relationalExpressionContext = ctx.relationalExpression();
+        C11Parser.ShiftExpressionContext shiftExpressionContext = ctx.shiftExpression();
+        boolean isLess = C11ParserHelper.hasToken(ctx, C11Parser.Less);
+        boolean isGreater = C11ParserHelper.hasToken(ctx, C11Parser.Greater);
+        boolean isLessEqual = C11ParserHelper.hasToken(ctx, C11Parser.LessEqual);
+        boolean isGreaterEqual = C11ParserHelper.hasToken(ctx, C11Parser.GreaterEqual);
+        if (isLess || isLessEqual || isGreater || isGreaterEqual) {
+            if (relationalExpressionContext == null) {
+                throw new YParserException(ctx, "Missing left part of inequality");
+            }
+            if (shiftExpressionContext == null) {
+                throw new YParserException(ctx, "Missing right part of inequality");
+            }
+            YExpression leftPart = visitRelationalExpression(relationalExpressionContext);
+            YExpression rightPart = visitShiftExpression(shiftExpressionContext);
+            YBinaryExpression.Kind operator =
+                    isLess ? YRelativeBinaryExpression.Kind.Less :
+                            (isLessEqual ? YRelativeBinaryExpression.Kind.LessOrEquals :
+                                    (isGreater ? YRelativeBinaryExpression.Kind.Greater :
+                                            YRelativeBinaryExpression.Kind.GreaterOrEquals));
+            return operator.createExpression(leftPart, rightPart);
+        }
         if (shiftExpressionContext != null) {
-            // todo: others
             return visitShiftExpression(shiftExpressionContext);
         }
         throw new YParserUnintendedStateException(ctx);

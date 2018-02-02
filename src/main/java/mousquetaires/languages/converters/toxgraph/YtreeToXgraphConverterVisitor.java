@@ -227,9 +227,12 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEntity> {
         visit(node.getThenBranch());
         program.currentProcess.finishTrueBranch();
 
-        program.currentProcess.startFalseBranch();
-        visit(node.getElseBranch());
-        program.currentProcess.finishFalseBranch();
+        YStatement elseBranch = node.getElseBranch();
+        if (elseBranch != null) {
+            program.currentProcess.startFalseBranch();
+            visit(elseBranch);
+            program.currentProcess.finishFalseBranch();
+        }
 
         program.currentProcess.finishBranching();
 

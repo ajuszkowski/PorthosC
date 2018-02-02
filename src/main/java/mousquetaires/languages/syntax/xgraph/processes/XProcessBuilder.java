@@ -6,11 +6,12 @@ import mousquetaires.languages.syntax.xgraph.events.computation.*;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XBranchingEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.*;
-import mousquetaires.utils.StringUtils;
 import mousquetaires.utils.exceptions.xgraph.XCompilatorUsageError;
 import mousquetaires.utils.patterns.Builder;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 
 
@@ -48,13 +49,14 @@ public class XProcessBuilder extends Builder<XProcess> {
 
     private State state = State.WaitingNextLinearEvent;
 
-    private final Stack<XBranchingEvent> branchingEventsStack;
+    private final Stack<BranchingContext> branchingContextStack;
+    private final Set<BranchingContext> readyBranchingContextSet;
     private final Stack<XComputationEvent> loopEntryNodesStack;
 
     private XEvent previousEvent;
 
-    private XEvent lastTrueBranchEvent;
-    private XEvent lastFalseBranchEvent;
+    //private XEvent lastTrueBranchEvent;
+    //private XEvent lastFalseBranchEvent;
 
     private final XMemoryManager memoryManager;
 
@@ -72,7 +74,9 @@ public class XProcessBuilder extends Builder<XProcess> {
         jumpsMap = new HashMap<>();
         falseBranchingJumpsMap = new HashMap<>();
         loopEntryNodesStack = new Stack<>();
-        branchingEventsStack = new Stack<>();
+
+        branchingContextStack = new Stack<>();
+        readyBranchingContextSet = new HashSet<>();
     }
 
     @Override
@@ -167,16 +171,9 @@ public class XProcessBuilder extends Builder<XProcess> {
 
             case WaitingFirstTrueBranchEvent:
             case WaitingFirstFalseBranchEvent:
-                if (previousEvent == null) {
-                    throw new XCompilatorUsageError("Missing branching condition evaluation event");
-                }
-                if (!(previousEvent instanceof XBranchingEvent)) {
-                    throw new XCompilatorUsageError("Invalid branching condition evaluation event: " +
-                            StringUtils.wrap(previousEvent.toString()) + " of type " +
-                            StringUtils.wrap(previousEvent.getClass().getSimpleName()));
-                }
-                XBranchingEvent branchingEvent = (XBranchingEvent) previousEvent;
-                branchingEventsStack.push(branchingEvent);
+                //assert previousEvent != null;
+                //assert previousEvent instanceof XBranchingEvent: previousEvent.getClass().getSimpleName();
+                XBranchingEvent branchingEvent = branchingContextStack.peek().getBranchingEvent();
                 if (state == State.WaitingFirstTrueBranchEvent) {
                     jumpsMap.put(branchingEvent, nextEvent);
                 }
@@ -186,16 +183,19 @@ public class XProcessBuilder extends Builder<XProcess> {
             break;
 
             case JustFinishedBranchingEvent:
-                if (lastTrueBranchEvent != null) {
-                    nextMap.put(lastTrueBranchEvent, nextEvent);
-                    lastTrueBranchEvent = null;
-                } else {
-                    throw new XCompilatorUsageError("Attempt to finish branching definition without true-branch");
+                for (BranchingContext readyBranchingContext : readyBranchingContextSet) {
+                    XEvent lastTrueBranchEvent = readyBranchingContext.getLastTrueBranchEvent();
+                    XEvent lastFalseBranchEvent = readyBranchingContext.getLastFalseBranchEvent();
+                    if (lastTrueBranchEvent != null) {
+                        nextMap.put(lastTrueBranchEvent, nextEvent);
+                    } else {
+                        throw new XCompilatorUsageError("Attempt to finish branching definition without true-branch");
+                    }
+                    if (lastFalseBranchEvent != null) {
+                        nextMap.put(lastFalseBranchEvent, nextEvent);
+                    }
                 }
-                if (lastFalseBranchEvent != null) {
-                    nextMap.put(lastFalseBranchEvent, nextEvent);
-                    lastFalseBranchEvent = null;
-                }
+                readyBranchingContextSet.clear();
             break;
 
             case JustFinishedLoopEvent:
@@ -226,42 +226,35 @@ public class XProcessBuilder extends Builder<XProcess> {
         assert state == State.WaitingNextLinearEvent: state.name();
         XBranchingEvent branchingEvent = new XBranchingEvent(newEventInfo(), condition);
         processNextEvent(branchingEvent);
+        branchingContextStack.push(new BranchingContext(branchingEvent));
         state = State.WaitingNextBranchingCommand;
         return branchingEvent;
     }
 
     public void startTrueBranch() {
-        if (state != State.WaitingNextBranchingCommand) {
-            throw new XCompilatorUsageError();
-        }
+        assert state == State.WaitingNextBranchingCommand: state.name();
         state = State.WaitingFirstTrueBranchEvent;
     }
 
     public void finishTrueBranch() {
-        assert state == State.WaitingNextLinearEvent: state.name();
-        lastTrueBranchEvent = previousEvent;
-        previousEvent = branchingEventsStack.peek();
+        BranchingContext currentContext = branchingContextStack.peek();
+        currentContext.setLastTrueBranchEvent(previousEvent);
         state = State.WaitingNextBranchingCommand;
     }
 
     public void startFalseBranch() {
-        if (state != State.WaitingNextBranchingCommand) {
-            throw new XCompilatorUsageError();
-        }
-        previousEvent =  branchingEventsStack.peek();
+        assert state == State.WaitingNextBranchingCommand: state.name();
         state = State.WaitingFirstFalseBranchEvent;
     }
 
     public void finishFalseBranch() {
-        assert state == State.WaitingNextLinearEvent: state.name();
-        lastFalseBranchEvent = previousEvent;
-        resetCurrentEvent();
+        BranchingContext currentContext = branchingContextStack.peek();
+        currentContext.setLastFalseBranchEvent(previousEvent);
         state = State.WaitingNextBranchingCommand;
     }
 
     public void finishBranching() {
-        assert state == State.WaitingNextBranchingCommand: state.name();
-        resetCurrentEvent();
+        readyBranchingContextSet.add(branchingContextStack.pop());
         state = State.JustFinishedBranchingEvent;
     }
 
@@ -274,5 +267,44 @@ public class XProcessBuilder extends Builder<XProcess> {
 
     public ImmutableList<XEvent> buildEvents() {
         return events.build();
+    }
+
+
+
+    // =================================================================================================================
+
+    private class BranchingContext {
+        private final XBranchingEvent branchingEvent;
+        private XEvent lastTrueBranchEvent;
+        private XEvent lastFalseBranchEvent;
+
+        public BranchingContext(XBranchingEvent branchingEvent) {
+            this.branchingEvent = branchingEvent;
+        }
+
+        public XBranchingEvent getBranchingEvent() {
+            return branchingEvent;
+        }
+
+        public XEvent getLastTrueBranchEvent() {
+            return lastTrueBranchEvent;
+        }
+
+        public XEvent getLastFalseBranchEvent() {
+            return lastFalseBranchEvent;
+        }
+
+        public void setLastTrueBranchEvent(XEvent lastTrueBranchEvent) {
+            this.lastTrueBranchEvent = lastTrueBranchEvent;
+        }
+
+        public void setLastFalseBranchEvent(XEvent lastFalseBranchEvent) {
+            this.lastFalseBranchEvent = lastFalseBranchEvent;
+        }
+
+        @Override
+        public String toString() {
+            return  branchingEvent + " {... " + lastTrueBranchEvent + " } else {... " + lastFalseBranchEvent + " }";
+        }
     }
 }

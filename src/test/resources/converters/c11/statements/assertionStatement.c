@@ -5,16 +5,21 @@ void P1(spinlock_t *sl, long long *x0, int& x1, char c) {
 //        x++;
 //        y--;
 //    }
-    y = 1;
-    if (x == 100) {
-        a = 1;
-        b = 0;
+    y = x > 0;
+    if (x == 1) {
+        if (x == 2) {
+            if (3) {
+                a = 4;
+            }
+        }
+        else {
+            b = 5;
+        }
     }
     else {
-        c = 2;
+        c = 6;
     }
-
-    d = 3;
+    d = 7;
 
 //    lll int r0;
 //    void* a, b, c ,d, e;
