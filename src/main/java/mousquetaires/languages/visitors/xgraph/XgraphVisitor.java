@@ -4,6 +4,7 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperation
 import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperationEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XBranchingEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XMethodCallEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
@@ -38,6 +39,7 @@ public interface XgraphVisitor<T> {
     T visit(XStoreMemoryEvent node);
     T visit(XLoadMemoryEvent node);
 
+    T visit(XJumpEvent node);
     T visit(XBranchingEvent node);
     T visit(XMethodCallEvent node);
 

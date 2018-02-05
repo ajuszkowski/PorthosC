@@ -40,6 +40,7 @@ import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
 import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
 import mousquetaires.languages.visitors.ytree.YtreeVisitorBase;
 import mousquetaires.utils.exceptions.NotImplementedException;
+import mousquetaires.utils.exceptions.xgraph.XCompilationError;
 import mousquetaires.utils.exceptions.xgraph.XCompilatorUsageError;
 import mousquetaires.utils.exceptions.xgraph.XInvalidTypeError;
 
@@ -255,8 +256,24 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEntity> {
     }
 
     @Override
-    public XEntity visit(YJumpStatement node) {
-        throw new NotImplementedException();
+    public XEvent visit(YJumpStatement node) {
+        switch (node.getKind()) {
+            case Goto:
+                throw new NotImplementedException();
+                //break;
+            case Return:
+                throw new NotImplementedException();
+                //break;
+            case Break:
+                program.currentProcess.processLoopBreakStatement();
+                break;
+            case Continue:
+                program.currentProcess.processLoopContinueStatement();
+                break;
+            default:
+                throw new XCompilationError("Unknown jump statement kind: " + node.getKind());
+        }
+        return program.currentProcess.emitFakeEvent();
     }
 
     @Override

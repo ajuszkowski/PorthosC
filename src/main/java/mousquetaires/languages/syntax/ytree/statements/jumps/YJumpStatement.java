@@ -10,36 +10,51 @@ import java.util.Iterator;
 
 // NOTE: immutability of this class is emulated manually!
 public class YJumpStatement extends YStatement {
+    public enum Kind {
+        Goto,
+        Return,
+        Break,
+        Continue,
+        ;
 
-    private final YJumpLabel jumpLabel; // label of statement to which we jump
+        public YJumpStatement createJumpStatement() {
+            return new YJumpStatement(this, new YJumpLabel(this.toString()));
+        }
 
-    public YJumpStatement(YJumpLabel jumpLabel) {
-        this(newLabel(), jumpLabel);
+
+        public YJumpStatement createJumpStatement(YJumpLabel jumpLabel) {
+            return new YJumpStatement(this, jumpLabel);
+        }
     }
 
-    private YJumpStatement(String selfLabel, YJumpLabel jumpLabel) {
+    private final Kind kind;
+    private final YJumpLabel jumpLabel; // label of statement to which we jump
+
+    private YJumpStatement(Kind kind, YJumpLabel jumpLabel) {
+        this(newLabel(), kind, jumpLabel);
+    }
+
+    private YJumpStatement(String selfLabel, Kind kind, YJumpLabel jumpLabel) {
         super(selfLabel);
+        this.kind = kind;
         this.jumpLabel = jumpLabel;
     }
 
-    //protected void setJumpLabel(YJumpLabel jumpLabel) {
-    //    if (getJumpLabel() != null) {
-    //        throw new IllegalStateException("Jump label has already been set to the value: " +
-    //                StringUtils.wrap(getJumpLabel().getValue()));
-    //    }
-    //    this.jumpLabel = jumpLabel;
-    //}
+    public Kind getKind() {
+        return kind;
+    }
 
     public YJumpLabel getJumpLabel() {
         return jumpLabel;
     }
+
 
     /**
      * NOTE: this method changes self label, NOT the label to jump to
      */
     @Override
     public YStatement withLabel(String newLabel) {
-        return new YJumpStatement(newLabel, getJumpLabel());
+        return new YJumpStatement(newLabel, getKind(), getJumpLabel());
     }
 
     @Override
@@ -54,6 +69,6 @@ public class YJumpStatement extends YStatement {
 
     @Override
     public YJumpStatement copy() {
-        return new YJumpStatement(getJumpLabel());
+        return new YJumpStatement(getKind(), getJumpLabel());
     }
 }

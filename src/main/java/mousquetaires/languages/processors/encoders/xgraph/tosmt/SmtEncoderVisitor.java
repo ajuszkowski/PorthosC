@@ -4,6 +4,7 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperation
 import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperationEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XBranchingEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XMethodCallEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
@@ -59,6 +60,11 @@ public class SmtEncoderVisitor implements XgraphVisitor<String> {
 
     @Override
     public String visit(XLoadMemoryEvent node) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public String visit(XJumpEvent node) {
         throw new NotImplementedException();
     }
 

@@ -11,7 +11,7 @@ public abstract class Builder<T> {
 
     public abstract T build();
 
-    protected void finishBuilding() {
+    protected void markFinished() {
         if (isBuilt) {
             throw new BuilderException(getAlreadyFinishedMessage());
         }

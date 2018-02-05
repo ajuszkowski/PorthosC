@@ -23,7 +23,7 @@ public class XProgramBuilder extends Builder<XProgram> {
 
     @Override
     public XProgram build() {
-        finishBuilding();
+        markFinished();
         if (currentProcess != null) {
             processes.add(currentProcess.build());
         }

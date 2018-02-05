@@ -1,6 +1,21 @@
 //void P9 (int a) {} //nested declarator
 
-void P1(spinlock_t *sl, long long *x0, int& x1, char c) {
+void P() {
+    if (cond1) {
+        if (cond2) {
+            //a = 2;
+            //continue;
+            //break;
+            code_true;
+        }
+        else {
+            code_false;
+        }
+        //a = 1;
+    }
+}
+
+/*void P1(spinlock_t *sl, long long *x0, int& x1, char c) {
 //    while (1) {
 //        x++;
 //        y--;
@@ -10,17 +25,21 @@ void P1(spinlock_t *sl, long long *x0, int& x1, char c) {
         x = 1.1;
         while (1.5) ;
         if (x == 2) {
-            while (3) {
+            while (x == 3) {
                 a = 4;
             }
-//            continue;
+            continue;
         }
         else {
             b = 5;
-//            break;
+            break;
         }
     }
     d = 7;
+
+}
+*/
+
 
 //    lll int r0;
 //    void* a, b, c ,d, e;
@@ -46,7 +65,6 @@ void P1(spinlock_t *sl, long long *x0, int& x1, char c) {
 //	function_1_2(*x0, 1);
 //	r1 = function_1_3(*x1);
 //	function_1_4(sl);
-}
 
 /*P2 {
 	int r2 ;//= function_2_1(sl);

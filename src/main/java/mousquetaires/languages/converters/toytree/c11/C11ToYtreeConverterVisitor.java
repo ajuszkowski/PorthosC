@@ -1489,14 +1489,14 @@ class C11ToYtreeConverterVisitor
             if (identifier == null) {
                 throw new YParserException(ctx, "Missing goto label in jump statement");
             }
-            YJumpLabel jumpToLabel = new YJumpLabel(identifier.getText());
-            return new YJumpStatement(jumpToLabel);
+            YJumpLabel gotoLabel = new YJumpLabel(identifier.getText());
+            return YJumpStatement.Kind.Goto.createJumpStatement(gotoLabel);
         }
         if (C11ParserHelper.hasToken(ctx, C11Parser.Continue)) {
-            return new YContinueStatement();
+            return YJumpStatement.Kind.Continue.createJumpStatement();
         }
         if (C11ParserHelper.hasToken(ctx, C11Parser.Break)) {
-            return new YBreakStatement();
+            return YJumpStatement.Kind.Break.createJumpStatement();
         }
         if (C11ParserHelper.hasToken(ctx, C11Parser.Return)) {
             C11Parser.ExpressionContext expressionContext = ctx.expression();
@@ -1504,7 +1504,7 @@ class C11ToYtreeConverterVisitor
                 // TODO: process return value
                 throw new NotImplementedException("For now, return values are not supported");
             }
-            return new YReturnStatement();
+            return YJumpStatement.Kind.Return.createJumpStatement();
         }
         throw new YParserNotImplementedException(ctx);
     }
