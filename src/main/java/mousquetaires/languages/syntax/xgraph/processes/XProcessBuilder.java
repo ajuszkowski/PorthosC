@@ -3,7 +3,6 @@ package mousquetaires.languages.syntax.xgraph.processes;
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.*;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XBranchingEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XControlFlowEvent;
 import mousquetaires.languages.syntax.xgraph.events.fakes.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fakes.XExitEvent;
@@ -42,8 +41,8 @@ public class XProcessBuilder extends Builder<XProcess> {
 
     //private final ImmutableMap.Builder<XEvent, XEvent> trueBranchingJumpsMap;
     /*private*/ final HashMap<XEvent, XEvent> nextEventMap;
-    /*private*/ final HashMap<XEvent, XEvent> trueBranchingJumpsMap; //goto, if(true), while(true)
-    /*private*/ final HashMap<XBranchingEvent, XEvent> falseBranchingJumpsMap; //if(false)
+    /*private*/ final HashMap<XComputationEvent, XEvent> trueBranchingJumpsMap; //goto, if(true), while(true)
+    /*private*/ final HashMap<XComputationEvent, XEvent> falseBranchingJumpsMap; //if(false)
 
 
     private State state = State.WaitingNextLinearEvent;
@@ -118,6 +117,7 @@ public class XProcessBuilder extends Builder<XProcess> {
 
     // --
 
+    // TODO: very bad, remove this!!!
     public XFakeEvent emitFakeEvent() {
         return new XFakeEvent(createEventInfo());
     }
@@ -132,7 +132,7 @@ public class XProcessBuilder extends Builder<XProcess> {
 
     public XComputationEvent emitComputationEvent(XLocalMemoryUnit operand) {
         XComputationEvent event = new XNullaryComputationEvent(createEventInfo(), operand);
-        processNextEvent(event);
+        addAndProcessNextEvent(event);
         return event;
     }
 
@@ -146,14 +146,14 @@ public class XProcessBuilder extends Builder<XProcess> {
 
     public XComputationEvent emitComputationEvent(XOperator operator, XLocalMemoryUnit operand) {
         XComputationEvent event = new XUnaryOperationEvent(createEventInfo(), operator, operand);
-        processNextEvent(event);
+        addAndProcessNextEvent(event);
         return event;
     }
 
 
     public XComputationEvent emitComputationEvent(XOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand) {
         XComputationEvent event = new XBinaryOperationEvent(createEventInfo(), operator, firstOperand, secondOperand);
-        processNextEvent(event);
+        addAndProcessNextEvent(event);
         return event;
     }
 
@@ -161,46 +161,51 @@ public class XProcessBuilder extends Builder<XProcess> {
 
     public XLocalMemoryEvent emitMemoryEvent(XLocalMemoryUnit destination, XLocalMemoryUnit source) {
         XRegisterMemoryEvent event = new XRegisterMemoryEvent(createEventInfo(), destination, source);
-        processNextEvent(event);
+        addAndProcessNextEvent(event);
         return event;
     }
 
     public XSharedMemoryEvent emitMemoryEvent(XLocalMemoryUnit destination, XSharedMemoryUnit source) {
         XLoadMemoryEvent event = new XLoadMemoryEvent(createEventInfo(), destination, source);
-        processNextEvent(event);
+        addAndProcessNextEvent(event);
         return event;
     }
 
     public XSharedMemoryEvent emitMemoryEvent(XSharedMemoryUnit destination, XLocalMemoryUnit source) {
         XStoreMemoryEvent event = new XStoreMemoryEvent(createEventInfo(), destination, source);
-        processNextEvent(event);
+        addAndProcessNextEvent(event);
         return event;
     }
 
     //private XJumpEvent emitJumpEvent() {
     //    XJumpEvent event = new XJumpEvent(createEventInfo());
-    //    processNextEvent(event);
+    //    addAndProcessNextEvent(event);
     //    return event;
     //}
 
     private void processExitEvent() {
         XExitEvent exitEvent = new XExitEvent(createEventInfo());
-        System.out.println("pre-exit event: " + previousEvent);
+        addAndProcessNextEvent(exitEvent);
+
         assert loopsStack.empty(): loopsStack.size();
         assert branchingStack.empty(): branchingStack.size();
         if (readyLoops.size() > 0) {
             state = State.JustFinishedLoopEvent;
+            processNextEvent(exitEvent);
         }
         if (readyBranchings.size() > 0) {
             state = State.JustFinishedBranchingEvent;
+            processNextEvent(exitEvent);
         }
-        processNextEvent(exitEvent);
+    }
+
+    private void addAndProcessNextEvent(XEvent nextEvent) {
+        add(nextEvent, events);
+        processNextEvent(nextEvent);
     }
 
     private void processNextEvent(XEvent nextEvent) {
         assert nextEvent != null;
-        add(nextEvent, events);
-
         switch (state) {
             case WaitingNextLinearEvent: {
                 if (previousEvent != null) {
@@ -232,7 +237,7 @@ public class XProcessBuilder extends Builder<XProcess> {
             case JustFinishedBranchingEvent: {
                 for (NonlinearBlockInfo branching : readyBranchings) {
                     XEvent loopExitNode = nextEvent;
-                    XBranchingEvent conditionEvent = branching.conditionEvent;
+                    XComputationEvent conditionEvent = branching.conditionEvent;
                     if (branching.hasTrueBranch()) {
                         trueBranchingJumpsMap.put(conditionEvent, branching.firstTrueBranchEvent);
                         setNextEvent(branching.lastTrueBranchEvent, loopExitNode);
@@ -257,7 +262,7 @@ public class XProcessBuilder extends Builder<XProcess> {
             case JustFinishedLoopEvent: {
                 for (NonlinearBlockInfo loop : readyLoops) {
                     XEvent loopExitNode = nextEvent;
-                    XBranchingEvent loopConditionEvent = loop.conditionEvent;
+                    XComputationEvent loopConditionEvent = loop.conditionEvent;
 
                     assert loop.lastFalseBranchEvent == null: loop.lastFalseBranchEvent.toString();
                     assert loop.firstFalseBranchEvent == null: loop.firstFalseBranchEvent.toString();
@@ -300,8 +305,8 @@ public class XProcessBuilder extends Builder<XProcess> {
 
     // -- BRANCHING ----------------------------------------------------------------------------------------------------
 
-    public XBranchingEvent startBranching(XComputationEvent condition) {
-        return processStartBranching(condition, branchingStack);
+    public void startBranchingDefinition(XComputationEvent condition) {
+        processStartBranching(condition, branchingStack);
     }
 
     public void startTrueBranch() {
@@ -326,15 +331,15 @@ public class XProcessBuilder extends Builder<XProcess> {
         state = State.WaitingAdditionalCommand;
     }
 
-    public void finishBranching() {
+    public void finishBranchingDefinition() {
         readyBranchings.add(branchingStack.pop());
         state = State.JustFinishedBranchingEvent;
     }
 
     // -- LOOP ---------------------------------------------------------------------------------------------------------
 
-    public XBranchingEvent startLoopDefinition(XComputationEvent condition) {
-        return processStartBranching(condition, loopsStack);
+    public void startLoopDefinition(XComputationEvent condition) {
+        processStartBranching(condition, loopsStack);
     }
 
     public void startLoopBodyDefinition() {
@@ -375,19 +380,16 @@ public class XProcessBuilder extends Builder<XProcess> {
 
     // =================================================================================================================
 
-    private XBranchingEvent processStartBranching(XComputationEvent condition, Stack<NonlinearBlockInfo> currentStack) {
+    private void processStartBranching(XComputationEvent conditionEvent, Stack<NonlinearBlockInfo> currentStack) {
         assert state == State.WaitingNextLinearEvent: state.name();
-        XBranchingEvent branchingEvent = new XBranchingEvent(createEventInfo(), condition);
-        processNextEvent(branchingEvent);
-        currentStack.push(new NonlinearBlockInfo(branchingEvent));
+        currentStack.push(new NonlinearBlockInfo(conditionEvent));
         state = State.WaitingAdditionalCommand;
-        return branchingEvent;
     }
 
     // =================================================================================================================
 
     private class NonlinearBlockInfo {
-        private final XBranchingEvent conditionEvent;
+        private final XComputationEvent conditionEvent;
         private XEvent firstTrueBranchEvent;
         private XEvent firstFalseBranchEvent;
 
@@ -399,7 +401,7 @@ public class XProcessBuilder extends Builder<XProcess> {
 
         //private XFakeEvent exitNode = new XFakeEvent(createEventInfo());
 
-        public NonlinearBlockInfo(XBranchingEvent conditionEvent) {
+        public NonlinearBlockInfo(XComputationEvent conditionEvent) {
             this.conditionEvent = conditionEvent;
         }
 

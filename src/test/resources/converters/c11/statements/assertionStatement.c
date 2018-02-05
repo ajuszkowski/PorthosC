@@ -1,12 +1,12 @@
 //void P9 (int a) {} //nested declarator
 
 void P() {
-    if (cond1) {
+    while (cond1) {
         if (cond2) {
-            //a = 2;
-            //continue;
+            a = 2;
+            continue;
             //break;
-            code_true;
+            dead_code;
         }
         else {
             code_false;

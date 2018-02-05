@@ -3,7 +3,7 @@ package mousquetaires.languages.syntax.xgraph.processes;
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XBranchingEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 
 import java.util.HashMap;
 
@@ -13,8 +13,8 @@ public class XProcess implements XEntity {
     public final String processId;
     private final ImmutableList<XEvent> events;
     private final HashMap<XEvent, XEvent> nextEventMap;
-    private final HashMap<XEvent, XEvent> trueBranchingJumpsMap; //goto, if(true), while(true)
-    private final HashMap<XBranchingEvent, XEvent> falseBranchingJumpsMap; //if(false)
+    private final HashMap<XComputationEvent, XEvent> trueBranchingJumpsMap; //goto, if(true), while(true)
+    private final HashMap<XComputationEvent, XEvent> falseBranchingJumpsMap; //if(false)
 
 
     XProcess(XProcessBuilder builder) {

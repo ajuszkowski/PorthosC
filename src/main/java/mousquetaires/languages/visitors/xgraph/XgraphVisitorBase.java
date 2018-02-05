@@ -6,7 +6,6 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperation
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperationEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XBranchingEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XControlFlowEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XMethodCallEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
@@ -82,11 +81,6 @@ public abstract class XgraphVisitorBase<T> implements XgraphVisitor<T> {
 
     @Override
     public T visit(XLoadMemoryEvent node) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public T visit(XBranchingEvent node) {
         throw new NotImplementedException();
     }
 

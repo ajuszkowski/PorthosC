@@ -11,7 +11,6 @@ import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XOperator;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XBranchingEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLocalMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.types.XMockType;
@@ -48,6 +47,8 @@ import mousquetaires.utils.exceptions.xgraph.XInvalidTypeError;
 // TODO: move this visitor to converter (replace conv. with visitor)
 class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEntity> {
 
+    // TODO: non-null checks everywhere!
+
     private final XProgramBuilder program;
 
     YtreeToXgraphConverterVisitor(ProgramLanguage language, DataModel dataModel) {
@@ -62,14 +63,10 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEntity> {
 
     @Override
     public XEntity visit(YSyntaxTree node) {
-        XEntity firstEvent = null;
         for (YEntity root : node.getRoots()) {
-            XEntity event = visit(root);
-            if (firstEvent == null) {
-                firstEvent = event;
-            }
+            visit(root);
         }
-        return firstEvent;
+        return null;
     }
 
     @Override
@@ -97,19 +94,18 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEntity> {
 
     @Override
     public XEvent visit(YCompoundStatement node) {
-        XEvent firstEvent = null;
         for (YStatement statement : node.getStatements()) {
-            XEvent event = visit(statement);
-            if (firstEvent == null) {
-                firstEvent = event;
-            }
+            visit(statement);
         }
-        return firstEvent;
+        return null;
     }
 
     @Override
     public XEvent visit(YStatement node) {
         XEntity result = node.accept(this);
+        if (result == null) {
+            return null;
+        }
         if (result instanceof XEvent) {
             return (XEvent) result;
         }
@@ -195,7 +191,10 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEntity> {
     public XEvent visit(YLinearStatement node) {
         YExpression yExpression = node.getExpression();
         if (yExpression != null) {
-            return processExpression(visit(yExpression));
+            XEntity xExpression = visit(yExpression);
+            if (xExpression != null) {
+                return processExpression(xExpression);
+            }
         }
         return program.currentProcess.emitComputationEvent();
     }
@@ -222,37 +221,32 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEntity> {
     public XEntity visit(YBranchingStatement node) {
         XEntity condition = visit(node.getCondition());
         XComputationEvent conditionEvent = evaluate(condition);
-        XBranchingEvent branchingEvent = program.currentProcess.startBranching(conditionEvent);
 
+        program.currentProcess.startBranchingDefinition(conditionEvent);
         program.currentProcess.startTrueBranch();
         visit(node.getThenBranch());
         program.currentProcess.finishTrueBranch();
-
         YStatement elseBranch = node.getElseBranch();
         if (elseBranch != null) {
             program.currentProcess.startFalseBranch();
             visit(elseBranch);
             program.currentProcess.finishFalseBranch();
         }
-
-        program.currentProcess.finishBranching();
-
-        return branchingEvent;
+        program.currentProcess.finishBranchingDefinition();
+        return null;
     }
 
     @Override
     public XEntity visit(YWhileLoopStatement node) {
         XEntity condition = visit(node.getCondition());
         XComputationEvent conditionEvent = evaluate(condition);
-        XBranchingEvent loopEvent = program.currentProcess.startLoopDefinition(conditionEvent);
 
+        program.currentProcess.startLoopDefinition(conditionEvent);
         program.currentProcess.startLoopBodyDefinition();
         visit(node.getBody());
         program.currentProcess.finishLoopBodyDefinition();
-
         program.currentProcess.finishLoopDefinition();
-
-        return loopEvent;
+        return null;
     }
 
     @Override
@@ -273,7 +267,7 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEntity> {
             default:
                 throw new XCompilationError("Unknown jump statement kind: " + node.getKind());
         }
-        return program.currentProcess.emitFakeEvent();
+        return null; //program.currentProcess.emitFakeEvent();
     }
 
     @Override
