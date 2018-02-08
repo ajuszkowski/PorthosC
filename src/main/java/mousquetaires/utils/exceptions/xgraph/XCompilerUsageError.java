@@ -1,12 +1,12 @@
 package mousquetaires.utils.exceptions.xgraph;
 
-public class XCompilatorUsageError extends XCompilationError {
+public class XCompilerUsageError extends XCompilationError {
 
     // TODO: remove parameterless constructor and describe all throws
-    public XCompilatorUsageError() {
+    public XCompilerUsageError() {
     }
 
-    public XCompilatorUsageError(String message) {
+    public XCompilerUsageError(String message) {
         super(message);
     }
 }

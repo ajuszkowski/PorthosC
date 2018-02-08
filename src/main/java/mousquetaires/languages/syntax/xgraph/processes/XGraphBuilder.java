@@ -3,6 +3,7 @@ package mousquetaires.languages.syntax.xgraph.processes;
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XControlFlowEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +19,7 @@ public class XGraphBuilder {
 
     public XGraphBuilder() {
         events = new ImmutableList.Builder<>();
-        nextEventMap = new HashMap<>();
+        nextEventMap = new HashMap<>(); // TODO: NOT A HASH MAP!!!!! STORE REFERENCES HERE!!!!!!
         trueBranchingJumpsMap = new HashMap<>();
         falseBranchingJumpsMap = new HashMap<>();
     }
@@ -29,6 +30,7 @@ public class XGraphBuilder {
     }
 
     public void addEpsilonEdge(XEvent from, XEvent to) {
+        assert !(from instanceof XControlFlowEvent);
         verifyEvent(from);
         verifyEvent(to);
         if (from != to) {
@@ -48,6 +50,16 @@ public class XGraphBuilder {
         verifyEvent(to);
         assert from != to: from.toString();
         falseBranchingJumpsMap.put(from, to);
+    }
+
+    public void VERIFY_TEMP_METHOD() {
+        // assert events also
+        for (XComputationEvent trueBranchEvent : trueBranchingJumpsMap.keySet()) {
+            assert !nextEventMap.containsKey(trueBranchEvent);
+        }
+        for (XComputationEvent falseBranchEvent : falseBranchingJumpsMap.keySet()) {
+            assert !nextEventMap.containsKey(falseBranchEvent);
+        }
     }
 
     public ImmutableList<XEvent> buildEvents() {

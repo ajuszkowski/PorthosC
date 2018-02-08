@@ -16,6 +16,7 @@ import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.processes.contexts.NonlinearBlockKind;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
@@ -108,7 +109,8 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
     @Override
     public XComputationEvent visit(YConstant node) {
         // todo: convert type 'node.getType()'
-        return program.currentProcess.evaluateConstant(node.getValue());
+        XConstant constant = program.currentProcess.getConstant(node.getValue());
+        return program.currentProcess.evaluateConstant(constant);
     }
 
     @Override
@@ -143,7 +145,7 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
             XOperator xOperator = XUnaryOperatorHelper.isPrefixIncrement(yOperator)
                     ? XOperator.IntegerPlus
                     : XOperator.IntegerMinus;
-            XConstant one = program.currentProcess.memoryManager.getConstant(1);
+            XConstant one = program.currentProcess.getConstant(1);
             XComputationEvent incremented = program.currentProcess.emitComputationEvent(xOperator, baseLocal, one);
             return program.currentProcess.emitMemoryEvent(baseLocal, incremented);
         } else if (XUnaryOperatorHelper.isPostfixIntegerOperator(yOperator)) {
@@ -215,22 +217,25 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
 
     @Override
     public XEvent visit(YBranchingStatement node) {
-        program.currentProcess.startBranchingConditionDefinition();
-        visit(node.getCondition());
-        //program.currentProcess.finishBranchingConditionDefinition();
-        program.currentProcess.finishBranchingConditionDefinition();
+        program.currentProcess.startBranchingBlockDefinition(NonlinearBlockKind.Branching);
 
-        program.currentProcess.startTrueBranch();
+        program.currentProcess.startConditionDefinition();
+        visit(node.getCondition());
+        program.currentProcess.finishConditionDefinition();
+
+        program.currentProcess.startTrueBranchDefinition();
         visit(node.getThenBranch());
-        program.currentProcess.finishTrueBranch();
+        program.currentProcess.finishBranchDefinition();
 
         YStatement elseBranch = node.getElseBranch();
         if (elseBranch != null) {
-            program.currentProcess.startFalseBranch();
+            program.currentProcess.startFalseBranchDefinition();
             visit(elseBranch);
-            program.currentProcess.finishFalseBranch();
+            program.currentProcess.finishBranchDefinition();
         }
-        program.currentProcess.finishBranchingDefinition();
+
+        program.currentProcess.finishBranchingBlockDefinition();
+
         return null;
     }
 
