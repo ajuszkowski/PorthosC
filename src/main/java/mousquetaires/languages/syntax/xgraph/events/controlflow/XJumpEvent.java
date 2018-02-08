@@ -15,4 +15,9 @@ public class XJumpEvent extends XEventBase implements XControlFlowEvent {
     public <T> T accept(XgraphVisitor<T> visitor) {
         return visitor.visit(this);
     }
+
+    @Override
+    public String toString() {
+        return "[JUMP_" + getInfo().getStamp() + "]";
+    }
 }

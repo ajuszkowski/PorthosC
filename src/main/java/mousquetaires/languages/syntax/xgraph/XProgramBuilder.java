@@ -12,7 +12,7 @@ public class XProgramBuilder extends Builder<XProgram> {
     public XProcessBuilder currentProcess;
     private final ImmutableList.Builder<XProcess> processes;
     // TODO: publish methods also!
-    public final XMemoryManager memoryManager;
+    private final XMemoryManager memoryManager;
 
     public XProgramBuilder(XMemoryManager memoryManager) {
         this.memoryManager = memoryManager;
@@ -86,10 +86,10 @@ public class XProgramBuilder extends Builder<XProgram> {
     //public XBinaryOperationEvent emitComputationEvent(XOperator operator, XMemoryUnit leftOperand, XMemoryUnit rightOperand) {
     //    XRegister left = leftOperand instanceof XRegister
     //            ? (XRegister) leftOperand
-    //            : copyToLocalMemoryIfNecessary(leftOperand);
+    //            : copyToLocalMemory(leftOperand);
     //    XRegister right = rightOperand instanceof XRegister
     //            ? (XRegister) rightOperand
-    //            : copyToLocalMemoryIfNecessary(rightOperand);
+    //            : copyToLocalMemory(rightOperand);
     //    return currentProcess.emitComputationEvent(operator, left, right);
     //}
 
@@ -125,7 +125,7 @@ public class XProgramBuilder extends Builder<XProgram> {
     //            return currentProcess.emitMemoryEvent(destinationShared, sourceLocal);
     //        }
     //        if (sourceShared != null) {
-    //            XRegister tempLocal = copyToLocalMemoryIfNecessary(sourceShared);
+    //            XRegister tempLocal = copyToLocalMemory(sourceShared);
     //            return currentProcess.emitMemoryEvent(destinationShared, tempLocal);
     //        }
     //    }

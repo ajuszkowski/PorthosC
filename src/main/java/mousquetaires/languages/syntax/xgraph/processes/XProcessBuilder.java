@@ -99,20 +99,29 @@ public class XProcessBuilder extends Builder<XProcess> {
 
     // --
 
+    public XLocalMemoryUnit copyToLocalMemory(XMemoryUnit memoryUnit) {
+        if (memoryUnit instanceof XLocation) {
+            copyToLocalMemory((XLocation) memoryUnit);
+        }
+        else if (memoryUnit instanceof XLocalMemoryUnit) { // also here: XComputationEvent
+            return (XLocalMemoryUnit) memoryUnit;
+        }
+        throw new XCompilationError("Illegal attempt to write to the local memory a memory unit of type "
+                + memoryUnit.getClass().getSimpleName());
+    }
+
     public XRegister copyToLocalMemory(XLocation shared) {
         XRegister tempLocal = memoryManager.newLocalMemoryUnit();
         emitMemoryEvent(tempLocal, shared);
         return tempLocal;
     }
 
-    public XRegister copyToLocalMemoryIfNecessary(XMemoryUnit sharedOrLocal) {
-        if (sharedOrLocal instanceof XLocation) {
-            copyToLocalMemory((XLocation) sharedOrLocal);
+    public XLocalMemoryUnit copyToLocalMemory(XEvent event) {
+        if (event instanceof XComputationEvent) {
+            return (XComputationEvent) event;
         }
-        else if (sharedOrLocal instanceof XRegister) {
-            return (XRegister) sharedOrLocal;
-        }
-        throw new IllegalArgumentException(sharedOrLocal.getClass().getName());
+        throw new XCompilationError("Attempt to write to the memory a non-memory event of type "
+                + event.getClass().getSimpleName());
     }
 
     // --
@@ -121,6 +130,12 @@ public class XProcessBuilder extends Builder<XProcess> {
     public XFakeEvent emitFakeEvent() {
         return new XFakeEvent(createEventInfo());
     }
+
+    public XComputationEvent evaluateLocalMemoryUnit(XLocalMemoryUnit localMemoryUnit) {
+        return evaluateIfNecessary(localMemoryUnit);
+    }
+
+    // --
 
     /**
      * For modelling empty statement

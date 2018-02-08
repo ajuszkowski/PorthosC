@@ -5,26 +5,24 @@ import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 
-import java.util.HashMap;
+import java.util.Map;
 
 
 public class XProcess implements XEntity {
 
     public final String processId;
     private final ImmutableList<XEvent> events;
-    private final HashMap<XEvent, XEvent> nextEventMap;
-    private final HashMap<XComputationEvent, XEvent> trueBranchingJumpsMap; //goto, if(true), while(true)
-    private final HashMap<XComputationEvent, XEvent> falseBranchingJumpsMap; //if(false)
+    private final Map<XEvent, XEvent> nextEventMap;
+    private final Map<XComputationEvent, XEvent> trueBranchingJumpsMap; //goto, if(true), while(true)
+    private final Map<XComputationEvent, XEvent> falseBranchingJumpsMap; //if(false)
 
 
     XProcess(XProcessBuilder builder) {
         this.processId = builder.getProcessId();
-        this.events = builder.buildEvents();
-        this.nextEventMap = builder.nextEventMap;
-        this.trueBranchingJumpsMap = builder.trueBranchingJumpsMap;
-        this.falseBranchingJumpsMap = builder.falseBranchingJumpsMap;
-
-
+        this.events = builder.graphBuilder.buildEvents();
+        this.nextEventMap = builder.graphBuilder.buildNextEventMap();
+        this.trueBranchingJumpsMap = builder.graphBuilder.buildTrueBranchingJumpsMap();
+        this.falseBranchingJumpsMap = builder.graphBuilder.buildFalseBranchingJumpsMap();
     }
 
     public String getProcessId() {

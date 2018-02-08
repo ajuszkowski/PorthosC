@@ -1,18 +1,46 @@
-//void P9 (int a) {} //nested declarator
-
-void P() {
-    while (cond1) {
+void P9 (int a) {
+    if (cond1) {
+        a = 1;
+        a = 3;
         if (cond2) {
-            a = 2;
-            continue;
-            //break;
-            dead_code;
+            if (cond3) {
+                a = 4;
+            }
         }
         else {
-            code_false;
+            a = 5;
         }
-        //a = 1;
     }
+} //nested declarator
+
+void P() {
+//    while (cond1) {
+//        expr;
+        while (cond2) {
+            if (x) {
+                x = 2;
+            }
+            if (cond3) {
+                break;
+            }
+            if (cond4) {
+                continue;
+            }
+            if (cond5) {
+                a = 2;
+                continue;
+                dead_code;
+            }
+            else {
+                code_false;
+            }
+        }
+
+        if (cond5) {//again cond5
+            break;
+        }
+        a = 1;
+//    }
 }
 
 /*void P1(spinlock_t *sl, long long *x0, int& x1, char c) {
