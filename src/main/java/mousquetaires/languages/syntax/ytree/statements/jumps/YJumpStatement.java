@@ -17,13 +17,18 @@ public class YJumpStatement extends YStatement {
         Continue,
         ;
 
+
         public YJumpStatement createJumpStatement() {
             return new YJumpStatement(this, new YJumpLabel(this.toString()));
         }
 
-
         public YJumpStatement createJumpStatement(YJumpLabel jumpLabel) {
             return new YJumpStatement(this, jumpLabel);
+        }
+
+        @Override
+        public String toString() {
+            return name().toLowerCase();
         }
     }
 
@@ -70,5 +75,10 @@ public class YJumpStatement extends YStatement {
     @Override
     public YJumpStatement copy() {
         return new YJumpStatement(getKind(), getJumpLabel());
+    }
+
+    @Override
+    public String toString() {
+        return kind.toString();
     }
 }

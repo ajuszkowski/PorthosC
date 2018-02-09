@@ -1,20 +1,58 @@
-void P9 (int a) {
-    if (cond1) {
-        a = 1;
-        a = 3;
-        if (cond2) {
-            if (cond3) {
-                a = 4;
+//void P(int in) {
+//    if (x == 1) {
+//        if (y == 2) {
+//            if (z == 3) {
+//                a = 4;
+//            }
+//        }
+//        else {
+//            b = 5;
+//        }
+//    }
+//    else {}
+//}
+
+void X() {
+    if (1) {
+        a = 2;
+        while (3) {
+            if (101) ;
+            while (0) ;
+            if (4) {
+                break;
             }
-        }
-        else if (x == 2) {
-            a = 5;
-        }
-        else {
-            a = 6;
+            else {
+                continue;
+            }
+            while (4) {
+                b = 3;
+                if (6) break;
+            }
+            c = 4;
         }
     }
-} //nested declarator
+
+    if (100) {}
+    x;
+}
+
+//void P9 (int a) {
+//    if (cond1) {
+//        a = 1;
+//        a = 3;
+//        if (cond2) {
+//            if (cond3) {
+//                a = 1;
+//            }
+//        }
+//        else if (x == 2) {
+//            a = 5;
+//        }
+//        else {
+//            a = 6;
+//        }
+//    }
+//} //nested declarator
 //
 //void P() {
 ////    while (cond1) {
@@ -47,30 +85,25 @@ void P9 (int a) {
 ////    }
 //}
 
-/*void P1(spinlock_t *sl, long long *x0, int& x1, char c) {
-//    while (1) {
-//        x++;
-//        y--;
+//void P1(spinlock_t *sl, long long *x0, int& x1, char c) {
+//    y = x > 100500;
+//    while (x == 1) ;
+//
+//    while (0) {
+//        x = 1.1;
+//        while (1.5) ;
+//        if (x == 2) {
+//            while (x == 3) {
+//                a = 4;
+//            }
+//            continue;
+//        }
+//        else {
+//            b = 5;
+//            break;
+//        }
 //    }
-    y = x > 100500;
-    while (x == 1) {
-        x = 1.1;
-        while (1.5) ;
-        if (x == 2) {
-            while (x == 3) {
-                a = 4;
-            }
-            continue;
-        }
-        else {
-            b = 5;
-            break;
-        }
-    }
-    d = 7;
-
-}
-*/
+//}
 
 
 //    lll int r0;

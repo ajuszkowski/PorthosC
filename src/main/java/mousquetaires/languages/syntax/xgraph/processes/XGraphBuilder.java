@@ -2,26 +2,28 @@ package mousquetaires.languages.syntax.xgraph.processes;
 
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XControlFlowEvent;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 
 public class XGraphBuilder {
 
-    private final ImmutableList.Builder<XEvent> events;
-    // TODO: immutable map? check this class
-    private final Map<XEvent, XEvent> nextEventMap;
-    private final Map<XComputationEvent, XEvent> trueBranchingJumpsMap;
-    private final Map<XComputationEvent, XEvent> falseBranchingJumpsMap;
+    /*private*/ final ImmutableList.Builder<XEvent> events;
+    /*private*/ final Map<XEvent, XEvent> nextEventMap; // TODO: immutable map? check this
+    /*private*/ final Map<XComputationEvent, XEvent> thenBranchingJumpsMap;
+    /*private*/ final Map<XComputationEvent, XEvent> elseBranchingJumpsMap;
 
     public XGraphBuilder() {
         events = new ImmutableList.Builder<>();
-        nextEventMap = new HashMap<>(); // TODO: NOT A HASH MAP!!!!! STORE REFERENCES HERE!!!!!!
-        trueBranchingJumpsMap = new HashMap<>();
-        falseBranchingJumpsMap = new HashMap<>();
+        nextEventMap = new HashMap<>(); // TODO: NOT THE HASH MAP HERE!!!!! or hashmap on event info It must store the references. Maybe another map? where key is the object id?
+        thenBranchingJumpsMap = new HashMap<>();
+        elseBranchingJumpsMap = new HashMap<>();
     }
 
     public void addEvent(XEvent event) {
@@ -30,35 +32,68 @@ public class XGraphBuilder {
     }
 
     public void addEpsilonEdge(XEvent from, XEvent to) {
-        assert !(from instanceof XControlFlowEvent);
         verifyEvent(from);
         verifyEvent(to);
-        if (from != to) {
-            nextEventMap.put(from, to);
-        }
+        assert from != to: "attempt to add an epsilon edge to the same node " + from;
+        nextEventMap.put(from, to);
     }
 
-    public void addTrueEdge(XComputationEvent from, XEvent to) {
+    public void addThenEdge(XComputationEvent from, XEvent to) {
+        verifyEvent(from);
+        verifyEvent(to);
+        //assert from != to: from.toString(); //allowed: `while(1);`
+        thenBranchingJumpsMap.put(from, to);
+    }
+
+    public void addElseEdge(XComputationEvent from, XEvent to) {
         verifyEvent(from);
         verifyEvent(to);
         assert from != to: from.toString();
-        trueBranchingJumpsMap.put(from, to);
+        elseBranchingJumpsMap.put(from, to);
     }
 
-    public void addFalseEdge(XComputationEvent from, XEvent to) {
-        verifyEvent(from);
-        verifyEvent(to);
-        assert from != to: from.toString();
-        falseBranchingJumpsMap.put(from, to);
-    }
-
-    public void VERIFY_TEMP_METHOD() {
+    public void TEMP_VERIFY() {
         // assert events also
-        for (XComputationEvent trueBranchEvent : trueBranchingJumpsMap.keySet()) {
-            assert !nextEventMap.containsKey(trueBranchEvent);
+        ImmutableList<XEvent> evs = events.build();
+        for (XEvent event : evs) {
+            if (thenBranchingJumpsMap.containsKey(event)) {
+                if (!elseBranchingJumpsMap.containsKey(event)) {
+                    assert false: "then without else, src: " + event;
+                }
+                assert !nextEventMap.containsKey(event) : "too many srcs " + event + ": then and eps";
+            }
+            else if (elseBranchingJumpsMap.containsKey(event)) {
+                if (!thenBranchingJumpsMap.containsKey(event)) {
+                    assert false: "else without then, src: " + event + ": else and eps";
+                }
+            }
+            else {
+                if (!(event instanceof XExitEvent)) {
+                    assert nextEventMap.containsKey(event) : "lack src " + event;
+                }
+            }
+            if (!(event instanceof XEntryEvent)
+                    && !nextEventMap.containsValue(event)
+                    && !thenBranchingJumpsMap.containsValue(event)
+                    && !elseBranchingJumpsMap.containsValue(event) ) {
+                System.out.println("dead code: " + event);
+            }
         }
-        for (XComputationEvent falseBranchEvent : falseBranchingJumpsMap.keySet()) {
-            assert !nextEventMap.containsKey(falseBranchEvent);
+
+        Set<XEvent> allEventsFromTransitions = new HashSet<>();
+        allEventsFromTransitions.addAll(nextEventMap.keySet());
+        allEventsFromTransitions.addAll(thenBranchingJumpsMap.keySet());
+        allEventsFromTransitions.addAll(elseBranchingJumpsMap.keySet());
+        allEventsFromTransitions.addAll(nextEventMap.values());
+        allEventsFromTransitions.addAll(thenBranchingJumpsMap.values());
+        allEventsFromTransitions.addAll(elseBranchingJumpsMap.values());
+        Set<XEvent> allEventsRegistered = new HashSet<>(events.build());
+
+        for (XEvent eventFromTransition : allEventsFromTransitions) {
+            assert allEventsRegistered.contains(eventFromTransition) : "not registered event: " + eventFromTransition;
+        }
+        for (XEvent eventRegistered : allEventsRegistered) {
+            assert allEventsFromTransitions.contains(eventRegistered) : "event without a transition: " + eventRegistered;
         }
     }
 
@@ -71,11 +106,11 @@ public class XGraphBuilder {
     }
 
     public Map<XComputationEvent, XEvent> buildTrueBranchingJumpsMap() {
-        return trueBranchingJumpsMap;
+        return thenBranchingJumpsMap;
     }
 
     public Map<XComputationEvent, XEvent> buildFalseBranchingJumpsMap() {
-        return falseBranchingJumpsMap;
+        return elseBranchingJumpsMap;
     }
 
     private void verifyEvent(XEvent event) {

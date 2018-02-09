@@ -13,16 +13,16 @@ public class XProcess implements XEntity {
     public final String processId;
     private final ImmutableList<XEvent> events;
     private final Map<XEvent, XEvent> nextEventMap;
-    private final Map<XComputationEvent, XEvent> trueBranchingJumpsMap; //goto, if(true), while(true)
-    private final Map<XComputationEvent, XEvent> falseBranchingJumpsMap; //if(false)
+    private final Map<XComputationEvent, XEvent> thenBranchingJumpsMap; //goto, if(true), while(true)
+    private final Map<XComputationEvent, XEvent> elseBranchingJumpsMap; //if(false)
 
 
     XProcess(XProcessBuilder builder) {
         this.processId = builder.getProcessId();
         this.events = builder.graphBuilder.buildEvents();
         this.nextEventMap = builder.graphBuilder.buildNextEventMap();
-        this.trueBranchingJumpsMap = builder.graphBuilder.buildTrueBranchingJumpsMap();
-        this.falseBranchingJumpsMap = builder.graphBuilder.buildFalseBranchingJumpsMap();
+        this.thenBranchingJumpsMap = builder.graphBuilder.buildTrueBranchingJumpsMap();
+        this.elseBranchingJumpsMap = builder.graphBuilder.buildFalseBranchingJumpsMap();
     }
 
     public String getProcessId() {

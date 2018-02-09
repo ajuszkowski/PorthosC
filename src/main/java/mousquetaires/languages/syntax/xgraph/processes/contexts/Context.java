@@ -8,26 +8,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class NonlinearBlock {
+public class Context {
     /*private*/public XEvent entryEvent;
 
-    /*private*/public final NonlinearBlockKind kind;
+    /*private*/public final ContextKind kind;
     /*private*/public XProcessBuilder.ContextState state;
     /*private*/public XProcessBuilder.BranchKind currentBranchKind;
 
     /*private*/public XComputationEvent conditionEvent;
-    //private XEvent firstTrueBranchEvent;
-    //private XEvent firstFalseBranchEvent;
 
-    /*private*/public XEvent lastTrueBranchEvent;
-    /*private*/public XEvent lastFalseBranchEvent;
+    /*private*/public XEvent firstThenBranchEvent;
+    /*private*/public XEvent firstElseBranchEvent;
+
+    /*private*/public XEvent lastThenBranchEvent;
+    /*private*/public XEvent lastElseBranchEvent;
 
     /*private*/public List<XEvent> continueingEvents;
     /*private*/public List<XEvent> breakingEvents;
 
-    private boolean isInitialised;
-
-    public NonlinearBlock(NonlinearBlockKind kind) {
+    public Context(ContextKind kind) {
         this.kind = kind;
     }
 
@@ -72,24 +71,25 @@ public class NonlinearBlock {
         breakingEvents.add(event);
     }
 
-    public boolean hasTrueBranch() {
-        return lastTrueBranchEvent != null;
+    public boolean hasThenBranch() {
+        return lastThenBranchEvent != null;
     }
 
-    public boolean hasFalseBranch() {
-        return lastFalseBranchEvent != null;
+    public boolean hasElseBranch() {
+        return lastElseBranchEvent != null;
     }
 
-    public boolean hasContinueEvents() {
+    public boolean needToBindContinueEvents() {
         return continueingEvents != null && continueingEvents.size() > 0;
     }
 
-    public boolean hasBreakEvents() {
+    public boolean needToBindBreakEvents() {
         return breakingEvents != null && breakingEvents.size() > 0;
     }
 
     @Override
     public String toString() {
-        return  entryEvent + " { " + lastTrueBranchEvent + " } else { " + lastFalseBranchEvent + " }";
+        return  entryEvent + "..." + conditionEvent + " { " + firstThenBranchEvent + "..." + lastThenBranchEvent +
+                " } else { " + firstElseBranchEvent + "..." + lastElseBranchEvent + " }";
     }
 }

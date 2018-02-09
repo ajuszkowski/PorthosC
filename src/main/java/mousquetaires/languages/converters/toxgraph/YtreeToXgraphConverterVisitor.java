@@ -16,7 +16,7 @@ import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.processes.contexts.NonlinearBlockKind;
+import mousquetaires.languages.syntax.xgraph.processes.contexts.ContextKind;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
@@ -189,7 +189,7 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
                 return xExpression;
             }
         }
-        return program.currentProcess.emitComputationEvent();
+        return program.currentProcess.emitFakeComputationEvent();
     }
 
     @Override
@@ -217,40 +217,42 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
 
     @Override
     public XEvent visit(YBranchingStatement node) {
-        program.currentProcess.startBranchingBlockDefinition(NonlinearBlockKind.Branching);
+        program.currentProcess.startNonlinearBlockDefinition(ContextKind.Branching);
 
         program.currentProcess.startConditionDefinition();
         visit(node.getCondition());
         program.currentProcess.finishConditionDefinition();
 
-        program.currentProcess.startTrueBranchDefinition();
+        program.currentProcess.startThenBranchDefinition();
         visit(node.getThenBranch());
         program.currentProcess.finishBranchDefinition();
 
         YStatement elseBranch = node.getElseBranch();
         if (elseBranch != null) {
-            program.currentProcess.startFalseBranchDefinition();
+            program.currentProcess.startElseBranchDefinition();
             visit(elseBranch);
             program.currentProcess.finishBranchDefinition();
         }
 
-        program.currentProcess.finishBranchingBlockDefinition();
+        program.currentProcess.finishNonlinearBlockDefinition();
 
         return null;
     }
 
     @Override
     public XEvent visit(YWhileLoopStatement node) {
-        throw new NotImplementedException();
-        //program.currentProcess.startLoopCondition();
-        //visit(node.getCondition());
-        //program.currentProcess.finishLoopCondition();
-        //
-        //program.currentProcess.startLoopBodyDefinition();
-        //visit(node.getBody());
-        //program.currentProcess.finishLoopBodyDefinition();
-        //program.currentProcess.finishLoopDefinition();
-        //return null;
+        program.currentProcess.startNonlinearBlockDefinition(ContextKind.Loop);
+
+        program.currentProcess.startConditionDefinition();
+        visit(node.getCondition());
+        program.currentProcess.finishConditionDefinition();
+
+        program.currentProcess.startThenBranchDefinition();
+        visit(node.getBody());
+        program.currentProcess.finishBranchDefinition();
+
+        program.currentProcess.finishNonlinearBlockDefinition();
+        return null;
     }
 
     @Override
@@ -263,10 +265,10 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
                 throw new NotImplementedException();
                 //break;
             case Break:
-                //program.currentProcess.processLoopBreakStatement();
+                program.currentProcess.processLoopBreakStatement();
                 break;
             case Continue:
-                //program.currentProcess.processLoopContinueStatement();
+                program.currentProcess.processLoopContinueStatement();
                 break;
             default:
                 throw new XCompilationError("Unknown jump statement kind: " + node.getKind());

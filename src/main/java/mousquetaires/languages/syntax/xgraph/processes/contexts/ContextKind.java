@@ -1,6 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.processes.contexts;
 
-public enum NonlinearBlockKind {
+public enum ContextKind {
+    Linear,
     Branching,
     Loop,
 }

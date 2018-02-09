@@ -1,26 +1,27 @@
 package mousquetaires.languages.syntax.xgraph.processes;
 
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.*;
-import mousquetaires.languages.syntax.xgraph.events.fakes.XEntryEvent;
-import mousquetaires.languages.syntax.xgraph.events.fakes.XExitEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
+import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeComputationEvent;
+import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.*;
-import mousquetaires.languages.syntax.xgraph.processes.contexts.NonlinearBlock;
-import mousquetaires.languages.syntax.xgraph.processes.contexts.NonlinearBlockKind;
-import mousquetaires.languages.syntax.xgraph.processes.contexts.NonlinearBlockStack;
+import mousquetaires.languages.syntax.xgraph.processes.contexts.Context;
+import mousquetaires.languages.syntax.xgraph.processes.contexts.ContextKind;
 import mousquetaires.utils.StringUtils;
-import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XCompilationError;
 import mousquetaires.utils.exceptions.xgraph.XCompilerUsageError;
 import mousquetaires.utils.patterns.Builder;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Stack;
 
 
 public class XProcessBuilder extends Builder<XProcess> {
-
 
     public enum ContextState {
         Idle,
@@ -36,27 +37,21 @@ public class XProcessBuilder extends Builder<XProcess> {
     }
 
     public enum BranchKind {
-        True,
-        False,
+        Then,
+        Else,
     }
 
     private final String processId;
     /*private*/ final XGraphBuilder graphBuilder;
 
-    //private BranchingStatementType currentBranchingStatementType;
-    //private BranchingStatementType previousBranchingStatementType;
-
     // todo: add add/put methods with non-null checks
-    private final NonlinearBlockStack loopsStack;
-    private final NonlinearBlockStack nonlinearStack;
-    private final Set<NonlinearBlock> readyNonlinearBlocks;
+    //private final ContextStack loopsStack;
+    private final Stack<Context> contextStack;
+    private final Set<Context> readyContexts;
     //private final Set<NonlinearBlockInfo> readyLoops;
 
 
     private XEvent previousEvent;
-
-    //private XEvent lastTrueBranchEvent;
-    //private XEvent lastFalseBranchEvent;
 
     private final XMemoryManager memoryManager;
 
@@ -67,14 +62,17 @@ public class XProcessBuilder extends Builder<XProcess> {
 
         this.graphBuilder = new XGraphBuilder();
 
-        nonlinearStack = new NonlinearBlockStack();
-        loopsStack = new NonlinearBlockStack();
-        readyNonlinearBlocks = new HashSet<>();
+        contextStack = new Stack<>();
+        //loopsStack = new ContextStack();
+        readyContexts = new HashSet<>();
         //readyLoops = new HashSet<>();
 
+        Context linearContext = new Context(ContextKind.Linear);
+        linearContext.state = XProcessBuilder.ContextState.WaitingNextLinearEvent;
+        contextStack.push(linearContext);
+
         XEntryEvent entryEvent = new XEntryEvent(createEventInfo());
-        graphBuilder.addEvent(entryEvent);
-        previousEvent = entryEvent;
+        addAndProcessNextEvent(entryEvent);
     }
 
     @Override
@@ -82,8 +80,9 @@ public class XProcessBuilder extends Builder<XProcess> {
         processExitEvent();
 
         //verify
-        assert nonlinearStack.isEmpty();
-        assert readyNonlinearBlocks.isEmpty();
+        assert contextStack.size() == 1; //linear entry context only
+        assert readyContexts.isEmpty();
+        graphBuilder.TEMP_VERIFY();
 
         return new XProcess(this);
     }
@@ -131,11 +130,12 @@ public class XProcessBuilder extends Builder<XProcess> {
         return emitComputationEvent(constant);
     }
 
+    //
     //// TODO: very bad, remove this!!!
     //public XFakeEvent emitFakeEvent() {
     //    return new XFakeEvent(createEventInfo());
     //}
-
+    //
     //public XComputationEvent evaluateLocalMemoryUnit(XLocalMemoryUnit localMemoryUnit) {
     //    return evaluateIfNecessary(localMemoryUnit);
     //}
@@ -145,9 +145,10 @@ public class XProcessBuilder extends Builder<XProcess> {
     /**
      * For modelling empty statement
      */
-    public XComputationEvent emitComputationEvent() {
-        XRegister dummyTempMemory = memoryManager.newLocalMemoryUnit();
-        return emitComputationEvent(dummyTempMemory);
+    public XComputationEvent emitFakeComputationEvent() {
+        XComputationEvent event = new XFakeComputationEvent(createEventInfo());
+        addAndProcessNextEvent(event);
+        return event;
     }
 
     public XComputationEvent emitComputationEvent(XLocalMemoryUnit operand) {
@@ -197,44 +198,225 @@ public class XProcessBuilder extends Builder<XProcess> {
         return event;
     }
 
-    //private XJumpEvent emitJumpEvent() {
-    //    XJumpEvent event = new XJumpEvent(createEventInfo());
-    //    addAndProcessNextEvent(event);
-    //    return event;
-    //}
+    private XJumpEvent emitJumpEvent() {
+        XJumpEvent event = new XJumpEvent(createEventInfo());
+        addAndProcessNextEvent(event);
+        return event;
+    }
 
     private void processExitEvent() {
         XExitEvent exitEvent = new XExitEvent(createEventInfo());
-        if (!nonlinearStack.empty()) {
-            finishBranchingBlockDefinition();
-            addAndProcessNextEvent(exitEvent);
-        }
-        else if (!loopsStack.empty()) {
-            throw new NotImplementedException();
-        }
-        else {
-            addAndProcessNextEvent(exitEvent);
-        }
+        assert contextStack.size() == 1; //only entry linear context
+        //if (!contextStack.empty()) {
+        //    finishNonlinearBlockDefinition();
+        //    addAndProcessNextEvent(exitEvent);
+        //}
+        //else if (!loopsStack.empty()) {
+        //    throw new NotImplementedException();
+        //}
+        //else {
+        //
+        //}
+        addAndProcessNextEvent(exitEvent);
     }
 
     private void addAndProcessNextEvent(XEvent nextEvent) {
-        graphBuilder.addEvent(nextEvent);
+        if (!(nextEvent instanceof XFakeEvent)) { // TODO: looks like hack here
+            graphBuilder.addEvent(nextEvent);
+        }
         processNextEvent(nextEvent);
     }
-
 
     private void processNextEvent(XEvent nextEvent) {
         assert nextEvent != null;
 
-        boolean notTheTopOfTheStack = false;
-        for (int i = nonlinearStack.size() - 1; i >= 0; i--) { //NonlinearBlock context : nonlinearStack) {
-            NonlinearBlock context = nonlinearStack.get(i);
+        boolean alreadySetEdgeToNextEvent = false;
 
+        if (!readyContexts.isEmpty()) {
+            for (Context context : readyContexts) {
+
+                if (context.firstThenBranchEvent instanceof XFakeComputationEvent) {
+                    context.firstThenBranchEvent = null;
+                }
+                if (context.lastThenBranchEvent instanceof XFakeComputationEvent) {
+                    context.lastThenBranchEvent = null;
+                }
+                if (context.firstElseBranchEvent instanceof XFakeComputationEvent) {
+                    context.firstElseBranchEvent = null;
+                }
+                if (context.lastElseBranchEvent instanceof XFakeComputationEvent) {
+                    context.lastElseBranchEvent = null;
+                }
+
+                if (context.firstThenBranchEvent != null) {
+                    switch (context.kind) {
+                        case Linear:
+                            assert false;
+                            break;
+                        case Branching:
+                        case Loop:
+                            graphBuilder.addThenEdge(context.conditionEvent, context.firstThenBranchEvent);
+                            break;
+                    }
+                }
+                else {
+                    switch (context.kind) {
+                        case Linear:
+                            assert false;
+                            break;
+                        case Branching:
+                            graphBuilder.addThenEdge(context.conditionEvent, nextEvent);
+                            alreadySetEdgeToNextEvent = true;
+                            break;
+                        case Loop:
+                            graphBuilder.addThenEdge(context.conditionEvent, context.conditionEvent);
+                            break;
+                    }
+                }
+                if (context.lastThenBranchEvent != null) {
+                    switch (context.kind) {
+                        case Linear:
+                            assert false;
+                            break;
+                        case Branching:
+                            graphBuilder.addEpsilonEdge(context.lastThenBranchEvent, nextEvent);
+                            alreadySetEdgeToNextEvent = true;
+                            break;
+                        case Loop:
+                            graphBuilder.addEpsilonEdge(context.lastThenBranchEvent, context.entryEvent);
+                            break;
+                    }
+                }
+                /*else {
+                    switch (context.kind) {
+                        case Linear:
+                            assert false;
+                            break;
+                        case Branching:
+                            graphBuilder.addElseEdge(context.conditionEvent, nextEvent);
+                            alreadySetEdgeToNextEvent = true;
+                            break;
+                        case Loop:
+                            // as it should be, no 'then' branch for loop
+                            break;
+                    }
+                }*/
+
+                //else {
+                //    switch (context.kind) {
+                //        case Linear:
+                //            assert false;
+                //            break;
+                //        case Branching:
+                //            //do nothing (should already done above)
+                //            //graphBuilder.addThenEdge(context.conditionEvent, nextEvent);
+                //            //alreadySetEdgeToNextEvent = true;
+                //            break;
+                //        case Loop:
+                //            // todo: check in case: `while(1) { do1(); if(2) {break;} } do2();`
+                //            //assert !(graphBuilder.elseBranchingJumpsMap.containsKey(context.conditionEvent));
+                //            //graphBuilder.addElseEdge(context.conditionEvent, context.entryEvent);
+                //            break;
+                //    }
+                //}
+
+                if (context.firstElseBranchEvent != null) {
+                    switch (context.kind) {
+                        case Linear:
+                            assert false;
+                            break;
+                        case Branching:
+                            graphBuilder.addElseEdge(context.conditionEvent, context.firstElseBranchEvent);
+                            break;
+                        case Loop:
+                            assert false;
+                            break;
+                    }
+                }
+                else {
+                    switch (context.kind) {
+                        case Linear:
+                            assert false;
+                            break;
+                        case Branching:
+                            graphBuilder.addElseEdge(context.conditionEvent, nextEvent);
+                            alreadySetEdgeToNextEvent = true; //todo: check here
+                        case Loop:
+                            // ok, loops should have no else branches
+                            break;
+                    }
+                }
+                if (context.lastElseBranchEvent != null) {
+                    switch (context.kind) {
+                        case Linear:
+                            assert false;
+                            break;
+                        case Branching:
+                            graphBuilder.addEpsilonEdge(context.lastElseBranchEvent, nextEvent);
+                            alreadySetEdgeToNextEvent = true;
+                            break;
+                        case Loop:
+                            assert false;
+                            break;
+                    }
+                }
+                //else {
+                //    switch (context.kind) {
+                //        case Linear:
+                //            assert false;
+                //            break;
+                //        case Branching:
+                //            graphBuilder.addElseEdge(context.conditionEvent, nextEvent);
+                //            alreadySetEdgeToNextEvent = true;
+                //            break;
+                //        case Loop:
+                //            // do nothing
+                //            break;
+                //    }
+                //
+                //    //graphBuilder.addElseEdge(context.conditionEvent, nextEvent);
+                //    //alreadySetEdgeToNextEvent = true;
+                //}
+
+                if (context.kind == ContextKind.Loop) {
+                    graphBuilder.addElseEdge(context.conditionEvent, nextEvent);
+                    assert context.firstElseBranchEvent == null : context.firstElseBranchEvent.toString();
+                    assert context.lastElseBranchEvent == null  : context.lastElseBranchEvent.toString();
+
+                    if (context.needToBindContinueEvents()) {
+                        for (XEvent continueingEvent : context.continueingEvents) {
+                            graphBuilder.addEpsilonEdge(continueingEvent, context.conditionEvent);
+                        }
+                    }
+                    if (context.needToBindBreakEvents()) {
+                        for (XEvent breakingEvent : context.breakingEvents) {
+                            graphBuilder.addEpsilonEdge(breakingEvent, nextEvent);
+                            alreadySetEdgeToNextEvent = true;
+                        }
+                    }
+                } else {
+                    assert !context.needToBindBreakEvents();
+                    assert !context.needToBindContinueEvents();
+                }
+            }
+            readyContexts.clear();
+        }
+
+        assert !contextStack.empty();
+        for (int i = contextStack.size() - 1; i >= 0; i--) { //NonlinearBlock context : contextStack) {
+            Context context = contextStack.get(i);
             switch (context.state) {
                 case WaitingNextLinearEvent: {
-                    if (previousEvent != null) { // && previousEvent != context.conditionEvent) {
-                        graphBuilder.addEpsilonEdge(previousEvent, nextEvent);
+                    if (!alreadySetEdgeToNextEvent) {
+                        processNextLinearEvent(nextEvent);
+                        alreadySetEdgeToNextEvent = true;
                     }
+                    //else {
+                    //    assert     graphBuilder.nextEventMap.containsValue(nextEvent)
+                    //            || graphBuilder.thenBranchingJumpsMap.containsValue(nextEvent)
+                    //            || graphBuilder.elseBranchingJumpsMap.containsValue(nextEvent)
+                    //            : nextEvent;
+                    //}
                 }
                 break;
 
@@ -249,21 +431,25 @@ public class XProcessBuilder extends Builder<XProcess> {
                 //break;
 
                 case WaitingFirstConditionEvent: {
-                    nonlinearStack.peek().setEntryEvent(nextEvent);//already initialised above
-                    //context.setState(ContextState.WaitingAdditionalCommand);
+                    context.setEntryEvent(nextEvent);//already initialised above
                 }
                 break;
 
                 case WaitingFirstSubBlockEvent: { //this case of stateStack should be on stack
+                    assert nextEvent != context.conditionEvent;
                     switch (context.currentBranchKind) {
-                        case True:
-                            graphBuilder.addTrueEdge(context.conditionEvent, nextEvent);
+                        case Then:
+                            // todo: do all nonlinear edge settings from ready hashset
+                            context.firstThenBranchEvent = nextEvent;
                             break;
-                        case False:
-                            graphBuilder.addFalseEdge(context.conditionEvent, nextEvent);
+                        case Else:
+                            context.firstElseBranchEvent = nextEvent;
+                            //graphBuilder.addElseEdge(context.conditionEvent, nextEvent);
+                            //alreadySetEdgeToNextEvent = true;
                             break;
                     }
                     context.setState(ContextState.WaitingNextLinearEvent);
+                    alreadySetEdgeToNextEvent = true; //delayed edge set
                 }
                 break;
 
@@ -280,57 +466,16 @@ public class XProcessBuilder extends Builder<XProcess> {
                 default:
                     throw new XCompilerUsageError("Received new event while in invalid stateStack: " + context.state.name());
             }
-
-            if (notTheTopOfTheStack) {
-                //continue;
-                context.setState(ContextState.Idle);
-            }
-
-            notTheTopOfTheStack = true;
-        }
-
-        if (!readyNonlinearBlocks.isEmpty()) {
-            XEvent branchingExitNode = nextEvent;
-
-            for (NonlinearBlock nonlinearBlock : readyNonlinearBlocks) {
-                if (nonlinearBlock.hasTrueBranch()) {
-                    //graphBuilder.addTrueEdge(nonlinearBlock.conditionEvent, nonlinearBlock.firstTrueBranchEvent);
-                    graphBuilder.addEpsilonEdge(nonlinearBlock.lastTrueBranchEvent, branchingExitNode);
-                }
-                else {
-                    //graphBuilder.addEpsilonEdge(nonlinearBlock.conditionEvent, previousConditionEvent);
-                    graphBuilder.addEpsilonEdge(nonlinearBlock.conditionEvent, branchingExitNode);
-                }
-                if (nonlinearBlock.hasFalseBranch()) {
-                    //graphBuilder.addFalseEdge(conditionEvent, branching.firstFalseBranchEvent);
-                    graphBuilder.addEpsilonEdge(nonlinearBlock.lastFalseBranchEvent, branchingExitNode);
-                }
-                if (nonlinearBlock.kind == NonlinearBlockKind.Loop) {
-                    NonlinearBlock loop = nonlinearBlock;
-                    assert loop.lastFalseBranchEvent == null: loop.lastFalseBranchEvent.toString();
-                    graphBuilder.addEpsilonEdge(loop.lastTrueBranchEvent, loop.conditionEvent);
-                    if (loop.hasContinueEvents()) {
-                        for (XEvent continueingEvent : loop.continueingEvents) {
-                            graphBuilder.addEpsilonEdge(continueingEvent, loop.conditionEvent);
-                        }
-                    }
-                    if (loop.hasBreakEvents()) {
-                        for (XEvent breakingEvent : loop.breakingEvents) {
-                            graphBuilder.addEpsilonEdge(breakingEvent, branchingExitNode);
-                        }
-                    }
-                }
-                else {
-                    assert !nonlinearBlock.hasBreakEvents();
-                    assert !nonlinearBlock.hasContinueEvents();
-                }
-
-                //previousConditionEvent = nonlinearBlock.conditionEvent;
-            }
-            readyNonlinearBlocks.clear();
         }
 
         previousEvent = nextEvent;
+    }
+
+
+    private void processNextLinearEvent(XEvent nextEvent) {
+        if (previousEvent != null) {
+            graphBuilder.addEpsilonEdge(previousEvent, nextEvent);
+        }
     }
 
     private XEventInfo createEventInfo() {
@@ -339,31 +484,14 @@ public class XProcessBuilder extends Builder<XProcess> {
 
     // to do: methodCall
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // -- BRANCHING + LOOPS --------------------------------------------------------------------------------------------
 
-    public void finishBranchDefinition() {
-        NonlinearBlock context = nonlinearStack.peek();
-        assert context.currentBranchKind != null;
-        switch (context.currentBranchKind) {
-            case True:
-                context.lastTrueBranchEvent = previousEvent;
-                break;
-            case False:
-                context.lastFalseBranchEvent = previousEvent;
-        }
-        context.currentBranchKind = null;
-        context.setState(ContextState.WaitingAdditionalCommand);
-    }
-
-    // -- BRANCHING ----------------------------------------------------------------------------------------------------
-
-    public void startBranchingBlockDefinition(NonlinearBlockKind type) {
-        nonlinearStack.push(new NonlinearBlock(type));
-        //stateStack.push(State.WaitingAdditionalCommand);
+    public void startNonlinearBlockDefinition(ContextKind kind) {
+        contextStack.push(new Context(kind));
     }
 
     public void startConditionDefinition() {
-        NonlinearBlock context = nonlinearStack.peek();
+        Context context = contextStack.peek();
         context.setState(ContextState.WaitingFirstConditionEvent);
     }
 
@@ -373,68 +501,75 @@ public class XProcessBuilder extends Builder<XProcess> {
                     + StringUtils.wrap(previousEvent.toString())
                     + " of type " + previousEvent.getClass().getSimpleName());
         }
-        NonlinearBlock context = nonlinearStack.peek();
+        Context context = contextStack.peek();
         context.setConditionEvent((XComputationEvent) previousEvent);
         context.setState(ContextState.WaitingAdditionalCommand);
     }
 
-    public void startTrueBranchDefinition() {
-        NonlinearBlock context = nonlinearStack.peek();
+    public void startThenBranchDefinition() {
+        Context context = contextStack.peek();
         assert context.state == ContextState.WaitingAdditionalCommand : context.state.name();
         context.setState(ContextState.WaitingFirstSubBlockEvent);
-        nonlinearStack.peek().currentBranchKind = BranchKind.True;
+        context.currentBranchKind = BranchKind.Then;
     }
 
-    public void startFalseBranchDefinition() {
-        NonlinearBlock context = nonlinearStack.peek();
+    public void startElseBranchDefinition() {
+        Context context = contextStack.peek();
         assert context.state == ContextState.WaitingAdditionalCommand : context.state.name();
         context.setState(ContextState.WaitingFirstSubBlockEvent);
-        nonlinearStack.peek().currentBranchKind = BranchKind.False;
+        context.currentBranchKind = BranchKind.Else;
     }
 
-    public void finishBranchingBlockDefinition() {
-        NonlinearBlock context = nonlinearStack.pop();
+    public void finishBranchDefinition() {
+        Context context = contextStack.peek();
+        assert context.currentBranchKind != null;
+        if (previousEvent != context.conditionEvent) {
+            switch (context.currentBranchKind) {
+                case Then:
+                    assert context.lastThenBranchEvent == null;
+                    context.lastThenBranchEvent = previousEvent;
+                    break;
+                case Else:
+                    assert context.lastElseBranchEvent == null;
+                    context.lastElseBranchEvent = previousEvent;
+                    break;
+            }
+        }
+        context.currentBranchKind = null;
+        context.setState(ContextState.WaitingAdditionalCommand);
+        previousEvent = null; //todo: check
+    }
+
+
+    public void finishNonlinearBlockDefinition() {
+        Context context = contextStack.pop();
         context.currentBranchKind = null;
         context.setState(ContextState.JustFinished);
-        readyNonlinearBlocks.add(context);
+        readyContexts.add(context);
+        previousEvent = null; //not to set too many epsilon jumps: e.g. `if (a) { while(b) do1(); } do2();`
     }
 
-    // -- LOOP ---------------------------------------------------------------------------------------------------------
+    public void processLoopBreakStatement() {
+        Context context = currentNearestLoopContext();
+        context.addBreakEvent(emitJumpEvent());
+        context.state = ContextState.JustJumped;
+    }
 
-    //public void startLoopDefinition() {
-    //    assert stateStack == State.WaitingNextLinearEvent: stateStack.name();
-    //    loopsStack.push(new NonlinearBlockInfo());
-    //    stateStack = State.WaitingAdditionalCommand;
-    //}
-    //
-    //public void startLoopBodyDefinition() {
-    //    assert stateStack == State.WaitingAdditionalCommand : stateStack.name();
-    //    stateStack = State.WaitingFirstLoopEvent;
-    //}
-    //
-    //public void processLoopContinueStatement() {
-    //    NonlinearBlockInfo currentContext = loopsStack.peek();
-    //    currentContext.addContinueEvent(previousEvent);
-    //    previousEvent = null;
-    //    stateStack = State.JustJumped;
-    //}
-    //
-    //public void processLoopBreakStatement() {
-    //    NonlinearBlockInfo currentContext = loopsStack.peek();
-    //    currentContext.addBreakEvent(previousEvent);
-    //    previousEvent = null;
-    //    stateStack = State.JustJumped;
-    //}
-    //
-    //public void finishLoopBodyDefinition() {
-    //    loopsStack.peek().setLastTrueBranchEvent(previousEvent);
-    //    readyLoops.add(loopsStack.pop());
-    //}
-    //
-    //public void finishLoopDefinition() {
-    //    stateStack = State.JustFinished;
-    //}
+    public void processLoopContinueStatement() {
+        Context context = currentNearestLoopContext();
+        context.addContinueEvent(emitJumpEvent());
+        context.state = ContextState.JustJumped;
+    }
 
     // =================================================================================================================
 
+    private Context currentNearestLoopContext() {
+        for (int i = contextStack.size() - 1; i >= 0; --i) {
+            Context context = contextStack.get(i);
+            if (context.kind == ContextKind.Loop) {
+                return context;
+            }
+        }
+        throw new XCompilerUsageError("Not found any loop contexts");
+    }
 }

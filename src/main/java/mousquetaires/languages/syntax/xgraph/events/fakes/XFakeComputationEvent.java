@@ -1,14 +1,15 @@
 package mousquetaires.languages.syntax.xgraph.events.fakes;
 
-import mousquetaires.languages.syntax.xgraph.events.XEventBase;
+import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
+import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
 import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
 import mousquetaires.utils.exceptions.NotSupportedException;
 
 
-public abstract class XFakeEvent extends XEventBase {
+public class XFakeComputationEvent extends XFakeEvent implements XComputationEvent {
 
-    public XFakeEvent(XEventInfo info) {
+    public XFakeComputationEvent(XEventInfo info) {
         super(info);
     }
 
@@ -18,7 +19,7 @@ public abstract class XFakeEvent extends XEventBase {
     }
 
     @Override
-    public String toString() {
-        return "FAKE_EVENT"; //TODO: there must be no fake events in the result graph
+    public XMemoryUnit.Bitness getBitness() {
+        throw new NotSupportedException();
     }
 }
