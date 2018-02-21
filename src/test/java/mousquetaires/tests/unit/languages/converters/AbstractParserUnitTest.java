@@ -1,4 +1,4 @@
-package mousquetaires.tests.unit.languages.parsers;
+package mousquetaires.tests.unit.languages.converters;
 
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
@@ -15,7 +15,7 @@ import java.util.List;
 
 public abstract class AbstractParserUnitTest extends AbstractUnitTest<YEntity> {
 
-    protected final String parsersDirectory = resourcesDirectory + "parsers/";
+    protected final String parsersDirectory = resourcesDirectory + "converters/";
 
     @Override
     protected List<YEntity> parseTestFile(String testFile) {

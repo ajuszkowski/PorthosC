@@ -1,11 +1,11 @@
-package mousquetaires.tests.unit.languages.parsers.c11;
+package mousquetaires.tests.unit.languages.converters.toytree.c11;
 
-import mousquetaires.tests.unit.languages.parsers.AbstractParserUnitTest;
+import mousquetaires.tests.unit.languages.converters.AbstractParserUnitTest;
 
 
 public abstract class C11ParseTest extends AbstractParserUnitTest {
 
-    protected final String rootDirectory = parsersDirectory + "c11/";
+    protected final String rootDirectory = parsersDirectory + "toytree/c11/";
 
     //protected void runParserTest(String file, YSyntaxTree expectedTree) {
     //    YSyntaxTree actualTree = runTest(file);
