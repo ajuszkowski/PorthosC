@@ -23,13 +23,13 @@ import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
 import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
 import mousquetaires.utils.StringUtils;
-import mousquetaires.utils.exceptions.ytree.YVisitorIllegalStateException;
+import mousquetaires.utils.exceptions.ytree.YtreeVisitorIllegalStateException;
 
 
 public abstract class YtreeVisitorStrictBase<T> implements YtreeVisitor<T> {
     @Override
     public T visit(YSyntaxTree node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     protected T visit(YEntity node) {
@@ -49,119 +49,119 @@ public abstract class YtreeVisitorStrictBase<T> implements YtreeVisitor<T> {
 
     @Override
     public T visit(YPreludeStatement node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YProcessStatement node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YPostludeStatement node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YVariableAssertion node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     // -- END OF Litmus-specific elements ------------------------------------------------------------------------------
 
     @Override
     public T visit(YConstant node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YIndexerExpression node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YMemberAccessExpression node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YInvocationExpression node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YFunctionDefinition node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YUnaryExpression node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YBinaryExpression node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YTernaryExpression node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YVariableRef node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YType node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YAssignmentExpression node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YBranchingStatement node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YCompoundStatement node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YLinearStatement node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YWhileLoopStatement node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YVariableDeclarationStatement node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YJumpStatement node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YMethodSignature node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     @Override
     public T visit(YParameter node) {
-        throw new YVisitorIllegalStateException(getExceptionMessage(node));
+        throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 
     private String getExceptionMessage(YEntity node) {

@@ -1,16 +1,44 @@
-//void P(int in) {
-//    if (x == 1) {
-//        if (y == 2) {
-//            if (z == 3) {
-//                a = 4;
-//            }
-//        }
-//        else {
-//            b = 5;
-//        }
-//    }
-//    else {}
-//}
+Y() {
+    if (x == 1) {
+        a = 2;
+        while (3) {
+            if (a == 4) {
+                break;
+            }
+            else {
+                continue;
+            }
+            if (b) {
+                if (c) {
+                    if (d);
+                    b = 1;
+                    while (c);
+                }
+                else if (d) {
+                    break;
+                }
+            }
+            e = 4;
+        }
+    }
+
+    if (100) {}
+    x;
+}
+
+void P(int in) {
+    if (x == 1) {
+        if (y == 2) {
+            if (z == 3) {
+                a = 4;
+            }
+        }
+        else {
+            b = 5;
+        }
+    }
+    else {}
+}
 
 void X() {
     if (1) {

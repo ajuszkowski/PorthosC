@@ -71,7 +71,7 @@ public final class XMemoryManager {
     //    if (isSharedMemoryDeclared(name)) {
     //        throw new MemoryUnitDoubleDeclarationError(name, false);
     //    }
-    //    return newSharedMemory(name, type);
+    //    return newSharedMemoryUnit(name, type);
     //}
 
     //private String defineMemory(String postProcessId, XType returnType, boolean isLocal) {
@@ -100,7 +100,7 @@ public final class XMemoryManager {
         return location;
     }
 
-    public XLocation newSharedMemory(String name) {
+    public XLocation newSharedMemoryUnit(String name) {
         XLocation location = new XLocation(name, XMemoryUnitBase.Bitness.bit16); //todo:bitness
         sharedLocations.put(name, location);
         return location;

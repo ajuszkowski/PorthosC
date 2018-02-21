@@ -86,10 +86,10 @@ public class XProgramBuilder extends Builder<XProgram> {
     //public XBinaryOperationEvent emitComputationEvent(XOperator operator, XMemoryUnit leftOperand, XMemoryUnit rightOperand) {
     //    XRegister left = leftOperand instanceof XRegister
     //            ? (XRegister) leftOperand
-    //            : copyToLocalMemory(leftOperand);
+    //            : copyToLocalMemoryIfNecessary(leftOperand);
     //    XRegister right = rightOperand instanceof XRegister
     //            ? (XRegister) rightOperand
-    //            : copyToLocalMemory(rightOperand);
+    //            : copyToLocalMemoryIfNecessary(rightOperand);
     //    return currentProcess.emitComputationEvent(operator, left, right);
     //}
 
@@ -125,7 +125,7 @@ public class XProgramBuilder extends Builder<XProgram> {
     //            return currentProcess.emitMemoryEvent(destinationShared, sourceLocal);
     //        }
     //        if (sourceShared != null) {
-    //            XRegister tempLocal = copyToLocalMemory(sourceShared);
+    //            XRegister tempLocal = copyToLocalMemoryIfNecessary(sourceShared);
     //            return currentProcess.emitMemoryEvent(destinationShared, tempLocal);
     //        }
     //    }

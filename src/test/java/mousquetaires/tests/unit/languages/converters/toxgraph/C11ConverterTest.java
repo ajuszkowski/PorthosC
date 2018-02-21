@@ -1,7 +1,5 @@
 package mousquetaires.tests.unit.languages.converters.toxgraph;
 
-import com.microsoft.z3.BoolExpr;
-import mousquetaires.languages.processors.encoders.xgraph.tosmt.XProgramToZ3Encoder;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.tests.unit.languages.converters.AbstractConverterUnitTest;
 import mousquetaires.utils.exceptions.NotImplementedException;
@@ -14,9 +12,9 @@ public abstract class C11ConverterTest extends AbstractConverterUnitTest {
 
     protected void runParserTest(String file, XProgram expected) {
         XProgram actual = runTest(file);
-        XProgramToZ3Encoder encoder = new XProgramToZ3Encoder();
+        //XProgramToZ3Encoder encoder = new XProgramToZ3Encoder();
 
-        BoolExpr result = encoder.encode(actual);
+        //BoolExpr result = encoder.encode(actual);
 
         //assertEquals("preludes:", expected.getPrelude(), actual.getPrelude());
 

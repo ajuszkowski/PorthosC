@@ -95,9 +95,9 @@ public class XProcessBuilder extends Builder<XProcess> {
 
     // --
 
-    public XLocalMemoryUnit copyToLocalMemory(XMemoryUnit memoryUnit) {
+    public XLocalMemoryUnit copyToLocalMemoryIfNecessary(XMemoryUnit memoryUnit) {
         if (memoryUnit instanceof XLocation) {
-            copyToLocalMemory((XLocation) memoryUnit);
+            return copyToLocalMemory((XLocation) memoryUnit);
         }
         else if (memoryUnit instanceof XLocalMemoryUnit) { // also here: XComputationEvent
             return (XLocalMemoryUnit) memoryUnit;
@@ -112,7 +112,7 @@ public class XProcessBuilder extends Builder<XProcess> {
         return tempLocal;
     }
 
-    public XLocalMemoryUnit copyToLocalMemory(XEvent event) {
+    public XLocalMemoryUnit copyToLocalMemoryIfNecessary(XEvent event) {
         if (event instanceof XComputationEvent) {
             return (XComputationEvent) event;
         }

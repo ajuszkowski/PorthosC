@@ -4,7 +4,6 @@ import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
 import mousquetaires.languages.syntax.ytree.expressions.YConstant;
-import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YTernaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
@@ -41,20 +40,6 @@ public abstract class YtreeVisitorBase<T> implements YtreeVisitor<T> {
         visitChildren(node);
         throw new IllegalStateException(getExceptionMessage(node));
     }
-
-
-    protected T visit(YEntity node) {
-        return node.accept(this);
-    }
-
-    protected T visit(YExpression node) {
-        return node.accept(this);
-    }
-
-    protected T visit(YStatement node) {
-        return node.accept(this);
-    }
-
 
     // -- Litmus-specific elements: ------------------------------------------------------------------------------------
 
