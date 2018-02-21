@@ -1,8 +1,8 @@
 package mousquetaires.tests.unit.languages.converters.toxgraph;
 
-import com.google.common.collect.ImmutableList;
+import com.microsoft.z3.BoolExpr;
+import mousquetaires.languages.processors.encoders.xgraph.tosmt.XProgramToZ3Encoder;
 import mousquetaires.languages.syntax.xgraph.XProgram;
-import mousquetaires.languages.syntax.xgraph.processes.XProcess;
 import mousquetaires.tests.unit.languages.converters.AbstractConverterUnitTest;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
@@ -14,10 +14,12 @@ public abstract class C11ConverterTest extends AbstractConverterUnitTest {
 
     protected void runParserTest(String file, XProgram expected) {
         XProgram actual = runTest(file);
+        XProgramToZ3Encoder encoder = new XProgramToZ3Encoder();
+
+        BoolExpr result = encoder.encode(actual);
 
         //assertEquals("preludes:", expected.getPrelude(), actual.getPrelude());
 
-        ImmutableList<XProcess> actualProcesses = actual.getProcesses();
         throw new NotImplementedException();
         //ImmutableList<XProcess> expectedProcesses = expected.getProcesses();
         //assertEquals("processes number does mismatch:", expectedProcesses.size(), actualProcesses.size());

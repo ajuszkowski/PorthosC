@@ -10,13 +10,13 @@ import mousquetaires.languages.syntax.xgraph.XProgramBuilder;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XOperator;
+import mousquetaires.languages.syntax.xgraph.events.computation.operators.XOperator;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLocalMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.processes.contexts.ContextKind;
+import mousquetaires.languages.syntax.xgraph.processes.contexts.XBlockContextKind;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
@@ -217,7 +217,7 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
 
     @Override
     public XEvent visit(YBranchingStatement node) {
-        program.currentProcess.startNonlinearBlockDefinition(ContextKind.Branching);
+        program.currentProcess.startNonlinearBlockDefinition(XBlockContextKind.Branching);
 
         program.currentProcess.startConditionDefinition();
         visit(node.getCondition());
@@ -241,7 +241,7 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
 
     @Override
     public XEvent visit(YWhileLoopStatement node) {
-        program.currentProcess.startNonlinearBlockDefinition(ContextKind.Loop);
+        program.currentProcess.startNonlinearBlockDefinition(XBlockContextKind.Loop);
 
         program.currentProcess.startConditionDefinition();
         visit(node.getCondition());

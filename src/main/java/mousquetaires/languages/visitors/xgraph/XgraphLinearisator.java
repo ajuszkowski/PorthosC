@@ -1,0 +1,64 @@
+package mousquetaires.languages.visitors.xgraph;
+
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
+import mousquetaires.languages.syntax.xgraph.processes.XProcess;
+import mousquetaires.utils.patterns.Builder;
+
+import java.util.*;
+
+
+public class XgraphLinearisator extends Builder<Queue<XEvent>> {
+    private final XProcess process;
+
+    private final Deque<XEvent> linearised;
+    private final Set<XEvent> tempMarks;
+    private final Set<XEvent> permMarks;
+    private final Queue<XEvent> nonVisited;
+
+    public XgraphLinearisator(XProcess process) {
+        this.process = process;
+        this.linearised = new ArrayDeque<>();
+        this.tempMarks = new HashSet<>();
+        this.permMarks = new HashSet<>();
+        this.nonVisited = new ArrayDeque<>();
+    }
+
+    @Override
+    public Queue<XEvent> build() {
+        nonVisited.add(process.entryEvent);
+        while (!nonVisited.isEmpty()) {
+            XEvent event = nonVisited.remove();
+            processDfsLinearisation(event);
+        }
+        assert tempMarks.isEmpty(): tempMarks.size();
+        assert permMarks.size() == linearised.size();
+        return linearised;
+    }
+
+    private void processDfsLinearisation(XEvent current) {
+        if (permMarks.contains(current)) {
+            return;
+        }
+        assert !tempMarks.contains(current); //not a dag in this case
+        tempMarks.add(current);
+
+        XEvent nextLinear = process.nextEventMap.get(current);
+        if (nextLinear != null) {
+            processDfsLinearisation(nextLinear);
+        }
+        else if (current != process.exitEvent) {
+            XComputationEvent currentComputationEvent = (XComputationEvent) current;
+            XEvent nextThen = process.thenBranchingJumpsMap.get(currentComputationEvent);
+            XEvent nextElse = process.elseBranchingJumpsMap.get(currentComputationEvent);
+            assert nextThen != null;
+            assert nextElse != null;
+            nonVisited.add(nextElse);
+            processDfsLinearisation(nextThen);
+        }
+
+        tempMarks.remove(current);
+        permMarks.add(current);
+        linearised.addFirst(current); //todo: check, should add to the head (index=0)
+    }
+}

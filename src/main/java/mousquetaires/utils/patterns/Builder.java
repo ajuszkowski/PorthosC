@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import mousquetaires.utils.exceptions.BuilderException;
 
+import java.util.List;
+
 
 public abstract class Builder<T> {
 
@@ -16,6 +18,12 @@ public abstract class Builder<T> {
             throw new BuilderException(getAlreadyFinishedMessage());
         }
         isBuilt = true;
+    }
+
+    // TODO : check this method and re-implement other builders
+    protected <S> void add(S element, List<S> collection) {
+        throwIfAlreadyBuilt();
+        collection.add(element);
     }
 
     // TODO : check this method and re-implement other builders

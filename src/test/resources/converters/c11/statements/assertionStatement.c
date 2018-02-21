@@ -15,20 +15,17 @@
 void X() {
     if (1) {
         a = 2;
-        while (3) {
-            if (101) ;
-            while (0) ;
-            if (4) {
-                break;
+        if (3) {
+            if (a == 4) {
+                b = 3;
             }
             else {
-                continue;
+                a = b;
             }
-            while (4) {
-                b = 3;
-                if (6) break;
+            if (b) {
+                c = d;
             }
-            c = 4;
+            e = 4;
         }
     }
 
