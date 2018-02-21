@@ -6,6 +6,7 @@ import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.YtreeUtils;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 
 public class YFunctionDefinition implements YDefinition {
@@ -41,5 +42,23 @@ public class YFunctionDefinition implements YDefinition {
     @Override
     public YFunctionDefinition copy() {
         return new YFunctionDefinition(body);
+    }
+
+    @Override
+    public String toString() {
+        return "<method_"+hashCode()+"_signature>"  + body;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof YFunctionDefinition)) return false;
+        YFunctionDefinition that = (YFunctionDefinition) o;
+        return Objects.equals(getBody(), that.getBody());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getBody());
     }
 }

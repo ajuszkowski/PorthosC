@@ -1,4 +1,4 @@
-package mousquetaires.languages.syntax.ytree.expressions;
+package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;

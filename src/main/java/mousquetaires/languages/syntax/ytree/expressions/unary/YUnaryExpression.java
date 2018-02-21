@@ -6,6 +6,7 @@ import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
 import mousquetaires.utils.YtreeUtils;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 
 public abstract class YUnaryExpression extends YMultiExpression {
@@ -35,5 +36,19 @@ public abstract class YUnaryExpression extends YMultiExpression {
 
     public String toString() {
         return "" + getKind() + getExpression();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof YUnaryExpression)) return false;
+        if (!super.equals(o)) return false;
+        YUnaryExpression that = (YUnaryExpression) o;
+        return Objects.equals(getKind(), that.getKind());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getKind());
     }
 }

@@ -18,7 +18,7 @@ public class YParserNotImplementedException extends YParserException {
 
     private static String getErrorMessage(ParserRuleContext context) {
         return context.getClass().getSimpleName() +
-                ", not supported syntax: " + StringUtils.wrap(AntlrUtils.getText(context)) +
+                ", (yet) not supported syntax: " + StringUtils.wrap(AntlrUtils.getText(context)) +
                 ".\nNon-null children: " + getNonNullChildrenText(context);
     }
 

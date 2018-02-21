@@ -50,4 +50,9 @@ public class YMockType implements YType {
     public String toString() {
         return "mock_type";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof YMockType;
+    }
 }

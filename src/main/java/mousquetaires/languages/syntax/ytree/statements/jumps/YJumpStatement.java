@@ -6,6 +6,7 @@ import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.YtreeUtils;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 
 // NOTE: immutability of this class is emulated manually!
@@ -80,5 +81,19 @@ public class YJumpStatement extends YStatement {
     @Override
     public String toString() {
         return kind.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof YJumpStatement)) return false;
+        YJumpStatement that = (YJumpStatement) o;
+        return getKind() == that.getKind() &&
+                Objects.equals(getJumpLabel(), that.getJumpLabel());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getKind(), getJumpLabel());
     }
 }

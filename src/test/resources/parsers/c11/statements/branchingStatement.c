@@ -1,6 +1,8 @@
-if (x == 1) {
-    y = 2;
-}
-else {
-    y = 3;
+void method() {
+    if (x == 1) {
+        y = 2;
+    }
+    else {
+        y = 3;
+    }
 }

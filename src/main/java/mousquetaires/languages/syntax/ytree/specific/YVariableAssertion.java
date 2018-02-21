@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.ytree.specific;
 
 import mousquetaires.languages.syntax.ytree.expressions.YMemoryLocation;
-import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
 
 

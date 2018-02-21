@@ -1,7 +1,7 @@
 package mousquetaires.tests.unit.languages.parsers.c11.statements;
 
-import mousquetaires.languages.syntax.ytree.expressions.YConstant;
-import mousquetaires.languages.syntax.ytree.expressions.YVariableRef;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
 import mousquetaires.languages.syntax.ytree.types.YMockType;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.tests.unit.languages.parsers.c11.C11ParseTest;

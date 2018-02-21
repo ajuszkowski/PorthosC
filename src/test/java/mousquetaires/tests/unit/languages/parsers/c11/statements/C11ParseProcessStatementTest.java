@@ -8,12 +8,14 @@ import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.statements.YVariableDeclarationStatement;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
 public class C11ParseProcessStatementTest extends C11ParseStatementTest {
 
     @Test
+    @Ignore("process statements syntax is temporarily not supported")
     public void test_processStatement() {
         YSyntaxTree expected = new YSyntaxTree(
                 new YProcessStatement("1", new YCompoundStatement(true,

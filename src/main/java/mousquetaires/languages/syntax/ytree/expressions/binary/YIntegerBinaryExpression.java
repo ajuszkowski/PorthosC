@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.expressions.binary;
 
-import mousquetaires.languages.syntax.ytree.expressions.YConstant;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 

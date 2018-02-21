@@ -1,3 +1,5 @@
-int x = 1;
+void method() {
+    int x = 1;
 
-int y = fun(x);
+    int y = fun(x);
+}

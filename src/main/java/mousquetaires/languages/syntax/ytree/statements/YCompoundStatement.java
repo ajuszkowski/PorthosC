@@ -13,12 +13,16 @@ public class YCompoundStatement extends YStatement {
     private final boolean hasBraces; // defines whether sequence of statements has surrounding braces '{' '}'
     private final ImmutableList<YStatement> statements; // <- recursive
 
+    public YCompoundStatement(YStatement... statements) {
+        this(true, statements);
+    }
+
     public YCompoundStatement(boolean hasBraces, YStatement... statements) {
         this(hasBraces, ImmutableList.copyOf(statements));
     }
 
     public YCompoundStatement(boolean hasBraces, ImmutableList<YStatement> statements) {
-        this(newLabel(), hasBraces, statements);
+        this("", hasBraces, statements);
     }
 
     private YCompoundStatement(String label, boolean hasBraces, ImmutableList<YStatement> statements) {
@@ -76,11 +80,12 @@ public class YCompoundStatement extends YStatement {
         if (this == o) return true;
         if (!(o instanceof YCompoundStatement)) return false;
         YCompoundStatement that = (YCompoundStatement) o;
-        return Objects.equals(getStatements(), that.getStatements());
+        return hasBraces == that.hasBraces &&
+                Objects.equals(getStatements(), that.getStatements());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getStatements());
+        return Objects.hash(hasBraces, getStatements());
     }
 }

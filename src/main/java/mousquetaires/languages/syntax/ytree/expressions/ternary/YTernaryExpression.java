@@ -1,5 +1,6 @@
-package mousquetaires.languages.syntax.ytree.expressions;
+package mousquetaires.languages.syntax.ytree.expressions.ternary;
 
+import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.utils.YtreeUtils;
@@ -7,7 +8,7 @@ import mousquetaires.utils.YtreeUtils;
 import java.util.Iterator;
 import java.util.Objects;
 
-
+// TODO: inherit from multi expression and use in parser
 public class YTernaryExpression implements YExpression {
     private final YExpression condition;
     private final YExpression trueExpression;

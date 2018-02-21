@@ -1,6 +1,7 @@
-package mousquetaires.languages.syntax.ytree.expressions;
+package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
+import mousquetaires.languages.syntax.ytree.expressions.YMemoryLocation;
 import mousquetaires.languages.syntax.ytree.types.YMockType;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.visitors.ytree.YtreeVisitor;
@@ -94,31 +95,13 @@ public class YConstant implements YMemoryLocation {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof YConstant)) return false;
-        YConstant that = (YConstant) o;
-        return Objects.equals(value, that.value) &&
-                Objects.equals(type, that.type);
+        YConstant yConstant = (YConstant) o;
+        return Objects.equals(getValue(), yConstant.getValue()) &&
+                Objects.equals(getType(), yConstant.getType());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value, type);
+        return Objects.hash(getValue(), getType());
     }
-
-    //public ArithExpr toZ3(MapSSA map, Context ctx) {
-    //    return ctx.mkInt(bitness);
-    //}
-    //
-    //public Set<Register> getRegs() {
-    //    return new HashSet<Register>();
-    //}
-
-    // boolean constant:
-        //public BoolExpr toZ3(MapSSA map, Context ctx) {
-    //    //    if(bitness) {
-    //    //        return ctx.mkTrue();
-    //    //    }
-    //    //    else {
-    //    //        return ctx.mkFalse();
-    //    //    }
-    //    //}
 }
