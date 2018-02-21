@@ -3,21 +3,27 @@ package mousquetaires.languages.syntax.xgraph.processes;
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
+import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
 
 import java.util.Map;
 
 
 public class XProcess implements XEntity {
 
+    public final XEntryEvent entryEvent;
+    public final XExitEvent exitEvent;
     public final String processId;
-    private final ImmutableList<XEvent> events;
-    private final Map<XEvent, XEvent> nextEventMap;
-    private final Map<XComputationEvent, XEvent> thenBranchingJumpsMap; //goto, if(true), while(true)
-    private final Map<XComputationEvent, XEvent> elseBranchingJumpsMap; //if(false)
-
+    /*private*/public final ImmutableList<XEvent> events;
+    /*private*/public final Map<XEvent, XEvent> nextEventMap;
+    /*private*/public final Map<XComputationEvent, XEvent> thenBranchingJumpsMap; //goto, if(true), while(true)
+    /*private*/public final Map<XComputationEvent, XEvent> elseBranchingJumpsMap; //if(false)
 
     XProcess(XProcessBuilder builder) {
+        this.entryEvent = builder.graphBuilder.entryEvent;
+        this.exitEvent = builder.graphBuilder.exitEvent;
         this.processId = builder.getProcessId();
         this.events = builder.graphBuilder.buildEvents();
         this.nextEventMap = builder.graphBuilder.buildNextEventMap();
@@ -29,7 +35,10 @@ public class XProcess implements XEntity {
         return processId;
     }
 
-
+    @Override
+    public <T> T accept(XgraphVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 
     //public int condLevel;
     // Main thread where this XEvent, Seq, etc belongs

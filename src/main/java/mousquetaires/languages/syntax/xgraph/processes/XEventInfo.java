@@ -1,8 +1,5 @@
 package mousquetaires.languages.syntax.xgraph.processes;
 
-import java.util.Objects;
-
-
 public class XEventInfo {
 
     /** identifier of the process that event comes from */
@@ -24,34 +21,16 @@ public class XEventInfo {
         this.stamp = newStamp();
     }
 
-    public String getProcessId() {
-        return processId;
+    // e.g.: p1_e32
+    public String getEventId() {
+        return processId + "_e" + stamp;
     }
 
-    public int getStamp() {
-        return stamp;
-    }
-
-    public static int getStampGlobalCounter() {
-        return stampGlobalCounter;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof XEventInfo)) return false;
-        XEventInfo that = (XEventInfo) o;
-        return getProcessId() == that.getProcessId() &&
-                getStamp() == that.getStamp();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getProcessId(), getStamp());
-    }
 
     private static int stampGlobalCounter = 0;
     private static int newStamp() {
         return stampGlobalCounter++;
     }
+
+    //todo: hashcode
 }

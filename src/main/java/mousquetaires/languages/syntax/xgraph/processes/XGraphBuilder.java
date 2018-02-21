@@ -14,6 +14,8 @@ import java.util.Set;
 
 public class XGraphBuilder {
 
+    /*private*/ XEntryEvent entryEvent;
+    /*private*/ XExitEvent exitEvent;
     /*private*/ final ImmutableList.Builder<XEvent> events;
     /*private*/ final Map<XEvent, XEvent> nextEventMap; // TODO: immutable map? check this
     /*private*/ final Map<XComputationEvent, XEvent> thenBranchingJumpsMap;
@@ -26,15 +28,25 @@ public class XGraphBuilder {
         elseBranchingJumpsMap = new HashMap<>();
     }
 
+    public void setEntryEvent(XEntryEvent event) {
+        assert entryEvent == null: entryEvent;
+        entryEvent = event;
+    }
+
+    public void setExitEvent(XExitEvent event) {
+        assert exitEvent == null: exitEvent;
+        exitEvent = event;
+    }
+
     public void addEvent(XEvent event) {
         verifyEvent(event);
         events.add(event);
     }
 
-    public void addEpsilonEdge(XEvent from, XEvent to) {
+    public void addLinearEdge(XEvent from, XEvent to) {
         verifyEvent(from);
         verifyEvent(to);
-        assert from != to: "attempt to add an epsilon edge to the same node " + from;
+        assert from != to: "attempt to add an linear edge to the same node " + from;
         nextEventMap.put(from, to);
     }
 
