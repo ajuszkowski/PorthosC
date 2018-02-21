@@ -1,6 +1,6 @@
 package mousquetaires.tests.unit.languages.parsers.c11.statements;
 
-import mousquetaires.languages.syntax.ytree.YSyntaxTree;
+import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
@@ -8,6 +8,8 @@ import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.statements.YVariableDeclarationStatement;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.List;
 
 
 public class C11ParsePrimitiveTypeDeclarationTest extends C11ParseStatementTest {
@@ -17,7 +19,7 @@ public class C11ParsePrimitiveTypeDeclarationTest extends C11ParseStatementTest 
     @Test
     @Ignore("Yet initializers are not implemented")
     public void test_primitiveTypeDeclaration_initialisation() {
-        YSyntaxTree expectedTree = new YSyntaxTree(
+        List<YEntity> expected = buildResultList(
                 new YFunctionDefinition(new YCompoundStatement(true,
                         new YVariableDeclarationStatement(typeInt, variableA), // 'int a'
                         new YLinearStatement(new YAssignmentExpression(variableA, constant1)), // 'a = 1;'
@@ -32,12 +34,12 @@ public class C11ParsePrimitiveTypeDeclarationTest extends C11ParseStatementTest 
                         new YVariableDeclarationStatement(typeInt, variableC), // 'int c;'
                         new YLinearStatement(new YAssignmentExpression(variableC, constant3)) // 'c = 3;'
                 )));
-        runParserTest(primitiveDirectory + "/variableDeclarationInitialisation.c", expectedTree);
+        run(primitiveDirectory + "/variableDeclarationInitialisation.c", expected);
     }
 
     @Test
     public void test_primitiveTypeDeclaration() {
-        YSyntaxTree expectedTree = new YSyntaxTree(
+        List<YEntity> expected = buildResultList(
                 new YFunctionDefinition(new YCompoundStatement(
                         new YVariableDeclarationStatement(typeInt, variableX),
                         //new YVariableDeclarationStatement(typeInt.withPointerLevel(1), variableX),
@@ -64,7 +66,7 @@ public class C11ParsePrimitiveTypeDeclarationTest extends C11ParseStatementTest 
                         //
                         new YVariableDeclarationStatement(typeVoidPointer, variableX)
                 )));
-        runParserTest(primitiveDirectory + "/primitiveTypeDeclaration.c", expectedTree);
+        run(primitiveDirectory + "/primitiveTypeDeclaration.c", expected);
     }
 
 }
