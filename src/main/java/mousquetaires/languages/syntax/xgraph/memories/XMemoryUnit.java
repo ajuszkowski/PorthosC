@@ -5,6 +5,8 @@ import mousquetaires.languages.syntax.xgraph.XEntity;
 
 public interface XMemoryUnit extends XEntity {
 
+    String getName();
+
     Bitness getBitness();
 
     enum Bitness {

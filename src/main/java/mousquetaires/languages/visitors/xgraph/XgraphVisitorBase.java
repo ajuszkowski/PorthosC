@@ -1,5 +1,6 @@
 package mousquetaires.languages.visitors.xgraph;
 
+import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperationEvent;
@@ -13,90 +14,102 @@ import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XLocation;
 import mousquetaires.languages.syntax.xgraph.memories.XRegister;
-import mousquetaires.utils.exceptions.NotImplementedException;
+import mousquetaires.languages.syntax.xgraph.processes.XProcess;
+import mousquetaires.utils.exceptions.encoding.XEncoderIllegalStateException;
 
 
 public abstract class XgraphVisitorBase<T> implements XgraphVisitor<T> {
 
-    protected T visit(XEvent node) {
-        return node.accept(this);
+    // abstract entities:
+    protected final T visit(XEvent entity) {
+        return entity.accept(this);
     }
-    protected T visit(XMemoryEvent node)  {
-        return node.accept(this);
+    protected final T visit(XMemoryEvent entity)  {
+        return entity.accept(this);
     }
-    protected T visit(XSharedMemoryEvent node)  {
-        return node.accept(this);
+    protected final T visit(XSharedMemoryEvent entity)  {
+        return entity.accept(this);
     }
-    protected T visit(XLocalMemoryEvent node)  {
-        return node.accept(this);
+    protected final T visit(XLocalMemoryEvent entity)  {
+        return entity.accept(this);
     }
-    protected T visit(XComputationEvent node)  {
-        return node.accept(this);
+    protected final T visit(XComputationEvent entity)  {
+        return entity.accept(this);
     }
-    protected T visit(XControlFlowEvent node)  {
-        return node.accept(this);
+    protected final T visit(XControlFlowEvent entity)  {
+        return entity.accept(this);
     }
-    protected T visit(XBarrierEvent node)  {
-        return node.accept(this);
-    }
-
-    @Override
-    public T visit(XRegister node) {
-        throw new NotImplementedException();
+    protected final T visit(XBarrierEvent entity)  {
+        return entity.accept(this);
     }
 
     @Override
-    public T visit(XLocation node) {
-        throw new NotImplementedException();
+    public T visit(XProgram entity) {
+        throw new XEncoderIllegalStateException();
     }
 
     @Override
-    public T visit(XConstant node) {
-        throw new NotImplementedException();
+    public T visit(XProcess entity) {
+        throw new XEncoderIllegalStateException();
     }
 
     @Override
-    public T visit(XNullaryComputationEvent node) {
-        throw new NotImplementedException();
+    public T visit(XRegister entity) {
+        throw new XEncoderIllegalStateException();
     }
 
     @Override
-    public T visit(XUnaryOperationEvent node) {
-        throw new NotImplementedException();
+    public T visit(XLocation entity) {
+        throw new XEncoderIllegalStateException();
     }
 
     @Override
-    public T visit(XBinaryOperationEvent node) {
-        throw new NotImplementedException();
+    public T visit(XConstant entity) {
+        throw new XEncoderIllegalStateException();
     }
 
     @Override
-    public T visit(XRegisterMemoryEvent node) {
-        throw new NotImplementedException();
+    public T visit(XNullaryComputationEvent event) {
+        throw new XEncoderIllegalStateException();
     }
 
     @Override
-    public T visit(XStoreMemoryEvent node) {
-        throw new NotImplementedException();
+    public T visit(XUnaryOperationEvent event) {
+        throw new XEncoderIllegalStateException();
     }
 
     @Override
-    public T visit(XLoadMemoryEvent node) {
-        throw new NotImplementedException();
+    public T visit(XBinaryOperationEvent event) {
+        throw new XEncoderIllegalStateException();
     }
 
     @Override
-    public T visit(XMethodCallEvent node) {
-        throw new NotImplementedException();
+    public T visit(XRegisterMemoryEvent event) {
+        throw new XEncoderIllegalStateException();
+    }
+
+    @Override
+    public T visit(XStoreMemoryEvent event) {
+        throw new XEncoderIllegalStateException();
+    }
+
+    @Override
+    public T visit(XLoadMemoryEvent event) {
+        throw new XEncoderIllegalStateException();
+    }
+
+    @Override
+    public T visit(XMethodCallEvent event) {
+        throw new XEncoderIllegalStateException();
     }
 
     //@Override
-    //public T visit(XBranchingEvent node) {
-    //    throw new NotImplementedException();
+    //public T visit(XBranchingEvent event) {
+    //    throw new XEncoderIllegalStateException();
     //}
 
     @Override
-    public T visit(XJumpEvent node) {
-        throw new NotImplementedException();
+    public T visit(XJumpEvent event) {
+        throw new XEncoderIllegalStateException();
     }
 }

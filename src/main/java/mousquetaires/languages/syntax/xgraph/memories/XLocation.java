@@ -1,13 +1,16 @@
 package mousquetaires.languages.syntax.xgraph.memories;
 
+import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
+
+
 public class XLocation extends XMemoryUnitBase implements XSharedMemoryUnit {
 
     XLocation(String name, Bitness bitness) {
-        super(name, bitness);
+        super("l_" + name, bitness);
     }
 
     @Override
-    public String toString() {
-        return "(shared)" + super.toString();
+    public <T> T accept(XgraphVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

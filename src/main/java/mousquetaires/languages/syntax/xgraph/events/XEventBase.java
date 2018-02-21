@@ -28,4 +28,10 @@ public abstract class XEventBase implements XEvent {
     //public XEvent getNextEvent() {
     //    return nextEvent;
     //}
+
+
+    @Override
+    public String getUniqueId() {
+        return getInfo().getEventId();
+    }
 }

@@ -35,4 +35,9 @@ public class XStoreMemoryEvent extends XMemoryEventBase implements XSharedMemory
     public String toString() {
         return getDestination() + ":=store(" + getSource() + /*", " + memoryOrder +*/ ")";
     }
+
+    @Override
+    public String getUniqueId() {
+        return super.getUniqueId() + "_store";
+    }
 }

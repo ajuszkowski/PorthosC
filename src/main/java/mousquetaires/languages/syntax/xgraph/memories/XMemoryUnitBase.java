@@ -13,6 +13,7 @@ public abstract class XMemoryUnitBase implements XMemoryUnit {
         this.bitness = bitness;
     }
 
+    @Override
     public String getName() {
         return name;
     }

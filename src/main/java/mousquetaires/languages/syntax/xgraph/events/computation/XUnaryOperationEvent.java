@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.xgraph.events.computation;
 
+import mousquetaires.languages.syntax.xgraph.events.computation.operators.XOperator;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
 import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
@@ -26,5 +27,10 @@ public class XUnaryOperationEvent extends XNullaryComputationEvent {
     @Override
     public String toString() {
         return "eval(" + getOperator() + " " + getFirstOperand() + ")";
+    }
+
+    @Override
+    public String getUniqueId() {
+        return super.getUniqueId() + "_unop";
     }
 }

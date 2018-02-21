@@ -27,4 +27,9 @@ public class XNullaryComputationEvent extends XComputationEventBase {
     public String toString() {
         return "eval(" + getFirstOperand() + ")";
     }
+
+    @Override
+    public String getUniqueId() {
+        return super.getUniqueId() + "_nulop";
+    }
 }

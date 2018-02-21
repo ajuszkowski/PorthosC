@@ -8,6 +8,8 @@ import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
 public interface XEvent extends XEntity {
     XEventInfo getInfo();
 
+    String getUniqueId();
+
     //void setNextEvent(XEvent next);
     //
     //XEvent getNextEvent();

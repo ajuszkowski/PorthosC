@@ -38,4 +38,9 @@ public class XLoadMemoryEvent extends XMemoryEventBase implements XSharedMemoryE
     public String toString() {
         return getDestination() + ":=load(" + getSource() /*+ ", " + memoryOrder*/ + ")";
     }
+
+    @Override
+    public String getUniqueId() {
+        return super.getUniqueId() + "_load";
+    }
 }

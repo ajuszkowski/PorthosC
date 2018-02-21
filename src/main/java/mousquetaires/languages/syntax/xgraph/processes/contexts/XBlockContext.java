@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Context {
+public class XBlockContext {
     /*private*/public XEvent entryEvent;
 
-    /*private*/public final ContextKind kind;
+    /*private*/public final XBlockContextKind kind;
     /*private*/public XProcessBuilder.ContextState state;
     /*private*/public XProcessBuilder.BranchKind currentBranchKind;
 
@@ -26,7 +26,7 @@ public class Context {
     /*private*/public List<XEvent> continueingEvents;
     /*private*/public List<XEvent> breakingEvents;
 
-    public Context(ContextKind kind) {
+    public XBlockContext(XBlockContextKind kind) {
         this.kind = kind;
     }
 

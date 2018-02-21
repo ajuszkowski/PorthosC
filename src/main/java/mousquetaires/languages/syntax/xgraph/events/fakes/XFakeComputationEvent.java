@@ -14,6 +14,11 @@ public class XFakeComputationEvent extends XFakeEvent implements XComputationEve
     }
 
     @Override
+    public String getName() {
+        return "fakecomp" + getInfo().getEventId();
+    }
+
+    @Override
     public <T> T accept(XgraphVisitor<T> visitor) {
         throw new NotSupportedException();
     }

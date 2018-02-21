@@ -1,4 +1,4 @@
-package mousquetaires.languages.syntax.xgraph.events.computation;
+package mousquetaires.languages.syntax.xgraph.events.computation.operators;
 
 public enum XOperator {
     // logical operators:

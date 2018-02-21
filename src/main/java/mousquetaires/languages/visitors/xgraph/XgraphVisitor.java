@@ -1,5 +1,6 @@
 package mousquetaires.languages.visitors.xgraph;
 
+import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperationEvent;
@@ -11,36 +12,29 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XLocation;
 import mousquetaires.languages.syntax.xgraph.memories.XRegister;
+import mousquetaires.languages.syntax.xgraph.processes.XProcess;
 
 
 public interface XgraphVisitor<T> {
-    // abstract nodes:
-    //T visit(XEvent node);
 
-    //T visit(XMemoryEvent node);
-    //
-    //T visit(XSharedMemoryEvent node);
-    //T visit(XLocalMemoryEvent node);
-    //T visit(XComputationEvent node);
-    //T visit(XControlFlowEvent node);
-    //T visit(XBarrierEvent node);
+    T visit(XProgram entity);
+    T visit(XProcess entity);
 
-    //concrete nodes:
-    T visit(XRegister node);
-    T visit(XLocation node);
-    T visit(XConstant node);
+    T visit(XRegister entity);
+    T visit(XLocation entity);
+    T visit(XConstant entity);
 
-    T visit(XNullaryComputationEvent node);
-    T visit(XUnaryOperationEvent node);
-    T visit(XBinaryOperationEvent node);
+    T visit(XNullaryComputationEvent entity);
+    T visit(XUnaryOperationEvent entity);
+    T visit(XBinaryOperationEvent entity);
 
-    T visit(XRegisterMemoryEvent node);
-    T visit(XStoreMemoryEvent node);
-    T visit(XLoadMemoryEvent node);
+    T visit(XRegisterMemoryEvent entity);
+    T visit(XStoreMemoryEvent entity);
+    T visit(XLoadMemoryEvent entity);
 
-    //T visit(XBranchingEvent node);
-    T visit(XJumpEvent node);
-    T visit(XMethodCallEvent node);
+    //T visit(XBranchingEvent entity);
+    T visit(XJumpEvent entity);
+    T visit(XMethodCallEvent entity);
 
     //todo: barriers impl
 }

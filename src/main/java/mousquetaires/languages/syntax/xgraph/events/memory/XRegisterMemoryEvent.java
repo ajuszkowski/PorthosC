@@ -38,4 +38,9 @@ public class XRegisterMemoryEvent extends XMemoryEventBase implements XLocalMemo
     public String toString() {
         return getDestination() + " := " + getSource();
     }
+
+    @Override
+    public String getUniqueId() {
+        return super.getUniqueId() + "_regreg";
+    }
 }
