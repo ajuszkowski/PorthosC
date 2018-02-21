@@ -3,15 +3,16 @@ package mousquetaires.tests.func.dartagnan;
 import com.googlecode.zohhak.api.TestWith;
 import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
 import mousquetaires.memorymodels.MemoryModelName;
+import mousquetaires.tests.unit.FuncTestPaths;
 
 import static org.junit.Assert.assertEquals;
 
 
 public class DartagnanParkerTest extends AbstractDartagnanFuncTest {
 
-    private final String parker_pts_rx    = targetsDirectory + "all_rx/parker.pts";
-    private final String parker_litmus_rx = targetsDirectory + "all_rx/parker.litmus";
-    private final String parker_pts_sc    = targetsDirectory + "all_sc/parker.pts";
+    private final String parker_pts_rx    = FuncTestPaths.targetsDirectory + "all_rx/parker.pts";
+    private final String parker_litmus_rx = FuncTestPaths.targetsDirectory + "all_rx/parker.litmus";
+    private final String parker_pts_sc    = FuncTestPaths.targetsDirectory + "all_sc/parker.pts";
 
     // == Relaxed operations: ==
 

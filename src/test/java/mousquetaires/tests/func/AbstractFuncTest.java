@@ -12,8 +12,6 @@ import org.junit.runner.RunWith;
 @RunWith(ZohhakRunner.class)
 public abstract class AbstractFuncTest extends AbstractTest {
 
-    protected final String targetsDirectory = resourcesDirectory + "targets/";
-
     protected AppVerdict runModule(AppModule module) {
         AppVerdict verdict = module.run();
         if (verdict.hasErrors()) {

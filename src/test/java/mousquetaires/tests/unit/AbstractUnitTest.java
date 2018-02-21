@@ -3,26 +3,31 @@ package mousquetaires.tests.unit;
 import mousquetaires.tests.AbstractTest;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Iterator;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 
 public abstract class AbstractUnitTest<TElement> extends AbstractTest {
 
-    protected abstract List<TElement> parseTestFile(String testFile);
+    protected abstract Iterator<? extends TElement> parseTestFile(String testFile);
 
-    public void run(String testFile, List<TElement> expectedResult) {
-        List<TElement> actualResult = parseTestFile(testFile);
-        assertEquals("roots number does not match", expectedResult.size(), actualResult.size());
-        for (int i = 0; i < expectedResult.size(); ++i) {
-            assertEquals("mismatch in " + i + "th statement:", expectedResult.get(i), actualResult.get(i));
+    public void run(String testFile, Iterator<? extends TElement> expectedResultIterator) {
+        Iterator<? extends TElement> actualResultIterator = parseTestFile(testFile);
+        int counter = 0;
+        while (actualResultIterator.hasNext() && expectedResultIterator.hasNext()) {
+            TElement actual = actualResultIterator.next();
+            TElement expected = expectedResultIterator.next();
+            assertEquals("mismatch in " + counter + "th statement:", expected, actual);
+            counter++;
         }
+        assertFalse("actual result has extra elements", actualResultIterator.hasNext());
+        assertFalse("actual result miss some elements", expectedResultIterator.hasNext());
     }
 
-    protected List<TElement> buildResultList(TElement... values) {
-        return Arrays.stream(values).collect(Collectors.toList());
+    protected Iterator<? extends TElement> getIterator(TElement... values) {
+        return Arrays.stream(values).collect(Collectors.toList()).iterator();
     }
-
 }

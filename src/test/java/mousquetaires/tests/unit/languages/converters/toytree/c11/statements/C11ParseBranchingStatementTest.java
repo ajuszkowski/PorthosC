@@ -7,20 +7,21 @@ import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryEx
 import mousquetaires.languages.syntax.ytree.statements.YBranchingStatement;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
+import mousquetaires.tests.unit.UnitTestPaths;
 import org.junit.Test;
 
-import java.util.List;
+import java.util.Iterator;
 
 
 public class C11ParseBranchingStatementTest extends C11ParseStatementTest {
 
     @Test
     public void test_branchingStatement() {
-        List<YEntity> expected = buildResultList(new YFunctionDefinition(
+        Iterator<? extends YEntity> expected = getIterator(new YFunctionDefinition(
                 new YCompoundStatement(true, new YBranchingStatement(
                         YRelativeBinaryExpression.Kind.Equals.createExpression(variableX, constant1),
                         new YCompoundStatement(true, new YLinearStatement(new YAssignmentExpression(variableY, constant2))),
                         new YCompoundStatement(true, new YLinearStatement(new YAssignmentExpression(variableY, constant3)))))));
-        run(statementsDirectory + "branchingStatement.c", expected);
+        run(UnitTestPaths.c11StatementsDirectory + "branchingStatement.c", expected);
     }
 }

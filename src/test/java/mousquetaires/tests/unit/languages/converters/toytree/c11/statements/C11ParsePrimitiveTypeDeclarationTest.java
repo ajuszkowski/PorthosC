@@ -6,20 +6,20 @@ import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentE
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.statements.YVariableDeclarationStatement;
+import mousquetaires.tests.unit.UnitTestPaths;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.List;
+import java.util.Iterator;
 
 
 public class C11ParsePrimitiveTypeDeclarationTest extends C11ParseStatementTest {
 
-    private final String primitiveDirectory = statementsDirectory + "/type_declaration/primitive";
 
     @Test
     @Ignore("Yet initializers are not implemented")
     public void test_primitiveTypeDeclaration_initialisation() {
-        List<YEntity> expected = buildResultList(
+        Iterator<? extends YEntity> expected = getIterator(
                 new YFunctionDefinition(new YCompoundStatement(true,
                         new YVariableDeclarationStatement(typeInt, variableA), // 'int a'
                         new YLinearStatement(new YAssignmentExpression(variableA, constant1)), // 'a = 1;'
@@ -34,12 +34,13 @@ public class C11ParsePrimitiveTypeDeclarationTest extends C11ParseStatementTest 
                         new YVariableDeclarationStatement(typeInt, variableC), // 'int c;'
                         new YLinearStatement(new YAssignmentExpression(variableC, constant3)) // 'c = 3;'
                 )));
-        run(primitiveDirectory + "/variableDeclarationInitialisation.c", expected);
+        run(UnitTestPaths.c11PrimitiveTypeDeclarationsDirectory + "/variableDeclarationInitialisation.c",
+                expected);
     }
 
     @Test
     public void test_primitiveTypeDeclaration() {
-        List<YEntity> expected = buildResultList(
+        Iterator<? extends YEntity> expected = getIterator(
                 new YFunctionDefinition(new YCompoundStatement(
                         new YVariableDeclarationStatement(typeInt, variableX),
                         //new YVariableDeclarationStatement(typeInt.withPointerLevel(1), variableX),
@@ -66,7 +67,8 @@ public class C11ParsePrimitiveTypeDeclarationTest extends C11ParseStatementTest 
                         //
                         new YVariableDeclarationStatement(typeVoidPointer, variableX)
                 )));
-        run(primitiveDirectory + "/primitiveTypeDeclaration.c", expected);
+        run(UnitTestPaths.c11PrimitiveTypeDeclarationsDirectory  + "/primitiveTypeDeclaration.c",
+                expected);
     }
 
 }

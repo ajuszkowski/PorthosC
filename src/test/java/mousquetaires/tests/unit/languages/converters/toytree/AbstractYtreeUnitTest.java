@@ -1,29 +1,27 @@
-package mousquetaires.tests.unit.languages.converters;
+package mousquetaires.tests.unit.languages.converters.toytree;
 
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.parsers.YtreeParser;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
-import mousquetaires.tests.unit.AbstractUnitTest;
 import mousquetaires.tests.TestFailedException;
+import mousquetaires.tests.unit.languages.converters.AbstractConverterUnitTest;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.Iterator;
 
 
-public abstract class AbstractParserUnitTest extends AbstractUnitTest<YEntity> {
-
-    protected final String parsersDirectory = resourcesDirectory + "converters/";
+public abstract class AbstractYtreeUnitTest extends AbstractConverterUnitTest<YEntity> {
 
     @Override
-    protected List<YEntity> parseTestFile(String testFile) {
+    protected Iterator<? extends YEntity> parseTestFile(String testFile) {
         try {
             File file = new File(testFile);
             ProgramLanguage language = ProgramExtensions.parseProgramLanguage(file.getName());
             YSyntaxTree syntaxTree = YtreeParser.parse(file, language);
-            return syntaxTree.getRoots();
+            return syntaxTree.getRoots().iterator();
         } catch (IOException e) {
             e.printStackTrace();
             throw new TestFailedException(e);

@@ -4,13 +4,14 @@ import com.googlecode.zohhak.api.TestWith;
 import mousquetaires.app.modules.porthos.PorthosMode;
 import mousquetaires.app.modules.porthos.PorthosVerdict;
 import mousquetaires.memorymodels.MemoryModelName;
+import mousquetaires.tests.unit.FuncTestPaths;
 
 import static org.junit.Assert.assertEquals;
 
 
 public class PorthosBakeryTest extends AbstractPorthosFuncTest {
 
-    private final String bakery_pts_rx    = targetsDirectory + "all_rx/bakery.pts";
+    private final String bakery_pts_rx    = FuncTestPaths.targetsDirectory + "all_rx/bakery.pts";
     //private final String bakery_litmus_rx = targetsDirectory + "all_rx/bakery.litmus";
     //private final String bakery_pts_sc    = targetsDirectory + "all_sc/bakery.pts";
 

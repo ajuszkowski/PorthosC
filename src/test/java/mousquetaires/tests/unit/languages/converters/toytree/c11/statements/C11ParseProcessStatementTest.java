@@ -8,10 +8,11 @@ import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.statements.YVariableDeclarationStatement;
+import mousquetaires.tests.unit.UnitTestPaths;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.List;
+import java.util.Iterator;
 
 
 public class C11ParseProcessStatementTest extends C11ParseStatementTest {
@@ -19,12 +20,12 @@ public class C11ParseProcessStatementTest extends C11ParseStatementTest {
     @Test
     @Ignore("process statements syntax is temporarily not supported")
     public void test_processStatement() {
-        List<YEntity> expected = buildResultList(
+        Iterator<? extends YEntity> expected = getIterator(
                 new YProcessStatement("1", new YCompoundStatement(true,
                         new YVariableDeclarationStatement(typeInt, variableA),
                         new YLinearStatement(new YAssignmentExpression(variableA, constant1)))),
                 new YAssertionStatement(
                         YRelativeBinaryExpression.Kind.Equals.createExpression(variableA, constant2)));
-        run(statementsDirectory + "processStatement.c", expected);
+        run(UnitTestPaths.c11StatementsDirectory + "processStatement.c", expected);
     }
 }
