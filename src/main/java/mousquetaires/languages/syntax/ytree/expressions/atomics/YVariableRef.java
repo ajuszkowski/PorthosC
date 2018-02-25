@@ -3,7 +3,7 @@ package mousquetaires.languages.syntax.ytree.expressions.atomics;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
 import mousquetaires.languages.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.YtreeUtils;
+import mousquetaires.utils.CollectionUtils;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -44,7 +44,7 @@ public class YVariableRef implements YAssignee {
 
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
-        return YtreeUtils.createIteratorFrom();
+        return CollectionUtils.createIteratorFrom();
     }
 
     @Override

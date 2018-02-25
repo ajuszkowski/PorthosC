@@ -3,7 +3,7 @@ package mousquetaires.languages.syntax.ytree.expressions.ternary;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.utils.YtreeUtils;
+import mousquetaires.utils.CollectionUtils;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -34,7 +34,7 @@ public class YTernaryExpression implements YExpression {
 
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
-        return YtreeUtils.createIteratorFrom(condition, trueExpression, falseExpression);
+        return CollectionUtils.createIteratorFrom(condition, trueExpression, falseExpression);
     }
 
     @Override

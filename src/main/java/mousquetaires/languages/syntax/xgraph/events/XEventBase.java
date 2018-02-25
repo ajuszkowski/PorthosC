@@ -29,9 +29,8 @@ public abstract class XEventBase implements XEvent {
     //    return nextEvent;
     //}
 
-
     @Override
     public String getUniqueId() {
-        return getInfo().getEventId();
+        return getInfo().getProcessId() + "evt+ " + hashCode();
     }
 }

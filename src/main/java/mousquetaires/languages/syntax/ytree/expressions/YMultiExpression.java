@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.ytree.expressions;
 
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.utils.YtreeUtils;
+import mousquetaires.utils.CollectionUtils;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -30,7 +30,7 @@ public abstract class YMultiExpression implements YExpression {
 
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
-        return YtreeUtils.createIteratorFrom(elements);
+        return CollectionUtils.createIteratorFrom(elements);
     }
 
     @Override

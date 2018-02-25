@@ -3,13 +3,13 @@ package mousquetaires.languages.syntax.xgraph;
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
 import mousquetaires.languages.syntax.xgraph.processes.XProcess;
-import mousquetaires.languages.syntax.xgraph.processes.XProcessBuilder;
+import mousquetaires.languages.syntax.xgraph.processes.XProcessInterpreterBuilder;
 import mousquetaires.utils.patterns.Builder;
 
 
 public class XProgramBuilder extends Builder<XProgram> {
 
-    public XProcessBuilder currentProcess;
+    public XProcessInterpreterBuilder currentProcess;
     private final ImmutableList.Builder<XProcess> processes;
     // TODO: publish methods also!
     private final XMemoryManager memoryManager;
@@ -36,7 +36,7 @@ public class XProgramBuilder extends Builder<XProgram> {
     //public void beginPreludeDefinition() {
     //    if (currentProcess != null || startedProcessesDefinition) {
     //        throw new IllegalStateException("Attempt to start prelude definition while another process '"
-    //                + currentProcess.getProcessId() + "'; is being constructed");
+    //                + currentProcess.buildProcessId() + "'; is being constructed");
     //    }
     //    currentProcess = preludeBuilder;
     //}
@@ -47,7 +47,7 @@ public class XProgramBuilder extends Builder<XProgram> {
     //public void beginPostludeDefinition() {
     //    if (currentProcess != null) {
     //        throw new IllegalStateException("Attempt to start postlude definition while another process '"
-    //                + currentProcess.getProcessId() + "'; is being constructed");
+    //                + currentProcess.buildProcessId() + "'; is being constructed");
     //    }
     //    if (!startedProcessesDefinition) {
     //        throw new IllegalStateException("Attempt to start postlude definition before definition of the processes");
@@ -63,10 +63,10 @@ public class XProgramBuilder extends Builder<XProgram> {
     public void startProcessDefinition(String processId) {
         if (currentProcess != null) {
             throw new IllegalStateException("Attempt to start new process '" + processId +
-                    "' definition while another process '" + currentProcess.getProcessId() +
+                    "' definition while another process '" + currentProcess.buildProcessId() +
                     "'; is being constructed");
         }
-        currentProcess = new XProcessBuilder(processId, memoryManager);
+        currentProcess = new XProcessInterpreterBuilder(processId, memoryManager);
     }
 
     public void finishProcessDefinition() {

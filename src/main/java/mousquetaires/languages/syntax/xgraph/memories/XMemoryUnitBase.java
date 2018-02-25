@@ -1,6 +1,9 @@
 package mousquetaires.languages.syntax.xgraph.memories;
 
 
+import java.util.Objects;
+
+
 // Note: here the 'memoryevents' does not signifies the RAM memoryevents, it's just a storage
 // containing some value (e.g. shared memoryevents = RAM, or local memoryevents = register)
 public abstract class XMemoryUnitBase implements XMemoryUnit {
@@ -29,6 +32,20 @@ public abstract class XMemoryUnitBase implements XMemoryUnit {
     }
 
     // todo: hashcode
-    
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof XMemoryUnitBase)) return false;
+        XMemoryUnitBase that = (XMemoryUnitBase) o;
+        return Objects.equals(getName(), that.getName()) &&
+                getBitness() == that.getBitness();
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getName(), getBitness());
+    }
 }

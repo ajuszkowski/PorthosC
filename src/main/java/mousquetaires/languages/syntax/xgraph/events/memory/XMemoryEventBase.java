@@ -4,6 +4,8 @@ import mousquetaires.languages.syntax.xgraph.events.XEventBase;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
 
+import java.util.Objects;
+
 
 public abstract class XMemoryEventBase extends XEventBase implements XMemoryEvent {
 
@@ -22,5 +24,20 @@ public abstract class XMemoryEventBase extends XEventBase implements XMemoryEven
 
     public XMemoryUnit getSource() {
         return source;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof XMemoryEventBase)) return false;
+        XMemoryEventBase that = (XMemoryEventBase) o;
+        return Objects.equals(getDestination(), that.getDestination()) &&
+                Objects.equals(getSource(), that.getSource());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getDestination(), getSource());
     }
 }

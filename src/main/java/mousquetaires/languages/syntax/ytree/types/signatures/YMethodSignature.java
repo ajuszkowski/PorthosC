@@ -3,7 +3,7 @@ package mousquetaires.languages.syntax.ytree.types.signatures;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.YtreeUtils;
+import mousquetaires.utils.CollectionUtils;
 
 import java.util.Iterator;
 
@@ -33,7 +33,7 @@ public class YMethodSignature implements YEntity {
 
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
-        return YtreeUtils.createIteratorFrom();
+        return CollectionUtils.createIteratorFrom();
     }
 
     @Override

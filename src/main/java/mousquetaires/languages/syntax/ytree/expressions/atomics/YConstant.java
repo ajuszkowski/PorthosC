@@ -5,7 +5,7 @@ import mousquetaires.languages.syntax.ytree.expressions.YMemoryLocation;
 import mousquetaires.languages.syntax.ytree.types.YMockType;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.YtreeUtils;
+import mousquetaires.utils.CollectionUtils;
 import mousquetaires.utils.exceptions.ArgumentNullException;
 
 import java.util.Iterator;
@@ -83,7 +83,7 @@ public class YConstant implements YMemoryLocation {
 
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
-        return YtreeUtils.createIteratorFrom();
+        return CollectionUtils.createIteratorFrom();
     }
 
     @Override

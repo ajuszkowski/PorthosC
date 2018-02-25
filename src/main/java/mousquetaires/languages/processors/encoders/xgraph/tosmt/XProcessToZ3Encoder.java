@@ -81,7 +81,7 @@ public class XProcessToZ3Encoder { //extends XgraphVisitorBase<Expr> {
     //    HashMap<XEvent, List<XEvent>> jointPoints = new HashMap<>(process.thenBranchingJumpsMap.size()); // not more than number of branchings
     //
     //    ConjunctiveFormulaBuilder formulaBuilder = new ConjunctiveFormulaBuilder(ctx);
-    //    XEvent entryEvent = traverser.getEntryEvent();
+    //    XEvent entryEvent = traverser.buildEntryEvent();
     //    visitedEvents.add(entryEvent);
     //
     //    XEvent firstEvent = traverser.getNextLinearEvent(entryEvent);

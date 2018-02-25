@@ -3,7 +3,7 @@ package mousquetaires.languages.syntax.ytree.statements;
 import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
-import mousquetaires.utils.YtreeUtils;
+import mousquetaires.utils.CollectionUtils;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -41,7 +41,7 @@ public class YWhileLoopStatement extends YStatement {
 
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
-        return YtreeUtils.createIteratorFrom(getCondition(), getBody());
+        return CollectionUtils.createIteratorFrom(getCondition(), getBody());
     }
 
     @Override

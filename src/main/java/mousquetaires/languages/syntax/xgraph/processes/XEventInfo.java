@@ -1,5 +1,8 @@
 package mousquetaires.languages.syntax.xgraph.processes;
 
+import java.util.Objects;
+
+
 public class XEventInfo {
 
     /** identifier of the process that event comes from */
@@ -13,24 +16,34 @@ public class XEventInfo {
     //public final String instruction; // todo: returnType
 
     /** ensures that events in a trace are unique */
-    private final int stamp;
+    //private final int stamp;
     // todo: perhaps add nullable labels to the event info - for jumps // <- ??
 
-    XEventInfo(String processId) {
+    //todo: package-private (after removing the folder 'tests' from tests project root)
+    public XEventInfo(String processId) {
         this.processId = processId;
-        this.stamp = newStamp();
+        //this.stamp = newStamp();
     }
 
-    // e.g.: p1_e32
-    public String getEventId() {
-        return processId + "_e" + stamp;
+    public String getProcessId() {
+        return processId;
     }
 
+    //private static int stampGlobalCounter = 0;
+    //private static int newStamp() {
+    //    return stampGlobalCounter++;
+    //}
 
-    private static int stampGlobalCounter = 0;
-    private static int newStamp() {
-        return stampGlobalCounter++;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof XEventInfo)) return false;
+        XEventInfo that = (XEventInfo) o;
+        return Objects.equals(processId, that.processId);
     }
 
-    //todo: hashcode
+    @Override
+    public int hashCode() {
+        return Objects.hash(processId);
+    }
 }

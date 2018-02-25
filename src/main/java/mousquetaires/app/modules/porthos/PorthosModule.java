@@ -68,7 +68,7 @@ public class PorthosModule extends AppModule {
         XProgram pTarget = program.clone();
 
         pSource.compile(source, false, true);
-        Integer startEId = Collections.max(pSource.getEvents().stream().filter(e -> e instanceof Init).map(e -> e.getEId()).collect(Collectors.toSet())) + 1;
+        Integer startEId = Collections.max(pSource.buildEvents().stream().filter(e -> e instanceof Init).map(e -> e.getEId()).collect(Collectors.toSet())) + 1;
         pTarget.compile(target, false, true, startEId);
 
 

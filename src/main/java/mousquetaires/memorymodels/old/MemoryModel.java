@@ -33,7 +33,7 @@ public class MemoryModel {
     //}
     //
     //public BoolExpr Consistent(XProgram programme, Context ctx) {
-    //    Set<XEvent> events = programme.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+    //    Set<XEvent> events = programme.buildEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
     //    BoolExpr expr = ctx.mkTrue();
     //    for (Relation namedrel : namedrels) {
     //        expr=ctx.mkAnd(expr,namedrel.encode(programme, ctx));
@@ -45,7 +45,7 @@ public class MemoryModel {
     //}
     //
     //    public BoolExpr Inconsistent(XProgram programme, Context ctx) {
-    //    Set<XEvent> events = programme.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+    //    Set<XEvent> events = programme.buildEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
     //    BoolExpr expr = ctx.mkFalse();
     //    for (Axiom ax : axioms) {
     //        expr=ctx.mkOr(expr,ax.Inconsistent(events, ctx));

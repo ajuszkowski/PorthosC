@@ -3,7 +3,7 @@ package mousquetaires.languages.syntax.ytree.statements;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.YtreeUtils;
+import mousquetaires.utils.CollectionUtils;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
@@ -52,7 +52,7 @@ public class YBranchingStatement extends YStatement {  // TODO: inherit from YJu
 
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
-        return YtreeUtils.createIteratorFrom(getCondition(), getThenBranch(), getElseBranch());
+        return CollectionUtils.createIteratorFrom(getCondition(), getThenBranch(), getElseBranch());
     }
 
     @Override

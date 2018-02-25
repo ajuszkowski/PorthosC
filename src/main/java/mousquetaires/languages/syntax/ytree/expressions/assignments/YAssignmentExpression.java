@@ -5,7 +5,7 @@ import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
 import mousquetaires.languages.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.YtreeUtils;
+import mousquetaires.utils.CollectionUtils;
 
 import java.util.Iterator;
 
@@ -58,7 +58,7 @@ public class YAssignmentExpression extends YMultiExpression {
 
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
-        return YtreeUtils.createIteratorFrom(getAssignee(), getExpression());
+        return CollectionUtils.createIteratorFrom(getAssignee(), getExpression());
     }
 
     @Override

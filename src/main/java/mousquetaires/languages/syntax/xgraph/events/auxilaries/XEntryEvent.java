@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.xgraph.events.auxilaries;
 
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventBase;
 import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
 import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
@@ -21,4 +22,5 @@ public class XEntryEvent extends XEventBase {
     public <T> T accept(XgraphVisitor<T> visitor) {
         throw new NotImplementedException();
     }
+
 }

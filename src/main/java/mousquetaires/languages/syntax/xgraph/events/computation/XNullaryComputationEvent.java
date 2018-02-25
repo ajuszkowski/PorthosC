@@ -4,6 +4,8 @@ import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
 import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
 
+import java.util.Objects;
+
 
 public class XNullaryComputationEvent extends XComputationEventBase {
 
@@ -31,5 +33,19 @@ public class XNullaryComputationEvent extends XComputationEventBase {
     @Override
     public String getUniqueId() {
         return super.getUniqueId() + "_nulop";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof XNullaryComputationEvent)) return false;
+        XNullaryComputationEvent that = (XNullaryComputationEvent) o;
+        return Objects.equals(getFirstOperand(), that.getFirstOperand());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getFirstOperand());
     }
 }

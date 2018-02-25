@@ -12,8 +12,8 @@ public class XgraphLinearisedTraverser implements Iterator<XEvent> {
     private final Iterator<XEvent> linearisedOrderIterator;
 
     public XgraphLinearisedTraverser(XProcess process) {
-        XgraphLinearisator linearisator = new XgraphLinearisator(process);
-        Queue<XEvent> linearsedEventsList = linearisator.build();
+        XgraphLineariser lineariser = new XgraphLineariser(process);
+        Queue<XEvent> linearsedEventsList = lineariser.build();
         linearisedOrderIterator = linearsedEventsList.iterator();
     }
 

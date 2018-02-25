@@ -5,7 +5,6 @@ import mousquetaires.languages.visitors.ytree.YtreeVisitor;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 
 public class YSyntaxTree implements YEntity {
@@ -29,7 +28,7 @@ public class YSyntaxTree implements YEntity {
         return roots.iterator();
     }
 
-    public List<YEntity> getRoots() {
+    public ImmutableList<YEntity> getRoots() {
         return roots;
     }
 

@@ -7,8 +7,8 @@ import mousquetaires.utils.patterns.Builder;
 
 import java.util.*;
 
-
-public class XgraphLinearisator extends Builder<Queue<XEvent>> {
+// TODO: Implement this as a Comparator! and then just sort the events list
+public class XgraphLineariser extends Builder<Queue<XEvent>> {
     private final XProcess process;
 
     private final Deque<XEvent> linearised;
@@ -16,7 +16,7 @@ public class XgraphLinearisator extends Builder<Queue<XEvent>> {
     private final Set<XEvent> permMarks;
     private final Queue<XEvent> nonVisited;
 
-    public XgraphLinearisator(XProcess process) {
+    public XgraphLineariser(XProcess process) {
         this.process = process;
         this.linearised = new ArrayDeque<>();
         this.tempMarks = new HashSet<>();

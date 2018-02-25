@@ -3,7 +3,7 @@ package mousquetaires.languages.syntax.ytree.expressions.binary;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
-import mousquetaires.utils.YtreeUtils;
+import mousquetaires.utils.CollectionUtils;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -23,7 +23,7 @@ public abstract class YBinaryExpression extends YMultiExpression {
 
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
-        return YtreeUtils.createIteratorFrom(getLeftExpression(), getRightExpression());
+        return CollectionUtils.createIteratorFrom(getLeftExpression(), getRightExpression());
     }
 
     public YExpression getLeftExpression() {

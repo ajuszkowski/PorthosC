@@ -15,7 +15,7 @@ public class XFakeComputationEvent extends XFakeEvent implements XComputationEve
 
     @Override
     public String getName() {
-        return "fakecomp" + getInfo().getEventId();
+        return "fakecomp_" + getUniqueId();
     }
 
     @Override

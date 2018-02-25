@@ -18,7 +18,7 @@ public class XJumpEvent extends XEventBase implements XControlFlowEvent {
 
     @Override
     public String toString() {
-        return "[JUMP_" + getInfo().getEventId() + "]";
+        return "[JUMP_" + getUniqueId() + "]";
     }
 
     @Override
