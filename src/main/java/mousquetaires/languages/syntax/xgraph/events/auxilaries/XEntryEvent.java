@@ -1,6 +1,5 @@
 package mousquetaires.languages.syntax.xgraph.events.auxilaries;
 
-import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventBase;
 import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
 import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
@@ -23,4 +22,11 @@ public class XEntryEvent extends XEventBase {
         throw new NotImplementedException();
     }
 
+
+    @Override
+    public boolean equals(Object other) {
+        return this == other || other instanceof XEntryEvent;
+    }
+
+    //todo: override hashcode!
 }

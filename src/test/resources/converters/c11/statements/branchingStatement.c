@@ -1,4 +1,4 @@
-void method() {
+void method() { 
     if (x == 1) {
         y = 2;
         x = y;

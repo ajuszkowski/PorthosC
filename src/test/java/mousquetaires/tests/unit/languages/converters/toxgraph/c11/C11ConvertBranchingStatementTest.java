@@ -27,17 +27,17 @@ public class C11ConvertBranchingStatementTest extends AbstractXgraphUnitTest {
         XConstant const3 = memoryManager.getConstant(3);
         XConstant const4 = memoryManager.getConstant(4);
 
-        XComputationEvent condition1 = builder.createComputationEvent(XOperator.CompareEquals,  registerX, const1);
-        XComputationEvent condition2 = builder.createComputationEvent(XOperator.CompareGreater, registerX, const2);
+        XComputationEvent conditionXequals1 = builder.createComputationEvent(XOperator.CompareEquals,  registerX, const1);
+        XComputationEvent conditionXgreater2 = builder.createComputationEvent(XOperator.CompareGreater, registerX, const2);
         XMemoryEvent assignY2 = builder.createAssignmentEvent(registerY, const2);
         XMemoryEvent assignXY = builder.createAssignmentEvent(registerX, registerY);
         XMemoryEvent assignY3 = builder.createAssignmentEvent(registerY, const3);
         XMemoryEvent assignX4 = builder.createAssignmentEvent(registerX, const4);
 
-        builder.processFirstEvent(condition1);
-        builder.processBranchingEvent(condition1, assignY2, condition2);
+        builder.processFirstEvent(conditionXequals1);
+        builder.processBranchingEvent(conditionXequals1, assignY2, conditionXgreater2);
         builder.processNextEvent(assignY2, assignXY);
-        builder.processBranchingEvent(condition2, assignY3, assignX4);
+        builder.processBranchingEvent(conditionXgreater2, assignY3, assignX4);
         builder.processNextEvent(assignXY, assignX4);
         builder.processNextEvent(assignY3, assignX4);
         builder.processLastEvent(assignX4);

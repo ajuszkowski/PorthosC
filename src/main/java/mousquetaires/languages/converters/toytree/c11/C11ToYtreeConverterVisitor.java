@@ -78,7 +78,7 @@ class C11ToYtreeConverterVisitor
     public YExpression visitPrimaryExpression(C11Parser.PrimaryExpressionContext ctx) {
         TerminalNode identifier = ctx.Identifier();
         if (identifier != null) {
-            return new YVariableRef(identifier.getText());
+            return YVariableRef.Kind.Local.createVariable(identifier.getText());  //TODO: process also global case
         }
         TerminalNode constantNode = ctx.Constant();
         if (constantNode != null) {
@@ -1001,7 +1001,7 @@ class C11ToYtreeConverterVisitor
         C11Parser.IdentifierListContext identifierListContext;
 
         if ((identifier = ctx.Identifier()) != null) {
-            return new YVariableRef(identifier.getText());
+            return YVariableRef.Kind.Local.createVariable(identifier.getText()); //TODO: process also global case
         }
         boolean hasParentheses = C11ParserHelper.hasParentheses(ctx);
         if (hasParentheses) {

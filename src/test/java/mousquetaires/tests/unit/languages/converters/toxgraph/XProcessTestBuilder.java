@@ -30,8 +30,6 @@ public class XProcessTestBuilder extends Builder<XProcess> implements XProcessBu
     private final ImmutableMap.Builder<XComputationEvent, XEvent> thenBranchingJumpsMap;
     private final ImmutableMap.Builder<XComputationEvent, XEvent> elseBranchingJumpsMap;
 
-    private XEvent current;
-
     public XProcessTestBuilder(String processId) {
         this.processId = processId;
         this.entryEvent = new XEntryEvent(createEventInfo());
@@ -43,6 +41,8 @@ public class XProcessTestBuilder extends Builder<XProcess> implements XProcessBu
         //ImmutableList<XEvent> allEvents = ImmutableList.copyOf(allEventsList);
         //Pair<XEntryEvent, XExitEvent> entryExitPair = XProcessHelper.findEntryAndExitEvents(allEvents);
         this.events = new ImmutableList.Builder<>();
+        events.add(this.entryEvent);
+        events.add(this.exitEvent);
         this.nextEventMap = new ImmutableMap.Builder<>();
         this.thenBranchingJumpsMap = new ImmutableMap.Builder<>();
         this.elseBranchingJumpsMap = new ImmutableMap.Builder<>();

@@ -1,11 +1,12 @@
 package mousquetaires.tests.unit;
 
 import mousquetaires.tests.AbstractTest;
+import mousquetaires.utils.CollectionUtils;
+import mousquetaires.utils.StringUtils;
 import org.junit.Assert;
 
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 
 public abstract class AbstractUnitTest<TElement> extends AbstractTest {
@@ -19,14 +20,38 @@ public abstract class AbstractUnitTest<TElement> extends AbstractTest {
         while (actualResultIterator.hasNext() && expectedResultIterator.hasNext()) {
             TElement actual = actualResultIterator.next();
             TElement expected = expectedResultIterator.next();
-            Assert.assertEquals("mismatch in " + counter + "th statement:", expected, actual);
-            counter++;
+            // todo: compare processes in a more clever way
+            System.out.println("Comparing " + counter++ + " objects...");
+            assertObjectsEqual(expected, actual);
         }
         Assert.assertFalse("actual result has extra elements", actualResultIterator.hasNext());
         Assert.assertFalse("actual result miss some elements", expectedResultIterator.hasNext());
     }
 
     protected Iterator<? extends TElement> getIterator(TElement... values) {
-        return Arrays.stream(values).collect(Collectors.toList()).iterator();
+        return CollectionUtils.createIteratorFrom(values);
+    }
+
+    protected abstract void assertObjectsEqual(TElement expected, TElement actual);
+
+    protected String getErrorString(int counter) {
+        return "mismatch in " + counter + "th statement:";
+    }
+
+    protected void assertMapsEqual(String info,
+                                 Map<?, ?> expected,
+                                 Map<?, ?> actual) {
+        for (Map.Entry<?, ?> entry : actual.entrySet()) {
+            Object actualKey = entry.getKey();
+            Assert.assertTrue(info + ": element " + StringUtils.wrap(actualKey) + " was not found in expected-map",
+                    expected.containsKey(actualKey));
+            Assert.assertEquals(info + ": expected value ",
+                    expected.get(actualKey),
+                    entry.getValue());
+        }
+        for (Object expectedKey : expected.keySet()) {
+            Assert.assertTrue(info + ": actual-map does not contain the key " + StringUtils.wrap(expectedKey),
+                    actual.containsKey(expectedKey));
+        }
     }
 }

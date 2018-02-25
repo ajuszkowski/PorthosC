@@ -8,6 +8,7 @@ import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
+import mousquetaires.utils.StringUtils;
 
 
 public class XProcess implements XEntity {
@@ -15,7 +16,7 @@ public class XProcess implements XEntity {
     public final String processId;
     public final XEntryEvent entryEvent;
     public final XExitEvent exitEvent;
-    /*private*/public final ImmutableList<XEvent> events;
+    /*private*/public final ImmutableList<XEvent> events; //TODO: get rid of this list, it's duplicating
     /*private*/public final ImmutableMap<XEvent, XEvent> nextEventMap;//next, goto jumps
     /*private*/public final ImmutableMap<XComputationEvent, XEvent> thenBranchingJumpsMap; //if(true), while(true)
     /*private*/public final ImmutableMap<XComputationEvent, XEvent> elseBranchingJumpsMap; //if(false)
@@ -37,6 +38,18 @@ public class XProcess implements XEntity {
     @Override
     public <T> T accept(XgraphVisitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("XProcess{");
+        sb.append("processId='").append(processId).append('\'');
+        sb.append(", nextEventMap=").append(StringUtils.jsonSerialize(nextEventMap));
+        sb.append(", thenBranchingJumpsMap=").append(StringUtils.jsonSerialize(thenBranchingJumpsMap));
+        sb.append(", elseBranchingJumpsMap=").append(StringUtils.jsonSerialize(elseBranchingJumpsMap));
+        sb.append('}');
+        return sb.toString();
     }
 
 

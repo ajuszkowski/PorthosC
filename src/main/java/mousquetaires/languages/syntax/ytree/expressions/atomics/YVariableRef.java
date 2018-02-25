@@ -16,14 +16,18 @@ public class YVariableRef implements YAssignee {
         Local,
         Global,
         ;
+
+        public YVariableRef createVariable(String name) {
+            return new YVariableRef(this, name);
+        }
     }
 
-    private final Kind kind = Kind.Local;
+    private final Kind kind;
     private final String name;
 
-    public YVariableRef(String name) {
-        // TODO: pass kind here also
+    private YVariableRef(Kind kind, String name) {
         this.name = name;
+        this.kind = kind;
     }
 
     public Kind getKind() {
@@ -38,10 +42,6 @@ public class YVariableRef implements YAssignee {
         return getKind() == Kind.Global;
     }
 
-    public static YVariableRef create(String name) {
-        return new YVariableRef(name);
-    }
-
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom();
@@ -54,8 +54,16 @@ public class YVariableRef implements YAssignee {
 
     @Override
     public YVariableRef copy() {
-        return create(name); // TODO: processName kind here also
+        return new YVariableRef(kind, name);
     }
+
+    //public YVariableRef asGlobal() {
+    //    return new YVariableRef(Kind.Global, name);
+    //}
+    //
+    //public YVariableRef asLocal() {
+    //    return new YVariableRef(Kind.Local, name);
+    //}
 
     @Override
     public String toString() {

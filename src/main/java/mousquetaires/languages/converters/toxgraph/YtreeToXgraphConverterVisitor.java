@@ -131,7 +131,7 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
 
     @Override
     public XEvent visit(YFunctionDefinition node) {
-        program.startProcessDefinition("function_name"); // todo: function name
+        program.startProcessDefinition("?"); // todo: function name
         XEvent result = node.getBody().accept(this);
         program.finishProcessDefinition();
         return result;

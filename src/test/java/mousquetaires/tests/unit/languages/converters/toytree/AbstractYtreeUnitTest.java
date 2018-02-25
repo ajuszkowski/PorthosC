@@ -7,6 +7,7 @@ import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.tests.TestFailedException;
 import mousquetaires.tests.unit.languages.converters.AbstractConverterUnitTest;
+import org.junit.Assert;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,5 +27,10 @@ public abstract class AbstractYtreeUnitTest extends AbstractConverterUnitTest<YE
             e.printStackTrace();
             throw new TestFailedException(e);
         }
+    }
+
+    @Override
+    protected void assertObjectsEqual(YEntity expected, YEntity actual) {
+        Assert.assertEquals(expected, actual);
     }
 }

@@ -10,12 +10,12 @@ import mousquetaires.tests.unit.languages.converters.toytree.AbstractYtreeUnitTe
 public abstract class C11ParseStatementTest extends AbstractYtreeUnitTest {
 
     // shortcuts necessary for tests
-    protected YVariableRef variableX = YVariableRef.create("x");
-    protected YVariableRef variableY = YVariableRef.create("y");
-    protected YVariableRef variableZ = YVariableRef.create("z");
-    protected YVariableRef variableA = YVariableRef.create("a");
-    protected YVariableRef variableB = YVariableRef.create("b");
-    protected YVariableRef variableC = YVariableRef.create("c");
+    protected YVariableRef variableX = YVariableRef.Kind.Local.createVariable("x");
+    protected YVariableRef variableY = YVariableRef.Kind.Local.createVariable("y");
+    protected YVariableRef variableZ = YVariableRef.Kind.Local.createVariable("z");
+    protected YVariableRef variableA = YVariableRef.Kind.Local.createVariable("a");
+    protected YVariableRef variableB = YVariableRef.Kind.Local.createVariable("b");
+    protected YVariableRef variableC = YVariableRef.Kind.Local.createVariable("c");
 
     protected YConstant constant1 = YConstant.fromValue(1);
     protected YConstant constant2 = YConstant.fromValue(2);
