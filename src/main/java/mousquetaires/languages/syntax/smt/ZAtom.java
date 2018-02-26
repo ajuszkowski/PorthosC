@@ -1,4 +1,4 @@
 package mousquetaires.languages.syntax.smt;
 
-public interface ZEntity {
+public interface ZAtom extends ZFormula {
 }

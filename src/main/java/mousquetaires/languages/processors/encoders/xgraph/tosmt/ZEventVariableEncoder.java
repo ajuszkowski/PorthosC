@@ -5,10 +5,10 @@ import com.microsoft.z3.Context;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 
 
-public class XEventVariableEncoder {
+public class ZEventVariableEncoder {
     private final Context ctx;
 
-    public XEventVariableEncoder(Context ctx) {
+    public ZEventVariableEncoder(Context ctx) {
         this.ctx = ctx;
     }
 

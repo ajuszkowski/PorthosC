@@ -11,6 +11,7 @@ public class XgraphLinearisedTraverser implements Iterator<XEvent> {
 
     private final Iterator<XEvent> linearisedOrderIterator;
 
+    //TODO: traverse graph on verifying stage (right after building) and saving this info as min-path labels foreach node
     public XgraphLinearisedTraverser(XProcess process) {
         XgraphLineariser lineariser = new XgraphLineariser(process);
         Queue<XEvent> linearsedEventsList = lineariser.build();

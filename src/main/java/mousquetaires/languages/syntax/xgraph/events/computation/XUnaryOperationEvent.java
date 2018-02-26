@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.xgraph.events.computation;
 
-import mousquetaires.languages.syntax.xgraph.events.computation.operators.XOperator;
+import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOperator;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
 import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
@@ -10,14 +10,14 @@ import java.util.Objects;
 
 public class XUnaryOperationEvent extends XNullaryComputationEvent {
 
-    private final XOperator operator;
+    private final XZOperator operator;
 
-    public XUnaryOperationEvent(XEventInfo info, XOperator operator, XLocalMemoryUnit operand1) {
+    public XUnaryOperationEvent(XEventInfo info, XZOperator operator, XLocalMemoryUnit operand1) {
         super(info, operand1);
         this.operator = operator;
     }
 
-    public XOperator getOperator() {
+    public XZOperator getOperator() {
         return operator;
     }
 

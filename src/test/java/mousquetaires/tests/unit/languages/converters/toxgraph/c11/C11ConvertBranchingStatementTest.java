@@ -2,7 +2,7 @@ package mousquetaires.tests.unit.languages.converters.toxgraph.c11;
 
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.operators.XOperator;
+import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOperator;
 import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
@@ -27,8 +27,8 @@ public class C11ConvertBranchingStatementTest extends AbstractXgraphUnitTest {
         XConstant const3 = memoryManager.getConstant(3);
         XConstant const4 = memoryManager.getConstant(4);
 
-        XComputationEvent conditionXequals1 = builder.createComputationEvent(XOperator.CompareEquals,  registerX, const1);
-        XComputationEvent conditionXgreater2 = builder.createComputationEvent(XOperator.CompareGreater, registerX, const2);
+        XComputationEvent conditionXequals1 = builder.createComputationEvent(XZOperator.CompareEquals,  registerX, const1);
+        XComputationEvent conditionXgreater2 = builder.createComputationEvent(XZOperator.CompareGreater, registerX, const2);
         XMemoryEvent assignY2 = builder.createAssignmentEvent(registerY, const2);
         XMemoryEvent assignXY = builder.createAssignmentEvent(registerX, registerY);
         XMemoryEvent assignY3 = builder.createAssignmentEvent(registerY, const3);

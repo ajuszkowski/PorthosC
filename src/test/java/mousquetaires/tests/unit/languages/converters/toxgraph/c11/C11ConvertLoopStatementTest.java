@@ -2,7 +2,7 @@ package mousquetaires.tests.unit.languages.converters.toxgraph.c11;
 
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.operators.XOperator;
+import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOperator;
 import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
 import mousquetaires.languages.syntax.xgraph.memories.XRegister;
@@ -22,12 +22,12 @@ public class C11ConvertLoopStatementTest extends AbstractXgraphUnitTest {
         XRegister registerX = memoryManager.getLocalMemoryUnit("x");
         XRegister registerY = memoryManager.getLocalMemoryUnit("y");
 
-        XComputationEvent conditionXequals0 = builder.createComputationEvent(XOperator.CompareEquals,  registerX, memoryManager.getConstant(0));
-        XComputationEvent conditionXgreater2 = builder.createComputationEvent(XOperator.CompareGreater, registerX, memoryManager.getConstant(2));
-        XComputationEvent conditionXgreater3 = builder.createComputationEvent(XOperator.CompareGreater, registerX, memoryManager.getConstant(3));
-        XComputationEvent conditionXgreater4 = builder.createComputationEvent(XOperator.CompareGreater, registerX, memoryManager.getConstant(4));
-        XComputationEvent conditionYequals5 = builder.createComputationEvent(XOperator.CompareGreater, registerY, memoryManager.getConstant(5));
-        XComputationEvent conditionXequals7 = builder.createComputationEvent(XOperator.CompareEquals, registerX, memoryManager.getConstant(7));
+        XComputationEvent conditionXequals0 = builder.createComputationEvent(XZOperator.CompareEquals,  registerX, memoryManager.getConstant(0));
+        XComputationEvent conditionXgreater2 = builder.createComputationEvent(XZOperator.CompareGreater, registerX, memoryManager.getConstant(2));
+        XComputationEvent conditionXgreater3 = builder.createComputationEvent(XZOperator.CompareGreater, registerX, memoryManager.getConstant(3));
+        XComputationEvent conditionXgreater4 = builder.createComputationEvent(XZOperator.CompareGreater, registerX, memoryManager.getConstant(4));
+        XComputationEvent conditionYequals5 = builder.createComputationEvent(XZOperator.CompareGreater, registerY, memoryManager.getConstant(5));
+        XComputationEvent conditionXequals7 = builder.createComputationEvent(XZOperator.CompareEquals, registerX, memoryManager.getConstant(7));
         XComputationEvent conditionConst10 = builder.createComputationEvent(memoryManager.getConstant(10));
 
         XMemoryEvent assignY1 = builder.createAssignmentEvent(registerY, memoryManager.getConstant(1));

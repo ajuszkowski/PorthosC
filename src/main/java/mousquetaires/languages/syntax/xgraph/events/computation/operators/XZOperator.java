@@ -1,6 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.events.computation.operators;
 
-public enum XOperator {
+// TODO: probably, make unique operator class
+public enum XZOperator {
     // logical operators:
     LogicalAnd,
     LogicalOr,
@@ -26,6 +27,8 @@ public enum XOperator {
     CompareGreaterOrEquals,
     // todo: more
     ;
+
+    // TODO: after unification operators for X, Z (and probably Y), add here methods 'createX', 'createY', etc
 
     //public XMemoryUnitBase.Bitness getBitness() {
     //    switch (this) {

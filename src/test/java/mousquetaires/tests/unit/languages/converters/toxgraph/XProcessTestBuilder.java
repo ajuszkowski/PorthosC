@@ -9,7 +9,7 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperation
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.operators.XOperator;
+import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOperator;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLocalMemoryEvent;
@@ -127,13 +127,13 @@ public class XProcessTestBuilder extends Builder<XProcess> implements XProcessBu
         return event;
     }
 
-    public XComputationEvent createComputationEvent(XOperator operator, XLocalMemoryUnit first) {
+    public XComputationEvent createComputationEvent(XZOperator operator, XLocalMemoryUnit first) {
         XComputationEvent event = new XUnaryOperationEvent(createEventInfo(), operator, first);
         events.add(event);
         return event;
     }
 
-    public XComputationEvent createComputationEvent(XOperator operator, XLocalMemoryUnit first, XLocalMemoryUnit second) {
+    public XComputationEvent createComputationEvent(XZOperator operator, XLocalMemoryUnit first, XLocalMemoryUnit second) {
         XComputationEvent event = new XBinaryOperationEvent(createEventInfo(), operator, first, second);
         events.add(event);
         return event;

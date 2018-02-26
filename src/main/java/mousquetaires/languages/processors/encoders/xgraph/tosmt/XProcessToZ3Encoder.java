@@ -2,13 +2,15 @@ package mousquetaires.languages.processors.encoders.xgraph.tosmt;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
-import mousquetaires.languages.processors.encoders.xgraph.tosmt.helpers.XDataFlowEncoder;
-import mousquetaires.languages.processors.encoders.xgraph.tosmt.helpers.XEventNameEncoder;
+import mousquetaires.languages.processors.encoders.xgraph.tosmt.helpers.ZDataFlowEncoder;
+import mousquetaires.languages.processors.encoders.xgraph.tosmt.helpers.ZEventNameEncoder;
+import mousquetaires.languages.syntax.smt.*;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.processes.XProcess;
 import mousquetaires.languages.visitors.xgraph.XgraphHelper;
 import mousquetaires.languages.visitors.xgraph.XgraphLinearisedTraverser;
 
+import static mousquetaires.languages.syntax.smt.ZFormulaHelper.*;
 import java.util.List;
 
 
@@ -16,48 +18,46 @@ public class XProcessToZ3Encoder { //extends XgraphVisitorBase<Expr> {
 
     private final Context ctx;
     //private final XControlFlowEncoder controlFlowEncoder;
-    private final XDataFlowEncoder dataFlowEncoder;
-    private final XEventNameEncoder eventNameEncoder;
+    private final ZDataFlowEncoder dataFlowEncoder;
     //private final XOperatorEncoder operatorEncoder;
 
-    public XProcessToZ3Encoder(Context ctx, XDataFlowEncoder dataFlowEncoder, XEventNameEncoder eventNameEncoder) {
+    public XProcessToZ3Encoder(Context ctx, ZDataFlowEncoder dataFlowEncoder) {
         this.ctx = ctx;
         this.dataFlowEncoder = dataFlowEncoder;
-        this.eventNameEncoder = eventNameEncoder;
         //this.controlFlowEncoder = new XControlFlowEncoder(ctx, process);
         //this.dataFlowEncoder = new XDataFlowEncoder(ctx, process);
         //this.eventVariableEncoder = new XEventVariableEncoder(ctx);
         //this.operatorEncoder = new XOperatorEncoder(ctx);
     }
 
-    public BoolExpr encode(XProcess process) {
-        ConjunctiveFormulaBuilder processFormula = new ConjunctiveFormulaBuilder(ctx);
+    public ZBoolFormula encode(XProcess process) {
+        ZBoolFormulaConjunctionBuilder processFormula = new ZBoolFormulaConjunctionBuilder();
         XgraphLinearisedTraverser traverser = new XgraphLinearisedTraverser(process);
         XgraphHelper helper = new XgraphHelper(process);
 
         while (traverser.hasNext()) {
             XEvent current = traverser.next();
-            BoolExpr currentName = eventNameEncoder.encode(current);
+            ZBoolVariableGlobal currentName = getEventVariable(current);
 
             // encode control-flow, 'if(c){a}else{b}' as 'not (a and b)'
             if (helper.isBranchingEvent(current)) {
                 XEvent nextThen = helper.getNextThenBranchingEvent(current);
                 XEvent nextElse = helper.getNextElseBranchingEvent(current);
                 // add constraint 'not both then and else'
-                BoolExpr nextThenId = boolConst(nextThen.getUniqueId());
-                BoolExpr nextElseId = boolConst(nextElse.getUniqueId());
-                BoolExpr branchingControlFlow = not(and(nextThenId, nextElseId));
-                processFormula.addConjunct(branchingControlFlow);
+                ZBoolVariableGlobal nextThenId = getEventVariable(nextThen);
+                ZBoolVariableGlobal nextElseId = getEventVariable(nextElse);
+                ZBoolFormula branchingControlFlow = not(and(nextThenId, nextElseId));
+                processFormula.addSubFormula(branchingControlFlow);
             }
             // encode control-flow, 'next -> prev'
             List<XEvent> predecessors = helper.getPredecessors(current);
             assert predecessors.size() > 0;
             //List<BoolExpr> predecessorNamesList = new LinkedList<>();
             for (XEvent predecessor : predecessors) {
-                BoolExpr predecessorName = eventNameEncoder.encode(predecessor);
+                ZBoolVariableGlobal predecessorName = getEventVariable(predecessor);
                 //predecessorNamesList.add(predecessorName);
-                BoolExpr controlFlow = implies(currentName, predecessorName);
-                processFormula.addConjunct(controlFlow);
+                ZBoolVariableGlobal controlFlow = implies(currentName, predecessorName);
+                processFormula.addSubFormula(controlFlow);
             }
 
             // update references from all predecessors
@@ -66,7 +66,7 @@ public class XProcessToZ3Encoder { //extends XgraphVisitorBase<Expr> {
             // encode dataflow if needed
             BoolExpr dataFlowExpr = dataFlowEncoder.encodeDataFlow(current);
             if (dataFlowExpr != null) {
-                processFormula.addConjunct(implies(currentName, dataFlowExpr));
+                processFormula.addSubFormula(implies(currentName, dataFlowExpr));
             }
         }
 
@@ -97,7 +97,7 @@ public class XProcessToZ3Encoder { //extends XgraphVisitorBase<Expr> {
     //
     //        // control-flow:
     //        BoolExpr controlFlow = implies(currentEventId, previoiusEventId);
-    //        formulaBuilder.addConjunct(controlFlow);
+    //        formulaBuilder.addSubFormula(controlFlow);
     //
     //        dataFlowEncoder
     //
@@ -111,7 +111,7 @@ public class XProcessToZ3Encoder { //extends XgraphVisitorBase<Expr> {
     //            BoolExpr nextElseId = boolConst(nextElse.getUniqueId());
     //
     //            BoolExpr branchingControlFlow = not(and(nextThenId, nextElseId));
-    //            formulaBuilder.addConjunct(branchingControlFlow);
+    //            formulaBuilder.addSubFormula(branchingControlFlow);
     //            // nexts:
     //            visitQueue.add(new Transition(currentEvent, nextThen));
     //            visitQueue.add(new Transition(currentEvent, nextElse));
@@ -148,22 +148,6 @@ public class XProcessToZ3Encoder { //extends XgraphVisitorBase<Expr> {
     //
     //    return formulaBuilder.build();
     //}
-
-    private BoolExpr boolConst(String name) {
-        return ctx.mkBoolConst(name);
-    }
-
-    private BoolExpr not(BoolExpr expr) {
-        return ctx.mkNot(expr);
-    }
-
-    private BoolExpr and(BoolExpr... expr) {
-        return ctx.mkAnd(expr);
-    }
-
-    private BoolExpr implies(BoolExpr expr1, BoolExpr expr2) {
-        return ctx.mkImplies(expr1, expr2);
-    }
 
     //
     //@Override

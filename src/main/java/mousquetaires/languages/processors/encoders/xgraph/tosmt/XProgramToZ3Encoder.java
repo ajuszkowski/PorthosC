@@ -1,10 +1,11 @@
 package mousquetaires.languages.processors.encoders.xgraph.tosmt;
 
-import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
-import mousquetaires.languages.processors.encoders.xgraph.tosmt.helpers.XDataFlowEncoder;
-import mousquetaires.languages.processors.encoders.xgraph.tosmt.helpers.XEventNameEncoder;
-import mousquetaires.languages.processors.encoders.xgraph.tosmt.helpers.XOperatorEncoder;
+import mousquetaires.languages.processors.encoders.xgraph.tosmt.helpers.ZDataFlowEncoder;
+import mousquetaires.languages.processors.encoders.xgraph.tosmt.helpers.ZEventNameEncoder;
+import mousquetaires.languages.processors.encoders.xgraph.tosmt.helpers.ZOperatorEncoder;
+import mousquetaires.languages.syntax.smt.ZBoolMultiFormula;
+import mousquetaires.languages.syntax.smt.ZBoolFormulaConjunctionBuilder;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.processes.XProcess;
 
@@ -20,17 +21,17 @@ public class XProgramToZ3Encoder {
         // todo: remember timeout
     }
 
-    public BoolExpr encode(XProgram program) {
+    public ZBoolMultiFormula encode(XProgram program) {
         Context ctx = new Context();
-        XEventNameEncoder eventNameEncoder = new XEventNameEncoder(ctx);
-        XOperatorEncoder operatorEncoder = new XOperatorEncoder(ctx);
-        XDataFlowEncoder dataFlowEncoder = new XDataFlowEncoder(ctx, operatorEncoder, eventNameEncoder);
+        ZEventNameEncoder eventNameEncoder = new ZEventNameEncoder(ctx);
+        ZOperatorEncoder operatorEncoder = new ZOperatorEncoder();//ctx);
+        ZDataFlowEncoder dataFlowEncoder = new ZDataFlowEncoder(ctx, operatorEncoder, eventNameEncoder);
 
-        ConjunctiveFormulaBuilder programFormula = new ConjunctiveFormulaBuilder(ctx);
+        ZBoolFormulaConjunctionBuilder programFormula = new ZBoolFormulaConjunctionBuilder(ctx);
         for (XProcess process : program.getAllProcesses()) {
             XProcessToZ3Encoder processEncoder = new XProcessToZ3Encoder(ctx, dataFlowEncoder, eventNameEncoder);
-            BoolExpr processFormula = processEncoder.encode(process); //process.accept(processEncoder);
-            programFormula.addConjunct(processFormula);
+            ZBoolMultiFormula processFormula = processEncoder.encode(process); //process.accept(processEncoder);
+            programFormula.addSubFormula(processFormula);
         }
         return programFormula.build();
     }

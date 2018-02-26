@@ -9,7 +9,7 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperation
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.operators.XOperator;
+import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOperator;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
@@ -197,14 +197,14 @@ public class XProcessInterpreterBuilder extends Builder<XProcess> implements XPr
     //    return emitUnaryComputationEvent(operand);
     //}
 
-    public XComputationEvent emitComputationEvent(XOperator operator, XLocalMemoryUnit operand) {
+    public XComputationEvent emitComputationEvent(XZOperator operator, XLocalMemoryUnit operand) {
         XComputationEvent event = new XUnaryOperationEvent(createEventInfo(), operator, operand);
         addAndProcessNextEvent(event);
         return event;
     }
 
 
-    public XComputationEvent emitComputationEvent(XOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand) {
+    public XComputationEvent emitComputationEvent(XZOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand) {
         XComputationEvent event = new XBinaryOperationEvent(createEventInfo(), operator, firstOperand, secondOperand);
         addAndProcessNextEvent(event);
         return event;

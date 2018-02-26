@@ -9,7 +9,7 @@ import mousquetaires.languages.syntax.xgraph.XProgramBuilder;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.operators.XOperator;
+import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOperator;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLocalMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
@@ -143,9 +143,9 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
         XLocalMemoryUnit baseLocal = program.currentProcess.copyToLocalMemoryIfNecessary(base);
         YUnaryExpression.Kind yOperator = node.getKind();
         if (XUnaryOperatorHelper.isPrefixIntegerOperator(yOperator)) {
-            XOperator xOperator = XUnaryOperatorHelper.isPrefixIncrement(yOperator)
-                    ? XOperator.IntegerPlus
-                    : XOperator.IntegerMinus;
+            XZOperator xOperator = XUnaryOperatorHelper.isPrefixIncrement(yOperator)
+                    ? XZOperator.IntegerPlus
+                    : XZOperator.IntegerMinus;
             XConstant one = program.currentProcess.getConstant(1);
             XComputationEvent incremented = program.currentProcess.emitComputationEvent(xOperator, baseLocal, one);
             return program.currentProcess.emitMemoryEvent(baseLocal, incremented);
@@ -160,7 +160,7 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
     public XComputationEvent visit(YBinaryExpression node) {
         XLocalMemoryUnit leftLocal  = convertOrEvaluateExpression(node.getLeftExpression());
         XLocalMemoryUnit rightLocal = convertOrEvaluateExpression(node.getRightExpression());
-        XOperator operator = XBinaryOperatorConverter.convert(node.getKind());
+        XZOperator operator = XBinaryOperatorConverter.convert(node.getKind());
         return program.currentProcess.emitComputationEvent(operator, leftLocal, rightLocal);
     }
 
