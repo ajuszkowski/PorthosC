@@ -4,10 +4,10 @@ import com.google.common.collect.ImmutableList;
 import mousquetaires.utils.patterns.Builder;
 
 
-public class ZBoolFormulaConjunctionBuilder extends Builder<ZBoolFormula> {
+public class ZBoolConjunctionBuilder extends Builder<ZBoolConjunction> {
     private ImmutableList.Builder<ZBoolFormula> expressions;
 
-    public ZBoolFormulaConjunctionBuilder() {
+    public ZBoolConjunctionBuilder() {
         this.expressions = new ImmutableList.Builder<>();
     }
 

@@ -1,28 +1,22 @@
 package mousquetaires.languages.processors.encoders.xgraph.tosmt;
 
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.Context;
 import mousquetaires.languages.processors.encoders.xgraph.tosmt.helpers.ZDataFlowEncoder;
-import mousquetaires.languages.processors.encoders.xgraph.tosmt.helpers.ZEventNameEncoder;
 import mousquetaires.languages.syntax.smt.*;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.processes.XProcess;
 import mousquetaires.languages.visitors.xgraph.XgraphHelper;
 import mousquetaires.languages.visitors.xgraph.XgraphLinearisedTraverser;
 
-import static mousquetaires.languages.syntax.smt.ZFormulaHelper.*;
 import java.util.List;
 
+import static mousquetaires.languages.syntax.smt.ZFormulaHelper.*;
 
-public class XProcessToZ3Encoder { //extends XgraphVisitorBase<Expr> {
 
-    private final Context ctx;
-    //private final XControlFlowEncoder controlFlowEncoder;
+public class XProcessToZ3Encoder {
+
     private final ZDataFlowEncoder dataFlowEncoder;
-    //private final XOperatorEncoder operatorEncoder;
 
-    public XProcessToZ3Encoder(Context ctx, ZDataFlowEncoder dataFlowEncoder) {
-        this.ctx = ctx;
+    public XProcessToZ3Encoder(ZDataFlowEncoder dataFlowEncoder) {
         this.dataFlowEncoder = dataFlowEncoder;
         //this.controlFlowEncoder = new XControlFlowEncoder(ctx, process);
         //this.dataFlowEncoder = new XDataFlowEncoder(ctx, process);
@@ -31,42 +25,40 @@ public class XProcessToZ3Encoder { //extends XgraphVisitorBase<Expr> {
     }
 
     public ZBoolFormula encode(XProcess process) {
-        ZBoolFormulaConjunctionBuilder processFormula = new ZBoolFormulaConjunctionBuilder();
+        ZBoolConjunctionBuilder processFormula = new ZBoolConjunctionBuilder();
         XgraphLinearisedTraverser traverser = new XgraphLinearisedTraverser(process);
         XgraphHelper helper = new XgraphHelper(process);
 
         while (traverser.hasNext()) {
             XEvent current = traverser.next();
-            ZBoolVariableGlobal currentName = getEventVariable(current);
+            ZBoolVariableGlobal currentName = ZVariableHelper.createEventVariable(current);
 
             // encode control-flow, 'if(c){a}else{b}' as 'not (a and b)'
             if (helper.isBranchingEvent(current)) {
                 XEvent nextThen = helper.getNextThenBranchingEvent(current);
                 XEvent nextElse = helper.getNextElseBranchingEvent(current);
                 // add constraint 'not both then and else'
-                ZBoolVariableGlobal nextThenId = getEventVariable(nextThen);
-                ZBoolVariableGlobal nextElseId = getEventVariable(nextElse);
+                ZBoolVariableGlobal nextThenId = ZVariableHelper.createEventVariable(nextThen);
+                ZBoolVariableGlobal nextElseId = ZVariableHelper.createEventVariable(nextElse);
                 ZBoolFormula branchingControlFlow = not(and(nextThenId, nextElseId));
                 processFormula.addSubFormula(branchingControlFlow);
             }
             // encode control-flow, 'next -> prev'
             List<XEvent> predecessors = helper.getPredecessors(current);
             assert predecessors.size() > 0;
-            //List<BoolExpr> predecessorNamesList = new LinkedList<>();
             for (XEvent predecessor : predecessors) {
-                ZBoolVariableGlobal predecessorName = getEventVariable(predecessor);
-                //predecessorNamesList.add(predecessorName);
-                ZBoolVariableGlobal controlFlow = implies(currentName, predecessorName);
-                processFormula.addSubFormula(controlFlow);
+                ZBoolVariableGlobal predecessorName = ZVariableHelper.createEventVariable(predecessor);
+                ZBoolImplication controlFlowConjunct = implies(currentName, predecessorName);
+                processFormula.addSubFormula(controlFlowConjunct);
             }
 
             // update references from all predecessors
             dataFlowEncoder.updateReferences(current, predecessors);
 
             // encode dataflow if needed
-            BoolExpr dataFlowExpr = dataFlowEncoder.encodeDataFlow(current);
-            if (dataFlowExpr != null) {
-                processFormula.addSubFormula(implies(currentName, dataFlowExpr));
+            ZBoolFormula dataFlowAssertion = dataFlowEncoder.encodeDataFlow(current);
+            if (dataFlowAssertion != null) {
+                processFormula.addSubFormula(implies(currentName, dataFlowAssertion));
             }
         }
 
@@ -201,7 +193,7 @@ public class XProcessToZ3Encoder { //extends XgraphVisitorBase<Expr> {
     //private Expr visitMemoryEvent(XMemoryEvent event) {
     //    Expr source = memoryUnitEncoder.encode(event.getSource());
     //    Expr destination = memoryUnitEncoder.encode(event.getDestination());
-    //    BoolExpr eventExecutedExpr = getEventVariable(event);
+    //    BoolExpr eventExecutedExpr = createEventVariable(event);
     //    return ctx.mkImplies(eventExecutedExpr, ctx.mkEq(source, destination));
     //}
 

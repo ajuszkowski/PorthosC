@@ -8,6 +8,8 @@ public class ZVariableLocal extends ZVariableGlobal implements ZAtom {
         this.uniqueIndex = uniqueIndex;
     }
 
+    //String.format("%s_%d", name, index)
+
     public int getUniqueIndex() {
         return uniqueIndex;
     }
