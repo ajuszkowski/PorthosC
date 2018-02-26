@@ -1,15 +1,6 @@
 package mousquetaires.languages.processors.encoders.xgraph.tosmt;
 
 import mousquetaires.languages.processors.encoders.xgraph.tosmt.helpers.ZDataFlowEncoder;
-import mousquetaires.languages.syntax.smt.*;
-import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.languages.syntax.xgraph.processes.XProcess;
-import mousquetaires.languages.visitors.xgraph.XgraphHelper;
-import mousquetaires.languages.visitors.xgraph.XgraphLinearisedTraverser;
-
-import java.util.List;
-
-import static mousquetaires.languages.syntax.smt.ZFormulaHelper.*;
 
 
 public class XProcessToZ3Encoder {
@@ -24,7 +15,7 @@ public class XProcessToZ3Encoder {
         //this.operatorEncoder = new XOperatorEncoder(ctx);
     }
 
-    public ZBoolFormula encode(XProcess process) {
+    /*public ZBoolFormula encode(XProcess process) {
         ZBoolConjunctionBuilder processFormula = new ZBoolConjunctionBuilder();
         XgraphLinearisedTraverser traverser = new XgraphLinearisedTraverser(process);
         XgraphHelper helper = new XgraphHelper(process);
@@ -63,7 +54,7 @@ public class XProcessToZ3Encoder {
         }
 
         return processFormula.build();
-    }
+    }*/
 
 
     //public Expr encode_OLD(XProcess process) {

@@ -1,6 +1,6 @@
 //package mousquetaires.languages.syntax.xrepr.events.memory;
 //
-//import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
+//import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 //import mousquetaires.languages.syntax.xgraph.memories.XRegister;
 //import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 //import mousquetaires.languages.syntax.xgraph.memories.XConstant;

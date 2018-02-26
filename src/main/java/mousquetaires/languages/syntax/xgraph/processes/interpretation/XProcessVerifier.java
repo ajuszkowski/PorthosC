@@ -1,14 +1,15 @@
-package mousquetaires.languages.syntax.xgraph.processes;
+package mousquetaires.languages.syntax.xgraph.processes.interpretation;
 
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
+import mousquetaires.languages.syntax.xgraph.processes.XProcess;
 
 import java.util.HashSet;
 import java.util.Set;
 
 
-public class XProcessVerifier {
+class XProcessVerifier {
 
     public static boolean verify(XProcess process) {
         // assert events also

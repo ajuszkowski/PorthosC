@@ -1,4 +1,4 @@
-package mousquetaires.languages.syntax.xgraph.processes;
+package mousquetaires.languages.syntax.xgraph.processes.interpretation;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -14,8 +14,9 @@ import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.*;
-import mousquetaires.languages.syntax.xgraph.processes.contexts.XBlockContext;
-import mousquetaires.languages.syntax.xgraph.processes.contexts.XBlockContextKind;
+import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
+import mousquetaires.languages.syntax.xgraph.processes.XProcess;
+import mousquetaires.languages.syntax.xgraph.processes.XProcessBuilder;
 import mousquetaires.utils.StringUtils;
 import mousquetaires.utils.exceptions.xgraph.XCompilationError;
 import mousquetaires.utils.exceptions.xgraph.XCompilerUsageError;
@@ -26,7 +27,7 @@ import java.util.Set;
 import java.util.Stack;
 
 
-public class XProcessInterpreterBuilder extends Builder<XProcess> implements XProcessBuilder {
+public class XProcessInterpretationBuilder extends Builder<XProcess> implements XProcessBuilder {
 
     public enum ContextState {
         Idle,
@@ -60,7 +61,7 @@ public class XProcessInterpreterBuilder extends Builder<XProcess> implements XPr
 
     private final XMemoryManager memoryManager;
 
-    public XProcessInterpreterBuilder(String processId, XMemoryManager memoryManager) {
+    public XProcessInterpretationBuilder(String processId, XMemoryManager memoryManager) {
         this.memoryManager = memoryManager;
         this.processId = processId; //todo: non-uniqueness case
         this.graphBuilder = new XGraphBuilder();
@@ -70,7 +71,7 @@ public class XProcessInterpreterBuilder extends Builder<XProcess> implements XPr
         //readyLoops = new HashSet<>();
 
         XBlockContext linearContext = new XBlockContext(XBlockContextKind.Linear);
-        linearContext.state = XProcessInterpreterBuilder.ContextState.WaitingNextLinearEvent;
+        linearContext.state = XProcessInterpretationBuilder.ContextState.WaitingNextLinearEvent;
         contextStack.push(linearContext);
 
         addAndProcessEntryEvent();
@@ -442,8 +443,12 @@ public class XProcessInterpreterBuilder extends Builder<XProcess> implements XPr
 
     // -- BRANCHING + LOOPS --------------------------------------------------------------------------------------------
 
-    public void startNonlinearBlockDefinition(XBlockContextKind kind) {
-        contextStack.push(new XBlockContext(kind));
+    public void startBranchingBlockDefinition() {
+        startNonlinearBlockDefinition(XBlockContextKind.Branching);
+    }
+
+    public void startLoopBlockDefinition() {
+        startNonlinearBlockDefinition(XBlockContextKind.Loop);
     }
 
     public void startConditionDefinition() {
@@ -518,12 +523,9 @@ public class XProcessInterpreterBuilder extends Builder<XProcess> implements XPr
         context.state = ContextState.JustJumped;
     }
 
-    //public void processNoOperation() {
-    //    if (!contextStack.isEmpty()) {
-    //        XBlockContext context = contextStack.peek();
-    //        context.addNopEvent(emitFakeComputationEvent());
-    //    }
-    //}
+    private void startNonlinearBlockDefinition(XBlockContextKind kind) {
+        contextStack.push(new XBlockContext(kind));
+    }
 
 
     // =================================================================================================================

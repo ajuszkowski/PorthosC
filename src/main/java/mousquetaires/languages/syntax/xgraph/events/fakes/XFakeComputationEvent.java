@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.xgraph.events.fakes;
 
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
+import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
 import mousquetaires.utils.exceptions.NotSupportedException;
 

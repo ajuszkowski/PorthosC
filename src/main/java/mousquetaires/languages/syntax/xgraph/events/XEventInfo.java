@@ -1,4 +1,4 @@
-package mousquetaires.languages.syntax.xgraph.processes;
+package mousquetaires.languages.syntax.xgraph.events;
 
 import java.util.Objects;
 

@@ -3,13 +3,13 @@ package mousquetaires.languages.syntax.xgraph;
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
 import mousquetaires.languages.syntax.xgraph.processes.XProcess;
-import mousquetaires.languages.syntax.xgraph.processes.XProcessInterpreterBuilder;
+import mousquetaires.languages.syntax.xgraph.processes.interpretation.XProcessInterpretationBuilder;
 import mousquetaires.utils.patterns.Builder;
 
 
 public class XProgramBuilder extends Builder<XProgram> {
 
-    public XProcessInterpreterBuilder currentProcess;
+    public XProcessInterpretationBuilder currentProcess;
     private final ImmutableList.Builder<XProcess> processes;
     // TODO: publish methods also!
     private final XMemoryManager memoryManager;
@@ -66,7 +66,7 @@ public class XProgramBuilder extends Builder<XProgram> {
                     "' definition while another process '" + currentProcess.buildProcessId() +
                     "'; is being constructed");
         }
-        currentProcess = new XProcessInterpreterBuilder(processId, memoryManager);
+        currentProcess = new XProcessInterpretationBuilder(processId, memoryManager);
     }
 
     public void finishProcessDefinition() {

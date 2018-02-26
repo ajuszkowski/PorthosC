@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.events.computation;
 
 import mousquetaires.languages.syntax.xgraph.events.XEventBase;
-import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
+import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 
 
 public abstract class XComputationEventBase extends XEventBase implements XComputationEvent {

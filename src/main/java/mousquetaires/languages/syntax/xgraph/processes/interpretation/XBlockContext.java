@@ -1,20 +1,19 @@
-package mousquetaires.languages.syntax.xgraph.processes.contexts;
+package mousquetaires.languages.syntax.xgraph.processes.interpretation;
 
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeEvent;
-import mousquetaires.languages.syntax.xgraph.processes.XProcessInterpreterBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class XBlockContext {
+class XBlockContext {
     /*private*/public XEvent entryEvent;
 
     /*private*/public final XBlockContextKind kind;
-    /*private*/public XProcessInterpreterBuilder.ContextState state;
-    /*private*/public XProcessInterpreterBuilder.BranchKind currentBranchKind;
+    /*private*/public XProcessInterpretationBuilder.ContextState state;
+    /*private*/public XProcessInterpretationBuilder.BranchKind currentBranchKind;
 
     /*private*/public XComputationEvent conditionEvent;
 
@@ -43,7 +42,7 @@ public class XBlockContext {
         this.conditionEvent = conditionEvent;
     }
 
-    public void setState(XProcessInterpreterBuilder.ContextState state) {
+    public void setState(XProcessInterpretationBuilder.ContextState state) {
         this.state = state;
     }
 

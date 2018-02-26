@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.xgraph.events.memory;
 
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
+import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
 
 

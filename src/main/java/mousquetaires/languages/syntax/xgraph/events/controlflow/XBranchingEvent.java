@@ -2,7 +2,7 @@
 //
 //import mousquetaires.languages.syntax.xgraph.events.XEventBase;
 //import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-//import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
+//import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 //import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
 //
 //

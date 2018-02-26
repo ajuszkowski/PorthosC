@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.xgraph.events.memory;
 
 import mousquetaires.languages.syntax.xgraph.events.XEventBase;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
+import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 
 import java.util.Objects;
 

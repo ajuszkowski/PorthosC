@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.xgraph.events.auxilaries;
 
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventBase;
-import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
+import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 

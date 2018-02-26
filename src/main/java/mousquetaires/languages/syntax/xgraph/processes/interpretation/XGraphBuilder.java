@@ -1,4 +1,4 @@
-package mousquetaires.languages.syntax.xgraph.processes;
+package mousquetaires.languages.syntax.xgraph.processes.interpretation;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -13,20 +13,22 @@ import mousquetaires.utils.StringUtils;
 import java.util.*;
 
 
-public class XGraphBuilder {
+class XGraphBuilder {
 
     /*private*/ XEntryEvent entryEvent;
     /*private*/ XExitEvent exitEvent;
-    /*private*/ final ImmutableList.Builder<XEvent> events;
+    /*private*/ final ImmutableList.Builder<XEvent> events; //TODO: get rid of this redundant array
     /*private*/ final HashMap<XEvent, XEvent> nextEventMap; // TODO: immutable map? check this
     /*private*/ final HashMap<XComputationEvent, XEvent> thenBranchingJumpsMap;
     /*private*/ final HashMap<XComputationEvent, XEvent> elseBranchingJumpsMap;
+    /*private*/ final HashMap<XEvent, Integer> distances;
 
     public XGraphBuilder() {
         events = new ImmutableList.Builder<>();
         nextEventMap = new HashMap<>(); // TODO: NOT THE HASH MAP HERE!!!!! or hashmap on event info It must store the references. Maybe another map? where key is the object id?
         thenBranchingJumpsMap = new HashMap<>();
         elseBranchingJumpsMap = new HashMap<>();
+        distances = new HashMap<>();
     }
 
     public void setEntryEvent(XEntryEvent event) {
@@ -101,8 +103,6 @@ public class XGraphBuilder {
             addElseEdge(elsePredecessor, replaceWithEvent);
             removed = true;
         }
-        if (!removed) {
-            int a =3;}
         assert removed: "could not find any predecessor for continueing event " + StringUtils.wrap(fakeEvent);
     }
 

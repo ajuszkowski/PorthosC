@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.events.controlflow;
 
 import mousquetaires.languages.syntax.xgraph.events.XEventBase;
-import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
+import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
 
 

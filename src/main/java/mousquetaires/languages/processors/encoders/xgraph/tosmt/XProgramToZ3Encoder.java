@@ -25,8 +25,8 @@ public class XProgramToZ3Encoder {
         ZBoolConjunctionBuilder programFormula = new ZBoolConjunctionBuilder();
         for (XProcess process : program.getAllProcesses()) {
             XProcessToZ3Encoder processEncoder = new XProcessToZ3Encoder(dataFlowEncoder);
-            ZBoolFormula processFormula = processEncoder.encode(process); //process.accept(processEncoder);
-            programFormula.addSubFormula(processFormula);
+            //ZBoolFormula processFormula = processEncoder.encode(process); //process.accept(processEncoder);
+            //programFormula.addSubFormula(processFormula);
         }
         return programFormula.build();
     }

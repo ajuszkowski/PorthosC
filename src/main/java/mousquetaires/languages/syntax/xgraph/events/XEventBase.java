@@ -1,7 +1,5 @@
 package mousquetaires.languages.syntax.xgraph.events;
 
-import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
-
 
 public abstract class XEventBase implements XEvent {
     //private XEvent nextEvent;
