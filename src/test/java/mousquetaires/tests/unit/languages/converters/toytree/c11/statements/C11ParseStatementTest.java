@@ -20,6 +20,7 @@ public abstract class C11ParseStatementTest extends AbstractYtreeUnitTest {
     protected YConstant constant1 = YConstant.fromValue(1);
     protected YConstant constant2 = YConstant.fromValue(2);
     protected YConstant constant3 = YConstant.fromValue(3);
+    protected YConstant constant4 = YConstant.fromValue(4);
 
     protected YType typeInt = new YMockType();  //YPrimitiveTypeFactory.getPrimitiveType(YTypeName.Int);
     protected YType typeChar = new YMockType();  //YPrimitiveTypeFactory.getPrimitiveType(YTypeName.Char);

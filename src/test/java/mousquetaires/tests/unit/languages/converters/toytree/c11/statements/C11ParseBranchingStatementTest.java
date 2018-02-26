@@ -18,10 +18,23 @@ public class C11ParseBranchingStatementTest extends C11ParseStatementTest {
     @Test
     public void test_branchingStatement() {
         Iterator<? extends YEntity> expected = getIterator(new YFunctionDefinition(
-                new YCompoundStatement(true, new YBranchingStatement(
-                        YRelativeBinaryExpression.Kind.Equals.createExpression(variableX, constant1),
-                        new YCompoundStatement(true, new YLinearStatement(new YAssignmentExpression(variableY, constant2))),
-                        new YCompoundStatement(true, new YLinearStatement(new YAssignmentExpression(variableY, constant3)))))));
+                new YCompoundStatement(true,
+                        new YBranchingStatement(
+                            YRelativeBinaryExpression.Kind.Equals.createExpression(variableX, constant1),
+                            new YCompoundStatement(true,
+                                    new YLinearStatement(new YAssignmentExpression(variableY, constant2)),
+                                    new YLinearStatement(new YAssignmentExpression(variableX, variableY))
+                            ),
+                            new YBranchingStatement(
+                                    YRelativeBinaryExpression.Kind.Greater.createExpression(variableX, constant2),
+                                    new YCompoundStatement(true, new YLinearStatement(new YAssignmentExpression(variableY, constant3))),
+                                    new YCompoundStatement(true)
+                            )
+                        ),
+                        new YLinearStatement(new YAssignmentExpression(variableX, constant4))
+                    )
+                )
+        );
         run(UnitTestPaths.c11StatementsDirectory + "branchingStatement.c", expected);
     }
 }
