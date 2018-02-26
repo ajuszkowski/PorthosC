@@ -3,7 +3,6 @@ package mousquetaires.tests.unit.languages.converters.toxgraph.c11;
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.operators.XOperator;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
 import mousquetaires.languages.syntax.xgraph.memories.XRegister;
@@ -39,26 +38,19 @@ public class C11ConvertLoopStatementTest extends AbstractXgraphUnitTest {
         XMemoryEvent assignY9 = builder.createAssignmentEvent(registerY, memoryManager.getConstant(9));
         XMemoryEvent assignX11 = builder.createAssignmentEvent(registerX, memoryManager.getConstant(11));
 
-        XJumpEvent jump1 = builder.createJumpEvent();
-        XJumpEvent jump2 = builder.createJumpEvent();
-        XJumpEvent jump3 = builder.createJumpEvent();
-
         builder.processFirstEvent(conditionXequals0);
         //first 'while'
         builder.processBranchingEvent(conditionXequals0, assignY1, conditionXgreater3);
         builder.processNextEvent(assignY1, conditionXgreater2);
-        builder.processBranchingEvent(conditionXgreater2, jump1, assignXY);
-        builder.processNextEvent(jump1, conditionXgreater3);
+        builder.processBranchingEvent(conditionXgreater2, conditionXgreater3, assignXY);
         builder.processNextEvent(assignXY, conditionXequals0);
         //second 'while'
         builder.processBranchingEvent(conditionXgreater3, assignYX, conditionConst10);
         builder.processNextEvent(assignYX, conditionXgreater4);
         builder.processBranchingEvent(conditionXgreater4, conditionYequals5, assignY9);
-        builder.processBranchingEvent(conditionYequals5, jump2, assignY6);
-        builder.processNextEvent(jump2, conditionXgreater4);
+        builder.processBranchingEvent(conditionYequals5, conditionXgreater4, assignY6);
         builder.processNextEvent(assignY6, conditionXequals7);
-        builder.processBranchingEvent(conditionXequals7, jump3, assignX8);
-        builder.processNextEvent(jump3, assignY9);
+        builder.processBranchingEvent(conditionXequals7, assignY9, assignX8);
         builder.processNextEvent(assignY9, conditionXgreater3);
         builder.processNextEvent(assignX8, conditionXgreater4);
         //third 'while'

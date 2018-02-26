@@ -186,7 +186,7 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
                 return xExpression;
             }
         }
-        return program.currentProcess.emitFakeComputationEvent();
+        return null;//program.currentProcess.emitFakeComputationEvent();
     }
 
     @Override

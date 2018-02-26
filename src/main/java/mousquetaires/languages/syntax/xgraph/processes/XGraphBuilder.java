@@ -2,10 +2,15 @@ package mousquetaires.languages.syntax.xgraph.processes;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
+import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeEvent;
+import mousquetaires.utils.StringUtils;
+
+import java.util.*;
 
 
 public class XGraphBuilder {
@@ -13,15 +18,15 @@ public class XGraphBuilder {
     /*private*/ XEntryEvent entryEvent;
     /*private*/ XExitEvent exitEvent;
     /*private*/ final ImmutableList.Builder<XEvent> events;
-    /*private*/ final ImmutableMap.Builder<XEvent, XEvent> nextEventMap; // TODO: immutable map? check this
-    /*private*/ final ImmutableMap.Builder<XComputationEvent, XEvent> thenBranchingJumpsMap;
-    /*private*/ final ImmutableMap.Builder<XComputationEvent, XEvent> elseBranchingJumpsMap;
+    /*private*/ final HashMap<XEvent, XEvent> nextEventMap; // TODO: immutable map? check this
+    /*private*/ final HashMap<XComputationEvent, XEvent> thenBranchingJumpsMap;
+    /*private*/ final HashMap<XComputationEvent, XEvent> elseBranchingJumpsMap;
 
     public XGraphBuilder() {
         events = new ImmutableList.Builder<>();
-        nextEventMap = new ImmutableMap.Builder<>(); // TODO: NOT THE HASH MAP HERE!!!!! or hashmap on event info It must store the references. Maybe another map? where key is the object id?
-        thenBranchingJumpsMap = new ImmutableMap.Builder<>();
-        elseBranchingJumpsMap = new ImmutableMap.Builder<>();
+        nextEventMap = new HashMap<>(); // TODO: NOT THE HASH MAP HERE!!!!! or hashmap on event info It must store the references. Maybe another map? where key is the object id?
+        thenBranchingJumpsMap = new HashMap<>();
+        elseBranchingJumpsMap = new HashMap<>();
     }
 
     public void setEntryEvent(XEntryEvent event) {
@@ -65,16 +70,42 @@ public class XGraphBuilder {
     }
 
     public ImmutableMap<XEvent, XEvent> buildNextEventMap() {
-        return nextEventMap.build();
+        return ImmutableMap.copyOf(nextEventMap);
     }
 
     public ImmutableMap<XComputationEvent, XEvent> buildThenBranchingJumpsMap() {
-        return thenBranchingJumpsMap.build();
+        return ImmutableMap.copyOf(thenBranchingJumpsMap);
     }
 
     public ImmutableMap<XComputationEvent, XEvent> buildElseBranchingJumpsMap() {
-        return elseBranchingJumpsMap.build();
+        return ImmutableMap.copyOf(elseBranchingJumpsMap);
     }
+
+    public void replaceEvent(XFakeEvent fakeEvent, XEvent replaceWithEvent) {
+        nextEventMap.remove(fakeEvent);
+
+        boolean removed = false;
+        Set<XEvent> linearPredecessors          = Maps.filterValues(nextEventMap,          succ -> Objects.equals(succ, fakeEvent)).keySet();
+        Set<XComputationEvent> thenPredecessors = Maps.filterValues(thenBranchingJumpsMap, succ -> Objects.equals(succ, fakeEvent)).keySet();
+        Set<XComputationEvent> elsePredecessors = Maps.filterValues(elseBranchingJumpsMap, succ -> Objects.equals(succ, fakeEvent)).keySet();
+
+        for (XEvent linearPredecessor : linearPredecessors) {
+            addLinearEdge(linearPredecessor, replaceWithEvent);
+            removed = true;
+        }
+        for (XComputationEvent thenPredecessor : thenPredecessors) {
+            addThenEdge(thenPredecessor, replaceWithEvent);
+            removed = true;
+        }
+        for (XComputationEvent elsePredecessor : elsePredecessors) {
+            addElseEdge(elsePredecessor, replaceWithEvent);
+            removed = true;
+        }
+        if (!removed) {
+            int a =3;}
+        assert removed: "could not find any predecessor for continueing event " + StringUtils.wrap(fakeEvent);
+    }
+
 
     private void verifyEvent(XEvent event) {
         if (event == null) {

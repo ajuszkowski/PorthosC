@@ -2,7 +2,6 @@ package mousquetaires.tests.unit;
 
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
 import mousquetaires.tests.AbstractTest;
 import mousquetaires.utils.CollectionUtils;
 import mousquetaires.utils.StringUtils;
@@ -46,8 +45,7 @@ public abstract class AbstractUnitTest<TElement> extends AbstractTest {
         for (Map.Entry<? extends T, ? extends T> entry : actual.entrySet()) {
             T actualKey = entry.getKey();
             //TODO: hack, somehow entry and exit events cannot be found in another immutable map even if equals() works fine
-            if (actualKey instanceof XEntryEvent || actualKey instanceof XExitEvent
-                    || actualKey instanceof XJumpEvent) { //todo: COMPARE JUMPS!
+            if (actualKey instanceof XEntryEvent || actualKey instanceof XExitEvent) {
                 continue;
             }
             Assert.assertTrue(info + ": key " + StringUtils.wrap(actualKey) + " was not found in expected-map",
@@ -58,8 +56,7 @@ public abstract class AbstractUnitTest<TElement> extends AbstractTest {
         }
         for (T expectedKey : expected.keySet()) {
             //TODO: hack, somehow entry and exit events cannot be found in another immutable map even if equals() works fine
-            if (expectedKey instanceof XEntryEvent || expectedKey instanceof XExitEvent
-                    || expectedKey instanceof XJumpEvent) { //todo: COMPARE JUMPS!
+            if (expectedKey instanceof XEntryEvent || expectedKey instanceof XExitEvent) {
                 continue;
             }
             Assert.assertTrue(info + ": actual-map does not contain the key " + StringUtils.wrap(expectedKey),

@@ -2,6 +2,7 @@ package mousquetaires.languages.syntax.xgraph.processes.contexts;
 
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
+import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeEvent;
 import mousquetaires.languages.syntax.xgraph.processes.XProcessInterpreterBuilder;
 
 import java.util.ArrayList;
@@ -23,8 +24,9 @@ public class XBlockContext {
     /*private*/public XEvent lastThenBranchEvent;
     /*private*/public XEvent lastElseBranchEvent;
 
-    /*private*/public List<XEvent> continueingEvents;
-    /*private*/public List<XEvent> breakingEvents;
+    /*private*/public List<XFakeEvent> continueingEvents;
+    /*private*/public List<XFakeEvent> breakingEvents;
+    /*private*/public List<XFakeEvent> nopEvents;
 
     public XBlockContext(XBlockContextKind kind) {
         this.kind = kind;
@@ -55,20 +57,27 @@ public class XBlockContext {
     //    this.firstFalseBranchEvent = event;
     //}
 
-    public void addContinueEvent(XEvent event) {
+    public void addContinueEvent(XFakeEvent previousEvent) {
         //assert event != conditionEvent;
         if (continueingEvents == null) {
             continueingEvents = new ArrayList<>();
         }
-        continueingEvents.add(event);
+        continueingEvents.add(previousEvent);
     }
 
-    public void addBreakEvent(XEvent event) {
+    public void addBreakEvent(XFakeEvent previousEvent) {
         //assert event != conditionEvent;
         if (breakingEvents == null) {
             breakingEvents = new ArrayList<>();
         }
-        breakingEvents.add(event);
+        breakingEvents.add(previousEvent);
+    }
+
+    public void addNopEvent(XFakeEvent nopEvent) {
+        if (nopEvents == null) {
+            nopEvents = new ArrayList<>();
+        }
+        nopEvents.add(nopEvent);
     }
 
     public boolean hasThenBranch() {

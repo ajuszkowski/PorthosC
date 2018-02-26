@@ -11,7 +11,6 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputat
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.operators.XOperator;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
-import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.*;
@@ -175,14 +174,14 @@ public class XProcessInterpreterBuilder extends Builder<XProcess> implements XPr
 
     // --
 
-    /**
-     * For modelling empty statement
-     */
-    public XComputationEvent emitFakeComputationEvent() {
-        XComputationEvent event = new XFakeComputationEvent(createEventInfo());
-        addAndProcessNextEvent(event);
-        return event;
-    }
+    ///**
+    // * For modelling empty statement
+    // */
+    //public XFakeComputationEvent emitFakeComputationEvent() {
+    //    XFakeComputationEvent event = new XFakeComputationEvent(createEventInfo());
+    //    addAndProcessNextEvent(event);
+    //    return event;
+    //}
 
     public XComputationEvent emitComputationEvent(XLocalMemoryUnit operand) {
         XComputationEvent event = new XNullaryComputationEvent(createEventInfo(), operand);
@@ -266,22 +265,7 @@ public class XProcessInterpreterBuilder extends Builder<XProcess> implements XPr
         if (!readyContexts.isEmpty()) {
             for (XBlockContext context : readyContexts) {
 
-                if (context.firstThenBranchEvent instanceof XFakeEvent) {
-                    context.firstThenBranchEvent = null;
-                }
-                if (context.lastThenBranchEvent instanceof XFakeEvent) {// ||
-                        //context.lastThenBranchEvent instanceof XControlFlowEvent) {
-                    context.lastThenBranchEvent = null;
-                }
-                if (context.firstElseBranchEvent instanceof XFakeEvent) {
-                    context.firstElseBranchEvent = null;
-                }
-                if (context.lastElseBranchEvent instanceof XFakeEvent) {// ||
-                        //context.lastElseBranchEvent instanceof XControlFlowEvent) {
-                    context.lastElseBranchEvent = null;
-                }
-
-                if (context.firstThenBranchEvent != null) {
+                if (context.firstThenBranchEvent != null) {// && !(context.firstThenBranchEvent instanceof XFakeEvent)) {
                     switch (context.kind) {
                         case Linear:
                             assert false;
@@ -306,7 +290,7 @@ public class XProcessInterpreterBuilder extends Builder<XProcess> implements XPr
                             break;
                     }
                 }
-                if (context.lastThenBranchEvent != null) {
+                if (context.lastThenBranchEvent != null) {// && !(context.lastThenBranchEvent instanceof XFakeEvent)) {
                     switch (context.kind) {
                         case Linear:
                             assert false;
@@ -321,7 +305,7 @@ public class XProcessInterpreterBuilder extends Builder<XProcess> implements XPr
                     }
                 }
 
-                if (context.firstElseBranchEvent != null) {
+                if (context.firstElseBranchEvent != null) {// && !(context.firstElseBranchEvent instanceof XFakeEvent)) {
                     switch (context.kind) {
                         case Linear:
                             assert false;
@@ -347,7 +331,7 @@ public class XProcessInterpreterBuilder extends Builder<XProcess> implements XPr
                             break;
                     }
                 }
-                if (context.lastElseBranchEvent != null) {
+                if (context.lastElseBranchEvent != null) {// && !(context.lastElseBranchEvent instanceof XFakeEvent)) {
                     switch (context.kind) {
                         case Linear:
                             assert false;
@@ -368,13 +352,13 @@ public class XProcessInterpreterBuilder extends Builder<XProcess> implements XPr
                     assert context.lastElseBranchEvent == null  : context.lastElseBranchEvent.toString();
 
                     if (context.needToBindContinueEvents()) {
-                        for (XEvent continueingEvent : context.continueingEvents) {
-                            graphBuilder.addLinearEdge(continueingEvent, context.conditionEvent);
+                        for (XFakeEvent continueingEvent : context.continueingEvents) {
+                            graphBuilder.replaceEvent(continueingEvent, context.conditionEvent);
                         }
                     }
                     if (context.needToBindBreakEvents()) {
-                        for (XEvent breakingEvent : context.breakingEvents) {
-                            graphBuilder.addLinearEdge(breakingEvent, nextEvent);
+                        for (XFakeEvent breakingEvent : context.breakingEvents) {
+                            graphBuilder.replaceEvent(breakingEvent, nextEvent);
                             alreadySetEdgeToNextEvent = true;
                         }
                     }
@@ -392,7 +376,9 @@ public class XProcessInterpreterBuilder extends Builder<XProcess> implements XPr
             switch (context.state) {
                 case WaitingNextLinearEvent: {
                     if (!alreadySetEdgeToNextEvent) {
-                        processNextLinearEvent(nextEvent);
+                        if (previousEvent != null) {
+                            graphBuilder.addLinearEdge(previousEvent, nextEvent);
+                        }
                         alreadySetEdgeToNextEvent = true;
                     }
                 }
@@ -447,12 +433,6 @@ public class XProcessInterpreterBuilder extends Builder<XProcess> implements XPr
         previousEvent = nextEvent;
     }
 
-
-    private void processNextLinearEvent(XEvent nextEvent) {
-        if (previousEvent != null) {
-            graphBuilder.addLinearEdge(previousEvent, nextEvent);
-        }
-    }
 
     private XEventInfo createEventInfo() {
         return new XEventInfo(processId);
@@ -537,6 +517,14 @@ public class XProcessInterpreterBuilder extends Builder<XProcess> implements XPr
         context.addContinueEvent(emitJumpEvent());
         context.state = ContextState.JustJumped;
     }
+
+    //public void processNoOperation() {
+    //    if (!contextStack.isEmpty()) {
+    //        XBlockContext context = contextStack.peek();
+    //        context.addNopEvent(emitFakeComputationEvent());
+    //    }
+    //}
+
 
     // =================================================================================================================
 
