@@ -37,7 +37,6 @@ public abstract class XMemoryEventBase extends XEventBase implements XMemoryEven
 
     @Override
     public int hashCode() {
-
         return Objects.hash(getDestination(), getSource());
     }
 }

@@ -1,11 +1,11 @@
 package mousquetaires.languages.syntax.xgraph.events.controlflow;
 
-import mousquetaires.languages.syntax.xgraph.events.XEventBase;
+import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeEvent;
 import mousquetaires.languages.syntax.xgraph.processes.XEventInfo;
 import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
 
 
-public class XJumpEvent extends XEventBase implements XControlFlowEvent {
+public class XJumpEvent extends XFakeEvent implements XControlFlowEvent {
 
     public XJumpEvent(XEventInfo info) {
         super(info);
@@ -18,11 +18,23 @@ public class XJumpEvent extends XEventBase implements XControlFlowEvent {
 
     @Override
     public String toString() {
-        return "[JUMP_" + getUniqueId() + "]";
+        return "[" + getUniqueId() + "]";
     }
 
     @Override
     public String getUniqueId() {
         return super.getUniqueId() + "_jump";
     }
+
+    //@Override
+    //public boolean equals(Object o) {
+    //    if (this == o) return true;
+    //    if (!(o instanceof XEvent)) return false;
+    //    XEvent other = (XEvent) o;
+    //    return other instanceof XJumpEvent &&
+    //            getInfo().getProcessId().equals(other.getInfo().getProcessId());
+    //}
+    //
+    ////todo: override hashcode!
+
 }

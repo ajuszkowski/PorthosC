@@ -7,7 +7,10 @@ import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.operators.XOperator;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLocalMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
@@ -118,6 +121,18 @@ public class XProcessTestBuilder extends Builder<XProcess> implements XProcessBu
     //    return new Pair<>(entry, exit);
     //}
 
+    public XComputationEvent createComputationEvent(XLocalMemoryUnit first) {
+        XComputationEvent event = new XNullaryComputationEvent(createEventInfo(), first);
+        events.add(event);
+        return event;
+    }
+
+    public XComputationEvent createComputationEvent(XOperator operator, XLocalMemoryUnit first) {
+        XComputationEvent event = new XUnaryOperationEvent(createEventInfo(), operator, first);
+        events.add(event);
+        return event;
+    }
+
     public XComputationEvent createComputationEvent(XOperator operator, XLocalMemoryUnit first, XLocalMemoryUnit second) {
         XComputationEvent event = new XBinaryOperationEvent(createEventInfo(), operator, first, second);
         events.add(event);
@@ -170,6 +185,12 @@ public class XProcessTestBuilder extends Builder<XProcess> implements XProcessBu
     public void processBranchingEvent(XComputationEvent condition, XEvent firstThen, XEvent firstElse) {
         thenBranchingJumpsMap.put(condition, firstThen);
         elseBranchingJumpsMap.put(condition, firstElse);
+    }
+
+    public XJumpEvent createJumpEvent() {
+        XJumpEvent event = new XJumpEvent(createEventInfo());
+        events.add(event);
+        return event;
     }
 
     private XEventInfo createEventInfo() {

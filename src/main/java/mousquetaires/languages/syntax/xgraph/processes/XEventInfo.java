@@ -16,23 +16,27 @@ public class XEventInfo {
     //public final String instruction; // todo: returnType
 
     /** ensures that events in a trace are unique */
-    //private final int stamp;
+    private final int stamp;
     // todo: perhaps add nullable labels to the event info - for jumps // <- ??
 
     //todo: package-private (after removing the folder 'tests' from tests project root)
     public XEventInfo(String processId) {
         this.processId = processId;
-        //this.stamp = newStamp();
+        this.stamp = newStamp();
     }
 
     public String getProcessId() {
         return processId;
     }
 
-    //private static int stampGlobalCounter = 0;
-    //private static int newStamp() {
-    //    return stampGlobalCounter++;
-    //}
+    public int getStamp() {
+        return stamp;
+    }
+
+    private static int stampGlobalCounter = 0;
+    private static int newStamp() {
+        return stampGlobalCounter++;
+    }
 
     @Override
     public boolean equals(Object o) {

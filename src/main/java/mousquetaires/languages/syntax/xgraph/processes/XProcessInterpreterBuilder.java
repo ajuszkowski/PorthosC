@@ -5,7 +5,10 @@ import com.google.common.collect.ImmutableMap;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.*;
+import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperationEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.operators.XOperator;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeComputationEvent;
@@ -263,16 +266,18 @@ public class XProcessInterpreterBuilder extends Builder<XProcess> implements XPr
         if (!readyContexts.isEmpty()) {
             for (XBlockContext context : readyContexts) {
 
-                if (context.firstThenBranchEvent instanceof XFakeComputationEvent) {
+                if (context.firstThenBranchEvent instanceof XFakeEvent) {
                     context.firstThenBranchEvent = null;
                 }
-                if (context.lastThenBranchEvent instanceof XFakeComputationEvent) {
+                if (context.lastThenBranchEvent instanceof XFakeEvent) {// ||
+                        //context.lastThenBranchEvent instanceof XControlFlowEvent) {
                     context.lastThenBranchEvent = null;
                 }
-                if (context.firstElseBranchEvent instanceof XFakeComputationEvent) {
+                if (context.firstElseBranchEvent instanceof XFakeEvent) {
                     context.firstElseBranchEvent = null;
                 }
-                if (context.lastElseBranchEvent instanceof XFakeComputationEvent) {
+                if (context.lastElseBranchEvent instanceof XFakeEvent) {// ||
+                        //context.lastElseBranchEvent instanceof XControlFlowEvent) {
                     context.lastElseBranchEvent = null;
                 }
 
