@@ -1,6 +1,5 @@
 package mousquetaires.languages.syntax.xgraph.processes;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
@@ -16,7 +15,6 @@ public class XProcess implements XEntity {
     public final String processId;
     public final XEntryEvent entryEvent;
     public final XExitEvent exitEvent;
-    /*private*/public final ImmutableList<XEvent> events; //TODO: get rid of this list, it's duplicating
     /*private*/public final ImmutableMap<XEvent, XEvent> nextEventMap;//next, goto jumps
     /*private*/public final ImmutableMap<XComputationEvent, XEvent> thenBranchingJumpsMap; //if(true), while(true)
     /*private*/public final ImmutableMap<XComputationEvent, XEvent> elseBranchingJumpsMap; //if(false)
@@ -25,7 +23,6 @@ public class XProcess implements XEntity {
         this.entryEvent = builder.buildEntryEvent();
         this.exitEvent = builder.buildExitEvent();
         this.processId = builder.buildProcessId();
-        this.events = builder.buildEvents();
         this.nextEventMap = builder.buildNextEventMap();
         this.thenBranchingJumpsMap = builder.buildThenBranchingJumpsMap();
         this.elseBranchingJumpsMap = builder.buildElseBranchingJumpsMap();

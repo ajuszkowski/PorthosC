@@ -1,57 +1,32 @@
 package mousquetaires.languages.syntax.xgraph.processes.interpretation;
 
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.processes.XProcess;
-
-import java.util.HashSet;
-import java.util.Set;
 
 
 class XProcessVerifier {
 
     public static boolean verify(XProcess process) {
-        // assert events also
-        for (XEvent event : process.events) {
-            if (process.thenBranchingJumpsMap.containsKey(event)) {
-                if (!process.elseBranchingJumpsMap.containsKey(event)) {
-                    assert false: "then without else, src: " + event;
-                }
-                assert !process.nextEventMap.containsKey(event) : "too many srcs " + event + ": then and eps";
-            }
-            else if (process.elseBranchingJumpsMap.containsKey(event)) {
-                if (!process.thenBranchingJumpsMap.containsKey(event)) {
-                    assert false: "else without then, src: " + event + ": else and eps";
-                }
-            }
-            else {
-                if (!(event instanceof XExitEvent)) {
-                    assert process.nextEventMap.containsKey(event) : "lack src " + event;
-                }
-            }
-            if (!(event instanceof XEntryEvent)
-                    && !process.nextEventMap.containsValue(event)
-                    && !process.thenBranchingJumpsMap.containsValue(event)
-                    && !process.elseBranchingJumpsMap.containsValue(event) ) {
-                System.out.println("dead code: " + event);
-            }
+        for (XComputationEvent event : process.thenBranchingJumpsMap.keySet()) {
+            assert process.elseBranchingJumpsMap.containsKey(event) : "then without else: " + event;
         }
-
-        Set<XEvent> allEventsFromTransitions = new HashSet<>();
-        allEventsFromTransitions.addAll(process.nextEventMap.keySet());
-        allEventsFromTransitions.addAll(process.thenBranchingJumpsMap.keySet());
-        allEventsFromTransitions.addAll(process.elseBranchingJumpsMap.keySet());
-        allEventsFromTransitions.addAll(process.nextEventMap.values());
-        allEventsFromTransitions.addAll(process.thenBranchingJumpsMap.values());
-        allEventsFromTransitions.addAll(process.elseBranchingJumpsMap.values());
-        Set<XEvent> allEventsRegistered = new HashSet<>(process.events);
-
-        for (XEvent eventFromTransition : allEventsFromTransitions) {
-            assert allEventsRegistered.contains(eventFromTransition) : "not registered event: " + eventFromTransition;
+        for (XComputationEvent event : process.elseBranchingJumpsMap.keySet()) {
+            assert process.thenBranchingJumpsMap.containsKey(event) : "else without then: " + event;
+            assert !process.nextEventMap.containsKey(event) : "both conditional-jump and next-jump for " + event;
         }
-        for (XEvent eventRegistered : allEventsRegistered) {
-            assert allEventsFromTransitions.contains(eventRegistered) : "event without a transition: " + eventRegistered;
+        for (XEvent event : process.nextEventMap.keySet()) {
+            if (event instanceof XComputationEvent) {
+                XComputationEvent computEvent = (XComputationEvent) event;
+                assert !process.thenBranchingJumpsMap.containsKey(computEvent) : "both next-jump and conditional-jump for condition: " + computEvent;
+                assert !process.elseBranchingJumpsMap.containsKey(computEvent) : "both next-jump and conditional-jump for condition: " + computEvent;
+            }
+            else if (event instanceof XExitEvent) {
+                assert !process.nextEventMap.containsValue(event) : "next-jump out of exit event";
+                assert !process.thenBranchingJumpsMap.containsValue(event) : "then-jump out of exit event";
+                assert !process.elseBranchingJumpsMap.containsValue(event) : "else-jump out of exit event";
+            }
         }
 
         return true;

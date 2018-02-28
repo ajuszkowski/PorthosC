@@ -100,11 +100,6 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> implements 
     }
 
     @Override
-    public ImmutableList<XEvent> buildEvents() {
-        return graphBuilder.buildEvents();
-    }
-
-    @Override
     public ImmutableMap<XEvent, XEvent> buildNextEventMap() {
         return graphBuilder.buildNextEventMap();
     }

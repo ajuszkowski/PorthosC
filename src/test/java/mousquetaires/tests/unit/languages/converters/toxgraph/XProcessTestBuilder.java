@@ -27,7 +27,6 @@ public class XProcessTestBuilder extends Builder<XProcess> implements XProcessBu
     private String processId;
     private XEntryEvent entryEvent;
     private XExitEvent exitEvent;
-    private ImmutableList.Builder<XEvent> events;
 
     private ImmutableMap.Builder<XEvent, XEvent> nextEventMap;
     private ImmutableMap.Builder<XComputationEvent, XEvent> thenBranchingJumpsMap;
@@ -43,8 +42,6 @@ public class XProcessTestBuilder extends Builder<XProcess> implements XProcessBu
         //allEventsList.addAll(elseBranchingJumpsMap.keySet());
         //ImmutableList<XEvent> allEvents = ImmutableList.copyOf(allEventsList);
         //Pair<XEntryEvent, XExitEvent> entryExitPair = XProcessHelper.findEntryAndExitEvents(allEvents);
-        this.events = new ImmutableList.Builder<>();
-        events.add(this.entryEvent);
         //events.add(this.exitEvent);
         this.nextEventMap = new ImmutableMap.Builder<>();
         this.thenBranchingJumpsMap = new ImmutableMap.Builder<>();
@@ -64,11 +61,6 @@ public class XProcessTestBuilder extends Builder<XProcess> implements XProcessBu
     @Override
     public XExitEvent buildExitEvent() {
         return exitEvent;
-    }
-
-    @Override
-    public ImmutableList<XEvent> buildEvents() {
-        return events.build();
     }
 
     @Override
@@ -122,39 +114,27 @@ public class XProcessTestBuilder extends Builder<XProcess> implements XProcessBu
     //}
 
     public XComputationEvent createComputationEvent(XLocalMemoryUnit first) {
-        XComputationEvent event = new XNullaryComputationEvent(createEventInfo(), first);
-        events.add(event);
-        return event;
+        return new XNullaryComputationEvent(createEventInfo(), first);
     }
 
     public XComputationEvent createComputationEvent(XZOperator operator, XLocalMemoryUnit first) {
-        XComputationEvent event = new XUnaryOperationEvent(createEventInfo(), operator, first);
-        events.add(event);
-        return event;
+        return new XUnaryOperationEvent(createEventInfo(), operator, first);
     }
 
     public XComputationEvent createComputationEvent(XZOperator operator, XLocalMemoryUnit first, XLocalMemoryUnit second) {
-        XComputationEvent event = new XBinaryOperationEvent(createEventInfo(), operator, first, second);
-        events.add(event);
-        return event;
+        return new XBinaryOperationEvent(createEventInfo(), operator, first, second);
     }
 
     public XLocalMemoryEvent createAssignmentEvent(XLocalMemoryUnit left, XLocalMemoryUnit right) {
-        XLocalMemoryEvent event = new XRegisterMemoryEvent(createEventInfo(), left, right);
-        events.add(event);
-        return event;
+        return new XRegisterMemoryEvent(createEventInfo(), left, right);
     }
 
     public XLoadMemoryEvent createAssignmentEvent(XLocalMemoryUnit left, XSharedMemoryUnit right) {
-        XLoadMemoryEvent event = new XLoadMemoryEvent(createEventInfo(), left, right);
-        events.add(event);
-        return event;
+        return new XLoadMemoryEvent(createEventInfo(), left, right);
     }
 
     public XStoreMemoryEvent createAssignmentEvent(XSharedMemoryUnit left, XLocalMemoryUnit right) {
-        XStoreMemoryEvent event = new XStoreMemoryEvent(createEventInfo(), left, right);
-        events.add(event);
-        return event;
+        return new XStoreMemoryEvent(createEventInfo(), left, right);
     }
 
     public void processFirstEvent(XEvent postEntryEvent) {
