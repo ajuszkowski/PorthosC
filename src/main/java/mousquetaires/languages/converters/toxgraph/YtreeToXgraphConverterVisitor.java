@@ -39,7 +39,7 @@ import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
 import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
 import mousquetaires.languages.visitors.ytree.YtreeVisitorBase;
 import mousquetaires.utils.exceptions.NotImplementedException;
-import mousquetaires.utils.exceptions.xgraph.XCompilationError;
+import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 
 
 // TODO: move this visitor to converter (replace conv. with visitor)
@@ -259,7 +259,7 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
                 program.currentProcess.processLoopContinueStatement();
                 break;
             default:
-                throw new XCompilationError("Unknown jump statement kind: " + node.getKind());
+                throw new XInterpretationError("Unknown jump statement kind: " + node.getKind());
         }
         return null; //program.currentProcess.emitFakeEvent();
     }

@@ -25,7 +25,6 @@ class XBlockContext {
 
     /*private*/public List<XFakeEvent> continueingEvents;
     /*private*/public List<XFakeEvent> breakingEvents;
-    /*private*/public List<XFakeEvent> nopEvents;
 
     public XBlockContext(XBlockContextKind kind) {
         this.kind = kind;
@@ -70,21 +69,6 @@ class XBlockContext {
             breakingEvents = new ArrayList<>();
         }
         breakingEvents.add(previousEvent);
-    }
-
-    public void addNopEvent(XFakeEvent nopEvent) {
-        if (nopEvents == null) {
-            nopEvents = new ArrayList<>();
-        }
-        nopEvents.add(nopEvent);
-    }
-
-    public boolean hasThenBranch() {
-        return lastThenBranchEvent != null;
-    }
-
-    public boolean hasElseBranch() {
-        return lastElseBranchEvent != null;
     }
 
     public boolean needToBindContinueEvents() {

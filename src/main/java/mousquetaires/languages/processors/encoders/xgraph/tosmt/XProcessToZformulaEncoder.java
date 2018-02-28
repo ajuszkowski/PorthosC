@@ -3,11 +3,11 @@ package mousquetaires.languages.processors.encoders.xgraph.tosmt;
 import mousquetaires.languages.processors.encoders.xgraph.tosmt.helpers.ZDataFlowEncoder;
 
 
-public class XProcessToZ3Encoder {
+public class XProcessToZformulaEncoder {
 
     private final ZDataFlowEncoder dataFlowEncoder;
 
-    public XProcessToZ3Encoder(ZDataFlowEncoder dataFlowEncoder) {
+    public XProcessToZformulaEncoder(ZDataFlowEncoder dataFlowEncoder) {
         this.dataFlowEncoder = dataFlowEncoder;
         //this.controlFlowEncoder = new XControlFlowEncoder(ctx, process);
         //this.dataFlowEncoder = new XDataFlowEncoder(ctx, process);

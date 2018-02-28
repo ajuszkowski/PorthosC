@@ -18,7 +18,7 @@ import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.processes.XProcess;
 import mousquetaires.languages.syntax.xgraph.processes.XProcessBuilder;
 import mousquetaires.utils.StringUtils;
-import mousquetaires.utils.exceptions.xgraph.XCompilationError;
+import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import mousquetaires.utils.exceptions.xgraph.XCompilerUsageError;
 import mousquetaires.utils.patterns.Builder;
 
@@ -51,13 +51,12 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> implements 
     /*private*/ final XGraphBuilder graphBuilder;
 
     // todo: add add/put methods with non-null checks
-    //private final ContextStack loopsStack;
     private final Stack<XBlockContext> contextStack;
     private final Set<XBlockContext> readyContexts;
-    //private final Set<NonlinearBlockInfo> readyLoops;
 
 
     private XEvent previousEvent;
+    private int previousEventDistance;
 
     private final XMemoryManager memoryManager;
 
@@ -135,7 +134,7 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> implements 
         else if (memoryUnit instanceof XLocalMemoryUnit) { // also here: XComputationEvent
             return (XLocalMemoryUnit) memoryUnit;
         }
-        throw new XCompilationError("Illegal attempt to write to the local memory a memory unit of type "
+        throw new XInterpretationError("Illegal attempt to write to the local memory a memory unit of type "
                 + memoryUnit.getClass().getSimpleName());
     }
 
@@ -149,7 +148,7 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> implements 
         if (event instanceof XComputationEvent) {
             return (XComputationEvent) event;
         }
-        throw new XCompilationError("Attempt to write to the memory a non-memory event of type "
+        throw new XInterpretationError("Attempt to write to the memory a non-memory event of type "
                 + event.getClass().getSimpleName());
     }
 
@@ -163,17 +162,22 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> implements 
         return emitComputationEvent(constant);
     }
 
-    //
-    //// TODO: very bad, remove this!!!
-    //public XFakeEvent emitFakeEvent() {
-    //    return new XFakeEvent(createEventInfo());
-    //}
-    //
-    //public XComputationEvent evaluateLocalMemoryUnit(XLocalMemoryUnit localMemoryUnit) {
-    //    return evaluateIfNecessary(localMemoryUnit);
-    //}
-
     // --
+
+    private void addAndProcessEntryEvent() {
+        XEntryEvent entryEvent = new XEntryEvent(createEventInfo());
+        graphBuilder.setEntryEvent(entryEvent);
+        graphBuilder.addEvent(entryEvent);
+        previousEventDistance = 0;
+        processNextEvent(entryEvent);
+    }
+
+    private void addAndProcessExitEvent() {
+        XExitEvent exitEvent = new XExitEvent(createEventInfo());
+        assert contextStack.size() == 1; //only entry linear context
+        addAndProcessNextEvent(exitEvent);
+        graphBuilder.setExitEvent(exitEvent);
+    }
 
     ///**
     // * For modelling empty statement
@@ -237,20 +241,6 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> implements 
         return event;
     }
 
-    private void addAndProcessEntryEvent() {
-        XEntryEvent entryEvent = new XEntryEvent(createEventInfo());
-        graphBuilder.setEntryEvent(entryEvent);
-        graphBuilder.addEvent(entryEvent);
-        processNextEvent(entryEvent);
-    }
-
-    private void addAndProcessExitEvent() {
-        XExitEvent exitEvent = new XExitEvent(createEventInfo());
-        assert contextStack.size() == 1; //only entry linear context
-        addAndProcessNextEvent(exitEvent);
-        graphBuilder.setExitEvent(exitEvent);
-    }
-
     private void addAndProcessNextEvent(XEvent nextEvent) {
         if (!(nextEvent instanceof XFakeEvent)) { // TODO: looks like hack here
             graphBuilder.addEvent(nextEvent);
@@ -266,7 +256,7 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> implements 
         if (!readyContexts.isEmpty()) {
             for (XBlockContext context : readyContexts) {
 
-                if (context.firstThenBranchEvent != null) {// && !(context.firstThenBranchEvent instanceof XFakeEvent)) {
+                if (context.firstThenBranchEvent != null) { // && !(context.firstThenBranchEvent instanceof XFakeEvent)) {
                     switch (context.kind) {
                         case Linear:
                             assert false;
@@ -458,7 +448,7 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> implements 
 
     public void finishConditionDefinition() {
         if (!(previousEvent instanceof XComputationEvent)) {
-            throw new XCompilationError("Attempt to make branching on non-computation event "
+            throw new XInterpretationError("Attempt to make branching on non-computation event "
                     + StringUtils.wrap(previousEvent.toString())
                     + " of type " + previousEvent.getClass().getSimpleName());
         }
@@ -499,7 +489,7 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> implements 
         }
         context.currentBranchKind = null;
         context.setState(ContextState.WaitingAdditionalCommand);
-        previousEvent = null; //todo: check
+        previousEvent = context.conditionEvent; //todo: check
     }
 
 

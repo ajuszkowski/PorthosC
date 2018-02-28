@@ -12,9 +12,9 @@ import mousquetaires.languages.syntax.xgraph.processes.XProcess;
 
 // Scala library for parsing and printing the SMT-LIB format
 // https://github.com/regb/scala-smtlib
-public class XProgramToZ3Encoder {
+public class XProgramToZformulaEncoder {
 
-    public XProgramToZ3Encoder() {
+    public XProgramToZformulaEncoder() {
         // todo: remember timeout
     }
 
@@ -24,7 +24,7 @@ public class XProgramToZ3Encoder {
 
         ZBoolConjunctionBuilder programFormula = new ZBoolConjunctionBuilder();
         for (XProcess process : program.getAllProcesses()) {
-            XProcessToZ3Encoder processEncoder = new XProcessToZ3Encoder(dataFlowEncoder);
+            XProcessToZformulaEncoder processEncoder = new XProcessToZformulaEncoder(dataFlowEncoder);
             //ZBoolFormula processFormula = processEncoder.encode(process); //process.accept(processEncoder);
             //programFormula.addSubFormula(processFormula);
         }

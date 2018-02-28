@@ -3,7 +3,7 @@ package mousquetaires.utils.exceptions.xgraph;
 import mousquetaires.utils.StringUtils;
 
 
-public class XInvalidTypeError extends XCompilationError {
+public class XInvalidTypeError extends XInterpretationError {
 
     public XInvalidTypeError(Object node, Class<?> castToClass) {
         super(getCastErrorMessage(node, castToClass));

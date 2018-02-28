@@ -21,6 +21,7 @@ class XGraphBuilder {
     /*private*/ final HashMap<XEvent, XEvent> nextEventMap; // TODO: immutable map? check this
     /*private*/ final HashMap<XComputationEvent, XEvent> thenBranchingJumpsMap;
     /*private*/ final HashMap<XComputationEvent, XEvent> elseBranchingJumpsMap;
+
     /*private*/ final HashMap<XEvent, Integer> distances;
 
     public XGraphBuilder() {
@@ -34,11 +35,15 @@ class XGraphBuilder {
     public void setEntryEvent(XEntryEvent event) {
         assert entryEvent == null: entryEvent;
         entryEvent = event;
+        distances.put(entryEvent, 0);
     }
 
     public void setExitEvent(XExitEvent event) {
         assert exitEvent == null: exitEvent;
         exitEvent = event;
+        assert nextEventMap.containsValue(exitEvent) ||
+                thenBranchingJumpsMap.containsValue(exitEvent) ||
+                elseBranchingJumpsMap.containsValue(exitEvent);
     }
 
     public void addEvent(XEvent event) {
@@ -105,7 +110,6 @@ class XGraphBuilder {
         }
         assert removed: "could not find any predecessor for continueing event " + StringUtils.wrap(fakeEvent);
     }
-
 
     private void verifyEvent(XEvent event) {
         if (event == null) {

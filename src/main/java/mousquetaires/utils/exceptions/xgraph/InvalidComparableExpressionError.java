@@ -1,6 +1,6 @@
 package mousquetaires.utils.exceptions.xgraph;
 
-public class InvalidComparableExpressionError extends XCompilationError {
+public class InvalidComparableExpressionError extends XInterpretationError {
 
     public InvalidComparableExpressionError(String originalExpr) {
         super("Cannot compare expression '" + originalExpr + "'");

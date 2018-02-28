@@ -16,7 +16,7 @@ import org.junit.Test;
 public class C11ConvertLoopStatementTest extends AbstractXgraphUnitTest {
 
     @Test
-    public void test_loopStatement() {
+    public void test() {
         XProcessTestBuilder builder = new XProcessTestBuilder("?");//TODO: process id
         XMemoryManager memoryManager = new XMemoryManager(ProgramLanguage.C11, null);
         XRegister registerX = memoryManager.getLocalMemoryUnit("x");
