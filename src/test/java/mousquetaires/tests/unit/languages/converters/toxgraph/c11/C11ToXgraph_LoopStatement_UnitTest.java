@@ -8,12 +8,12 @@ import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
 import mousquetaires.languages.syntax.xgraph.memories.XRegister;
 import mousquetaires.languages.syntax.xgraph.processes.XProcess;
 import mousquetaires.tests.unit.UnitTestPaths;
-import mousquetaires.tests.unit.languages.converters.toxgraph.AbstractXgraphUnitTest;
+import mousquetaires.tests.unit.languages.converters.toxgraph.C11ToXgraph_UnitTestBase;
 import mousquetaires.tests.unit.languages.converters.toxgraph.XProcessTestBuilder;
 import org.junit.Test;
 
 
-public class C11ConvertLoopStatementTest extends AbstractXgraphUnitTest {
+public class C11ToXgraph_LoopStatement_UnitTest extends C11ToXgraph_UnitTestBase {
 
     @Test
     public void test() {

@@ -13,10 +13,10 @@ import org.junit.Test;
 import java.util.Iterator;
 
 
-public class C11ParseBranchingStatementTest extends C11ParseStatementTest {
+public class C11ToYtree_BranchingStatement_UnitTest extends C11ToYtree_Statement_UnitTest {
 
     @Test
-    public void test_branchingStatement() {
+    public void test() {
         Iterator<? extends YEntity> expected = getIterator(new YFunctionDefinition(
                 new YCompoundStatement(true,
                         new YBranchingStatement(

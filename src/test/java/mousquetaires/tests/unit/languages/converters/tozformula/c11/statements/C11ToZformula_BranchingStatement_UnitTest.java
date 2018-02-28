@@ -1,11 +1,11 @@
 package mousquetaires.tests.unit.languages.converters.tozformula.c11.statements;
 
 import mousquetaires.tests.unit.UnitTestPaths;
-import mousquetaires.tests.unit.languages.converters.tozformula.AbstractZformulaUnitTest;
+import mousquetaires.tests.unit.languages.converters.tozformula.C11ToZformula_UnitTestBase;
 import org.junit.Test;
 
 
-public class C11ToZformula_BranchingStatement_ConversionTest extends AbstractZformulaUnitTest {
+public class C11ToZformula_BranchingStatement_UnitTest extends C11ToZformula_UnitTestBase {
 
     @Test
     public void test() {

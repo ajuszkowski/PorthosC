@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 
-public abstract class AbstractYtreeUnitTest extends AbstractConverterUnitTest<YEntity> {
+public abstract class C11ToYtree_UnitTestBase extends AbstractConverterUnitTest<YEntity> {
 
     @Override
     protected Iterator<? extends YEntity> parseTestFile(String testFile) {

@@ -15,11 +15,11 @@ import org.junit.Test;
 import java.util.Iterator;
 
 
-public class C11ParseProcessStatementTest extends C11ParseStatementTest {
+public class C11ToYtree_ProcessStatement_UnitTest extends C11ToYtree_Statement_UnitTest {
 
     @Test
     @Ignore("process statements syntax is temporarily not supported")
-    public void test_processStatement() {
+    public void test() {
         Iterator<? extends YEntity> expected = getIterator(
                 new YProcessStatement("1", new YCompoundStatement(true,
                         new YVariableDeclarationStatement(typeInt, variableA),
