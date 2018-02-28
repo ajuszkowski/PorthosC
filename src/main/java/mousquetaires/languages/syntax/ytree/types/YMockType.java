@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.ytree.types;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
 import java.util.Iterator;

@@ -3,7 +3,7 @@ package mousquetaires.tests.unit.languages.converters.toxgraph;
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.converters.toxgraph.YtreeToXgraphConverter;
-import mousquetaires.languages.parsers.YtreeParser;
+import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.processes.XProcess;

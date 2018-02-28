@@ -1,6 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.memories;
 
 import mousquetaires.languages.syntax.xgraph.XEntity;
+import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 
 
 public interface XMemoryUnit extends XEntity {
@@ -8,6 +9,8 @@ public interface XMemoryUnit extends XEntity {
     String getName();
 
     Bitness getBitness();
+
+    <T> T accept(XMemoryUnitVisitor<T> visitor);
 
     enum Bitness {
         bit1,

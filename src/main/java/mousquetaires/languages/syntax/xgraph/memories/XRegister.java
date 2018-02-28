@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.xgraph.memories;
 
-import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
+import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 
 
 public class XRegister extends XMemoryUnitBase implements XLocalMemoryUnit {
@@ -10,7 +10,7 @@ public class XRegister extends XMemoryUnitBase implements XLocalMemoryUnit {
     }
 
     @Override
-    public <T> T accept(XgraphVisitor<T> visitor) {
+    public <T> T accept(XMemoryUnitVisitor<T> visitor) {
         return visitor.visit(this);
     }
 }

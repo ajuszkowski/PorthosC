@@ -2,7 +2,7 @@ package mousquetaires.tests.unit.languages.converters.toytree;
 
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
-import mousquetaires.languages.parsers.YtreeParser;
+import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.tests.TestFailedException;

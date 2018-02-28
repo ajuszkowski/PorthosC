@@ -3,7 +3,7 @@ package mousquetaires.languages.syntax.xgraph.events.fakes;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
-import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
+import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 import mousquetaires.utils.exceptions.NotSupportedException;
 
 
@@ -19,7 +19,7 @@ public class XFakeComputationEvent extends XFakeEvent implements XComputationEve
     }
 
     @Override
-    public <T> T accept(XgraphVisitor<T> visitor) {
+    public <T> T accept(XEventVisitor<T> visitor) {
         throw new NotSupportedException();
     }
 

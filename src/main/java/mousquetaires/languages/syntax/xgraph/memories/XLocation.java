@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.xgraph.memories;
 
-import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
+import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 
 
 public class XLocation extends XMemoryUnitBase implements XSharedMemoryUnit {
@@ -10,7 +10,7 @@ public class XLocation extends XMemoryUnitBase implements XSharedMemoryUnit {
     }
 
     @Override
-    public <T> T accept(XgraphVisitor<T> visitor) {
+    public <T> T accept(XMemoryUnitVisitor<T> visitor) {
         return visitor.visit(this);
     }
 }

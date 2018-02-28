@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.ytree.types.signatures;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.temporaries.YTempEntity;
-import mousquetaires.languages.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.patterns.Builder;
 
 import java.util.ArrayList;

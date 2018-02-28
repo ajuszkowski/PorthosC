@@ -6,7 +6,7 @@ import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
+import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 import mousquetaires.utils.StringUtils;
 
 
@@ -33,7 +33,7 @@ public class XProcess implements XEntity {
     }
 
     @Override
-    public <T> T accept(XgraphVisitor<T> visitor) {
+    public <T> T accept(XEventVisitor<T> visitor) {
         return visitor.visit(this);
     }
 

@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.ytree.expressions.ternary;
 
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
-import mousquetaires.languages.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.utils.CollectionUtils;
 

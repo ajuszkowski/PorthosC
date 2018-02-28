@@ -37,7 +37,7 @@ import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
 import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
-import mousquetaires.languages.visitors.ytree.YtreeVisitorBase;
+import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitorBase;
 import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 

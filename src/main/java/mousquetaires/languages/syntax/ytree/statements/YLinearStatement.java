@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.ytree.statements;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
-import mousquetaires.languages.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.CollectionUtils;
 
 import javax.annotation.Nullable;

@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.xgraph;
 
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.processes.XProcess;
-import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
+import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
 public final class XProgram implements XEntity {
@@ -30,7 +30,7 @@ public final class XProgram implements XEntity {
 
 
     @Override
-    public <T> T accept(XgraphVisitor<T> visitor) {
+    public <T> T accept(XEventVisitor<T> visitor) {
         return visitor.visit(this);
     }
 }

@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.ytree.expressions.binary;
 
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
-import mousquetaires.languages.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
 
 public class YIntegerBinaryExpression extends YBinaryExpression {

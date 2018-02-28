@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.xgraph.events.controlflow;
 
 import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
-import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
+import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
 public class XJumpEvent extends XFakeEvent implements XControlFlowEvent {
@@ -12,7 +12,7 @@ public class XJumpEvent extends XFakeEvent implements XControlFlowEvent {
     }
 
     @Override
-    public <T> T accept(XgraphVisitor<T> visitor) {
+    public <T> T accept(XEventVisitor<T> visitor) {
         return visitor.visit(this);
     }
 

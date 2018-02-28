@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.events;
 
 import mousquetaires.languages.syntax.xgraph.XEntity;
-import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
+import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
 public interface XEvent extends XEntity {
@@ -13,5 +13,5 @@ public interface XEvent extends XEntity {
     //
     //XEvent getNextEvent();
 
-    <T> T accept(XgraphVisitor<T> visitor);
+    <T extends XEvent> T accept(XEventVisitor<T> visitor);
 }

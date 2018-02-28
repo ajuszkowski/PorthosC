@@ -3,7 +3,7 @@ package mousquetaires.languages.syntax.xgraph.events.memory;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
-import mousquetaires.languages.visitors.xgraph.XgraphVisitor;
+import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
 /** Write event from local memory (registry, {@link XLocalMemoryUnit})
@@ -27,7 +27,7 @@ public class XStoreMemoryEvent extends XMemoryEventBase implements XSharedMemory
     }
 
     @Override
-    public <T> T accept(XgraphVisitor<T> visitor) {
+    public <T> T accept(XEventVisitor<T> visitor) {
         return visitor.visit(this);
     }
 

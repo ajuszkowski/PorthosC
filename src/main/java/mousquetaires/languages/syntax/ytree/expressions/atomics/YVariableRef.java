@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
-import mousquetaires.languages.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.CollectionUtils;
 
 import java.util.Iterator;
