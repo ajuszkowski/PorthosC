@@ -41,7 +41,7 @@ public YPrimitiveType asUnsigned() {
 }
 
 @Override
-public Iterator<? extends YEntity> getChildrenIterator() {
+public Iterator<YEntity> getChildrenIterator() {
     return YtreeUtils.createIteratorFrom();
 }
 

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class CollectionUtils {
 
-    public static <T> Iterator<? extends T> createIteratorFrom(T firstElement, T[] otherElements) {
+    public static <T> Iterator<T> createIteratorFrom(T firstElement, T[] otherElements) {
         switch (otherElements.length) {
             case 0:
                 return createIteratorFrom(firstElement);
@@ -30,7 +30,7 @@ public class CollectionUtils {
         }
     }
 
-    public static <T> Iterator<? extends T> createIteratorFrom(T... elements) {
+    public static <T> Iterator<T> createIteratorFrom(T... elements) {
         final int length = elements.length;
         if (length == 0) {
             return Collections.emptyIterator();
@@ -41,11 +41,11 @@ public class CollectionUtils {
         return Arrays.asList(elements).iterator();
     }
 
-    public static <T> Iterator<? extends T> createIteratorFrom(Iterable<? extends T> elements) {
+    public static <T> Iterator<T> createIteratorFrom(Iterable<T> elements) {
         return elements.iterator();
     }
 
-    public static <T> Iterator<? extends T> createIteratorFrom(ImmutableList<? extends T> list) {
+    public static <T> Iterator<T> createIteratorFrom(ImmutableList<T> list) {
         return list.listIterator();
     }
 

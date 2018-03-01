@@ -29,7 +29,7 @@ public abstract class YMultiExpression implements YExpression {
     }
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom(elements);
     }
 

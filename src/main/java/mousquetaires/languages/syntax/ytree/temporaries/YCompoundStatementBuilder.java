@@ -67,7 +67,7 @@ public class YCompoundStatementBuilder extends Builder<YCompoundStatement> imple
 
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         throw new UnsupportedOperationException();
     }
 

@@ -30,7 +30,7 @@ public abstract class YUnaryExpression extends YMultiExpression {
     }
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom(getExpression());
     }
 

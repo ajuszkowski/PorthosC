@@ -37,7 +37,7 @@ public class YTempListBuilder<T extends YEntity>
     }
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         throw new UnsupportedOperationException();
     }
 

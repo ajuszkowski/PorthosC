@@ -28,7 +28,7 @@ import java.util.Iterator;
 
 public abstract class YtreeVisitorBase<T> implements YtreeVisitor<T> {
     public final void visitChildren(YEntity node) {
-        Iterator<? extends YEntity> iterator = node.getChildrenIterator();
+        Iterator<YEntity> iterator = node.getChildrenIterator();
         while (iterator.hasNext()) {
             YEntity child = iterator.next();
             child.accept(this);

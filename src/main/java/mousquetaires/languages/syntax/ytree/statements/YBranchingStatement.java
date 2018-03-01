@@ -51,7 +51,7 @@ public class YBranchingStatement extends YStatement {  // TODO: inherit from YJu
     }
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom(getCondition(), getThenBranch(), getElseBranch());
     }
 

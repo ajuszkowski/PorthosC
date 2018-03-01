@@ -22,7 +22,7 @@ public enum YUnaryOperatorKindTemp implements YTempEntity {
 
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         throw new UnsupportedOperationException();
     }
 

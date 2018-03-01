@@ -27,7 +27,7 @@ public class YAssignmentExpression extends YMultiExpression {
     //    ;
     //
     //    @Override
-    //    public Iterator<? extends YEntity> getChildrenIterator() {
+    //    public Iterator<YEntity> getChildrenIterator() {
     //        return YtreeUtils.createIteratorFrom();
     //    }
     //
@@ -57,7 +57,7 @@ public class YAssignmentExpression extends YMultiExpression {
     }
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom(getAssignee(), getExpression());
     }
 

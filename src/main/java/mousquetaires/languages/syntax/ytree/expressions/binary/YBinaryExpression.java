@@ -22,7 +22,7 @@ public abstract class YBinaryExpression extends YMultiExpression {
     }
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom(getLeftExpression(), getRightExpression());
     }
 

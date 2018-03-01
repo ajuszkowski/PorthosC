@@ -32,7 +32,7 @@ public class YProcessStatement extends YUnlabeledStatement {
     }
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom(body);
     }
 

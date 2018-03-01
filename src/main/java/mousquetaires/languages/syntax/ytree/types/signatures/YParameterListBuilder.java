@@ -32,7 +32,7 @@ public class YParameterListBuilder extends Builder<YParameter[]> implements YTem
     }
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         throw new UnsupportedOperationException();
     }
 

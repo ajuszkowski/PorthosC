@@ -30,7 +30,7 @@ public class YFunctionDefinition implements YDefinition {
     }
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom(body);
     }
 

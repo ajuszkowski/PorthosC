@@ -30,7 +30,7 @@ public class YMockType implements YType {
     }
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         throw new NotImplementedException();
     }
 

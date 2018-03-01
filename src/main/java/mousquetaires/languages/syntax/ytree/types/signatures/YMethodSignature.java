@@ -32,7 +32,7 @@ public class YMethodSignature implements YEntity {
     }
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom();
     }
 

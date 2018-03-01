@@ -9,7 +9,7 @@ import java.util.Iterator;
 public abstract class YTempEntityBase implements YTempEntity {
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         throw new UnsupportedOperationException();
     }
 

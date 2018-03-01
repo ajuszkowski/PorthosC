@@ -31,7 +31,7 @@ public int getPointerLevel() {
 }
 
 @Override
-public Iterator<? extends YEntity> getChildrenIterator() {
+public Iterator<YEntity> getChildrenIterator() {
     return YtreeUtils.createIteratorFrom();
 }
 

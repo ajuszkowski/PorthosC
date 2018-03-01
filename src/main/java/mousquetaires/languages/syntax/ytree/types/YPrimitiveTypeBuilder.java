@@ -110,7 +110,7 @@ public class YPrimitiveTypeBuilder extends Builder<YPrimitiveType> implements YT
     }
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         throw new UnsupportedOperationException();
     }
 

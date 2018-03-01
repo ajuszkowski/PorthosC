@@ -43,7 +43,7 @@ public class YVariableRef implements YAssignee {
     }
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom();
     }
 

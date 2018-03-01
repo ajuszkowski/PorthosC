@@ -46,7 +46,7 @@ public class YCompoundStatement extends YStatement {
 
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
+    public Iterator<YEntity> getChildrenIterator() {
         return getStatements().iterator();
     }
 
