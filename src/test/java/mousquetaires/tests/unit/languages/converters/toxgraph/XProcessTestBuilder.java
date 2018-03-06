@@ -1,6 +1,5 @@
 package mousquetaires.tests.unit.languages.converters.toxgraph;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
@@ -18,69 +17,39 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.processes.XProcess;
-import mousquetaires.languages.syntax.xgraph.processes.XProcessBuilder;
 import mousquetaires.utils.patterns.Builder;
 
 
-public class XProcessTestBuilder extends Builder<XProcess> implements XProcessBuilder {
+public class XProcessTestBuilder extends Builder<XProcess> {
 
     private String processId;
     private XEntryEvent entryEvent;
     private XExitEvent exitEvent;
 
-    private ImmutableMap.Builder<XEvent, XEvent> nextEventMap;
-    private ImmutableMap.Builder<XComputationEvent, XEvent> thenBranchingJumpsMap;
-    private ImmutableMap.Builder<XComputationEvent, XEvent> elseBranchingJumpsMap;
+    private ImmutableMap.Builder<XEvent, XEvent> epsilonJumps;
+    private ImmutableMap.Builder<XComputationEvent, XEvent> condTrueJumps;
+    private ImmutableMap.Builder<XComputationEvent, XEvent> condFalseJumps;
 
     public XProcessTestBuilder(String processId) {
         this.processId = processId;
         this.entryEvent = new XEntryEvent(createEventInfo());
-        //this.exitEvent = new XExitEvent(createEventInfo());
+        //this.exit = new XExitEvent(createEventInfo());
         //ArrayList<XEvent> allEventsList = new ArrayList<>();
-        //allEventsList.addAll(nextEventMap.keySet());
-        //allEventsList.addAll(thenBranchingJumpsMap.keySet());
-        //allEventsList.addAll(elseBranchingJumpsMap.keySet());
+        //allEventsList.addAll(epsilonJumps.keySet());
+        //allEventsList.addAll(condTrueJumps.keySet());
+        //allEventsList.addAll(condFalseJumps.keySet());
         //ImmutableList<XEvent> allEvents = ImmutableList.copyOf(allEventsList);
         //Pair<XEntryEvent, XExitEvent> entryExitPair = XProcessHelper.findEntryAndExitEvents(allEvents);
-        //events.add(this.exitEvent);
-        this.nextEventMap = new ImmutableMap.Builder<>();
-        this.thenBranchingJumpsMap = new ImmutableMap.Builder<>();
-        this.elseBranchingJumpsMap = new ImmutableMap.Builder<>();
-    }
-
-    @Override
-    public String buildProcessId() {
-        return processId;
-    }
-
-    @Override
-    public XEntryEvent buildEntryEvent() {
-        return entryEvent;
-    }
-
-    @Override
-    public XExitEvent buildExitEvent() {
-        return exitEvent;
-    }
-
-    @Override
-    public ImmutableMap<XEvent, XEvent> buildNextEventMap() {
-        return nextEventMap.build();
-    }
-
-    @Override
-    public ImmutableMap<XComputationEvent, XEvent> buildThenBranchingJumpsMap() {
-        return thenBranchingJumpsMap.build();
-    }
-
-    @Override
-    public ImmutableMap<XComputationEvent, XEvent> buildElseBranchingJumpsMap() {
-        return elseBranchingJumpsMap.build();
+        //events.add(this.exit);
+        this.epsilonJumps = new ImmutableMap.Builder<>();
+        this.condTrueJumps = new ImmutableMap.Builder<>();
+        this.condFalseJumps = new ImmutableMap.Builder<>();
     }
 
     @Override
     public XProcess build() {
-        return new XProcess(this);
+        return new XProcess(processId, entryEvent, exitEvent,
+                epsilonJumps.build(), condTrueJumps.build(), condFalseJumps.build());
     }
 
 
@@ -138,21 +107,21 @@ public class XProcessTestBuilder extends Builder<XProcess> implements XProcessBu
     }
 
     public void processFirstEvent(XEvent postEntryEvent) {
-        nextEventMap.put(entryEvent, postEntryEvent);
+        epsilonJumps.put(entryEvent, postEntryEvent);
     }
 
     public void processLastEvent(XEvent preExitEvent) {
         exitEvent = new XExitEvent(createEventInfo());
-        nextEventMap.put(preExitEvent, exitEvent);
+        epsilonJumps.put(preExitEvent, exitEvent);
     }
 
     public void processNextEvent(XEvent previous, XEvent next) {
-        nextEventMap.put(previous, next);
+        epsilonJumps.put(previous, next);
     }
 
     public void processBranchingEvent(XComputationEvent condition, XEvent firstThen, XEvent firstElse) {
-        thenBranchingJumpsMap.put(condition, firstThen);
-        elseBranchingJumpsMap.put(condition, firstElse);
+        condTrueJumps.put(condition, firstThen);
+        condFalseJumps.put(condition, firstElse);
     }
 
     private XEventInfo createEventInfo() {

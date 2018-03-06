@@ -13,22 +13,23 @@ import mousquetaires.utils.StringUtils;
 import java.util.*;
 
 
-class XGraphBuilder {
+// private class, DTO builder for XProcess
+class XProcessGraphBuilder {
 
     /*private*/ XEntryEvent entryEvent;
     /*private*/ XExitEvent exitEvent;
     /*private*/ final ImmutableList.Builder<XEvent> events; //TODO: get rid of this redundant array
-    /*private*/ final HashMap<XEvent, XEvent> nextEventMap; // TODO: immutable map? check this
-    /*private*/ final HashMap<XComputationEvent, XEvent> thenBranchingJumpsMap;
-    /*private*/ final HashMap<XComputationEvent, XEvent> elseBranchingJumpsMap;
+    /*private*/ final HashMap<XEvent, XEvent> epsilonJumps; // TODO: immutable map? check this
+    /*private*/ final HashMap<XComputationEvent, XEvent> condTrueJumps;
+    /*private*/ final HashMap<XComputationEvent, XEvent> condFalseJumps;
 
     /*private*/ final HashMap<XEvent, Integer> distances;
 
-    public XGraphBuilder() {
+    public XProcessGraphBuilder() {
         events = new ImmutableList.Builder<>();
-        nextEventMap = new HashMap<>(); // TODO: NOT THE HASH MAP HERE!!!!! or hashmap on event info It must store the references. Maybe another map? where key is the object id?
-        thenBranchingJumpsMap = new HashMap<>();
-        elseBranchingJumpsMap = new HashMap<>();
+        epsilonJumps = new HashMap<>(); // TODO: NOT THE HASH MAP HERE!!!!! or hashmap on event info It must store the references. Maybe another map? where key is the object id?
+        condTrueJumps = new HashMap<>();
+        condFalseJumps = new HashMap<>();
         distances = new HashMap<>();
     }
 
@@ -41,9 +42,9 @@ class XGraphBuilder {
     public void setExitEvent(XExitEvent event) {
         assert exitEvent == null: exitEvent;
         exitEvent = event;
-        assert nextEventMap.containsValue(exitEvent) ||
-                thenBranchingJumpsMap.containsValue(exitEvent) ||
-                elseBranchingJumpsMap.containsValue(exitEvent);
+        assert epsilonJumps.containsValue(exitEvent) ||
+                condTrueJumps.containsValue(exitEvent) ||
+                condFalseJumps.containsValue(exitEvent);
     }
 
     public void addEvent(XEvent event) {
@@ -55,21 +56,21 @@ class XGraphBuilder {
         verifyEvent(from);
         verifyEvent(to);
         assert from != to: "attempt to add an linear edge to the same node " + from;
-        nextEventMap.put(from, to);
+        epsilonJumps.put(from, to);
     }
 
     public void addThenEdge(XComputationEvent from, XEvent to) {
         verifyEvent(from);
         verifyEvent(to);
         //assert from != to: from.toString(); //allowed: `while(1);`
-        thenBranchingJumpsMap.put(from, to);
+        condTrueJumps.put(from, to);
     }
 
     public void addElseEdge(XComputationEvent from, XEvent to) {
         verifyEvent(from);
         verifyEvent(to);
         assert from != to: from.toString();
-        elseBranchingJumpsMap.put(from, to);
+        condFalseJumps.put(from, to);
     }
 
     public ImmutableList<XEvent> buildEvents() {
@@ -77,24 +78,24 @@ class XGraphBuilder {
     }
 
     public ImmutableMap<XEvent, XEvent> buildNextEventMap() {
-        return ImmutableMap.copyOf(nextEventMap);
+        return ImmutableMap.copyOf(epsilonJumps);
     }
 
     public ImmutableMap<XComputationEvent, XEvent> buildThenBranchingJumpsMap() {
-        return ImmutableMap.copyOf(thenBranchingJumpsMap);
+        return ImmutableMap.copyOf(condTrueJumps);
     }
 
     public ImmutableMap<XComputationEvent, XEvent> buildElseBranchingJumpsMap() {
-        return ImmutableMap.copyOf(elseBranchingJumpsMap);
+        return ImmutableMap.copyOf(condFalseJumps);
     }
 
     public void replaceEvent(XFakeEvent fakeEvent, XEvent replaceWithEvent) {
-        nextEventMap.remove(fakeEvent);
+        epsilonJumps.remove(fakeEvent);
 
         boolean removed = false;
-        Set<XEvent> linearPredecessors          = Maps.filterValues(nextEventMap,          succ -> Objects.equals(succ, fakeEvent)).keySet();
-        Set<XComputationEvent> thenPredecessors = Maps.filterValues(thenBranchingJumpsMap, succ -> Objects.equals(succ, fakeEvent)).keySet();
-        Set<XComputationEvent> elsePredecessors = Maps.filterValues(elseBranchingJumpsMap, succ -> Objects.equals(succ, fakeEvent)).keySet();
+        Set<XEvent> linearPredecessors          = Maps.filterValues(epsilonJumps, succ -> Objects.equals(succ, fakeEvent)).keySet();
+        Set<XComputationEvent> thenPredecessors = Maps.filterValues(condTrueJumps, succ -> Objects.equals(succ, fakeEvent)).keySet();
+        Set<XComputationEvent> elsePredecessors = Maps.filterValues(condFalseJumps, succ -> Objects.equals(succ, fakeEvent)).keySet();
 
         for (XEvent linearPredecessor : linearPredecessors) {
             addLinearEdge(linearPredecessor, replaceWithEvent);

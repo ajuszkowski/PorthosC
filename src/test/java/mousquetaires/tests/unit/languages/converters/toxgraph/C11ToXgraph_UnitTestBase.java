@@ -38,11 +38,11 @@ public abstract class C11ToXgraph_UnitTestBase extends AbstractConverterUnitTest
     @Override
     protected void assertObjectsEqual(XProcess expected, XProcess actual) {
         Assert.assertEquals("processes ID mismatch", expected.processId, actual.processId);
-        Assert.assertEquals("entry events do not match", expected.entryEvent, actual.entryEvent);
-        Assert.assertEquals("exit events do not match", expected.exitEvent, actual.exitEvent);
-        assertMapsEqual("nextEventMap mismatch", expected.nextEventMap, actual.nextEventMap);
-        assertMapsEqual("thenBranchingJumpsMap mismatch", expected.thenBranchingJumpsMap, actual.thenBranchingJumpsMap);
-        assertMapsEqual("elseBranchingJumpsMap mismatch", expected.elseBranchingJumpsMap, actual.elseBranchingJumpsMap);
+        Assert.assertEquals("entry events do not match", expected.entry, actual.entry);
+        Assert.assertEquals("exit events do not match", expected.exit, actual.exit);
+        assertMapsEqual("epsilonJumps mismatch", expected.epsilonJumps, actual.epsilonJumps);
+        assertMapsEqual("condTrueJumps mismatch", expected.condTrueJumps, actual.condTrueJumps);
+        assertMapsEqual("condFalseJumps mismatch", expected.condFalseJumps, actual.condFalseJumps);
     }
 
 

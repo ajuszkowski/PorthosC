@@ -3,11 +3,11 @@ package mousquetaires.languages.converters.tozformula;
 import mousquetaires.languages.converters.tozformula.helpers.ZDataFlowEncoder;
 
 
-public class XProcessToZformulaEncoder {
+public class XProcessToZformulaConverter {
 
     private final ZDataFlowEncoder dataFlowEncoder;
 
-    public XProcessToZformulaEncoder(ZDataFlowEncoder dataFlowEncoder) {
+    public XProcessToZformulaConverter(ZDataFlowEncoder dataFlowEncoder) {
         this.dataFlowEncoder = dataFlowEncoder;
         //this.controlFlowEncoder = new XControlFlowEncoder(ctx, process);
         //this.dataFlowEncoder = new XDataFlowEncoder(ctx, process);
@@ -61,14 +61,14 @@ public class XProcessToZformulaEncoder {
     //    XgraphLinearisedTraverser traverser = new XgraphLinearisedTraverser(process);
     //    Queue<Transition> visitQueue = new ArrayDeque<>();
     //    Set<XEvent> visitedEvents = new HashSet<>();
-    //    HashMap<XEvent, List<XEvent>> jointPoints = new HashMap<>(process.thenBranchingJumpsMap.size()); // not more than number of branchings
+    //    HashMap<XEvent, List<XEvent>> jointPoints = new HashMap<>(process.condTrueJumps.size()); // not more than number of branchings
     //
     //    ConjunctiveFormulaBuilder formulaBuilder = new ConjunctiveFormulaBuilder(ctx);
-    //    XEvent entryEvent = traverser.buildEntryEvent();
-    //    visitedEvents.add(entryEvent);
+    //    XEvent entry = traverser.buildEntryEvent();
+    //    visitedEvents.add(entry);
     //
-    //    XEvent firstEvent = traverser.getNextLinearEvent(entryEvent);
-    //    visitQueue.add(new Transition(entryEvent, firstEvent));
+    //    XEvent firstEvent = traverser.nextEpsilonEvent(entry);
+    //    visitQueue.add(new Transition(entry, firstEvent));
     //
     //    while (!visitQueue.isEmpty()) {
     //        Transition transition = visitQueue.remove();
@@ -101,7 +101,7 @@ public class XProcessToZformulaEncoder {
     //        }
     //        else {
     //            // nexts:
-    //            XEvent nextLinear = traverser.getNextLinearEvent(currentEvent);
+    //            XEvent nextLinear = traverser.nextEpsilonEvent(currentEvent);
     //            visitQueue.add(new Transition(currentEvent, nextLinear));
     //        }
     //

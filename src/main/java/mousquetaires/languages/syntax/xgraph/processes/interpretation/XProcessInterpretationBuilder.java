@@ -1,8 +1,8 @@
 package mousquetaires.languages.syntax.xgraph.processes.interpretation;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperationEvent;
@@ -14,12 +14,10 @@ import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.*;
-import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.processes.XProcess;
-import mousquetaires.languages.syntax.xgraph.processes.XProcessBuilder;
 import mousquetaires.utils.StringUtils;
-import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import mousquetaires.utils.exceptions.xgraph.XCompilerUsageError;
+import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import mousquetaires.utils.patterns.Builder;
 
 import java.util.HashSet;
@@ -27,7 +25,7 @@ import java.util.Set;
 import java.util.Stack;
 
 
-public class XProcessInterpretationBuilder extends Builder<XProcess> implements XProcessBuilder {
+public class XProcessInterpretationBuilder extends Builder<XProcess> {
 
     public enum ContextState {
         Idle,
@@ -48,7 +46,7 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> implements 
     }
 
     private final String processId;
-    /*private*/ final XGraphBuilder graphBuilder;
+    /*private*/ final XProcessGraphBuilder graphBuilder;
 
     // todo: add add/put methods with non-null checks
     private final Stack<XBlockContext> contextStack;
@@ -63,7 +61,7 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> implements 
     public XProcessInterpretationBuilder(String processId, XMemoryManager memoryManager) {
         this.memoryManager = memoryManager;
         this.processId = processId; //todo: non-uniqueness case
-        this.graphBuilder = new XGraphBuilder();
+        this.graphBuilder = new XProcessGraphBuilder();
         contextStack = new Stack<>();
         //loopsStack = new ContextStack();
         readyContexts = new HashSet<>();
@@ -83,35 +81,15 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> implements 
         //verify
         assert contextStack.size() == 1; //linear entry context only
         assert readyContexts.isEmpty();
-        XProcess result = new XProcess(this);
+        XProcess result = new XProcess(processId,
+                graphBuilder.entryEvent,
+                graphBuilder.exitEvent,
+                ImmutableMap.copyOf(graphBuilder.epsilonJumps),
+                ImmutableMap.copyOf(graphBuilder.condTrueJumps),
+                ImmutableMap.copyOf(graphBuilder.condFalseJumps));
+
         assert XProcessVerifier.verify(result); //TODO: verify but optionally and not here
-
         return result;
-    }
-
-    @Override
-    public XEntryEvent buildEntryEvent() {
-        return graphBuilder.entryEvent;
-    }
-
-    @Override
-    public XExitEvent buildExitEvent() {
-        return graphBuilder.exitEvent;
-    }
-
-    @Override
-    public ImmutableMap<XEvent, XEvent> buildNextEventMap() {
-        return graphBuilder.buildNextEventMap();
-    }
-
-    @Override
-    public ImmutableMap<XComputationEvent, XEvent> buildThenBranchingJumpsMap() {
-        return graphBuilder.buildThenBranchingJumpsMap();
-    }
-
-    @Override
-    public ImmutableMap<XComputationEvent, XEvent> buildElseBranchingJumpsMap() {
-        return graphBuilder.buildElseBranchingJumpsMap();
     }
 
     // --

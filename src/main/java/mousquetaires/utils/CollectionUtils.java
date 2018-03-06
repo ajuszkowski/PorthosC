@@ -30,6 +30,7 @@ public class CollectionUtils {
         }
     }
 
+    //@SafeVarargs //TODO: check this warning
     public static <T> Iterator<T> createIteratorFrom(T... elements) {
         final int length = elements.length;
         if (length == 0) {

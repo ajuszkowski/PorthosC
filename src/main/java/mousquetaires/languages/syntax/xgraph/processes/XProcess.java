@@ -6,26 +6,32 @@ import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 import mousquetaires.utils.StringUtils;
 
 
+// TODO: rename to XFlowGraph (but without basic blocks)
+// TODO: maybe extract class XProcessCyclic and make XProcess abstract
 public class XProcess implements XEntity {
 
     public final String processId;
-    public final XEntryEvent entryEvent;
-    public final XExitEvent exitEvent;
-    /*private*/public final ImmutableMap<XEvent, XEvent> nextEventMap;//next, goto jumps
-    /*private*/public final ImmutableMap<XComputationEvent, XEvent> thenBranchingJumpsMap; //if(true), while(true)
-    /*private*/public final ImmutableMap<XComputationEvent, XEvent> elseBranchingJumpsMap; //if(false)
+    public final XEntryEvent entry;
+    public final XExitEvent exit;
+    /*private*/public final ImmutableMap<XEvent, XEvent> epsilonJumps;//next, goto jumps
+    /*private*/public final ImmutableMap<XComputationEvent, XEvent> condTrueJumps; //if(true), while(true)
+    /*private*/public final ImmutableMap<XComputationEvent, XEvent> condFalseJumps; //if(false)
 
-    public XProcess(XProcessBuilder builder) {
-        this.entryEvent = builder.buildEntryEvent();
-        this.exitEvent = builder.buildExitEvent();
-        this.processId = builder.buildProcessId();
-        this.nextEventMap = builder.buildNextEventMap();
-        this.thenBranchingJumpsMap = builder.buildThenBranchingJumpsMap();
-        this.elseBranchingJumpsMap = builder.buildElseBranchingJumpsMap();
+    public XProcess(String processId,
+                    XEntryEvent entry,
+                    XExitEvent exit,
+                    ImmutableMap<XEvent, XEvent> epsilonJumps,
+                    ImmutableMap<XComputationEvent, XEvent> condTrueJumps,
+                    ImmutableMap<XComputationEvent, XEvent> condFalseJumps) {
+        this.processId = processId;
+        this.entry = entry;
+        this.exit = exit;
+        this.epsilonJumps = epsilonJumps;
+        this.condTrueJumps = condTrueJumps;
+        this.condFalseJumps = condFalseJumps;
     }
 
     public String getProcessId() {
@@ -33,20 +39,12 @@ public class XProcess implements XEntity {
     }
 
     @Override
-    public <T> T accept(XEventVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
-
-
-    @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("XProcess{");
-        sb.append("processId='").append(processId).append('\'');
-        sb.append(", nextEventMap=").append(StringUtils.jsonSerialize(nextEventMap));
-        sb.append(", thenBranchingJumpsMap=").append(StringUtils.jsonSerialize(thenBranchingJumpsMap));
-        sb.append(", elseBranchingJumpsMap=").append(StringUtils.jsonSerialize(elseBranchingJumpsMap));
-        sb.append('}');
-        return sb.toString();
+        return "XProcess{" + "processId='" + processId + '\'' +
+                ", epsilonJumps=" + StringUtils.jsonSerialize(epsilonJumps) +
+                ", condTrueJumps=" + StringUtils.jsonSerialize(condTrueJumps) +
+                ", condFalseJumps=" + StringUtils.jsonSerialize(condFalseJumps) +
+                '}';
     }
 
 

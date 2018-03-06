@@ -1,6 +1,5 @@
 package mousquetaires.languages.syntax.xgraph.visitors;
 
-import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperationEvent;
@@ -9,21 +8,10 @@ import mousquetaires.languages.syntax.xgraph.events.controlflow.XMethodCallEvent
 import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
-import mousquetaires.languages.syntax.xgraph.processes.XProcess;
 import mousquetaires.utils.exceptions.encoding.XEncoderIllegalStateException;
 
 
 public abstract class XEventVisitorBase<T> implements XEventVisitor<T> {
-
-    @Override
-    public T visit(XProgram entity) {
-        throw new XEncoderIllegalStateException();
-    }
-
-    @Override
-    public T visit(XProcess entity) {
-        throw new XEncoderIllegalStateException();
-    }
 
     @Override
     public T visit(XNullaryComputationEvent event) {

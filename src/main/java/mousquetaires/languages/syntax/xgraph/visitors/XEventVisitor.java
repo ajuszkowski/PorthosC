@@ -14,9 +14,6 @@ import mousquetaires.languages.syntax.xgraph.processes.XProcess;
 
 public interface XEventVisitor<T> {
 
-    T visit(XProgram entity);
-    T visit(XProcess entity);
-
     T visit(XNullaryComputationEvent entity);
     T visit(XUnaryOperationEvent entity);
     T visit(XBinaryOperationEvent entity);

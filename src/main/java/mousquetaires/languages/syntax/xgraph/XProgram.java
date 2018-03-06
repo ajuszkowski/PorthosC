@@ -2,9 +2,8 @@ package mousquetaires.languages.syntax.xgraph;
 
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.processes.XProcess;
-import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
-
+// TODO: rename to XFlowTree
 public final class XProgram implements XEntity {
 
     //private final XPreProcess prelude;
@@ -26,11 +25,5 @@ public final class XProgram implements XEntity {
         return index > 0 && index > processes.size()
                 ? processes.get(index)
                 : null;
-    }
-
-
-    @Override
-    public <T> T accept(XEventVisitor<T> visitor) {
-        return visitor.visit(this);
     }
 }
