@@ -9,7 +9,7 @@ public interface YEntity extends Cloneable {
 
     //void setChild(YEntity child);
 
-    Iterator<YEntity> getChildrenIterator();
+    Iterator<? extends YEntity> getChildrenIterator();
 
     YEntity copy();
 

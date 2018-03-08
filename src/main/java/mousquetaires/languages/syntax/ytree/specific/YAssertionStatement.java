@@ -20,7 +20,7 @@ public class YAssertionStatement extends YPostludeStatement {
     }
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
+    public Iterator<? extends YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom(expression);
     }
 

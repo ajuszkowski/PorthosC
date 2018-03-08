@@ -82,7 +82,7 @@ public class YConstant implements YMemoryLocation {
     }
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
+    public Iterator<? extends YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom();
     }
 

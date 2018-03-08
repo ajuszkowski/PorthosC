@@ -19,7 +19,7 @@ public class YTokenTemp extends YTempEntityBase {
     }
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
+    public Iterator<? extends YEntity> getChildrenIterator() {
         throw new UnsupportedOperationException();
     }
 

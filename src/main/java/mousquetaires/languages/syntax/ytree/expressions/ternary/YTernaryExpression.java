@@ -33,7 +33,7 @@ public class YTernaryExpression implements YExpression {
     }
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
+    public Iterator<? extends YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom(condition, trueExpression, falseExpression);
     }
 

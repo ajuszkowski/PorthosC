@@ -38,7 +38,7 @@ public class YLinearStatement extends YStatement {
     }
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
+    public Iterator<? extends YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom(getExpression());
     }
 

@@ -22,7 +22,7 @@ public final class YPreludeStatement extends YUnlabeledStatement {
     }
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
+    public Iterator<? extends YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom(body);
     }
 

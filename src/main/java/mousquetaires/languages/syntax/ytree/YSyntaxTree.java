@@ -24,7 +24,7 @@ public class YSyntaxTree implements YEntity {
     }
 
     @Override
-    public Iterator<YEntity> getChildrenIterator() {
+    public Iterator<? extends YEntity> getChildrenIterator() {
         return roots.iterator();
     }
 
