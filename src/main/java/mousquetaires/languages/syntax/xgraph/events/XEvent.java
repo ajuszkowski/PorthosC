@@ -13,5 +13,5 @@ public interface XEvent extends XEntity {
     //
     //XEvent getNextEvent();
 
-    <T extends XEvent> T accept(XEventVisitor<T> visitor);
+    <T> T accept(XEventVisitor<T> visitor);
 }

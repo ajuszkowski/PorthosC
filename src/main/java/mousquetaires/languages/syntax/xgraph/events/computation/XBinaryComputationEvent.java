@@ -8,11 +8,11 @@ import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 import java.util.Objects;
 
 
-public class XBinaryOperationEvent extends XUnaryOperationEvent {
+public class XBinaryComputationEvent extends XUnaryComputationEvent {
 
     private final XLocalMemoryUnit secondOperand;
 
-    public XBinaryOperationEvent(XEventInfo info, XZOperator operator, XLocalMemoryUnit operand1, XLocalMemoryUnit secondOperand) {
+    public XBinaryComputationEvent(XEventInfo info, XZOperator operator, XLocalMemoryUnit operand1, XLocalMemoryUnit secondOperand) {
         super(info, operator, operand1);
         this.secondOperand = secondOperand;
     }
@@ -39,9 +39,9 @@ public class XBinaryOperationEvent extends XUnaryOperationEvent {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof XBinaryOperationEvent)) return false;
+        if (!(o instanceof XBinaryComputationEvent)) return false;
         if (!super.equals(o)) return false;
-        XBinaryOperationEvent that = (XBinaryOperationEvent) o;
+        XBinaryComputationEvent that = (XBinaryComputationEvent) o;
         return Objects.equals(getSecondOperand(), that.getSecondOperand());
     }
 

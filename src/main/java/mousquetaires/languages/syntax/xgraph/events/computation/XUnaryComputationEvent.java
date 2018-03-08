@@ -4,15 +4,16 @@ import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOper
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
+import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 
 import java.util.Objects;
 
 
-public class XUnaryOperationEvent extends XNullaryComputationEvent {
+public class XUnaryComputationEvent extends XNullaryComputationEvent {
 
     private final XZOperator operator;
 
-    public XUnaryOperationEvent(XEventInfo info, XZOperator operator, XLocalMemoryUnit operand1) {
+    public XUnaryComputationEvent(XEventInfo info, XZOperator operator, XLocalMemoryUnit operand1) {
         super(info, operand1);
         this.operator = operator;
     }
@@ -23,6 +24,11 @@ public class XUnaryOperationEvent extends XNullaryComputationEvent {
 
     @Override
     public <T> T accept(XEventVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public <T> T accept(XMemoryUnitVisitor<T> visitor) {
         return visitor.visit(this);
     }
 
@@ -39,9 +45,9 @@ public class XUnaryOperationEvent extends XNullaryComputationEvent {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof XUnaryOperationEvent)) return false;
+        if (!(o instanceof XUnaryComputationEvent)) return false;
         if (!super.equals(o)) return false;
-        XUnaryOperationEvent that = (XUnaryOperationEvent) o;
+        XUnaryComputationEvent that = (XUnaryComputationEvent) o;
         return getOperator() == that.getOperator();
     }
 

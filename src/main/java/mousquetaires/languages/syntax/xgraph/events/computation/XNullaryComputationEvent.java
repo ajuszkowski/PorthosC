@@ -1,8 +1,9 @@
 package mousquetaires.languages.syntax.xgraph.events.computation;
 
-import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
+import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
+import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 
 import java.util.Objects;
 
@@ -22,6 +23,11 @@ public class XNullaryComputationEvent extends XComputationEventBase {
 
     @Override
     public <T> T accept(XEventVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public <T> T accept(XMemoryUnitVisitor<T> visitor) {
         return visitor.visit(this);
     }
 
