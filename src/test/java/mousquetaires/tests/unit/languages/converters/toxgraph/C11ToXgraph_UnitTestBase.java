@@ -6,7 +6,7 @@ import mousquetaires.languages.converters.toxgraph.YtreeToXgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
-import mousquetaires.languages.syntax.xgraph.processes.XProcess;
+import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.tests.TestFailedException;
 import mousquetaires.tests.unit.languages.converters.AbstractConverterUnitTest;
@@ -17,10 +17,10 @@ import java.io.IOException;
 import java.util.Iterator;
 
 
-public abstract class C11ToXgraph_UnitTestBase extends AbstractConverterUnitTest<XProcess> {
+public abstract class C11ToXgraph_UnitTestBase extends AbstractConverterUnitTest<XFlowGraph> {
 
     @Override
-    protected Iterator<? extends XProcess> parseTestFile(String testFile) {
+    protected Iterator<? extends XFlowGraph> parseTestFile(String testFile) {
         try {
             DataModel dataModel = null; // TODO: consider data model also
             File file = new File(testFile);
@@ -36,13 +36,12 @@ public abstract class C11ToXgraph_UnitTestBase extends AbstractConverterUnitTest
     }
 
     @Override
-    protected void assertObjectsEqual(XProcess expected, XProcess actual) {
-        Assert.assertEquals("processes ID mismatch", expected.processId, actual.processId);
-        Assert.assertEquals("entry events do not match", expected.entry, actual.entry);
-        Assert.assertEquals("exit events do not match", expected.exit, actual.exit);
-        assertMapsEqual("epsilonJumps mismatch", expected.epsilonJumps, actual.epsilonJumps);
-        assertMapsEqual("condTrueJumps mismatch", expected.condTrueJumps, actual.condTrueJumps);
-        assertMapsEqual("condFalseJumps mismatch", expected.condFalseJumps, actual.condFalseJumps);
+    protected void assertObjectsEqual(XFlowGraph expected, XFlowGraph actual) {
+        Assert.assertEquals("process ID mismatch", expected.processId(), actual.processId());
+        Assert.assertEquals("entry events do not match", expected.source(), actual.source());
+        Assert.assertEquals("exit events do not match", expected.sink(), actual.sink());
+        assertMapsEqual("edges set mismatch", expected.getEdges(), actual.getEdges());
+        assertMapsEqual("alternative e mismatch", expected.getAlternativeEdges(), actual.getAlternativeEdges());
     }
 
 

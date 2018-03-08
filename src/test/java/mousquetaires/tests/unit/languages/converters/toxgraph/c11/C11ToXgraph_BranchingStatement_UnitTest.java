@@ -7,7 +7,7 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
 import mousquetaires.languages.syntax.xgraph.memories.XRegister;
-import mousquetaires.languages.syntax.xgraph.processes.XProcess;
+import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
 import mousquetaires.tests.unit.UnitTestPaths;
 import mousquetaires.tests.unit.languages.converters.toxgraph.C11ToXgraph_UnitTestBase;
 import mousquetaires.tests.unit.languages.converters.toxgraph.XProcessTestBuilder;
@@ -42,7 +42,7 @@ public class C11ToXgraph_BranchingStatement_UnitTest extends C11ToXgraph_UnitTes
         builder.processNextEvent(assignY3, assignX4);
         builder.processLastEvent(assignX4);
 
-        XProcess process = builder.build();
+        XFlowGraph process = builder.build();
 
         run( UnitTestPaths.c11StatementsDirectory + "branchingStatement.c",
                 getIterator(process));

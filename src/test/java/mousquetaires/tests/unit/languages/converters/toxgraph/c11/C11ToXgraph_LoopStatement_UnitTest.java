@@ -6,7 +6,7 @@ import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOper
 import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
 import mousquetaires.languages.syntax.xgraph.memories.XRegister;
-import mousquetaires.languages.syntax.xgraph.processes.XProcess;
+import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
 import mousquetaires.tests.unit.UnitTestPaths;
 import mousquetaires.tests.unit.languages.converters.toxgraph.C11ToXgraph_UnitTestBase;
 import mousquetaires.tests.unit.languages.converters.toxgraph.XProcessTestBuilder;
@@ -57,7 +57,7 @@ public class C11ToXgraph_LoopStatement_UnitTest extends C11ToXgraph_UnitTestBase
         builder.processBranchingEvent(conditionConst10, conditionConst10, assignX11);
         builder.processLastEvent(assignX11);
 
-        XProcess process = builder.build();
+        XFlowGraph process = builder.build();
 
         run( UnitTestPaths.c11StatementsDirectory + "loopStatement.c",
                 getIterator(process));

@@ -1,4 +1,4 @@
-package mousquetaires.languages.syntax.xgraph.processes.interpretation;
+package mousquetaires.languages.syntax.xgraph.process.interpretation;
 
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
@@ -12,8 +12,8 @@ class XBlockContext {
     /*private*/public XEvent entryEvent;
 
     /*private*/public final XBlockContextKind kind;
-    /*private*/public XProcessInterpretationBuilder.ContextState state;
-    /*private*/public XProcessInterpretationBuilder.BranchKind currentBranchKind;
+    /*private*/public XFlowGraphInterpretationBuilder.ContextState state;
+    /*private*/public XFlowGraphInterpretationBuilder.BranchKind currentBranchKind;
 
     /*private*/public XComputationEvent conditionEvent;
 
@@ -41,7 +41,7 @@ class XBlockContext {
         this.conditionEvent = conditionEvent;
     }
 
-    public void setState(XProcessInterpretationBuilder.ContextState state) {
+    public void setState(XFlowGraphInterpretationBuilder.ContextState state) {
         this.state = state;
     }
 

@@ -1,20 +1,20 @@
-package mousquetaires.languages.syntax.xgraph.processes.interpretation;
+package mousquetaires.languages.syntax.xgraph.process.interpretation;
 
-import com.google.common.collect.ImmutableMap;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperationEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperationEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOperator;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.*;
-import mousquetaires.languages.syntax.xgraph.processes.XProcess;
+import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
+import mousquetaires.languages.syntax.xgraph.process.XFlowGraphBuilder;
 import mousquetaires.utils.StringUtils;
 import mousquetaires.utils.exceptions.xgraph.XCompilerUsageError;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.Stack;
 
 
-public class XProcessInterpretationBuilder extends Builder<XProcess> {
+public class XFlowGraphInterpretationBuilder extends Builder<XFlowGraph> {
 
     public enum ContextState {
         Idle,
@@ -46,7 +46,7 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> {
     }
 
     private final String processId;
-    /*private*/ final XProcessGraphBuilder graphBuilder;
+    /*private*/ final XFlowGraphBuilder graphBuilder;
 
     // todo: add add/put methods with non-null checks
     private final Stack<XBlockContext> contextStack;
@@ -58,38 +58,32 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> {
 
     private final XMemoryManager memoryManager;
 
-    public XProcessInterpretationBuilder(String processId, XMemoryManager memoryManager) {
+    public XFlowGraphInterpretationBuilder(String processId, XMemoryManager memoryManager) {
         this.memoryManager = memoryManager;
         this.processId = processId; //todo: non-uniqueness case
-        this.graphBuilder = new XProcessGraphBuilder();
+        this.graphBuilder = new XFlowGraphBuilder(processId);
         contextStack = new Stack<>();
         //loopsStack = new ContextStack();
         readyContexts = new HashSet<>();
         //readyLoops = new HashSet<>();
 
         XBlockContext linearContext = new XBlockContext(XBlockContextKind.Linear);
-        linearContext.state = XProcessInterpretationBuilder.ContextState.WaitingNextLinearEvent;
+        linearContext.state = XFlowGraphInterpretationBuilder.ContextState.WaitingNextLinearEvent;
         contextStack.push(linearContext);
 
         addAndProcessEntryEvent();
     }
 
     @Override
-    public XProcess build() {
+    public XFlowGraph build() {
         addAndProcessExitEvent();
 
         //verify
         assert contextStack.size() == 1; //linear entry context only
         assert readyContexts.isEmpty();
-        XProcess result = new XProcess(processId,
-                graphBuilder.entryEvent,
-                graphBuilder.exitEvent,
-                ImmutableMap.copyOf(graphBuilder.epsilonJumps),
-                ImmutableMap.copyOf(graphBuilder.condTrueJumps),
-                ImmutableMap.copyOf(graphBuilder.condFalseJumps));
 
-        assert XProcessVerifier.verify(result); //TODO: verify but optionally and not here
-        return result;
+        graphBuilder.verifyGraph();//TODO: verify but optionally and not here
+        return graphBuilder.build();
     }
 
     // --
@@ -139,8 +133,7 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> {
 
     private void addAndProcessEntryEvent() {
         XEntryEvent entryEvent = new XEntryEvent(createEventInfo());
-        graphBuilder.setEntryEvent(entryEvent);
-        graphBuilder.addEvent(entryEvent);
+        graphBuilder.setSource(entryEvent);
         previousEventDistance = 0;
         processNextEvent(entryEvent);
     }
@@ -148,8 +141,8 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> {
     private void addAndProcessExitEvent() {
         XExitEvent exitEvent = new XExitEvent(createEventInfo());
         assert contextStack.size() == 1; //only entry linear context
-        addAndProcessNextEvent(exitEvent);
-        graphBuilder.setExitEvent(exitEvent);
+        processNextEvent(exitEvent);
+        graphBuilder.setSink(exitEvent);
     }
 
     ///**
@@ -157,13 +150,13 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> {
     // */
     //public XFakeComputationEvent emitFakeComputationEvent() {
     //    XFakeComputationEvent event = new XFakeComputationEvent(createEventInfo());
-    //    addAndProcessNextEvent(event);
+    //    processNextEvent(event);
     //    return event;
     //}
 
     public XComputationEvent emitComputationEvent(XLocalMemoryUnit operand) {
         XComputationEvent event = new XNullaryComputationEvent(createEventInfo(), operand);
-        addAndProcessNextEvent(event);
+        processNextEvent(event);
         return event;
     }
 
@@ -176,15 +169,15 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> {
     //}
 
     public XComputationEvent emitComputationEvent(XZOperator operator, XLocalMemoryUnit operand) {
-        XComputationEvent event = new XUnaryOperationEvent(createEventInfo(), operator, operand);
-        addAndProcessNextEvent(event);
+        XComputationEvent event = new XUnaryComputationEvent(createEventInfo(), operator, operand);
+        processNextEvent(event);
         return event;
     }
 
 
     public XComputationEvent emitComputationEvent(XZOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand) {
-        XComputationEvent event = new XBinaryOperationEvent(createEventInfo(), operator, firstOperand, secondOperand);
-        addAndProcessNextEvent(event);
+        XComputationEvent event = new XBinaryComputationEvent(createEventInfo(), operator, firstOperand, secondOperand);
+        processNextEvent(event);
         return event;
     }
 
@@ -192,33 +185,26 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> {
 
     public XLocalMemoryEvent emitMemoryEvent(XLocalMemoryUnit destination, XLocalMemoryUnit source) {
         XRegisterMemoryEvent event = new XRegisterMemoryEvent(createEventInfo(), destination, source);
-        addAndProcessNextEvent(event);
+        processNextEvent(event);
         return event;
     }
 
     public XSharedMemoryEvent emitMemoryEvent(XLocalMemoryUnit destination, XSharedMemoryUnit source) {
         XLoadMemoryEvent event = new XLoadMemoryEvent(createEventInfo(), destination, source);
-        addAndProcessNextEvent(event);
+        processNextEvent(event);
         return event;
     }
 
     public XSharedMemoryEvent emitMemoryEvent(XSharedMemoryUnit destination, XLocalMemoryUnit source) {
         XStoreMemoryEvent event = new XStoreMemoryEvent(createEventInfo(), destination, source);
-        addAndProcessNextEvent(event);
+        processNextEvent(event);
         return event;
     }
 
     private XJumpEvent emitJumpEvent() {
         XJumpEvent event = new XJumpEvent(createEventInfo());
-        addAndProcessNextEvent(event);
+        processNextEvent(event);
         return event;
-    }
-
-    private void addAndProcessNextEvent(XEvent nextEvent) {
-        if (!(nextEvent instanceof XFakeEvent)) { // TODO: looks like hack here
-            graphBuilder.addEvent(nextEvent);
-        }
-        processNextEvent(nextEvent);
     }
 
     private void processNextEvent(XEvent nextEvent) {
@@ -236,7 +222,7 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> {
                             break;
                         case Branching:
                         case Loop:
-                            graphBuilder.addThenEdge(context.conditionEvent, context.firstThenBranchEvent);
+                            graphBuilder.addEdge/*addThenEdge*/(context.conditionEvent, context.firstThenBranchEvent);
                             break;
                     }
                 }
@@ -246,11 +232,11 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> {
                             assert false;
                             break;
                         case Branching:
-                            graphBuilder.addThenEdge(context.conditionEvent, nextEvent);
+                            graphBuilder.addEdge/*addThenEdge*/(context.conditionEvent, nextEvent);
                             alreadySetEdgeToNextEvent = true;
                             break;
                         case Loop:
-                            graphBuilder.addThenEdge(context.conditionEvent, context.conditionEvent);
+                            graphBuilder.addEdge/*addThenEdge*/(context.conditionEvent, context.conditionEvent);
                             break;
                     }
                 }
@@ -260,11 +246,11 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> {
                             assert false;
                             break;
                         case Branching:
-                            graphBuilder.addLinearEdge(context.lastThenBranchEvent, nextEvent);
+                            graphBuilder.addEdge/*addLinearEdge*/(context.lastThenBranchEvent, nextEvent);
                             alreadySetEdgeToNextEvent = true;
                             break;
                         case Loop:
-                            graphBuilder.addLinearEdge(context.lastThenBranchEvent, context.entryEvent);
+                            graphBuilder.addEdge/*addLinearEdge*/(context.lastThenBranchEvent, context.entryEvent);
                             break;
                     }
                 }
@@ -275,7 +261,7 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> {
                             assert false;
                             break;
                         case Branching:
-                            graphBuilder.addElseEdge(context.conditionEvent, context.firstElseBranchEvent);
+                            graphBuilder.addAlternativeEdge(context.conditionEvent, context.firstElseBranchEvent);
                             break;
                         case Loop:
                             assert false;
@@ -288,7 +274,7 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> {
                             assert false;
                             break;
                         case Branching:
-                            graphBuilder.addElseEdge(context.conditionEvent, nextEvent);
+                            graphBuilder.addAlternativeEdge(context.conditionEvent, nextEvent);
                             alreadySetEdgeToNextEvent = true; //todo: check here
                         case Loop:
                             // ok, loops should have no else branches
@@ -301,7 +287,7 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> {
                             assert false;
                             break;
                         case Branching:
-                            graphBuilder.addLinearEdge(context.lastElseBranchEvent, nextEvent);
+                            graphBuilder.addEdge/*addLinearEdge*/(context.lastElseBranchEvent, nextEvent);
                             alreadySetEdgeToNextEvent = true;
                             break;
                         case Loop:
@@ -311,7 +297,7 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> {
                 }
 
                 if (context.kind == XBlockContextKind.Loop) {
-                    graphBuilder.addElseEdge(context.conditionEvent, nextEvent);
+                    graphBuilder.addAlternativeEdge(context.conditionEvent, nextEvent);
                     assert context.firstElseBranchEvent == null : context.firstElseBranchEvent.toString();
                     assert context.lastElseBranchEvent == null  : context.lastElseBranchEvent.toString();
 
@@ -341,7 +327,7 @@ public class XProcessInterpretationBuilder extends Builder<XProcess> {
                 case WaitingNextLinearEvent: {
                     if (!alreadySetEdgeToNextEvent) {
                         if (previousEvent != null) {
-                            graphBuilder.addLinearEdge(previousEvent, nextEvent);
+                            graphBuilder.addEdge/*addLinearEdge*/(previousEvent, nextEvent);
                         }
                         alreadySetEdgeToNextEvent = true;
                     }

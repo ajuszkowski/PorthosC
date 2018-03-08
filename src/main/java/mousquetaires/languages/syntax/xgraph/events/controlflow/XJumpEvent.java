@@ -32,7 +32,7 @@ public class XJumpEvent extends XFakeEvent implements XControlFlowEvent {
     //    if (!(o instanceof XEvent)) return false;
     //    XEvent other = (XEvent) o;
     //    return other instanceof XJumpEvent &&
-    //            getInfo().getProcessId().equals(other.getInfo().getProcessId());
+    //            getInfo().processId().equals(other.getInfo().processId());
     //}
     //
     ////todo: override hashcode!

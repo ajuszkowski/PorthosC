@@ -5,10 +5,10 @@ import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperationEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperationEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOperator;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLocalMemoryEvent;
@@ -16,42 +16,37 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.processes.XProcess;
+import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
 import mousquetaires.utils.patterns.Builder;
 
 
-public class XProcessTestBuilder extends Builder<XProcess> {
+public class XProcessTestBuilder extends Builder<XFlowGraph> {
 
     private String processId;
     private XEntryEvent entryEvent;
     private XExitEvent exitEvent;
 
-    private ImmutableMap.Builder<XEvent, XEvent> epsilonJumps;
-    private ImmutableMap.Builder<XComputationEvent, XEvent> condTrueJumps;
-    private ImmutableMap.Builder<XComputationEvent, XEvent> condFalseJumps;
+    private ImmutableMap.Builder<XEvent, XEvent> edges;
+    private ImmutableMap.Builder<XComputationEvent, XEvent> alternativeEdges;
+    private boolean isUnrolled;
 
     public XProcessTestBuilder(String processId) {
         this.processId = processId;
         this.entryEvent = new XEntryEvent(createEventInfo());
-        //this.exit = new XExitEvent(createEventInfo());
-        //ArrayList<XEvent> allEventsList = new ArrayList<>();
-        //allEventsList.addAll(epsilonJumps.keySet());
-        //allEventsList.addAll(condTrueJumps.keySet());
-        //allEventsList.addAll(condFalseJumps.keySet());
-        //ImmutableList<XEvent> allEvents = ImmutableList.copyOf(allEventsList);
-        //Pair<XEntryEvent, XExitEvent> entryExitPair = XProcessHelper.findEntryAndExitEvents(allEvents);
-        //events.add(this.exit);
-        this.epsilonJumps = new ImmutableMap.Builder<>();
-        this.condTrueJumps = new ImmutableMap.Builder<>();
-        this.condFalseJumps = new ImmutableMap.Builder<>();
+        this.edges = new ImmutableMap.Builder<>();
+        this.alternativeEdges = new ImmutableMap.Builder<>();
     }
 
     @Override
-    public XProcess build() {
-        return new XProcess(processId, entryEvent, exitEvent,
-                epsilonJumps.build(), condTrueJumps.build(), condFalseJumps.build());
+    public XFlowGraph build() {
+        return new XFlowGraph(processId, entryEvent, exitEvent,
+                edges.build(), alternativeEdges.build(), isUnrolled);
     }
 
+
+    public void markAsUnrolled() {
+        this.isUnrolled = true;
+    }
 
     //private static Pair<XEntryEvent, XExitEvent> findEntryAndExitEvents(ImmutableList<XEvent> events) {
     //    XEntryEvent entry = null;
@@ -87,11 +82,11 @@ public class XProcessTestBuilder extends Builder<XProcess> {
     }
 
     public XComputationEvent createComputationEvent(XZOperator operator, XLocalMemoryUnit first) {
-        return new XUnaryOperationEvent(createEventInfo(), operator, first);
+        return new XUnaryComputationEvent(createEventInfo(), operator, first);
     }
 
     public XComputationEvent createComputationEvent(XZOperator operator, XLocalMemoryUnit first, XLocalMemoryUnit second) {
-        return new XBinaryOperationEvent(createEventInfo(), operator, first, second);
+        return new XBinaryComputationEvent(createEventInfo(), operator, first, second);
     }
 
     public XLocalMemoryEvent createAssignmentEvent(XLocalMemoryUnit left, XLocalMemoryUnit right) {
@@ -107,21 +102,21 @@ public class XProcessTestBuilder extends Builder<XProcess> {
     }
 
     public void processFirstEvent(XEvent postEntryEvent) {
-        epsilonJumps.put(entryEvent, postEntryEvent);
+        edges.put(entryEvent, postEntryEvent);
     }
 
     public void processLastEvent(XEvent preExitEvent) {
         exitEvent = new XExitEvent(createEventInfo());
-        epsilonJumps.put(preExitEvent, exitEvent);
+        edges.put(preExitEvent, exitEvent);
     }
 
     public void processNextEvent(XEvent previous, XEvent next) {
-        epsilonJumps.put(previous, next);
+        edges.put(previous, next);
     }
 
     public void processBranchingEvent(XComputationEvent condition, XEvent firstThen, XEvent firstElse) {
-        condTrueJumps.put(condition, firstThen);
-        condFalseJumps.put(condition, firstElse);
+        edges.put(condition, firstThen);
+        alternativeEdges.put(condition, firstElse);
     }
 
     private XEventInfo createEventInfo() {

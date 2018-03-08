@@ -2,15 +2,15 @@ package mousquetaires.languages.syntax.xgraph;
 
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
-import mousquetaires.languages.syntax.xgraph.processes.XProcess;
-import mousquetaires.languages.syntax.xgraph.processes.interpretation.XProcessInterpretationBuilder;
+import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
+import mousquetaires.languages.syntax.xgraph.process.interpretation.XFlowGraphInterpretationBuilder;
 import mousquetaires.utils.patterns.Builder;
 
 
 public class XProgramBuilder extends Builder<XProgram> {
 
-    public XProcessInterpretationBuilder currentProcess;
-    private final ImmutableList.Builder<XProcess> processes;
+    public XFlowGraphInterpretationBuilder currentProcess;
+    private final ImmutableList.Builder<XFlowGraph> processes;
     // TODO: publish methods also!
     private final XMemoryManager memoryManager;
 
@@ -27,7 +27,7 @@ public class XProgramBuilder extends Builder<XProgram> {
         if (currentProcess != null) {
             processes.add(currentProcess.build());
         }
-        return new XProgram(processes.build()); //preludeBuilder.build(), processes.build(), postludeBuilder.build());
+        return new XProgram(processes.build()); //preludeBuilder.build(), process.build(), postludeBuilder.build());
     }
 
     //private final XPreProcessBuilder preludeBuilder;
@@ -50,7 +50,7 @@ public class XProgramBuilder extends Builder<XProgram> {
     //                + currentProcess.buildProcessId() + "'; is being constructed");
     //    }
     //    if (!startedProcessesDefinition) {
-    //        throw new IllegalStateException("Attempt to start postlude definition before definition of the processes");
+    //        throw new IllegalStateException("Attempt to start postlude definition before definition of the process");
     //    }
     //    currentProcess = postludeBuilder;
     //}
@@ -66,7 +66,7 @@ public class XProgramBuilder extends Builder<XProgram> {
                     "' definition while another process '" + currentProcess.buildProcessId() +
                     "'; is being constructed");
         }
-        currentProcess = new XProcessInterpretationBuilder(processId, memoryManager);
+        currentProcess = new XFlowGraphInterpretationBuilder(processId, memoryManager);
     }
 
     public void finishProcessDefinition() {
@@ -77,7 +77,7 @@ public class XProgramBuilder extends Builder<XProgram> {
         currentProcess = null;
         //if (currentProcess instanceof XProcessBuilder) {
         //    XParallelProcessBuilder currentParBuilder = (XParallelProcessBuilder) currentProcess;
-        //    processes.add(currentParBuilder.build());
+        //    process.add(currentParBuilder.build());
         //    currentProcess = null;
         //}
         // for pre & post do nothing, because current is a reference to it
