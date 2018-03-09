@@ -10,7 +10,7 @@ import mousquetaires.languages.syntax.xgraph.memories.XRegister;
 import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
 import mousquetaires.tests.unit.UnitTestPaths;
 import mousquetaires.tests.unit.languages.converters.toxgraph.C11ToXgraph_UnitTestBase;
-import mousquetaires.tests.unit.languages.converters.toxgraph.XProcessTestBuilder;
+import mousquetaires.tests.unit.languages.converters.toxgraph.XFlowGraphTestBuilder;
 import org.junit.Test;
 
 
@@ -18,7 +18,7 @@ public class C11ToXgraph_BranchingStatement_UnitTest extends C11ToXgraph_UnitTes
 
     @Test
     public void test() {
-        XProcessTestBuilder builder = new XProcessTestBuilder("?");//TODO: process id
+        XFlowGraphTestBuilder builder = new XFlowGraphTestBuilder("?");//TODO: process id
         XMemoryManager memoryManager = new XMemoryManager(ProgramLanguage.C11, null);
         XRegister registerX = memoryManager.getLocalMemoryUnit("x");
         XRegister registerY = memoryManager.getLocalMemoryUnit("y");
@@ -40,7 +40,7 @@ public class C11ToXgraph_BranchingStatement_UnitTest extends C11ToXgraph_UnitTes
         builder.processBranchingEvent(conditionXgreater2, assignY3, assignX4);
         builder.processNextEvent(assignXY, assignX4);
         builder.processNextEvent(assignY3, assignX4);
-        builder.processLastEvent(assignX4);
+        builder.processLastEvents(assignX4);
 
         XFlowGraph process = builder.build();
 

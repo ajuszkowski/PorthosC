@@ -9,7 +9,7 @@ import mousquetaires.languages.syntax.xgraph.memories.XRegister;
 import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
 import mousquetaires.tests.unit.UnitTestPaths;
 import mousquetaires.tests.unit.languages.converters.toxgraph.C11ToXgraph_UnitTestBase;
-import mousquetaires.tests.unit.languages.converters.toxgraph.XProcessTestBuilder;
+import mousquetaires.tests.unit.languages.converters.toxgraph.XFlowGraphTestBuilder;
 import org.junit.Test;
 
 
@@ -17,7 +17,7 @@ public class C11ToXgraph_LoopStatement_UnitTest extends C11ToXgraph_UnitTestBase
 
     @Test
     public void test() {
-        XProcessTestBuilder builder = new XProcessTestBuilder("?");//TODO: process id
+        XFlowGraphTestBuilder builder = new XFlowGraphTestBuilder("?");//TODO: process id
         XMemoryManager memoryManager = new XMemoryManager(ProgramLanguage.C11, null);
         XRegister registerX = memoryManager.getLocalMemoryUnit("x");
         XRegister registerY = memoryManager.getLocalMemoryUnit("y");
@@ -55,7 +55,7 @@ public class C11ToXgraph_LoopStatement_UnitTest extends C11ToXgraph_UnitTestBase
         builder.processNextEvent(assignX8, conditionXgreater4);
         //third 'while'
         builder.processBranchingEvent(conditionConst10, conditionConst10, assignX11);
-        builder.processLastEvent(assignX11);
+        builder.processLastEvents(assignX11);
 
         XFlowGraph process = builder.build();
 

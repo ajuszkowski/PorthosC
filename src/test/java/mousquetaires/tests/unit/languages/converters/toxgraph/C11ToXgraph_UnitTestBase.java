@@ -9,6 +9,7 @@ import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.tests.TestFailedException;
+import mousquetaires.tests.unit.FlowGraphComparer;
 import mousquetaires.tests.unit.languages.converters.AbstractConverterUnitTest;
 import org.junit.Assert;
 
@@ -38,11 +39,6 @@ public abstract class C11ToXgraph_UnitTestBase extends AbstractConverterUnitTest
     @Override
     protected void assertObjectsEqual(XFlowGraph expected, XFlowGraph actual) {
         Assert.assertEquals("process ID mismatch", expected.processId(), actual.processId());
-        Assert.assertEquals("entry events do not match", expected.source(), actual.source());
-        Assert.assertEquals("exit events do not match", expected.sink(), actual.sink());
-        assertMapsEqual("edges set mismatch", expected.getEdges(), actual.getEdges());
-        assertMapsEqual("alternative e mismatch", expected.getAlternativeEdges(), actual.getAlternativeEdges());
+        FlowGraphComparer.assertGraphsEqual(expected, actual);
     }
-
-
 }

@@ -6,11 +6,11 @@ import mousquetaires.languages.common.graph.FlowGraphBuilder;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeEvent;
 import mousquetaires.utils.StringUtils;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -21,8 +21,10 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
     private XExitEvent exitEvent;
     private final HashMap<XEvent, XEvent> edges; // TODO: immutable map? check this
     // TODO: merge edges and ifTrueJumps into one hashmap
-    private final HashMap<XComputationEvent, XEvent> alternativeEdges;
+    private final HashMap<XEvent/*XComputationEvent*/, XEvent> alternativeEdges;
     private boolean isUnrolled = false;
+
+    private HashSet<XEvent> leaves = new HashSet<>();
 
     public XFlowGraphBuilder(String processId) {
         this.processId = processId;
@@ -32,6 +34,16 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
 
     public void markAsUnrolled() {
         isUnrolled = true;
+    }
+
+    @Override
+    public void finish() {
+        // todo: final verifications
+        assert entryEvent != null;
+        assert exitEvent != null;
+        for (XEvent leaf : leaves) {
+            edges.put(leaf, exitEvent);
+        }
     }
 
     @Override
@@ -47,13 +59,13 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
 
     @Override
     public void setSink(XEvent sink) {
-        assert exitEvent == null: exitEvent;
+        assert exitEvent == null;
         if (!(sink instanceof XExitEvent)) {
             throw new IllegalArgumentException("Sink event may be only of type " + XExitEvent.class.getSimpleName() +
                     " but received: " + sink.getClass().getSimpleName());
         }
         exitEvent = (XExitEvent) sink;
-        assert edges.containsValue(exitEvent) || alternativeEdges.containsValue(exitEvent);
+        //assert edges.containsValue(exitEvent) || alternativeEdges.containsValue(exitEvent);
     }
 
     @Override
@@ -61,18 +73,23 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
     public void addEdge(XEvent from, XEvent to) {
         verifyEvent(from);
         verifyEvent(to);
+        processLeaf(from, to);
         edges.put(from, to);
     }
 
     @Override
     //public void addElseEdge(XComputationEvent from, XEvent to) {
     public void addAlternativeEdge(XEvent from, XEvent to) {
-        if (!(from instanceof XComputationEvent)) {
-            throw new IllegalArgumentException("Conditional edge may outgo only from " + XComputationEvent.class.getSimpleName() +
-                    " but received: " + from.getClass().getSimpleName());
-        }
-        XComputationEvent computationFrom = (XComputationEvent) from;
-        alternativeEdges.put(computationFrom, to);
+        // TODO: normal checks on type of conditional event 'from'
+        //if (!(from instanceof XComputationEvent)) {
+        //    throw new IllegalArgumentException("Conditional edge may outgo only from " + XComputationEvent.class.getSimpleName() +
+        //            " but received: " + from.getClass().getSimpleName());
+        //}
+        //XComputationEvent computationFrom = (XComputationEvent) from;
+        verifyEvent(from);
+        verifyEvent(to);
+        processLeaf(from, to);
+        alternativeEdges.put(from/*computationFrom*/, to);
     }
 
     // TODO  : inefficient now
@@ -82,13 +99,13 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
 
         boolean removed = false;
         Set<XEvent> linearPredecessors          = Maps.filterValues(edges, succ -> Objects.equals(succ, fakeEvent)).keySet();
-        Set<XComputationEvent> elsePredecessors = Maps.filterValues(alternativeEdges, succ -> Objects.equals(succ, fakeEvent)).keySet();
+        Set<XEvent> elsePredecessors = Maps.filterValues(alternativeEdges, succ -> Objects.equals(succ, fakeEvent)).keySet();
 
         for (XEvent linearPredecessor : linearPredecessors) {
             addEdge(linearPredecessor, replaceWithEvent);
             removed = true;
         }
-        for (XComputationEvent elsePredecessor : elsePredecessors) {
+        for (XEvent elsePredecessor : elsePredecessors) {
             addAlternativeEdge(elsePredecessor, replaceWithEvent);
             removed = true;
         }
@@ -136,5 +153,14 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
             throw new IllegalArgumentException("Null event");
         }
         // TODO: verify that graph is connected  by remembering leaves (and dangling nodes) on each step
+    }
+
+    private void processLeaf(XEvent from, XEvent to) {
+        if (leaves.contains(from)) {
+            leaves.remove(from);
+        }
+        if (!edges.containsKey(to) && !alternativeEdges.containsKey(to)) {
+            leaves.add(to);
+        }
     }
 }

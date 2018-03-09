@@ -12,6 +12,8 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
 
 public interface XEventVisitor<T> {
 
+    //T visit(XEventRef entity);
+
     T visit(XNullaryComputationEvent entity);
     T visit(XUnaryComputationEvent entity);
     T visit(XBinaryComputationEvent entity);

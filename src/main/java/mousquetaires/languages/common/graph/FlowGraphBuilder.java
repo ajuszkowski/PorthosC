@@ -13,4 +13,7 @@ public abstract class FlowGraphBuilder<T> extends Builder<FlowGraph<T>> {
 
     public abstract void addAlternativeEdge(T from, T to);
 
+    public abstract void markAsUnrolled();
+
+    public abstract void finish();
 }

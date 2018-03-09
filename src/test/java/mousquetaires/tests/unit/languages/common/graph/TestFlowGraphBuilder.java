@@ -1,44 +1,61 @@
 package mousquetaires.tests.unit.languages.common.graph;
 
-import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.common.graph.FlowGraphBuilder;
+import mousquetaires.utils.exceptions.NotImplementedException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
-public class TestFlowGraphBuilder extends FlowGraphBuilder<Integer> {
+public abstract class TestFlowGraphBuilder extends FlowGraphBuilder<TestNode> {
+    private final HashMap<TestNode, Integer> referenceMap = new HashMap<>();
 
-    private Set<Integer> nodes;
-    private Map<Integer, Integer> chidren;
-    private Map<Integer, Integer> chidrenAlternative;
-    private Map<Integer, Set<Integer>> parents;
+    private Set<TestNode> nodes;
+    private Map<TestNode, TestNode> edges;
+    private Map<TestNode, TestNode> alternativeEdges;
+    private Map<TestNode, Set<TestNode>> parents;
 
-    private Integer source;
-    private Integer sink;
+    private TestNode source;
+    private TestNode sink;
+
+    private boolean isUnrolled = false;
 
     public TestFlowGraphBuilder() {
         this.nodes = new HashSet<>();
-        this.chidren = new HashMap<>();
-        this.chidrenAlternative = new HashMap<>();
+        this.edges = new HashMap<>();
+        this.alternativeEdges = new HashMap<>();
         this.parents = new HashMap<>();
     }
 
     @Override
-    public void setSource(Integer source) {
-        this.source = source;
+    public void finish() {
+        throw new NotImplementedException(); // leaves, etc...
     }
 
     @Override
-    public void setSink(Integer sink) {
+    public void setSource(TestNode source) {
+        throw new NotImplementedException("First node added is considered to be the source");
+    }
+
+    @Override
+    public void setSink(TestNode sink) {
         this.sink = sink;
+        for (TestNode node : nodes) {
+            if (node.equals(sink)) { continue; }
+            if (!edges.containsKey(node)) {
+                addEdge(node, sink);
+            }
+        }
     }
 
+    public abstract void addEdge(int from, int to);
+
     @Override
-    public void addEdge(Integer from, Integer to) {
-        if (chidren.containsKey(from)) {
+    public void addEdge(TestNode from, TestNode to) {
+        if (source == null) {
+            source = from;
+        }
+
+        if (edges.containsKey(from)) {
             throw new IllegalStateException("Already have outgoing edge from node " + from);
         }
 
@@ -46,10 +63,10 @@ public class TestFlowGraphBuilder extends FlowGraphBuilder<Integer> {
             source = from;
         }
 
-        chidren.put(from, to);
+        edges.put(from, to);
 
         if (!parents.containsKey(to)) {
-            HashSet<Integer> newParents = new HashSet<>();
+            HashSet<TestNode> newParents = new HashSet<>();
             newParents.add(from);
             parents.put(to, newParents);
         }
@@ -61,24 +78,30 @@ public class TestFlowGraphBuilder extends FlowGraphBuilder<Integer> {
         nodes.add(to);
     }
 
+
     @Override
-    public void addAlternativeEdge(Integer from, Integer to) {
-        if (chidrenAlternative.containsKey(from)) {
+    public void addAlternativeEdge(TestNode from, TestNode to) {
+        if (alternativeEdges.containsKey(from)) {
             throw new IllegalStateException("Already have outgoing edge from node " + from);
         }
-        if (!chidren.containsKey(from)) {
-            throw new IllegalStateException("Attempt to add alternative edge from " + from + " to " + to +
-                    " before adding the normal edge");
-        }
-        chidrenAlternative.put(from, to);
+        //if (!edges.containsKey(from)) {
+        //    throw new IllegalStateException("Attempt to add alternative edge from " + from + " to " + to +
+        //            " before adding the normal edge");
+        //}
+        alternativeEdges.put(from, to);
     }
 
     @Override
-    public FlowGraph<Integer> build() {
-        return null;
+    public void markAsUnrolled() {
+        isUnrolled = true;
     }
 
-    public void addPath(int... nodes) {
+    @Override
+    public TestFlowGraph build() {
+        return new TestFlowGraph(source, sink, nodes, edges, alternativeEdges, isUnrolled);
+    }
+
+    public final void addPath(int... nodes) {
         assert nodes.length > 2;
         int from = nodes[0], to;
         for (int i = 1; i < nodes.length; i++) {
@@ -86,5 +109,14 @@ public class TestFlowGraphBuilder extends FlowGraphBuilder<Integer> {
             addEdge(from, to);
             from = to;
         }
+    }
+
+    public TestNodeRef nodeToRef(TestNode node) {
+        int referenceNumber = 0;
+        if (referenceMap.containsKey(node)) {
+            referenceNumber = referenceMap.get(node) + 1;
+            referenceMap.put(node, referenceNumber);
+        }
+        return new TestNodeRef(node, referenceNumber);
     }
 }

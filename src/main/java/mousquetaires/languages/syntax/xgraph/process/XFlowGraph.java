@@ -20,7 +20,7 @@ public class XFlowGraph implements XEntity, FlowGraph<XEvent> {
     private final XEntryEvent entry;
     private final XExitEvent exit;
     private final ImmutableMap<XEvent, XEvent> edges;//next, goto jumps
-    private final ImmutableMap<XComputationEvent, XEvent> alternativeEdges; //if(false)
+    private final ImmutableMap<XEvent, XEvent> alternativeEdges; //if(false)
     private ImmutableMap<XEvent, ImmutableSet<XEvent>> edgesReversed;
     public final boolean isUnrolled;
 
@@ -28,7 +28,7 @@ public class XFlowGraph implements XEntity, FlowGraph<XEvent> {
                XEntryEvent entry,
                XExitEvent exit,
                ImmutableMap<XEvent, XEvent> edges,
-               ImmutableMap<XComputationEvent, XEvent> alternativeEdges,
+               ImmutableMap<XEvent, XEvent> alternativeEdges,
                boolean isUnrolled) {
         this.processId = processId;
         this.entry = entry;
@@ -78,7 +78,7 @@ public class XFlowGraph implements XEntity, FlowGraph<XEvent> {
     }
 
     @Override
-    public Set<XEvent> allNodes() {
+    public Set<XEvent> nodes() {
         throw new NotImplementedException();
     }
 
@@ -96,11 +96,12 @@ public class XFlowGraph implements XEntity, FlowGraph<XEvent> {
     }
 
 
-    public ImmutableMap<XEvent, XEvent> getEdges() {
+    public ImmutableMap<XEvent, XEvent> edges() {
         return edges;
     }
 
-    public ImmutableMap<XComputationEvent, XEvent> getAlternativeEdges() {
+    @Override
+    public ImmutableMap<XEvent, XEvent> alternativeEdges() {
         return alternativeEdges;
     }
 

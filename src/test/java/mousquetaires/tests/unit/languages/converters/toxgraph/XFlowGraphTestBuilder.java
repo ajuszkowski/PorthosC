@@ -20,17 +20,17 @@ import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
 import mousquetaires.utils.patterns.Builder;
 
 
-public class XProcessTestBuilder extends Builder<XFlowGraph> {
+public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
 
     private String processId;
     private XEntryEvent entryEvent;
     private XExitEvent exitEvent;
 
     private ImmutableMap.Builder<XEvent, XEvent> edges;
-    private ImmutableMap.Builder<XComputationEvent, XEvent> alternativeEdges;
+    private ImmutableMap.Builder<XEvent, XEvent> alternativeEdges;
     private boolean isUnrolled;
 
-    public XProcessTestBuilder(String processId) {
+    public XFlowGraphTestBuilder(String processId) {
         this.processId = processId;
         this.entryEvent = new XEntryEvent(createEventInfo());
         this.edges = new ImmutableMap.Builder<>();
@@ -105,16 +105,29 @@ public class XProcessTestBuilder extends Builder<XFlowGraph> {
         edges.put(entryEvent, postEntryEvent);
     }
 
-    public void processLastEvent(XEvent preExitEvent) {
+    public void processLastEvents(XEvent... preExitEvents) {
         exitEvent = new XExitEvent(createEventInfo());
-        edges.put(preExitEvent, exitEvent);
+        for (XEvent event : preExitEvents) {
+            edges.put(event, exitEvent);
+        }
+    }
+
+    public void processNextEvent(XEvent... events) {
+        XEvent previous = events[0], next;
+        for (int i = 1; i < events.length; i++) {
+            next = events[i];
+            edges.put(previous, next);
+            previous = next;
+        }
     }
 
     public void processNextEvent(XEvent previous, XEvent next) {
         edges.put(previous, next);
     }
 
-    public void processBranchingEvent(XComputationEvent condition, XEvent firstThen, XEvent firstElse) {
+    public void processBranchingEvent(XEvent condition, XEvent firstThen, XEvent firstElse) {
+        // todo: make checks more systematic in this builder
+        //assert condition instanceof XComputationEvent || (condition instanceof XEventRef && ((XEventRef)condition).getOriginalNode() instanceof XComputationEvent);
         edges.put(condition, firstThen);
         alternativeEdges.put(condition, firstElse);
     }

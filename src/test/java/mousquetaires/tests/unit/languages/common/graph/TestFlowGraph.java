@@ -2,66 +2,82 @@ package mousquetaires.tests.unit.languages.common.graph;
 
 import mousquetaires.languages.common.graph.FlowGraph;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 
-public class TestFlowGraph implements FlowGraph<Integer>  {
+public class TestFlowGraph implements FlowGraph<TestNode>  {
 
-    private Set<Integer> nodes;
-    private Map<Integer, Integer> chidren;
-    private Map<Integer, Integer> chidrenAlternative;
-    private Map<Integer, Set<Integer>> parents;
+    private TestNode source;
+    private TestNode sink;
 
-    private Integer source;
-    private Integer sink;
+    private Set<TestNode> nodes;
+    private Map<TestNode, TestNode> edges;
+    private Map<TestNode, TestNode> alternativeEdges;
+    private Map<TestNode, Set<TestNode>> parents;
+    private final boolean isUnrolled;
 
-    public TestFlowGraph() {
-        this.nodes = new HashSet<>();
-        this.chidren = new HashMap<>();
-        this.chidrenAlternative = new HashMap<>();
-        this.parents = new HashMap<>();
+    public TestFlowGraph(TestNode source,
+                         TestNode sink,
+                         Set<TestNode> nodes,
+                         Map<TestNode, TestNode> edges,
+                         Map<TestNode, TestNode> alternativeEdges,
+                         boolean isUnrolled) {
+        this.source = source;
+        this.sink = sink;
+        this.nodes = nodes;
+        this.edges = edges;
+        this.alternativeEdges = alternativeEdges;
+        this.isUnrolled = isUnrolled;;
     }
 
     @Override
-    public Integer source() {
+    public TestNode source() {
         return source;
     }
 
     @Override
-    public Integer sink() {
+    public TestNode sink() {
         return sink;
     }
 
     @Override
-    public Integer child(Integer node) {
-        if (!chidren.containsKey(node)) {
+    public TestNode child(TestNode node) {
+        if (!edges.containsKey(node)) {
             throw new IllegalArgumentException("Cannot find graph node " + node);
         }
-        return chidren.get(node);
+        return edges.get(node);
     }
 
     @Override
-    public boolean hasAlternativeChild(Integer node) {
-        return chidrenAlternative.containsKey(node);
+    public boolean hasAlternativeChild(TestNode node) {
+        return alternativeEdges.containsKey(node);
     }
 
     @Override
-    public Integer alternativeChild(Integer node) {
-        return chidrenAlternative.get(node);
+    public TestNode alternativeChild(TestNode node) {
+        return alternativeEdges.get(node);
     }
 
     @Override
-    public Set<Integer> parents(Integer node) {
+    public Set<TestNode> parents(TestNode node) {
         return parents.containsKey(node)
                 ? parents.get(node)
                 : Set.of();
     }
 
     @Override
-    public Set<Integer> allNodes() {
+    public Set<TestNode> nodes() {
         return nodes;
+    }
+
+    @Override
+    public Map<TestNode, TestNode> edges() {
+        return edges;
+    }
+
+    @Override
+    public Map<TestNode, TestNode> alternativeEdges() {
+        return alternativeEdges;
     }
 }

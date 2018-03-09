@@ -15,6 +15,11 @@ public abstract class XEventBase implements XEvent {
     }
 
     //@Override
+    //public FlowGraphNodeRef createRef(int refId) {
+    //    return new XEventRef(this, refId);
+    //}
+
+    //@Override
     //public void setNextEvent(XEvent next) {
     //    if (nextEvent != null) {
     //        throw new IllegalStateException("Next event has already been assigned");
