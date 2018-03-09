@@ -6,12 +6,15 @@ import mousquetaires.app.errors.UnrecognisedError;
 import mousquetaires.app.modules.AppModule;
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
-import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.converters.toxgraph.YtreeToXgraphConverter;
+import mousquetaires.languages.converters.toytree.YtreeParser;
+import mousquetaires.languages.converters.tozformula.XProgramToZformulaConverter;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModelLP64;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
+import mousquetaires.languages.syntax.zformula.ZFormula;
+import mousquetaires.languages.transformers.xgraph.XProgramUnroller;
 import mousquetaires.memorymodels.old.MemoryModel;
 import mousquetaires.memorymodels.old.MemoryModelFactory;
 
@@ -37,6 +40,7 @@ public class DartagnanModule extends AppModule {
         verdict.onStartExecution();
 
         try {
+            int unrollBound = 6; // TODO: get from options
 
             MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
             File inputProgramFile = options.inputProgramFile;
@@ -44,8 +48,12 @@ public class DartagnanModule extends AppModule {
             YSyntaxTree internalRepr = YtreeParser.parse(inputProgramFile, language);
             DataModel dataModel = new DataModelLP64(); // TODO: pass as cli-option
 
-            YtreeToXgraphConverter converter = new YtreeToXgraphConverter(language, dataModel);
-            XProgram program = converter.convert(internalRepr);
+            YtreeToXgraphConverter yConverter = new YtreeToXgraphConverter(language, dataModel);
+            XProgram program = yConverter.convert(internalRepr);
+
+            XProgram programUnrolled = XProgramUnroller.unroll(program, unrollBound);
+            XProgramToZformulaConverter zConverter = new XProgramToZformulaConverter(); //todo: pass timeout
+            ZFormula formula = zConverter.encode(programUnrolled);
 
             // SmtEncoder.encode(program) ...
 

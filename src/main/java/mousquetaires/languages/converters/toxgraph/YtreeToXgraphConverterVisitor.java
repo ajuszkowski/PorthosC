@@ -5,7 +5,7 @@ import mousquetaires.languages.converters.toxgraph.helpers.MemoryUnitConverter;
 import mousquetaires.languages.converters.toxgraph.helpers.XBinaryOperatorConverter;
 import mousquetaires.languages.converters.toxgraph.helpers.XUnaryOperatorHelper;
 import mousquetaires.languages.syntax.xgraph.XProgram;
-import mousquetaires.languages.syntax.xgraph.XProgramBuilder;
+import mousquetaires.languages.syntax.xgraph.XProgramInterpretationBuilder;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
@@ -49,7 +49,7 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
 
     // TODO: non-null checks everywhere!
 
-    private final XProgramBuilder program;
+    private final XProgramInterpretationBuilder program;
     private final MemoryUnitConverter memoryUnitConverter;
 
     public XProgram getProgram() {
@@ -300,7 +300,7 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
     YtreeToXgraphConverterVisitor(ProgramLanguage language, DataModel dataModel) {
         //this.interpreter = interpreter;
         XMemoryManager memoryManager = new XMemoryManager(language, dataModel);
-        this.program = new XProgramBuilder(memoryManager);
+        this.program = new XProgramInterpretationBuilder(memoryManager);
         this.memoryUnitConverter = new MemoryUnitConverter(memoryManager);
     }
 }

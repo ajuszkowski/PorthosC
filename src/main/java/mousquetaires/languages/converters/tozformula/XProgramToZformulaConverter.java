@@ -18,13 +18,14 @@ public class XProgramToZformulaConverter {
         // todo: remember timeout
     }
 
+    // TODO: unify names 'encode', 'convert', ...
     public ZBoolFormula encode(XProgram program) {
         ZOperatorEncoder operatorEncoder = new ZOperatorEncoder();//ctx);
         ZDataFlowEncoder dataFlowEncoder = new ZDataFlowEncoder(operatorEncoder, program);
 
         ZBoolConjunctionBuilder programFormula = new ZBoolConjunctionBuilder();
         for (XFlowGraph process : program.getAllProcesses()) {
-            XProcessToZformulaConverter processEncoder = new XProcessToZformulaConverter(dataFlowEncoder);
+            XFlowGraphToZformulaConverter processEncoder = new XFlowGraphToZformulaConverter(dataFlowEncoder);
             //ZBoolFormula processFormula = processEncoder.encode(process); //process.accept(processEncoder);
             //programFormula.addSubFormula(processFormula);
         }

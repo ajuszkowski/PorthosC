@@ -27,7 +27,7 @@
 //    }
 //
 //    public XEvent nextEpsilonEvent(XEvent event) {
-//        return process.epsilonJumps.get(event);
+//        return process.(event);
 //    }
 //
 //    public XEvent nextCondTrueEvent(XEvent event) {

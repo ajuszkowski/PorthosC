@@ -1,13 +1,24 @@
 package mousquetaires.languages.converters.tozformula;
 
 import mousquetaires.languages.converters.tozformula.helpers.ZDataFlowEncoder;
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
+import mousquetaires.languages.syntax.zformula.ZBoolConjunctionBuilder;
+import mousquetaires.languages.syntax.zformula.ZBoolFormula;
+import mousquetaires.languages.syntax.zformula.ZBoolVariableGlobal;
+
+import java.util.*;
+
+import static mousquetaires.languages.syntax.zformula.ZHelper.*;
+import static mousquetaires.languages.syntax.zformula.ZVariableHelper.createEventVariable;
 
 
-public class XProcessToZformulaConverter {
+// TODO: generalize this class
+public class XFlowGraphToZformulaConverter {
 
     private final ZDataFlowEncoder dataFlowEncoder;
 
-    public XProcessToZformulaConverter(ZDataFlowEncoder dataFlowEncoder) {
+    public XFlowGraphToZformulaConverter(ZDataFlowEncoder dataFlowEncoder) {
         this.dataFlowEncoder = dataFlowEncoder;
         //this.controlFlowEncoder = new XControlFlowEncoder(ctx, process);
         //this.dataFlowEncoder = new XDataFlowEncoder(ctx, process);
@@ -15,46 +26,60 @@ public class XProcessToZformulaConverter {
         //this.operatorEncoder = new XOperatorEncoder(ctx);
     }
 
-    /*public ZBoolFormula encode(XProcess process) {
+    public ZBoolFormula encode(XFlowGraph graph) {
         ZBoolConjunctionBuilder processFormula = new ZBoolConjunctionBuilder();
-        XgraphLinearisedTraverser traverser = new XgraphLinearisedTraverser(process);
-        XgraphHelper helper = new XgraphHelper(process);
 
-        while (traverser.hasNext()) {
-            XEvent current = traverser.next();
-            ZBoolVariableGlobal currentName = ZVariableHelper.createEventVariable(current);
+        Stack<XEvent> stack = new Stack<>();
+        stack.push(graph.source());
+        while (!stack.isEmpty()) {
+            XEvent current = stack.pop();
+
+            ZBoolVariableGlobal currentId = createEventVariable(current);
+
+            XEvent nextThen = graph.child(current);
+            stack.push(nextThen);
+            ZBoolVariableGlobal nextThenId = createEventVariable(nextThen);
 
             // encode control-flow, 'if(c){a}else{b}' as 'not (a and b)'
-            if (helper.isBranchingEvent(current)) {
-                XEvent nextThen = helper.getNextThenBranchingEvent(current);
-                XEvent nextElse = helper.getNextElseBranchingEvent(current);
+            if (graph.hasAlternativeChild(current)) {
+                XEvent nextElse = graph.alternativeChild(current);
+                stack.push(nextElse);
+
                 // add constraint 'not both then and else'
-                ZBoolVariableGlobal nextThenId = ZVariableHelper.createEventVariable(nextThen);
-                ZBoolVariableGlobal nextElseId = ZVariableHelper.createEventVariable(nextElse);
+                ZBoolVariableGlobal nextElseId = createEventVariable(nextElse);
                 ZBoolFormula branchingControlFlow = not(and(nextThenId, nextElseId));
                 processFormula.addSubFormula(branchingControlFlow);
-            }
-            // encode control-flow, 'next -> prev'
-            List<XEvent> predecessors = helper.getPredecessors(current);
-            assert predecessors.size() > 0;
-            for (XEvent predecessor : predecessors) {
-                ZBoolVariableGlobal predecessorName = ZVariableHelper.createEventVariable(predecessor);
-                ZBoolImplication controlFlowConjunct = implies(currentName, predecessorName);
-                processFormula.addSubFormula(controlFlowConjunct);
-            }
 
-            // update references from all predecessors
-            dataFlowEncoder.updateReferences(current, predecessors);
+
+            }
+            //else {
+            //    // add constraint 'next => previous'
+            //    ZBoolFormula branchingControlFlow = implies(nextThenId, currentId);
+            //    processFormula.addSubFormula(branchingControlFlow);
+            //}
+
+            // encode control-flow, 'next -> prev'
+            Set<XEvent> parents = graph.parents(current);
+            assert parents.size() > 0;
+            List<ZBoolFormula> parentsIds = new ArrayList<>(parents.size());
+            for (XEvent parent : parents) {
+                parentsIds.add(createEventVariable(parent));
+            }
+            ZBoolFormula nextImpliesPreviouses = implies(currentId, or(parentsIds));
+            processFormula.addSubFormula(nextImpliesPreviouses);
+
+            // update references from all parents
+            dataFlowEncoder.updateReferences(current, parents);
 
             // encode dataflow if needed
-            ZBoolFormula dataFlowAssertion = dataFlowEncoder.encodeDataFlow(current);
+            ZBoolFormula dataFlowAssertion = current.accept(dataFlowEncoder);
             if (dataFlowAssertion != null) {
-                processFormula.addSubFormula(implies(currentName, dataFlowAssertion));
+                processFormula.addSubFormula(implies(currentId, dataFlowAssertion));
             }
         }
 
         return processFormula.build();
-    }*/
+    }
 
 
     //public Expr encode_OLD(XProcess process) {

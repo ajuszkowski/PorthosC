@@ -3,7 +3,6 @@ package mousquetaires.languages.syntax.xgraph;
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
 
-// TODO: rename to XFlowTree
 public final class XProgram implements XEntity {
 
     //private final XPreProcess prelude;

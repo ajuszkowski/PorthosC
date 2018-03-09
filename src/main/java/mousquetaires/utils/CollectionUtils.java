@@ -57,4 +57,20 @@ public class CollectionUtils {
         }
         return builder.build();
     }
+
+    public static <T> T getSingleElement(Set<T> set) {
+        Iterator<T> iterator = set.iterator();
+
+        if (!iterator.hasNext()) {
+            throw new RuntimeException("Set is empty");
+        }
+
+        T element = iterator.next();
+
+        if (iterator.hasNext()) {
+            throw new RuntimeException("Set contains more than one item");
+        }
+
+        return element;
+    }
 }
