@@ -1,12 +1,11 @@
 package mousquetaires.utils;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 
 public class CollectionUtils {
@@ -50,4 +49,12 @@ public class CollectionUtils {
         return list.listIterator();
     }
 
+
+    public static <T> ImmutableMap<T, ImmutableSet<T>> buildMapOfSets(Map<T, Set<T>> map) {
+        ImmutableMap.Builder<T, ImmutableSet<T>> builder = new ImmutableMap.Builder<>();
+        for (Map.Entry<T, Set<T>> pair : map.entrySet()) {
+            builder.put(pair.getKey(), ImmutableSet.copyOf(pair.getValue()));
+        }
+        return builder.build();
+    }
 }

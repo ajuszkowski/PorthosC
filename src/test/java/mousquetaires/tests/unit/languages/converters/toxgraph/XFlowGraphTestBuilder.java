@@ -17,7 +17,13 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
+import mousquetaires.utils.CollectionUtils;
 import mousquetaires.utils.patterns.Builder;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 
 public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
@@ -28,6 +34,7 @@ public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
 
     private ImmutableMap.Builder<XEvent, XEvent> edges;
     private ImmutableMap.Builder<XEvent, XEvent> alternativeEdges;
+    private Map<XEvent, Set<XEvent>> edgesReversed;
     private boolean isUnrolled;
 
     public XFlowGraphTestBuilder(String processId) {
@@ -35,47 +42,20 @@ public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
         this.entryEvent = new XEntryEvent(createEventInfo());
         this.edges = new ImmutableMap.Builder<>();
         this.alternativeEdges = new ImmutableMap.Builder<>();
+        this.edgesReversed = new HashMap<>();
     }
 
     @Override
     public XFlowGraph build() {
         return new XFlowGraph(processId, entryEvent, exitEvent,
-                edges.build(), alternativeEdges.build(), isUnrolled);
+                edges.build(), alternativeEdges.build(),
+                CollectionUtils.buildMapOfSets(edgesReversed), isUnrolled);
     }
 
 
     public void markAsUnrolled() {
         this.isUnrolled = true;
     }
-
-    //private static Pair<XEntryEvent, XExitEvent> findEntryAndExitEvents(ImmutableList<XEvent> events) {
-    //    XEntryEvent entry = null;
-    //    XExitEvent exit = null;
-    //    boolean firstWasFound = false;
-    //    for (XEvent event : events) {
-    //        if (entry == null && event instanceof XEntryEvent) {
-    //            entry = (XEntryEvent) event;
-    //            if (firstWasFound) {
-    //                break;
-    //            }
-    //            firstWasFound = true;
-    //        }
-    //        else if (exit == null && event instanceof XExitEvent) {
-    //            exit = (XExitEvent) event;
-    //            if (firstWasFound) {
-    //                break;
-    //            }
-    //            firstWasFound = true;
-    //        }
-    //    }
-    //    if (entry == null) {
-    //        throw new RuntimeException("Entry point was not found");
-    //    }
-    //    if (exit == null) {
-    //        throw new RuntimeException("Exit point was not found");
-    //    }
-    //    return new Pair<>(entry, exit);
-    //}
 
     public XComputationEvent createComputationEvent(XLocalMemoryUnit first) {
         return new XNullaryComputationEvent(createEventInfo(), first);
@@ -134,6 +114,14 @@ public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
 
     private XEventInfo createEventInfo() {
         return new XEventInfo(processId);
+    }
+
+    private void putEvent(ImmutableMap.Builder<XEvent, XEvent> map, XEvent from, XEvent to) {
+        map.put(from, to);
+        if (!edgesReversed.containsKey(to)) {
+            edgesReversed.put(to, new HashSet<>());
+        }
+        edgesReversed.get(to).add(from);
     }
 
 }

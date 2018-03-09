@@ -21,7 +21,7 @@ public class XFlowGraph implements XEntity, FlowGraph<XEvent> {
     private final XExitEvent exit;
     private final ImmutableMap<XEvent, XEvent> edges;//next, goto jumps
     private final ImmutableMap<XEvent, XEvent> alternativeEdges; //if(false)
-    private ImmutableMap<XEvent, ImmutableSet<XEvent>> edgesReversed;
+    private final ImmutableMap<XEvent, ImmutableSet<XEvent>> edgesReversed;
     public final boolean isUnrolled;
 
     public XFlowGraph(String processId,
@@ -29,12 +29,14 @@ public class XFlowGraph implements XEntity, FlowGraph<XEvent> {
                XExitEvent exit,
                ImmutableMap<XEvent, XEvent> edges,
                ImmutableMap<XEvent, XEvent> alternativeEdges,
+               ImmutableMap<XEvent, ImmutableSet<XEvent>> edgesReversed,
                boolean isUnrolled) {
         this.processId = processId;
         this.entry = entry;
         this.exit = exit;
         this.edges = edges;
         this.alternativeEdges = alternativeEdges;
+        this.edgesReversed = edgesReversed;
         this.isUnrolled = isUnrolled;
     }
 
@@ -74,7 +76,10 @@ public class XFlowGraph implements XEntity, FlowGraph<XEvent> {
 
     @Override
     public Set<XEvent> parents(XEvent node) {
-        throw new NotImplementedException();
+        if (!edgesReversed.containsKey(node)) {
+            throw new IllegalArgumentException("Not found any parent for node " + node);
+        }
+        return edgesReversed.get(node);
     }
 
     @Override

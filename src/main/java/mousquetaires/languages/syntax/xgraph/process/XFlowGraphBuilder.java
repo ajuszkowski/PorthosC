@@ -7,12 +7,10 @@ import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeEvent;
+import mousquetaires.utils.CollectionUtils;
 import mousquetaires.utils.StringUtils;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 
 public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
@@ -21,6 +19,7 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
     private XExitEvent exitEvent;
     private final HashMap<XEvent, XEvent> edges; // TODO: immutable map? check this
     // TODO: merge edges and ifTrueJumps into one hashmap
+    private Map<XEvent, Set<XEvent>> edgesReversed;
     private final HashMap<XEvent/*XComputationEvent*/, XEvent> alternativeEdges;
     private boolean isUnrolled = false;
 
@@ -30,6 +29,7 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
         this.processId = processId;
         this.edges = new HashMap<>();
         this.alternativeEdges = new HashMap<>();
+        this.edgesReversed = new HashMap<>();
     }
 
     public void markAsUnrolled() {
@@ -41,6 +41,7 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
         // todo: final verifications
         assert entryEvent != null;
         assert exitEvent != null;
+        edgesReversed.put(exitEvent, leaves);
         for (XEvent leaf : leaves) {
             edges.put(leaf, exitEvent);
         }
@@ -71,10 +72,7 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
     @Override
     //public void addLinearEdge(XEvent from, XEvent to) {
     public void addEdge(XEvent from, XEvent to) {
-        verifyEvent(from);
-        verifyEvent(to);
-        processLeaf(from, to);
-        edges.put(from, to);
+        putEdge(edges, from, to);
     }
 
     @Override
@@ -86,10 +84,7 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
         //            " but received: " + from.getClass().getSimpleName());
         //}
         //XComputationEvent computationFrom = (XComputationEvent) from;
-        verifyEvent(from);
-        verifyEvent(to);
-        processLeaf(from, to);
-        alternativeEdges.put(from/*computationFrom*/, to);
+        putEdge(alternativeEdges, from, to);
     }
 
     // TODO  : inefficient now
@@ -119,6 +114,7 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
                 exitEvent,
                 ImmutableMap.copyOf(edges),
                 ImmutableMap.copyOf(alternativeEdges),
+                CollectionUtils.buildMapOfSets(edgesReversed),
                 isUnrolled);
     }
     
@@ -155,12 +151,20 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
         // TODO: verify that graph is connected  by remembering leaves (and dangling nodes) on each step
     }
 
-    private void processLeaf(XEvent from, XEvent to) {
+    private void putEdge(HashMap<XEvent, XEvent> map, XEvent from, XEvent to) {
+        verifyEvent(from);
+        verifyEvent(to);
         if (leaves.contains(from)) {
             leaves.remove(from);
         }
         if (!edges.containsKey(to) && !alternativeEdges.containsKey(to)) {
             leaves.add(to);
         }
+        map.put(from, to);
+        if (!edgesReversed.containsKey(to)) {
+            edgesReversed.put(to, new HashSet<>());
+        }
+        edgesReversed.get(to).add(from);
     }
+
 }
