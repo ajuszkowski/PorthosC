@@ -34,7 +34,7 @@ public class Domain {
     public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
         BoolExpr enc = ctx.mkTrue();
 
-        Set<Event> mEvents = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> mEvents = program.getMemEvents();
         Set<Event> barriers = program.getEvents().stream().filter(e -> e instanceof Barrier).collect(Collectors.toSet());
         Set<Event> eventsL = program.getEvents().stream().filter(e -> e instanceof MemEvent || e instanceof Local).collect(Collectors.toSet());
 

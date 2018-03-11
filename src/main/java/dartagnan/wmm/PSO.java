@@ -10,7 +10,7 @@ import dartagnan.program.*;
 public class PSO {
 
     public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> events = program.getMemEvents();
 
         BoolExpr enc = Encodings.satUnion("co", "fr", events, ctx);
         enc = ctx.mkAnd(enc, Encodings.satUnion("com", "(co+fr)", "rf", events, ctx));
@@ -23,12 +23,12 @@ public class PSO {
     }
 
     public static BoolExpr Consistent(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> events = program.getMemEvents();
         return ctx.mkAnd(Encodings.satAcyclic("(poloc+com)", events, ctx), Encodings.satAcyclic("ghb-pso", events, ctx));
     }
 
     public static BoolExpr Inconsistent(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> events = program.getMemEvents();
         BoolExpr enc = ctx.mkAnd(Encodings.satCycleDef("(poloc+com)", events, ctx), Encodings.satCycleDef("ghb-pso", events, ctx));
         enc = ctx.mkAnd(enc, ctx.mkOr(Encodings.satCycle("(poloc+com)", events, ctx), Encodings.satCycle("ghb-pso", events, ctx)));
         return enc;

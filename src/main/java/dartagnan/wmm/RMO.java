@@ -10,7 +10,7 @@ import dartagnan.program.*;
 public class RMO {
 
     public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> events = program.getMemEvents();
         Set<Event> eventsL = program.getEvents().stream().filter(e -> e instanceof MemEvent || e instanceof Local).collect(Collectors.toSet());
 
         BoolExpr enc = Encodings.satUnion("co", "fr", events, ctx);
@@ -34,12 +34,12 @@ public class RMO {
     }
 
     public static BoolExpr Consistent(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> events = program.getMemEvents();
         return ctx.mkAnd(Encodings.satAcyclic("((poloc\\RR)+com)", events, ctx), Encodings.satAcyclic("ghb-rmo", events, ctx));
     }
 
     public static BoolExpr Inconsistent(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> events = program.getMemEvents();
         BoolExpr enc = ctx.mkAnd(Encodings.satCycleDef("((poloc\\RR)+com)", events, ctx), Encodings.satCycleDef("ghb-rmo", events, ctx));
         enc = ctx.mkAnd(enc, ctx.mkOr(Encodings.satCycle("((poloc\\RR)+com)", events, ctx), Encodings.satCycle("ghb-rmo", events, ctx)));
         return enc;

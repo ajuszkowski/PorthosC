@@ -19,6 +19,8 @@ public class Program {
     public Assert ass;
     private List<Thread> threads;
     public MapSSA lastMap;
+    private Set<Event> events;
+    private Set<Event> memevents;
 
     public Program (String name) {
         this.name = name;
@@ -291,14 +293,23 @@ public class Program {
     }
 
     public Set<Event> getEvents() {
-        Set<Event> ret = new HashSet<Event>();
+        events = new HashSet<Event>();
         ListIterator<Thread> iter = threads.listIterator();
         while (iter.hasNext()) {
-            ret.addAll(iter.next().getEvents());
+            events.addAll(iter.next().getEvents());
         }
-        return ret;
+        return events;
     }
 
+    public Set<Event> getMemEvents() {
+        if(memevents==null){
+            memevents=this.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+            return memevents;
+        }else return memevents;
+    }
+
+    
+    
     public void setMainThread() {
         ListIterator<Thread> iter = threads.listIterator();
         while (iter.hasNext()) {

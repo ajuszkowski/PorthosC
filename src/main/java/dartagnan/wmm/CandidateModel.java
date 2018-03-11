@@ -13,6 +13,10 @@ import java.util.ArrayList;
  */
 public class CandidateModel extends Wmm{
     
+    public int size(){
+        return axioms.size();
+    }
+    
     public void push(CandidateAxiom ax){
         axioms.add(ax);        
     }

@@ -10,7 +10,7 @@ import dartagnan.program.*;
 public class Alpha {
 
     public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> events = program.getMemEvents();
         Set<Event> eventsL = program.getEvents().stream().filter(e -> e instanceof MemEvent || e instanceof Local).collect(Collectors.toSet());
 
         BoolExpr enc = Encodings.satUnion("co", "fr", events, ctx);
@@ -36,12 +36,12 @@ public class Alpha {
     }
 
     public static BoolExpr Consistent(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> events = program.getMemEvents();
         return ctx.mkAnd(Encodings.satAcyclic("(poloc+com)", events, ctx), Encodings.satAcyclic("(dp-alpha+rf)", events, ctx), Encodings.satAcyclic("ghb-alpha", events, ctx));
     }
 
     public static BoolExpr Inconsistent(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> events = program.getMemEvents();
         BoolExpr enc = ctx.mkAnd(Encodings.satCycleDef("(poloc+com)", events, ctx), Encodings.satCycleDef("(dp-alpha+rf)", events, ctx), Encodings.satCycleDef("ghb-alpha", events, ctx));
         enc = ctx.mkAnd(enc, ctx.mkOr(Encodings.satCycle("(poloc+com)", events, ctx), Encodings.satCycle("(dp-alpha+rf)", events, ctx), Encodings.satCycle("ghb-alpha", events, ctx)));
         return enc;

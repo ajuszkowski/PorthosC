@@ -16,7 +16,7 @@ import dartagnan.utils.Utils;
 public class Power {
 
     public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> events = program.getMemEvents();
         Set<Event> eventsL = program.getEvents().stream().filter(e -> e instanceof MemEvent || e instanceof Local).collect(Collectors.toSet());
 
         BoolExpr enc = Encodings.satUnion("co", "fr", events, ctx);
@@ -32,7 +32,7 @@ public class Power {
         enc = ctx.mkAnd(enc, Encodings.satComp("coe", "rfe", events, ctx));
 
         enc = ctx.mkAnd(enc, Encodings.satIntersection("rdw", "poloc", "(fre;rfe)", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satIntersection("detour", "poloc", "(coe;rfe)", events,ctx));
+        enc = ctx.mkAnd(enc, Encodings.satIntersection("detour", "poloc", "(coe;rfe)", events, ctx));
         // Base case for program order
         enc = ctx.mkAnd(enc, Encodings.satUnion("dp", "rdw", events, ctx));
         enc = ctx.mkAnd(enc, Encodings.satUnion("ii0", "(dp+rdw)", "rfi", events, ctx));
@@ -74,29 +74,29 @@ public class Power {
     }
 
     public static BoolExpr Consistent(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> events = program.getMemEvents();
         return ctx.mkAnd(Encodings.satAcyclic("hb-power", events, ctx),
-                        Encodings.satIrref("((fre;prop);(hb-power)*)", events, ctx),
-                        Encodings.satAcyclic("(co+prop)", events, ctx),
-                        Encodings.satAcyclic("(poloc+com)", events, ctx));
+                Encodings.satIrref("((fre;prop);(hb-power)*)", events, ctx),
+                Encodings.satAcyclic("(co+prop)", events, ctx),
+                Encodings.satAcyclic("(poloc+com)", events, ctx));
     }
 
     public static BoolExpr Inconsistent(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> events = program.getMemEvents();
         BoolExpr enc = ctx.mkAnd(Encodings.satCycleDef("hb-power", events, ctx),
-                                Encodings.satCycleDef("(co+prop)", events, ctx),
-                                Encodings.satCycleDef("(poloc+com)", events, ctx));
+                Encodings.satCycleDef("(co+prop)", events, ctx),
+                Encodings.satCycleDef("(poloc+com)", events, ctx));
         enc = ctx.mkAnd(enc, ctx.mkOr(Encodings.satCycle("hb-power", events, ctx),
-                                    ctx.mkNot(Encodings.satIrref("((fre;prop);(hb-power)*)", events, ctx)),
-                                    Encodings.satCycle("(co+prop)", events, ctx),
-                                    Encodings.satCycle("(poloc+com)", events, ctx)));
+                ctx.mkNot(Encodings.satIrref("((fre;prop);(hb-power)*)", events, ctx)),
+                Encodings.satCycle("(co+prop)", events, ctx),
+                Encodings.satCycle("(poloc+com)", events, ctx)));
         return enc;
     }
 
     private static BoolExpr satPowerPPO(Set<Event> events, Context ctx) throws Z3Exception {
         BoolExpr enc = ctx.mkTrue();
-        for(Event e1 : events) {
-            for(Event e2 : events) {
+        for (Event e1 : events) {
+            for (Event e2 : events) {
                 BoolExpr orClause1 = ctx.mkFalse();
                 BoolExpr orClause2 = ctx.mkFalse();
                 BoolExpr orClause3 = ctx.mkFalse();
@@ -105,52 +105,74 @@ public class Power {
                 BoolExpr orClause6 = ctx.mkFalse();
                 BoolExpr orClause7 = ctx.mkFalse();
                 BoolExpr orClause8 = ctx.mkFalse();
-                for(Event e3 : events) {
-                    orClause1 = ctx.mkOr(orClause1, ctx.mkAnd(Utils.edge("ic",e1,e3, ctx), Utils.edge("ci",e3,e2, ctx)));
-                    orClause2 = ctx.mkOr(orClause2, ctx.mkAnd(Utils.edge("ii",e1,e3, ctx), Utils.edge("ii",e3,e2, ctx)));
-                    orClause3 = ctx.mkOr(orClause3, ctx.mkAnd(Utils.edge("ic",e1,e3, ctx), Utils.edge("cc",e3,e2, ctx)));
-                    orClause4 = ctx.mkOr(orClause4, ctx.mkAnd(Utils.edge("ii",e1,e3, ctx), Utils.edge("ic",e3,e2, ctx)));
-                    orClause5 = ctx.mkOr(orClause5, ctx.mkAnd(Utils.edge("ci",e1,e3, ctx), Utils.edge("ii",e3,e2, ctx)));
-                    orClause6 = ctx.mkOr(orClause6, ctx.mkAnd(Utils.edge("cc",e1,e3, ctx), Utils.edge("ci",e3,e2, ctx)));
-                    orClause7 = ctx.mkOr(orClause7, ctx.mkAnd(Utils.edge("ci",e1,e3, ctx), Utils.edge("ic",e3,e2, ctx)));
-                    orClause8 = ctx.mkOr(orClause8, ctx.mkAnd(Utils.edge("cc",e1,e3, ctx), Utils.edge("cc",e3,e2, ctx)));
-
+                for (Event e3 : events) {
+                    orClause1 = ctx.mkOr(orClause1, ctx.mkAnd(Utils.edge("ic", e1, e3, ctx), Utils.edge("ci", e3, e2, ctx)));
+                    orClause2 = ctx.mkOr(orClause2, ctx.mkAnd(Utils.edge("ii", e1, e3, ctx), Utils.edge("ii", e3, e2, ctx)));
+                    orClause3 = ctx.mkOr(orClause3, ctx.mkAnd(Utils.edge("ic", e1, e3, ctx), Utils.edge("cc", e3, e2, ctx)));
+                    orClause4 = ctx.mkOr(orClause4, ctx.mkAnd(Utils.edge("ii", e1, e3, ctx), Utils.edge("ic", e3, e2, ctx)));
+                    orClause5 = ctx.mkOr(orClause5, ctx.mkAnd(Utils.edge("ci", e1, e3, ctx), Utils.edge("ii", e3, e2, ctx)));
+                    orClause6 = ctx.mkOr(orClause6, ctx.mkAnd(Utils.edge("cc", e1, e3, ctx), Utils.edge("ci", e3, e2, ctx)));
+                    orClause7 = ctx.mkOr(orClause7, ctx.mkAnd(Utils.edge("ci", e1, e3, ctx), Utils.edge("ic", e3, e2, ctx)));
+                    orClause8 = ctx.mkOr(orClause8, ctx.mkAnd(Utils.edge("cc", e1, e3, ctx), Utils.edge("cc", e3, e2, ctx)));
                 }
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ic;ci",e1,e2, ctx), orClause1));
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ii;ii",e1,e2, ctx), orClause2));
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ic;cc",e1,e2, ctx), orClause3));
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ii;ic",e1,e2, ctx), orClause4));
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ci;ii",e1,e2, ctx), orClause5));
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("cc;ci",e1,e2, ctx), orClause6));
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ci;ic",e1,e2, ctx), orClause7));
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("cc;cc",e1,e2, ctx), orClause8));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ic;ci", e1, e2, ctx), orClause1));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ii;ii", e1, e2, ctx), orClause2));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ic;cc", e1, e2, ctx), orClause3));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ii;ic", e1, e2, ctx), orClause4));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ci;ii", e1, e2, ctx), orClause5));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("cc;ci", e1, e2, ctx), orClause6));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ci;ic", e1, e2, ctx), orClause7));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("cc;cc", e1, e2, ctx), orClause8));
 
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ii",e1,e2, ctx), ctx.mkOr(Utils.edge("ii0",e1,e2, ctx), Utils.edge("ci",e1,e2, ctx), Utils.edge("ic;ci",e1,e2, ctx), Utils.edge("ii;ii",e1,e2, ctx))));
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ic",e1,e2, ctx), ctx.mkOr(Utils.edge("ic0",e1,e2, ctx), Utils.edge("ii",e1,e2, ctx), Utils.edge("cc",e1,e2, ctx), Utils.edge("ic;cc",e1,e2, ctx), Utils.edge("ii;ic",e1,e2, ctx))));
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ci",e1,e2, ctx), ctx.mkOr(Utils.edge("ci0",e1,e2, ctx), Utils.edge("ci;ii",e1,e2, ctx), Utils.edge("cc;ci",e1,e2, ctx))));
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("cc",e1,e2, ctx), ctx.mkOr(Utils.edge("cc0",e1,e2, ctx), Utils.edge("ci",e1,e2, ctx), Utils.edge("ci;ic",e1,e2, ctx), Utils.edge("cc;cc",e1,e2, ctx))));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ii", e1, e2, ctx), ctx.mkOr(Utils.edge("ii0", e1, e2, ctx), Utils.edge("ci", e1, e2, ctx), Utils.edge("ic;ci", e1, e2, ctx), Utils.edge("ii;ii", e1, e2, ctx))));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ic", e1, e2, ctx), ctx.mkOr(Utils.edge("ic0", e1, e2, ctx), Utils.edge("ii", e1, e2, ctx), Utils.edge("cc", e1, e2, ctx), Utils.edge("ic;cc", e1, e2, ctx), Utils.edge("ii;ic", e1, e2, ctx))));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ci", e1, e2, ctx), ctx.mkOr(Utils.edge("ci0", e1, e2, ctx), Utils.edge("ci;ii", e1, e2, ctx), Utils.edge("cc;ci", e1, e2, ctx))));
+                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("cc", e1, e2, ctx), ctx.mkOr(Utils.edge("cc0", e1, e2, ctx), Utils.edge("ci", e1, e2, ctx), Utils.edge("ci;ic", e1, e2, ctx), Utils.edge("cc;cc", e1, e2, ctx))));
 
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ii",e1,e2, ctx), ctx.mkOr(ctx.mkAnd(Utils.edge("ii0",e1,e2, ctx), ctx.mkGt(Utils.intCount("ii",e1,e2, ctx), Utils.intCount("ii0",e1,e2, ctx))),
-                                                                                    ctx.mkAnd(Utils.edge("ci",e1,e2, ctx), ctx.mkGt(Utils.intCount("ii",e1,e2, ctx), Utils.intCount("ci",e1,e2, ctx))),
-                                                                                    ctx.mkAnd(Utils.edge("ic;ci",e1,e2, ctx), ctx.mkGt(Utils.intCount("ii",e1,e2, ctx), Utils.intCount("ic;ci",e1,e2, ctx))),
-                                                                                    ctx.mkAnd(Utils.edge("ii;ii",e1,e2, ctx), ctx.mkGt(Utils.intCount("ii",e1,e2, ctx), Utils.intCount("ii;ii",e1,e2, ctx))))));
+                if (Relation.Approx) {
+//                    enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ii", e1, e2, ctx), ctx.mkOr(Utils.edge("ii0", e1, e2, ctx),
+//                            Utils.edge("ci", e1, e2, ctx),
+//                            Utils.edge("ic;ci", e1, e2, ctx),
+//                            Utils.edge("ii;ii", e1, e2, ctx))));
+//
+//                    enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ic", e1, e2, ctx), ctx.mkOr(Utils.edge("ic0", e1, e2, ctx),
+//                            Utils.edge("ii", e1, e2, ctx),
+//                            Utils.edge("cc", e1, e2, ctx),
+//                            Utils.edge("ic;cc", e1, e2, ctx),
+//                            Utils.edge("ii;ic", e1, e2, ctx))));
+//
+//                    enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ci", e1, e2, ctx), ctx.mkOr(Utils.edge("ci0", e1, e2, ctx),
+//                            Utils.edge("ci;ii", e1, e2, ctx),
+//                            Utils.edge("cc;ci", e1, e2, ctx))));
+//                            
+//                    enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("cc", e1, e2, ctx), ctx.mkOr(Utils.edge("cc0", e1, e2, ctx),
+//                            Utils.edge("ci", e1, e2, ctx), 
+//                            Utils.edge("ci;ic", e1, e2, ctx), 
+//                            Utils.edge("cc;cc", e1, e2, ctx))));
 
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ic",e1,e2, ctx), ctx.mkOr(ctx.mkAnd(Utils.edge("ic0",e1,e2, ctx), ctx.mkGt(Utils.intCount("ic",e1,e2, ctx), Utils.intCount("ic0",e1,e2, ctx))),
-                                                                                    ctx.mkAnd(Utils.edge("ii",e1,e2, ctx), ctx.mkGt(Utils.intCount("ic",e1,e2, ctx), Utils.intCount("ii",e1,e2, ctx))),
-                                                                                    ctx.mkAnd(Utils.edge("cc",e1,e2, ctx), ctx.mkGt(Utils.intCount("ic",e1,e2, ctx), Utils.intCount("cc",e1,e2, ctx))),
-                                                                                    ctx.mkAnd(Utils.edge("ic;cc",e1,e2, ctx), ctx.mkGt(Utils.intCount("ic",e1,e2, ctx), Utils.intCount("ic;cc",e1,e2, ctx))),
-                                                                                    ctx.mkAnd(Utils.edge("ii;ic",e1,e2, ctx), ctx.mkGt(Utils.intCount("ic",e1,e2, ctx), Utils.intCount("ii;ic",e1,e2, ctx))))));
+                } else {
+                    enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ii", e1, e2, ctx), ctx.mkOr(ctx.mkAnd(Utils.edge("ii0", e1, e2, ctx), ctx.mkGt(Utils.intCount("ii", e1, e2, ctx), Utils.intCount("ii0", e1, e2, ctx))),
+                            ctx.mkAnd(Utils.edge("ci", e1, e2, ctx), ctx.mkGt(Utils.intCount("ii", e1, e2, ctx), Utils.intCount("ci", e1, e2, ctx))),
+                            ctx.mkAnd(Utils.edge("ic;ci", e1, e2, ctx), ctx.mkGt(Utils.intCount("ii", e1, e2, ctx), Utils.intCount("ic;ci", e1, e2, ctx))),
+                            ctx.mkAnd(Utils.edge("ii;ii", e1, e2, ctx), ctx.mkGt(Utils.intCount("ii", e1, e2, ctx), Utils.intCount("ii;ii", e1, e2, ctx))))));
 
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ci",e1,e2, ctx), ctx.mkOr(ctx.mkAnd(Utils.edge("ci0",e1,e2, ctx), ctx.mkGt(Utils.intCount("ci",e1,e2, ctx), Utils.intCount("ci0",e1,e2, ctx))),
-                                                                                    ctx.mkAnd(Utils.edge("ci;ii",e1,e2, ctx), ctx.mkGt(Utils.intCount("ci",e1,e2, ctx), Utils.intCount("ci;ii",e1,e2, ctx))),
-                                                                                    ctx.mkAnd(Utils.edge("cc;ci",e1,e2, ctx), ctx.mkGt(Utils.intCount("ci",e1,e2, ctx), Utils.intCount("cc;ci",e1,e2, ctx))))));
+                    enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ic", e1, e2, ctx), ctx.mkOr(ctx.mkAnd(Utils.edge("ic0", e1, e2, ctx), ctx.mkGt(Utils.intCount("ic", e1, e2, ctx), Utils.intCount("ic0", e1, e2, ctx))),
+                            ctx.mkAnd(Utils.edge("ii", e1, e2, ctx), ctx.mkGt(Utils.intCount("ic", e1, e2, ctx), Utils.intCount("ii", e1, e2, ctx))),
+                            ctx.mkAnd(Utils.edge("cc", e1, e2, ctx), ctx.mkGt(Utils.intCount("ic", e1, e2, ctx), Utils.intCount("cc", e1, e2, ctx))),
+                            ctx.mkAnd(Utils.edge("ic;cc", e1, e2, ctx), ctx.mkGt(Utils.intCount("ic", e1, e2, ctx), Utils.intCount("ic;cc", e1, e2, ctx))),
+                            ctx.mkAnd(Utils.edge("ii;ic", e1, e2, ctx), ctx.mkGt(Utils.intCount("ic", e1, e2, ctx), Utils.intCount("ii;ic", e1, e2, ctx))))));
 
-                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("cc",e1,e2, ctx), ctx.mkOr(ctx.mkAnd(Utils.edge("cc0",e1,e2, ctx), ctx.mkGt(Utils.intCount("cc",e1,e2, ctx), Utils.intCount("cc0",e1,e2, ctx))),
-                                                                                    ctx.mkAnd(Utils.edge("ci",e1,e2, ctx), ctx.mkGt(Utils.intCount("cc",e1,e2, ctx), Utils.intCount("ci",e1,e2, ctx))),
-                                                                                    ctx.mkAnd(Utils.edge("ci;ic",e1,e2, ctx), ctx.mkGt(Utils.intCount("cc",e1,e2, ctx), Utils.intCount("ci;ic",e1,e2, ctx))),
-                                                                                    ctx.mkAnd(Utils.edge("cc;cc",e1,e2, ctx), ctx.mkGt(Utils.intCount("cc",e1,e2, ctx), Utils.intCount("cc;cc",e1,e2, ctx))))));
+                    enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ci", e1, e2, ctx), ctx.mkOr(ctx.mkAnd(Utils.edge("ci0", e1, e2, ctx), ctx.mkGt(Utils.intCount("ci", e1, e2, ctx), Utils.intCount("ci0", e1, e2, ctx))),
+                            ctx.mkAnd(Utils.edge("ci;ii", e1, e2, ctx), ctx.mkGt(Utils.intCount("ci", e1, e2, ctx), Utils.intCount("ci;ii", e1, e2, ctx))),
+                            ctx.mkAnd(Utils.edge("cc;ci", e1, e2, ctx), ctx.mkGt(Utils.intCount("ci", e1, e2, ctx), Utils.intCount("cc;ci", e1, e2, ctx))))));
+
+                    enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("cc", e1, e2, ctx), ctx.mkOr(ctx.mkAnd(Utils.edge("cc0", e1, e2, ctx), ctx.mkGt(Utils.intCount("cc", e1, e2, ctx), Utils.intCount("cc0", e1, e2, ctx))),
+                            ctx.mkAnd(Utils.edge("ci", e1, e2, ctx), ctx.mkGt(Utils.intCount("cc", e1, e2, ctx), Utils.intCount("ci", e1, e2, ctx))),
+                            ctx.mkAnd(Utils.edge("ci;ic", e1, e2, ctx), ctx.mkGt(Utils.intCount("cc", e1, e2, ctx), Utils.intCount("ci;ic", e1, e2, ctx))),
+                            ctx.mkAnd(Utils.edge("cc;cc", e1, e2, ctx), ctx.mkGt(Utils.intCount("cc", e1, e2, ctx), Utils.intCount("cc;cc", e1, e2, ctx))))));
+                }
             }
         }
-         return enc;
+        return enc;
     }
 }

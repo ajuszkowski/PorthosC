@@ -16,7 +16,6 @@ import java.util.HashMap;
 public class CandidateAxiom extends Acyclic {
 
     //denotes whether the axiom fails a Neg test.
-    public boolean relevant=false;
 
     /**
      * Creates an acyclic Axiom that has additional information regarding its behaviour towards the reachability src.mousquetaires.tests.
@@ -28,11 +27,35 @@ public class CandidateAxiom extends Acyclic {
     
     public Consistent[] pos=new Consistent[aramis.Aramis.posPrograms.size()];
     public Consistent[] neg=new Consistent[aramis.Aramis.negPrograms.size()];
-    public HashMap<Program, Boolean> consProg = new HashMap<>();
+    //public HashMap<Program, Boolean> consProg = new HashMap<>();
     //Denotes whether the axiom passes all POS tests.
     public boolean consistent=false;
     public int position;
     public CandidateAxiom[] next=new CandidateAxiom[aramis.Aramis.negPrograms.size()];
+    public boolean relevant=false;
+    
+    public void largerthan(CandidateAxiom ax){
+        for (int i = 0; i < pos.length; i++) {
+            if(ax.pos[i]==Consistent.INCONSISTENT){
+                consistent=false;
+                pos[i]=ax.pos[i];
+            }
+        }
+        for (int i = 0; i < neg.length; i++) {
+            if(ax.neg[i]==Consistent.INCONSISTENT) neg[i]=ax.neg[i];
+        }        
+    }
+    
+    
+    public void smallerthan(CandidateAxiom ax){
+        consistent=(consistent || ax.consistent);
+        for (int i = 0; i < pos.length; i++) {
+            if(ax.pos[i]==Consistent.CONSISTENT) pos[i]=ax.pos[i];
+        }
+        for (int i = 0; i < neg.length; i++) {
+            if(ax.neg[i]==Consistent.CONSISTENT) neg[i]=ax.neg[i];
+        }
+    }
 
     /**
      * This provides the next NEG test we have to cover in the dynamic synthesis.

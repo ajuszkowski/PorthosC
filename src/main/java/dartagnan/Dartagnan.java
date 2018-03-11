@@ -1,5 +1,8 @@
 package dartagnan;
 
+import aramis.Aramis;
+import static aramis.ListOfRels.baserels;
+import com.microsoft.z3.BoolExpr;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -10,14 +13,19 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.commons.io.FileUtils;
 
 import com.microsoft.z3.Context;
+import com.microsoft.z3.Model;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 import com.microsoft.z3.Z3Exception;
 import com.microsoft.z3.enumerations.Z3_ast_print_mode;
+import dartagnan.program.Event;
 
 import dartagnan.program.Program;
+import dartagnan.utils.Utils;
 import dartagnan.wmm.Domain;
+import dartagnan.wmm.Relation;
 import dartagnan.wmm.Wmm;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.cli.*;
@@ -42,6 +50,10 @@ public class Dartagnan {
         Option fileOpt = new Option("f", "file", true, "target MCM file");
         fileOpt.setRequired(false);
         options.addOption(fileOpt);
+
+        Option approxOpt = new Option("app", "approx", false, "Use of approximation encoding of MCM.");
+        approxOpt.setRequired(false);
+        options.addOption(approxOpt);
 
         CommandLineParser parserCmd = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
@@ -92,6 +104,8 @@ Wmm mcm;
         }
         mcm=Wmm.getWmm(target);
 
+        if(cmd.hasOption("approx")) Relation.Approx=true;
+        
         if (cmd.hasOption("file")) {
             String filePath = cmd.getOptionValue("file");
             if (!filePath.endsWith("cat")) {
@@ -113,7 +127,8 @@ Wmm mcm;
 
         }
 
-        p.initialize();
+        log.info("Encoding...");
+        p.initialize(2);
         p.compile(target, false, true);
 
         Context ctx = new Context();
@@ -137,12 +152,36 @@ Wmm mcm;
 
 
         ctx.setPrintMode(Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL);
+        log.info("Solving...");
 
         if (s.check() == Status.SATISFIABLE) {
             System.out.println("       0");
+            
+//                        log.info("execution: ");
+//                        Model m = s.getModel();
+//                        String exec = "";
+//                                        Set<Event> events = p.getMemEvents();
+//
+//                        for (Event e1 : events) {
+//                            for (Event e2 : events) {
+//                                for (String rel : baserels) {
+//                                    //log.fine("testing ("+rel+e1.repr()+e2.repr()+")");
+//                                    BoolExpr relPair = Utils.edge(rel, e1, e2, ctx);
+//                                    //TODO: autocomplete option on?
+//                                    //log.finest(rel+" "+m.eval(relPair, true).isTrue());
+//                                    if (m.eval(relPair, true).isTrue()) {
+//                                        //log.fine("testing ("+rel+e1.repr()+e2.repr()+")");
+//                                        exec = exec + " " + String.format("%s(%s,%s)", rel, e1.repr(), e2.repr());
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        System.out.println(exec);
+            
         } else {
             System.out.println("       1");
         }
+        log.info("Solved.");
 
     }
 

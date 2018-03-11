@@ -12,11 +12,18 @@ import dartagnan.program.Program;
 import java.util.HashSet;
 import java.util.Set;
 
+
 /**
  *
  * @author Florian Furbach
  */
 public abstract class Relation {
+
+    /**
+     * Describes whether the encoding process uses an over-approximation which is only suitable for checking consistency, NOT inconsistency.
+     */
+    public static boolean Approx=false;
+    
     protected String name;
     protected boolean containsRec;
     protected boolean isnamed=false;
@@ -28,7 +35,7 @@ public abstract class Relation {
     }
     
     /*
-    Only use this method befoe relations depending on this one are encoded!!!
+    Only use this method before relations depending on this one are encoded!!!
     */
     public void setName(String name){
         this.name=name;
@@ -50,7 +57,7 @@ public abstract class Relation {
     }
 
     public String getName() {
-        return name;
+        return TemplateRelation.PREFIX+name;
     }
 
     public Set<Relation> getNamedRelations() {
@@ -59,5 +66,11 @@ public abstract class Relation {
     
     
     
-    public abstract BoolExpr encode(Program program, Context ctx) throws Z3Exception;
+    public abstract BoolExpr encode(Program program, Context ctx, Set<String> encodedRels) throws Z3Exception;
+    
+    protected abstract BoolExpr encodeBasic(Program program, Context ctx) throws Z3Exception;
+    
+    public BoolExpr encodeApprox(Program program, Context ctx) throws Z3Exception{
+        return this.encodeBasic(program, ctx);
+    }
 }

@@ -16,7 +16,7 @@ import dartagnan.utils.Utils;
 public class ARM {
 
     public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> events = program.getMemEvents();
         Set<Event> eventsL = program.getEvents().stream().filter(e -> e instanceof MemEvent || e instanceof Local).collect(Collectors.toSet());
 
         BoolExpr enc = Encodings.satUnion("co", "fr", events, ctx);
@@ -70,7 +70,7 @@ public class ARM {
     }
 
     public static BoolExpr Consistent(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> events = program.getMemEvents();
         return ctx.mkAnd(Encodings.satAcyclic("hb-arm", events, ctx),
                         Encodings.satIrref("((fre;prop);(hb-arm)*)", events, ctx),
                         Encodings.satAcyclic("(co+prop)", events, ctx),
@@ -78,7 +78,7 @@ public class ARM {
     }
 
     public static BoolExpr Inconsistent(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> events = program.getMemEvents();
         BoolExpr enc = ctx.mkAnd(Encodings.satCycleDef("hb-arm", events, ctx),
                                 Encodings.satCycleDef("(co+prop)", events, ctx),
                                 Encodings.satCycleDef("(poloc+com)", events, ctx));

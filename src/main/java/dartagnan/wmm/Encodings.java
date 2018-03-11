@@ -219,7 +219,24 @@ public class Encodings {
     }
 
     public static BoolExpr satTransRef(String name, Set<Event> events, Context ctx) throws Z3Exception {
-        BoolExpr enc = satTransFixPoint(name, events, ctx);
+        BoolExpr enc;
+        if(Relation.Approx){
+                    enc = ctx.mkTrue();
+        for (Event e1 : events) {
+            for (Event e2 : events) {
+                    //transitive
+                    BoolExpr orClause = ctx.mkFalse();
+                    for (Event e3 : events) {
+                        orClause = ctx.mkOr(orClause, ctx.mkAnd(Utils.edge(String.format("%s^+", name), e1, e3, ctx), Utils.edge(String.format("%s^+", name), e3, e2, ctx)));
+                    }
+                    //original relation
+                    orClause=ctx.mkOr(orClause, Utils.edge(name, e1, e2, ctx));
+                    //putting it together:
+                    enc=ctx.mkAnd(enc,ctx.mkEq(Utils.edge(String.format("%s^+", name), e1, e2, ctx),orClause));
+
+            }
+        }
+        }else enc = satTransFixPoint(name, events, ctx);
         enc = ctx.mkAnd(enc, satUnion(String.format("(%s)*", name), "id", String.format("%s^+", name), events, ctx));
         return enc;
     }
@@ -307,8 +324,8 @@ public class Encodings {
 
     public static BoolExpr encodePreserveFences(Program p1, Program p2, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
-        Set<Event> memEventsP1 = p1.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
-        Set<Event> memEventsP2 = p2.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+        Set<Event> memEventsP1 = p1.getMemEvents();
+        Set<Event> memEventsP2 = p2.getMemEvents();
         for(Event e1P1 : memEventsP1) {
             for(Event e1P2 : memEventsP2) {
                 if(e1P1.getHLId().equals(e1P2.getHLId())) {
