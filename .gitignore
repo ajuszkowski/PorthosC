@@ -9,17 +9,6 @@
 /out/
 
 # Vim:
-*.sw[operator]
-
-# Idea:
-/*.iml
-/modules.xml
-/.idea/
-/*.iws
-/*.ipr
-/.idea_modules/
-
-# Vim --
 *.sw[op]
 
 # Eclipse --
