@@ -5,11 +5,16 @@ import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
 import mousquetaires.languages.syntax.zformula.ZBoolConjunctionBuilder;
 import mousquetaires.languages.syntax.zformula.ZBoolFormula;
-import mousquetaires.languages.syntax.zformula.ZBoolVariableGlobal;
+import mousquetaires.languages.syntax.zformula.ZBoolVariable;
+import mousquetaires.utils.graphs.GraphLineariser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import static mousquetaires.languages.syntax.zformula.ZHelper.*;
+import static mousquetaires.languages.syntax.zformula.ZHelper.implies;
+import static mousquetaires.languages.syntax.zformula.ZHelper.or;
 import static mousquetaires.languages.syntax.zformula.ZVariableHelper.createEventVariable;
 
 
@@ -27,38 +32,30 @@ public class XFlowGraphToZformulaConverter {
     }
 
     public ZBoolFormula encode(XFlowGraph graph) {
-        ZBoolConjunctionBuilder processFormula = new ZBoolConjunctionBuilder();
+        ZBoolConjunctionBuilder resultFormula = new ZBoolConjunctionBuilder();
 
-        Stack<XEvent> stack = new Stack<>();
-        stack.push(graph.source());
-        while (!stack.isEmpty()) {
-            XEvent current = stack.pop();
+        Set<XEvent> visited = new HashSet<>(graph.nodesCount());
+        //Deque<XEvent> queue = new ArrayDeque<>(graph.edges().size());
+        //queue.add(graph.source());
+        GraphLineariser<XEvent> lineariser = new GraphLineariser<>(graph);
+        Iterable<XEvent> topologicallySortedNodes = lineariser.computeLinearisedNodes();
 
-            ZBoolVariableGlobal currentId = createEventVariable(current);
+        visited.add(graph.source());
+        visited.add(graph.sink());
 
-            XEvent nextThen = graph.child(current);
-            stack.push(nextThen);
-            ZBoolVariableGlobal nextThenId = createEventVariable(nextThen);
+        for (XEvent current : topologicallySortedNodes) {
 
-            // encode control-flow, 'if(c){a}else{b}' as 'not (a and b)'
-            if (graph.hasAlternativeChild(current)) {
-                XEvent nextElse = graph.alternativeChild(current);
-                stack.push(nextElse);
+        //while (!queue.isEmpty()) {
+        //    XEvent current = queue.removeFirst();
 
-                // add constraint 'not both then and else'
-                ZBoolVariableGlobal nextElseId = createEventVariable(nextElse);
-                ZBoolFormula branchingControlFlow = not(and(nextThenId, nextElseId));
-                processFormula.addSubFormula(branchingControlFlow);
-
-
+            if (visited.contains(current)) {
+                continue;
             }
-            //else {
-            //    // add constraint 'next => previous'
-            //    ZBoolFormula branchingControlFlow = implies(nextThenId, currentId);
-            //    processFormula.addSubFormula(branchingControlFlow);
-            //}
+
+            ZBoolVariable currentId = createEventVariable(current);
 
             // encode control-flow, 'next -> prev'
+            //if (!current.equals(graph.source())) {
             Set<XEvent> parents = graph.parents(current);
             assert parents.size() > 0;
             List<ZBoolFormula> parentsIds = new ArrayList<>(parents.size());
@@ -66,19 +63,38 @@ public class XFlowGraphToZformulaConverter {
                 parentsIds.add(createEventVariable(parent));
             }
             ZBoolFormula nextImpliesPreviouses = implies(currentId, or(parentsIds));
-            processFormula.addSubFormula(nextImpliesPreviouses);
+            resultFormula.addSubFormula(nextImpliesPreviouses);
 
             // update references from all parents
-            dataFlowEncoder.updateReferences(current, parents);
+            //dataFlowEncoder.updateReferences(current, parents);
 
-            // encode dataflow if needed
-            ZBoolFormula dataFlowAssertion = current.accept(dataFlowEncoder);
+            // encode dataflow if needed AND set up ssa map
+            ZBoolFormula dataFlowAssertion = current.accept(dataFlowEncoder); //TODO: do not implicitly update references while visit
             if (dataFlowAssertion != null) {
-                processFormula.addSubFormula(implies(currentId, dataFlowAssertion));
+                resultFormula.addSubFormula(implies(currentId, dataFlowAssertion));
             }
+
+            //if (!current.equals(graph.sink())) {
+            //    //XEvent nextThen = graph.child(current);
+            //    //queue.addLast(nextThen);
+            //    //ZBoolVariable nextThenId = createEventVariable(nextThen);
+            //
+            //    //// encode control-flow, 'if(c){a}else{b}' as 'not (a and b)'
+            //    //if (graph.hasAlternativeChild(current)) {
+            //    //    XEvent nextElse = graph.alternativeChild(current);
+            //    //    //queue.addLast(nextElse);
+            //    //
+            //    //    // add constraint 'not both then and else'
+            //    //    ZBoolVariable nextElseId = createEventVariable(nextElse);
+            //    //    ZBoolFormula branchingControlFlow = not(and(nextThenId, nextElseId)); //TODO: <--- THIS IS NOT CORRECT!!!
+            //    //    resultFormula.addSubFormula(branchingControlFlow);
+            //    //}
+            //}
+
+            visited.add(current);
         }
 
-        return processFormula.build();
+        return resultFormula.build();
     }
 
 

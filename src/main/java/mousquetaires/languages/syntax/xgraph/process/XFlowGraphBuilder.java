@@ -17,11 +17,12 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
     private final String processId;
     private XEntryEvent entryEvent;
     private XExitEvent exitEvent;
-    private final HashMap<XEvent, XEvent> edges; // TODO: immutable map? check this
+    private HashMap<XEvent, XEvent> edges; // TODO: immutable map? check this
     // TODO: merge edges and ifTrueJumps into one hashmap
     private Map<XEvent, Set<XEvent>> edgesReversed;
-    private final HashMap<XEvent/*XComputationEvent*/, XEvent> alternativeEdges;
-    private boolean isUnrolled = false;
+    private HashMap<XEvent/*XComputationEvent*/, XEvent> alternativeEdges;
+    //private ImmutableList.Builder<XEvent> linearisedNodes;
+    private boolean isUnrolled;
 
     private HashSet<XEvent> leaves = new HashSet<>();
 
@@ -30,8 +31,16 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
         this.edges = new HashMap<>();
         this.alternativeEdges = new HashMap<>();
         this.edgesReversed = new HashMap<>();
+        //this.linearisedNodes = new ImmutableList.Builder<>();
     }
 
+
+    //@Override
+    //public void addTopologicallyNextNode(XEvent node) {
+    //    linearisedNodes.add(node);
+    //}
+
+    @Override
     public void markAsUnrolled() {
         isUnrolled = true;
     }
@@ -115,6 +124,7 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
                 ImmutableMap.copyOf(edges),
                 ImmutableMap.copyOf(alternativeEdges),
                 CollectionUtils.buildMapOfSets(edgesReversed),
+                //linearisedNodes.build(),
                 isUnrolled);
     }
     
@@ -166,5 +176,4 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
         }
         edgesReversed.get(to).add(from);
     }
-
 }

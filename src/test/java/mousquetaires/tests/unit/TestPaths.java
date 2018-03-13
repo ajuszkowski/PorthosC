@@ -1,5 +1,5 @@
 package mousquetaires.tests.unit;
 
 public abstract class TestPaths {
-    public static final String resourcesDirectory = "src/test/resources/";
+    public static final String resourcesDirectory = "src/test_unrollingBound6/resources/";
 }

@@ -9,6 +9,7 @@ import mousquetaires.languages.syntax.zformula.ZBoolFormula;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
+import mousquetaires.languages.transformers.xgraph.XProgramUnroller;
 import mousquetaires.tests.TestFailedException;
 import mousquetaires.tests.unit.languages.converters.AbstractConverterUnitTest;
 import mousquetaires.utils.CollectionUtils;
@@ -24,13 +25,15 @@ public abstract class C11ToZformula_UnitTestBase extends AbstractConverterUnitTe
     protected Iterator<? extends ZBoolFormula> parseTestFile(String testFile) {
         try {
             DataModel dataModel = null; // TODO: consider data model also
+            int unrollBound = 6; // TODO: PASS IT AS TEST PARAMETER (object testSettings)
             File file = new File(testFile);
             ProgramLanguage language = ProgramExtensions.parseProgramLanguage(file.getName());
             YSyntaxTree internalRepr = YtreeParser.parse(file, language);
             YtreeToXgraphConverter converter = new YtreeToXgraphConverter(language, dataModel);
             XProgram program = converter.convert(internalRepr);
+            XProgram unrolledProgram = XProgramUnroller.unroll(program, unrollBound);
             XProgramToZformulaConverter encoder = new XProgramToZformulaConverter();
-            ZBoolFormula smtFormula = encoder.encode(program);
+            ZBoolFormula smtFormula = encoder.encode(unrolledProgram);
             return CollectionUtils.createIteratorFrom(smtFormula);
         } catch (IOException e) {
             e.printStackTrace();

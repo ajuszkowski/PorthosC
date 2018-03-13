@@ -8,7 +8,7 @@ import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 /** Write event from local memory (registry, {@link XLocalMemoryUnit})
  * to the shared memory ({@link XLocalMemoryUnit}) */
-public class XStoreMemoryEvent extends XMemoryEventBase implements XSharedMemoryEvent {
+public final class XStoreMemoryEvent extends XMemoryEventBase implements XSharedMemoryEvent {
 
     //public final XMemoryOrder memoryOrder;
 

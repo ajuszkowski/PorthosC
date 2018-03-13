@@ -59,8 +59,7 @@ public enum XZOperator {
     //    }
     //}
 
-    @Override
-    public String toString() {
+    public String getText() {
         switch (this) {
             case LogicalAnd:             return "&&";
             case LogicalOr:              return "||";
@@ -85,5 +84,10 @@ public enum XZOperator {
             default:
                 throw new IllegalArgumentException(this.name());
         }
+    }
+
+    @Override
+    public String toString() {
+        return getText();
     }
 }

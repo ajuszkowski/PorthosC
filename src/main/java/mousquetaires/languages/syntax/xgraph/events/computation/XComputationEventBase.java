@@ -14,8 +14,13 @@ public abstract class XComputationEventBase extends XEventBase implements XCompu
     }
 
     @Override
+    public String getUniqueId() {
+        return super.getUniqueId() + "_comp";
+    }
+
+    @Override
     public String getName() {
-        return "comp_" + getUniqueId();
+        return getUniqueId();
     }
 
     @Override

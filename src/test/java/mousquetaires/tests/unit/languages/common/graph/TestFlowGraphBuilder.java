@@ -9,21 +9,24 @@ import java.util.*;
 public abstract class TestFlowGraphBuilder extends FlowGraphBuilder<TestNode> {
     private final HashMap<TestNode, Integer> referenceMap = new HashMap<>();
 
-    private Set<TestNode> nodes;
     private Map<TestNode, TestNode> edges;
     private Map<TestNode, TestNode> alternativeEdges;
     private Map<TestNode, Set<TestNode>> parents;
+    //private List<TestNode> linearisedNodes;
 
     private TestNode source;
     private TestNode sink;
 
     private boolean isUnrolled = false;
 
+    private Set<TestNode> nodes;
+
     public TestFlowGraphBuilder() {
-        this.nodes = new HashSet<>();
         this.edges = new HashMap<>();
         this.alternativeEdges = new HashMap<>();
         this.parents = new HashMap<>();
+        //this.linearisedNodes = new LinkedList<>();
+        nodes = new HashSet<>();
     }
 
     @Override
@@ -46,6 +49,11 @@ public abstract class TestFlowGraphBuilder extends FlowGraphBuilder<TestNode> {
             }
         }
     }
+
+    //@Override
+    //public void addTopologicallyNextNode(TestNode node) {
+    //    linearisedNodes.add(node);
+    //}
 
     public abstract void addEdge(int from, int to);
 
@@ -98,7 +106,7 @@ public abstract class TestFlowGraphBuilder extends FlowGraphBuilder<TestNode> {
 
     @Override
     public TestFlowGraph build() {
-        return new TestFlowGraph(source, sink, nodes, edges, alternativeEdges, isUnrolled);
+        return new TestFlowGraph(source, sink, edges, alternativeEdges, isUnrolled);
     }
 
     public final void addPath(int... nodes) {

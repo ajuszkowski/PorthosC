@@ -1,34 +1,36 @@
 package mousquetaires.tests.unit.languages.common.graph;
 
-import mousquetaires.languages.common.graph.FlowGraph;
+import mousquetaires.languages.common.graph.InformativeFlowGraph;
 
 import java.util.Map;
 import java.util.Set;
 
 
-public class TestFlowGraph implements FlowGraph<TestNode>  {
+public class TestFlowGraph implements InformativeFlowGraph<TestNode> {
 
     private TestNode source;
     private TestNode sink;
 
-    private Set<TestNode> nodes;
+    //private List<TestNode> nodesLinearised;
     private Map<TestNode, TestNode> edges;
     private Map<TestNode, TestNode> alternativeEdges;
     private Map<TestNode, Set<TestNode>> parents;
-    private final boolean isUnrolled;
+    private boolean isUnrolled;
+    private final int nodesCount;
 
     public TestFlowGraph(TestNode source,
                          TestNode sink,
-                         Set<TestNode> nodes,
                          Map<TestNode, TestNode> edges,
                          Map<TestNode, TestNode> alternativeEdges,
+                         //List<TestNode> nodesLinearised,
                          boolean isUnrolled) {
         this.source = source;
         this.sink = sink;
-        this.nodes = nodes;
         this.edges = edges;
         this.alternativeEdges = alternativeEdges;
-        this.isUnrolled = isUnrolled;;
+        //this.nodesLinearised = nodesLinearised;
+        this.isUnrolled = isUnrolled;
+        this.nodesCount = edges.keySet().size();
     }
 
     @Override
@@ -67,8 +69,13 @@ public class TestFlowGraph implements FlowGraph<TestNode>  {
     }
 
     @Override
-    public Set<TestNode> nodes() {
-        return nodes;
+    public boolean isAcyclic() {
+        return isUnrolled;
+    }
+
+    @Override
+    public int nodesCount() {
+        return nodesCount;
     }
 
     @Override
@@ -80,4 +87,9 @@ public class TestFlowGraph implements FlowGraph<TestNode>  {
     public Map<TestNode, TestNode> alternativeEdges() {
         return alternativeEdges;
     }
+
+    //@Override
+    //public Iterable<TestNode> linearisedNodes() {
+    //    return nodesLinearised;
+    //}
 }

@@ -35,11 +35,11 @@ public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
     private ImmutableMap.Builder<XEvent, XEvent> edges;
     private ImmutableMap.Builder<XEvent, XEvent> alternativeEdges;
     private Map<XEvent, Set<XEvent>> edgesReversed;
+
     private boolean isUnrolled;
 
     public XFlowGraphTestBuilder(String processId) {
         this.processId = processId;
-        this.entryEvent = new XEntryEvent(createEventInfo());
         this.edges = new ImmutableMap.Builder<>();
         this.alternativeEdges = new ImmutableMap.Builder<>();
         this.edgesReversed = new HashMap<>();
@@ -49,9 +49,10 @@ public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
     public XFlowGraph build() {
         return new XFlowGraph(processId, entryEvent, exitEvent,
                 edges.build(), alternativeEdges.build(),
-                CollectionUtils.buildMapOfSets(edgesReversed), isUnrolled);
+                CollectionUtils.buildMapOfSets(edgesReversed),
+                //null, //TODO: store topologically sorted nodes in separate visitor
+                isUnrolled);
     }
-
 
     public void markAsUnrolled() {
         this.isUnrolled = true;
@@ -82,6 +83,7 @@ public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
     }
 
     public void processFirstEvent(XEvent postEntryEvent) {
+        entryEvent = new XEntryEvent(createEventInfo());
         edges.put(entryEvent, postEntryEvent);
     }
 
@@ -92,18 +94,16 @@ public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
         }
     }
 
-    public void processNextEvent(XEvent... events) {
-        XEvent previous = events[0], next;
-        for (int i = 1; i < events.length; i++) {
-            next = events[i];
+    public void processNextEvent(XEvent first, XEvent second, XEvent... others) {
+        edges.put(first, second);
+        XEvent previous = second, next;
+        for (int i = 0; i < others.length; i++) {
+            next = others[i];
             edges.put(previous, next);
             previous = next;
         }
     }
 
-    public void processNextEvent(XEvent previous, XEvent next) {
-        edges.put(previous, next);
-    }
 
     public void processBranchingEvent(XEvent condition, XEvent firstThen, XEvent firstElse) {
         // todo: make checks more systematic in this builder

@@ -15,6 +15,7 @@ public class XConstant extends XRegister {
     // TODO: maybe add types (bit1, bit32
 
     XConstant(Object value, Bitness bitness) {
+        // TODO: make name unique (add bitness to it)
         super("const" + value/*.hashCode()//todo: uncomment after debugging*/, bitness);
         this.value = value;
     }

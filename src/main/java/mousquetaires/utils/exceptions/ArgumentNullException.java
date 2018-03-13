@@ -3,7 +3,7 @@ package mousquetaires.utils.exceptions;
 public class ArgumentNullException extends IllegalArgumentException {
 
     public ArgumentNullException() {
-        this("?");
+        this("?"); // TODO: more informative message
     }
 
     public ArgumentNullException(String argumentName) {

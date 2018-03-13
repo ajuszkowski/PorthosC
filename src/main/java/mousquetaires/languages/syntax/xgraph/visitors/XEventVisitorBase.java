@@ -1,5 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.visitors;
 
+import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
@@ -12,6 +14,16 @@ import mousquetaires.utils.exceptions.encoding.XEncoderIllegalStateException;
 
 
 public abstract class XEventVisitorBase<T> implements XEventVisitor<T> {
+
+    @Override
+    public T visit(XEntryEvent event) {
+        throw new XEncoderIllegalStateException();
+    }
+
+    @Override
+    public T visit(XExitEvent event) {
+        throw new XEncoderIllegalStateException();
+    }
 
     @Override
     public T visit(XNullaryComputationEvent event) {

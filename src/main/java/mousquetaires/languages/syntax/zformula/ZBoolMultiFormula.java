@@ -3,14 +3,39 @@ package mousquetaires.languages.syntax.zformula;
 import com.google.common.collect.ImmutableList;
 
 
-abstract class ZBoolMultiFormula {
-    private final ImmutableList<ZBoolFormula> expressions;
+public abstract class ZBoolMultiFormula<T extends ZFormula> implements ZFormula {
 
-    protected ZBoolMultiFormula(ImmutableList<ZBoolFormula> expressions) {
+    private final ImmutableList<T> expressions;
+
+    protected ZBoolMultiFormula(ImmutableList<T> expressions) {
         this.expressions = expressions;
     }
 
-    public ImmutableList<ZBoolFormula> getExpressions() {
+    protected ImmutableList<T> getExpressions() {
         return expressions;
+    }
+
+    protected abstract String getOperatorText();
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("(");
+        if (expressions.size() == 1) {
+            // unary operator
+            sb.append(getOperatorText()).append(expressions.get(0));
+        }
+        else {
+            // multi-ary operator
+            boolean addSeparator = false;
+            for (ZFormula expression : getExpressions()) {
+                if (addSeparator) {
+                    sb.append(" ").append(getOperatorText()).append(" ");
+                }
+                sb.append(expression);
+                addSeparator = true;
+            }
+        }
+        sb.append(")");
+        return sb.toString();
     }
 }

@@ -1,14 +1,31 @@
 package mousquetaires.languages.syntax.zformula;
 
 
-public class ZBoolNegationAtom implements ZBoolFormula, ZAtom {
-    private final ZBoolFormula expression;
+import com.google.common.collect.ImmutableList;
 
-    ZBoolNegationAtom(ZBoolFormula expression) {
-        this.expression = expression;
+
+public class ZBoolNegationAtom extends ZBoolMultiFormula<ZBoolFormula> implements ZBoolFormula, ZAtom {
+
+    public ZBoolNegationAtom(ZBoolFormula expression) {
+        super(ImmutableList.of(expression));
     }
 
     public ZBoolFormula getExpression() {
-        return expression;
+        return getExpressions().get(0);
     }
+
+    @Override
+    protected String getOperatorText() {
+        return "~";
+    }
+
+    //private final ZBoolFormula expression;
+    //
+    //ZBoolNegationAtom(ZBoolFormula expression) {
+    //    this.expression = expression;
+    //}
+    //
+    //public ZBoolFormula getExpression() {
+    //    return expression;
+    //}
 }

@@ -1,21 +1,20 @@
 package mousquetaires.languages.common.graph;
 
-import java.util.Map;
-import java.util.Set;
-
-
+// TODO: generalise these interfaces into abstract classes (+ builders) !
 public interface FlowGraph<T> {
-
     T source();
+
     T sink();
 
     T child(T node);
+
     T alternativeChild(T node);
+
     boolean hasAlternativeChild(T node);
 
-    Set<T> parents(T node);
+    default boolean hasChild(T node) {
+        return !node.equals(sink());
+    }
 
-    Set<T> nodes();
-    Map<T, T> edges();
-    Map<T, T> alternativeEdges();
+    boolean isAcyclic();
 }

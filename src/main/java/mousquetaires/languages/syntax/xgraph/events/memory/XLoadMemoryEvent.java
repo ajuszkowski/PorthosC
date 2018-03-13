@@ -9,7 +9,7 @@ import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 /** Load event from shared memory ({@link XLocalMemoryUnit})
  * to local storage (registry, {@link XLocalMemoryUnit}) */
-public class XLoadMemoryEvent extends XMemoryEventBase implements XSharedMemoryEvent {
+public final class XLoadMemoryEvent extends XMemoryEventBase implements XSharedMemoryEvent {
 
     public XLoadMemoryEvent(XEventInfo info, XLocalMemoryUnit destination, XSharedMemoryUnit source/*, XMemoryOrder memoryOrder*/) {
         super(info, destination, source);

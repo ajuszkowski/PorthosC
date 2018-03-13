@@ -37,11 +37,6 @@ public class XNullaryComputationEvent extends XComputationEventBase {
     }
 
     @Override
-    public String getUniqueId() {
-        return super.getUniqueId() + "_nulop";
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof XNullaryComputationEvent)) return false;

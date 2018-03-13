@@ -17,7 +17,7 @@ public class C11ToXgraph_LoopStatement_UnitTest extends C11ToXgraph_UnitTestBase
 
     @Test
     public void test() {
-        XFlowGraphTestBuilder builder = new XFlowGraphTestBuilder("?");//TODO: process id
+        XFlowGraphTestBuilder builder = new XFlowGraphTestBuilder("P0");//TODO: process id
         XMemoryManager memoryManager = new XMemoryManager(ProgramLanguage.C11, null);
         XRegister registerX = memoryManager.getLocalMemoryUnit("x");
         XRegister registerY = memoryManager.getLocalMemoryUnit("y");

@@ -9,7 +9,6 @@ public class C11ToZformula_BranchingStatement_UnitTest extends C11ToZformula_Uni
 
     @Test
     public void test() {
-
         run( UnitTestPaths.c11StatementsDirectory + "branchingStatement.c",
                 null);
     }

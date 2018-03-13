@@ -2,19 +2,18 @@ package mousquetaires.languages.syntax.xgraph.process;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import mousquetaires.languages.common.graph.FlowGraph;
+import mousquetaires.languages.common.graph.InformativeFlowGraph;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.utils.StringUtils;
-import mousquetaires.utils.exceptions.NotImplementedException;
 
 import java.util.Set;
 
 
-public class XFlowGraph implements XEntity, FlowGraph<XEvent> {
+public class XFlowGraph implements XEntity, InformativeFlowGraph<XEvent> {
 
     private final String processId;
     private final XEntryEvent entry;
@@ -22,7 +21,9 @@ public class XFlowGraph implements XEntity, FlowGraph<XEvent> {
     private final ImmutableMap<XEvent, XEvent> edges;//next, goto jumps
     private final ImmutableMap<XEvent, XEvent> alternativeEdges; //if(false)
     private final ImmutableMap<XEvent, ImmutableSet<XEvent>> edgesReversed;
-    public final boolean isUnrolled;
+    //private final ImmutableList<XEvent> nodesLinearised;
+    private final boolean isUnrolled;
+    private final int nodesCount;
 
     public XFlowGraph(String processId,
                XEntryEvent entry,
@@ -30,6 +31,7 @@ public class XFlowGraph implements XEntity, FlowGraph<XEvent> {
                ImmutableMap<XEvent, XEvent> edges,
                ImmutableMap<XEvent, XEvent> alternativeEdges,
                ImmutableMap<XEvent, ImmutableSet<XEvent>> edgesReversed,
+               //ImmutableList<XEvent> nodesLinearised,
                boolean isUnrolled) {
         this.processId = processId;
         this.entry = entry;
@@ -37,11 +39,18 @@ public class XFlowGraph implements XEntity, FlowGraph<XEvent> {
         this.edges = edges;
         this.alternativeEdges = alternativeEdges;
         this.edgesReversed = edgesReversed;
+        //this.nodesLinearised = nodesLinearised;
         this.isUnrolled = isUnrolled;
+        this.nodesCount = edges.keySet().size();
     }
 
     public String processId() {
         return processId;
+    }
+
+    @Override
+    public boolean isAcyclic() {
+        return isUnrolled;
     }
 
     @Override
@@ -76,6 +85,9 @@ public class XFlowGraph implements XEntity, FlowGraph<XEvent> {
 
     @Override
     public Set<XEvent> parents(XEvent node) {
+        if (node.equals(source())) {
+            return Set.of();
+        }
         if (!edgesReversed.containsKey(node)) {
             throw new IllegalArgumentException("Not found any parent for node " + node);
         }
@@ -83,9 +95,14 @@ public class XFlowGraph implements XEntity, FlowGraph<XEvent> {
     }
 
     @Override
-    public Set<XEvent> nodes() {
-        throw new NotImplementedException();
+    public int nodesCount() {
+        return nodesCount;
     }
+
+    //@Override
+    //public ImmutableList<XEvent> linearisedNodes() {
+    //    return nodesLinearised;
+    //}
 
     @Override
     public String toString() {
@@ -99,7 +116,6 @@ public class XFlowGraph implements XEntity, FlowGraph<XEvent> {
     public boolean hasAlternativeChild(XEvent node) {
         return node instanceof XComputationEvent && alternativeEdges.containsKey(node);
     }
-
 
     public ImmutableMap<XEvent, XEvent> edges() {
         return edges;

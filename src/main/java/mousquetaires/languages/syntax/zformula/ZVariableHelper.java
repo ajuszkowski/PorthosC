@@ -5,11 +5,16 @@ import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 
 
 public class ZVariableHelper {
-    public static ZBoolVariableGlobal createEventVariable(XEvent event) {
-        return new ZBoolVariableGlobal(event.getUniqueId());
+    public static ZBoolVariable createEventVariable(XEvent event) {
+        //todo: use 'event.getUniqueId()', toString() is just for debugging
+        return new ZBoolVariable(event.toString());//event.getUniqueId());
     }
 
-    public static ZVariableLocal createMemoryUnitVariable(XMemoryUnit memoryUnit, int localityIndex) {
-        return new ZVariableLocal(memoryUnit.getName(), localityIndex);
+    public static ZBoolVariable createConstantMemoryUnitVariable(XMemoryUnit constant) {
+        return new ZBoolVariable(constant.getName());
+    }
+
+    public static ZVariableReference createMemoryUnitVariable(XMemoryUnit memoryUnit, int localityIndex) {
+        return new ZVariableReference(memoryUnit.getName(), localityIndex);
     }
 }

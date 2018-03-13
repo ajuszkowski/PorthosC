@@ -32,11 +32,6 @@ public class XBinaryComputationEvent extends XUnaryComputationEvent {
     }
 
     @Override
-    public String getUniqueId() {
-        return super.getUniqueId() + "_binop";
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof XBinaryComputationEvent)) return false;

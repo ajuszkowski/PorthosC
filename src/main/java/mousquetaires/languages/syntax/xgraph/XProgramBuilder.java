@@ -8,9 +8,14 @@ import mousquetaires.utils.patterns.Builder;
 public class XProgramBuilder extends Builder<XProgram> {
 
     private ImmutableList.Builder<XFlowGraph> processes;
+    private boolean isUnrolled = false;
 
     public XProgramBuilder() {
         this.processes = new ImmutableList.Builder<>();
+    }
+
+    public void markUnrolled() {
+        isUnrolled = true;
     }
 
     public void addProcess(XFlowGraph process) {
@@ -19,6 +24,6 @@ public class XProgramBuilder extends Builder<XProgram> {
 
     @Override
     public XProgram build() {
-        return new XProgram(processes.build());
+        return new XProgram(processes.build(), isUnrolled);
     }
 }

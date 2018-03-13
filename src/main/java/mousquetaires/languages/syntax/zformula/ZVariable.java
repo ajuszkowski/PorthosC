@@ -1,13 +1,18 @@
 package mousquetaires.languages.syntax.zformula;
 
-abstract class ZVariableGlobal {
+public abstract class ZVariable implements ZAtom {
     private final String name;
 
-    ZVariableGlobal(String name) {
+    ZVariable(String name) {
         this.name = name;
     }
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 }

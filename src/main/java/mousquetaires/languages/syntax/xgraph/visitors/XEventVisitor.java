@@ -1,5 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.visitors;
 
+import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
@@ -12,19 +14,22 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
 
 public interface XEventVisitor<T> {
 
-    //T visit(XEventRef entity);
+    //T visit(XEventRef event);
 
-    T visit(XNullaryComputationEvent entity);
-    T visit(XUnaryComputationEvent entity);
-    T visit(XBinaryComputationEvent entity);
+    T visit(XEntryEvent event);
+    T visit(XExitEvent event);
 
-    T visit(XRegisterMemoryEvent entity);
-    T visit(XStoreMemoryEvent entity);
-    T visit(XLoadMemoryEvent entity);
+    T visit(XNullaryComputationEvent event);
+    T visit(XUnaryComputationEvent event);
+    T visit(XBinaryComputationEvent event);
 
-    //T visit(XBranchingEvent entity);
-    T visit(XJumpEvent entity);
-    T visit(XMethodCallEvent entity);
+    T visit(XRegisterMemoryEvent event);
+    T visit(XStoreMemoryEvent event);
+    T visit(XLoadMemoryEvent event);
+
+    //T visit(XBranchingEvent event);
+    T visit(XJumpEvent event);
+    T visit(XMethodCallEvent event);
 
     //todo: barriers impl
 }

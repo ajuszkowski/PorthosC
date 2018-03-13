@@ -9,7 +9,7 @@ import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 /**
  * Event of writing from one local memory to another (e.g. from one register to sth).
  */
-public class XRegisterMemoryEvent extends XMemoryEventBase implements XLocalMemoryEvent {
+public final class XRegisterMemoryEvent extends XMemoryEventBase implements XLocalMemoryEvent {
 
     public XRegisterMemoryEvent(XEventInfo info, XLocalMemoryUnit destination, XLocalMemoryUnit source) {
         super(info, destination, source);

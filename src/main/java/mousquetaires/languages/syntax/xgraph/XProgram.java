@@ -3,17 +3,25 @@ package mousquetaires.languages.syntax.xgraph;
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
 
+
 public final class XProgram implements XEntity {
 
     //private final XPreProcess prelude;
     private final ImmutableList<XFlowGraph> processes;
     //private final XPostProcess postlude;
 
+    private final boolean isUnrolled;
+
     //XProgram(XPreProcess prelude, ImmutableList<XParallelProcess> process, XPostProcess postlude) {
     XProgram(ImmutableList<XFlowGraph> processes) {
+        this(processes, false);
+    }
+
+    XProgram(ImmutableList<XFlowGraph> processes, boolean isUnrolled) {
         //this.prelude = prelude;
         this.processes = processes;
         //this.postlude = postlude;
+        this.isUnrolled = isUnrolled;
     }
 
     public ImmutableList<XFlowGraph> getAllProcesses() {
@@ -21,8 +29,9 @@ public final class XProgram implements XEntity {
     }
 
     public XFlowGraph getProcess(int index) {
-        return index > 0 && index > processes.size()
-                ? processes.get(index)
-                : null;
+        if (index < 0 || index >= processes.size()) {
+            throw new IndexOutOfBoundsException(index);
+        }
+        return processes.get(index);
     }
 }
