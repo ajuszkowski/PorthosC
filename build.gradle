@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'antlr'
 apply plugin: 'eclipse'
-//apply plugin: 'idea'
+apply plugin: 'idea'
 
 repositories {
     flatDir {

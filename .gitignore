@@ -3,34 +3,22 @@
 build/
 out/
 
-# Generated files:
+# Generated files --
 src/generated/*
 
-# Intellij IDEA:
-.idea/*.iml
-.idea/inspectionProfiles/
+# Intellij IDEA --
+.idea/
+*.iml
+*.ips
+*.ipr
+*.iml
+*.ipw
+*.iws
 
-# Gradle:
-.idea/**/gradle.xml
-.idea/**/libraries
-
-# User-specific stuff:
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/dictionaries
-
-# Sensitive or high-churn files:
-.idea/**/dataSources/
-.idea/**/dataSources.ids
-.idea/**/dataSources.local.xml
-.idea/**/sqlDataSources.xml
-.idea/**/dynamic.xml
-.idea/**/uiDesigner.xml
-
-# Vim:
+# Vim --
 *.sw[op]
 
-# Eclipse:
+# Eclipse --
 .metadata
 *.tmp
 *.bak
@@ -40,37 +28,26 @@ local.properties
 .classpath
 .loadpath
 .recommenders
-
 # External tool builders
 .externalToolBuilders/
-
 # Locally stored "Eclipse launch configurations"
 *.launch
-
 # CDT- autotools
 .autotools
-
 # Java annotation processor (APT)
 .factorypath
-
 # PDT-specific (PHP Development Tools)
 .buildpath
-
 # sbteclipse plugin
 .target
-
 # Tern plugin
 .tern-project
-
 # TeXlipse plugin
 .texlipse
-
 # STS (Spring Tool Suite)
 .springBeans
-
 # Code Recommenders
 .recommenders/
-
 # Scala IDE specific (Scala & Java development for Eclipse)
 .cache-main
 .scala_dependencies
