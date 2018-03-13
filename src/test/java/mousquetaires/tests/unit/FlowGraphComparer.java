@@ -1,8 +1,8 @@
 package mousquetaires.tests.unit;
 
 import mousquetaires.languages.common.graph.InformativeFlowGraph;
-import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
-import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.utils.StringUtils;
 import org.junit.Assert;
 

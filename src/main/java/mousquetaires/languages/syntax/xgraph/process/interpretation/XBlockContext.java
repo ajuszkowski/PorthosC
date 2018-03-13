@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.xgraph.process.interpretation;
 
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XFakeEvent;
 
 import java.util.ArrayList;
 import java.util.List;

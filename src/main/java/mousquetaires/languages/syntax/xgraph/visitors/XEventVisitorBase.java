@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.visitors;
 
-import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
-import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;

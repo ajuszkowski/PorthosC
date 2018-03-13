@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import mousquetaires.languages.common.graph.FlowGraphBuilder;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.languages.syntax.xgraph.events.auxilaries.XEntryEvent;
-import mousquetaires.languages.syntax.xgraph.events.auxilaries.XExitEvent;
-import mousquetaires.languages.syntax.xgraph.events.fakes.XFakeEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XFakeEvent;
 import mousquetaires.utils.CollectionUtils;
 import mousquetaires.utils.StringUtils;
 

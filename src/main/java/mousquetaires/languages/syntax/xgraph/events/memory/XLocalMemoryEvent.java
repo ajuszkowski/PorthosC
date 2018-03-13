@@ -5,6 +5,8 @@ import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 
 
 public interface XLocalMemoryEvent extends XMemoryEvent {
+
     XLocalMemoryUnit getSource();
+
     XLocalMemoryUnit getDestination();
 }

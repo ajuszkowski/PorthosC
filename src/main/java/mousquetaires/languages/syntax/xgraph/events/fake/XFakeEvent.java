@@ -1,4 +1,4 @@
-package mousquetaires.languages.syntax.xgraph.events.fakes;
+package mousquetaires.languages.syntax.xgraph.events.fake;
 
 import mousquetaires.languages.syntax.xgraph.events.XEventBase;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
@@ -15,10 +15,5 @@ public abstract class XFakeEvent extends XEventBase {
     @Override
     public <T> T accept(XEventVisitor<T> visitor) {
         throw new NotSupportedException();
-    }
-
-    @Override
-    public String toString() {
-        return "FAKE_EVENT"; //TODO: there must be no fake events in the result graph
     }
 }

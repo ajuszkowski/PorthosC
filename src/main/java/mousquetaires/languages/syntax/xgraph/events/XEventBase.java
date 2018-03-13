@@ -1,8 +1,10 @@
 package mousquetaires.languages.syntax.xgraph.events;
 
 
+import java.util.Objects;
+
+
 public abstract class XEventBase implements XEvent {
-    //private XEvent nextEvent;
     private final XEventInfo info;
 
     public XEventBase(XEventInfo info) {
@@ -14,24 +16,6 @@ public abstract class XEventBase implements XEvent {
         return info;
     }
 
-    //@Override
-    //public FlowGraphNodeRef createRef(int refId) {
-    //    return new XEventRef(this, refId);
-    //}
-
-    //@Override
-    //public void setNextEvent(XEvent next) {
-    //    if (nextEvent != null) {
-    //        throw new IllegalStateException("Next event has already been assigned");
-    //    }
-    //    nextEvent = next;
-    //}
-    //
-    //@Override
-    //public XEvent getNextEvent() {
-    //    return nextEvent;
-    //}
-
     @Override
     public String getUniqueId() {
         return getInfo().getProcessId() + "_e" + hashCode();//getInfo().getStamp();
@@ -40,5 +24,19 @@ public abstract class XEventBase implements XEvent {
     @Override
     public String toString() {
         return getUniqueId();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof XEventBase)) return false;
+        XEventBase that = (XEventBase) o;
+        return Objects.equals(getInfo(), that.getInfo());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getInfo());
     }
 }
