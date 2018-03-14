@@ -1,9 +1,11 @@
 package mousquetaires.tests.unit.languages.common.graph;
 
+import mousquetaires.languages.common.graph.GraphNode;
+
 import java.util.Objects;
 
 
-public class TestNode {
+public class TestNode implements GraphNode {
     private final int value;
 
     public TestNode(int value) {

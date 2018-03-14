@@ -1,6 +1,7 @@
 package mousquetaires.tests.unit;
 
-import mousquetaires.languages.common.graph.InformativeFlowGraph;
+import mousquetaires.languages.common.graph.FlowGraph;
+import mousquetaires.languages.common.graph.GraphNode;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.utils.StringUtils;
@@ -10,14 +11,14 @@ import java.util.Map;
 
 
 public class FlowGraphComparer {
-    public static <T> void assertGraphsEqual(InformativeFlowGraph<T> expected, InformativeFlowGraph<T> actual) {
+    public static <T extends GraphNode> void assertGraphsEqual(FlowGraph<T> expected, FlowGraph<T> actual) {
         Assert.assertEquals("entry events do not match", expected.source(), actual.source());
         Assert.assertEquals("exit events do not match", expected.sink(), actual.sink());
         assertMapsEqual("edges set mismatch", expected.edges(), actual.edges());
         assertMapsEqual("alternative edges set mismatch", expected.alternativeEdges(), actual.alternativeEdges());
     }
 
-    private static <T> void assertMapsEqual(String info,
+    private static <T extends GraphNode> void assertMapsEqual(String info,
                                        Map<? extends T, ? extends T> expected,
                                        Map<? extends T, ? extends T> actual) {
         for (Map.Entry<? extends T, ? extends T> entry : actual.entrySet()) {

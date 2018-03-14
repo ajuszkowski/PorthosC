@@ -1,3 +1,4 @@
+// todo: split tests
 void method() {
     while (x == 0) { //1
         y = 1; //2

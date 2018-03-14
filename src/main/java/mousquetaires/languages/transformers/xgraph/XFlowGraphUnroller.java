@@ -1,10 +1,7 @@
 package mousquetaires.languages.transformers.xgraph;
 
-import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.languages.syntax.xgraph.events.XEventRef;
 import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
-import mousquetaires.languages.syntax.xgraph.process.XFlowGraphBuilder;
-import mousquetaires.utils.graphs.FlowGraphUnroller;
+import mousquetaires.utils.exceptions.NotImplementedException;
 
 
 public class XFlowGraphUnroller {
@@ -16,7 +13,8 @@ public class XFlowGraphUnroller {
     }
 
     public XFlowGraph unroll(XFlowGraph graph) {
-        FlowGraphUnroller<XEvent> unroller = new FlowGraphUnroller<>(graph, bound) {
+        throw new NotImplementedException();
+        /*FlowGraphUnroller<XEvent> unroller = new FlowGraphUnroller<>(graph, bound) {
             @Override
             protected XEvent createNodeRef(XEvent node, int refId) {
                 return new XEventRef(node, refId);
@@ -24,6 +22,6 @@ public class XFlowGraphUnroller {
         };
         XFlowGraphBuilder builder = new XFlowGraphBuilder(graph.processId());
         unroller.unrollIntoBuilder(builder);
-        return builder.build();
+        return builder.build();*/
     }
 }

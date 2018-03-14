@@ -12,8 +12,8 @@ class XBlockContext {
     /*private*/public XEvent entryEvent;
 
     /*private*/public final XBlockContextKind kind;
-    /*private*/public XFlowGraphInterpretationBuilder.ContextState state;
-    /*private*/public XFlowGraphInterpretationBuilder.BranchKind currentBranchKind;
+    /*private*/public XProcessInterpreter.ContextState state;
+    /*private*/public XProcessInterpreter.BranchKind currentBranchKind;
 
     /*private*/public XComputationEvent conditionEvent;
 
@@ -41,7 +41,7 @@ class XBlockContext {
         this.conditionEvent = conditionEvent;
     }
 
-    public void setState(XFlowGraphInterpretationBuilder.ContextState state) {
+    public void setState(XProcessInterpreter.ContextState state) {
         this.state = state;
     }
 

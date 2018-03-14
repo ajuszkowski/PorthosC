@@ -5,17 +5,10 @@ import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
 import mousquetaires.languages.syntax.zformula.ZBoolConjunctionBuilder;
 import mousquetaires.languages.syntax.zformula.ZBoolFormula;
-import mousquetaires.languages.syntax.zformula.ZBoolVariable;
-import mousquetaires.utils.graphs.GraphLineariser;
+import mousquetaires.utils.exceptions.NotImplementedException;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
-import static mousquetaires.languages.syntax.zformula.ZHelper.implies;
-import static mousquetaires.languages.syntax.zformula.ZHelper.or;
-import static mousquetaires.languages.syntax.zformula.ZVariableHelper.createEventVariable;
 
 
 // TODO: generalize this class
@@ -37,7 +30,9 @@ public class XFlowGraphToZformulaConverter {
         Set<XEvent> visited = new HashSet<>(graph.nodesCount());
         //Deque<XEvent> queue = new ArrayDeque<>(graph.edges().size());
         //queue.add(graph.source());
-        GraphLineariser<XEvent> lineariser = new GraphLineariser<>(graph);
+
+        throw new NotImplementedException();
+        /*GraphLineariser<XEvent> lineariser = new GraphLineariser<>(graph);
         Iterable<XEvent> topologicallySortedNodes = lineariser.computeLinearisedNodes();
 
         visited.add(graph.source());
@@ -94,7 +89,7 @@ public class XFlowGraphToZformulaConverter {
             visited.add(current);
         }
 
-        return resultFormula.build();
+        return resultFormula.build();*/
     }
 
 

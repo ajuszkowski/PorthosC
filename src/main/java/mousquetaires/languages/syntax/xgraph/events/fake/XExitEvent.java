@@ -5,7 +5,7 @@ import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
-public final class XExitEvent extends XFakeEvent { //extends XEventBase {
+public final class XExitEvent extends XFakeEvent {
 
     public XExitEvent(XEventInfo info) {
         super(info);

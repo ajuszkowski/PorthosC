@@ -18,14 +18,13 @@ import mousquetaires.languages.syntax.xgraph.process.XFlowGraphBuilder;
 import mousquetaires.utils.StringUtils;
 import mousquetaires.utils.exceptions.xgraph.XCompilerUsageError;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
-import mousquetaires.utils.patterns.Builder;
 
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
 
 
-public class XFlowGraphInterpretationBuilder extends Builder<XFlowGraph> {
+public class XProcessInterpreter {
 
     public enum ContextState {
         Idle,
@@ -46,7 +45,8 @@ public class XFlowGraphInterpretationBuilder extends Builder<XFlowGraph> {
     }
 
     private final String processId;
-    /*private*/ final XFlowGraphBuilder graphBuilder;
+    private final XFlowGraphBuilder graphBuilder;
+    private XFlowGraph result;
 
     // todo: add add/put methods with non-null checks
     private final Stack<XBlockContext> contextStack;
@@ -54,41 +54,43 @@ public class XFlowGraphInterpretationBuilder extends Builder<XFlowGraph> {
 
 
     private XEvent previousEvent;
-    private int previousEventDistance;
+
 
     private final XMemoryManager memoryManager;
 
-    public XFlowGraphInterpretationBuilder(String processId, XMemoryManager memoryManager) {
+    public XProcessInterpreter(String processId, XMemoryManager memoryManager) {
         this.memoryManager = memoryManager;
         this.processId = processId; //todo: non-uniqueness case
         this.graphBuilder = new XFlowGraphBuilder(processId);
         contextStack = new Stack<>();
-        //loopsStack = new ContextStack();
         readyContexts = new LinkedList<>();
-        //readyLoops = new HashSet<>();
 
         XBlockContext linearContext = new XBlockContext(XBlockContextKind.Linear);
-        linearContext.state = XFlowGraphInterpretationBuilder.ContextState.WaitingNextLinearEvent;
+        linearContext.state = XProcessInterpreter.ContextState.WaitingNextLinearEvent;
         contextStack.push(linearContext);
 
         addAndProcessEntryEvent();
     }
 
-    @Override
-    public XFlowGraph build() {
-        addAndProcessExitEvent();
 
-        //verify
+    public void finish() {
+        addAndProcessExitEvent();
+        //todo: verify
         assert contextStack.size() == 1; //linear entry context only
         assert readyContexts.isEmpty();
+        result = graphBuilder.build();
+    }
 
-        graphBuilder.verifyGraph();//TODO: verify but optionally and not here
-        return graphBuilder.build();
+    public XFlowGraph getResult() {
+        if (result == null) {
+            finish();
+        }
+        return result;
     }
 
     // --
 
-    public String buildProcessId() {
+    public String getProcessId() {
         return processId;
     }
 
@@ -134,7 +136,6 @@ public class XFlowGraphInterpretationBuilder extends Builder<XFlowGraph> {
     private void addAndProcessEntryEvent() {
         XEntryEvent entryEvent = new XEntryEvent(createEventInfo());
         graphBuilder.setSource(entryEvent);
-        previousEventDistance = 0;
         processNextEvent(entryEvent);
     }
 
@@ -315,25 +316,6 @@ public class XFlowGraphInterpretationBuilder extends Builder<XFlowGraph> {
                             break;
                     }
                 }
-
-                //boolean hasBreaks = context.hasBreakEvents();
-                //boolean hasContinues = context.hasContinueEvents();
-                //if (hasBreaks || hasContinues) {
-                //    assert context.firstElseBranchEvent == null : context.firstElseBranchEvent.toString();
-                //    assert context.lastElseBranchEvent == null  : context.lastElseBranchEvent.toString();
-                //
-                //    if (hasContinues) {
-                //        for (XFakeEvent continueingEvent : context.continueingEvents) {
-                //            graphBuilder.replaceEvent(continueingEvent, context.conditionEvent);
-                //        }
-                //    }
-                //    if (hasBreaks) {
-                //        for (XFakeEvent breakingEvent : context.breakingEvents) {
-                //            graphBuilder.replaceEvent(breakingEvent, nextEvent);
-                //            alreadySetEdgeToNextEvent = true;
-                //        }
-                //    }
-                //}
             }
             readyContexts.clear();
         }
