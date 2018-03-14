@@ -1,10 +1,11 @@
 package mousquetaires.languages.syntax.xgraph.events.fake;
 
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
-public class XEntryEvent extends XFakeEvent { //extends XEventBase {
+public final class XEntryEvent extends XFakeEvent { //extends XEventBase {
 
     public XEntryEvent(XEventInfo info) {
         super(info);
@@ -20,14 +21,14 @@ public class XEntryEvent extends XFakeEvent { //extends XEventBase {
         return visitor.visit(this);
     }
 
-    //@Override
-    //public boolean equals(Object o) {
-    //    if (this == o) return true;
-    //    if (!(o instanceof XEvent)) return false;
-    //    XEvent other = (XEvent) o;
-    //    return other instanceof XEntryEvent &&
-    //            getInfo().getProcessId().equals(other.getInfo().getProcessId());
-    //}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof XEvent)) return false;
+        XEvent other = (XEvent) o;
+        return other instanceof XEntryEvent &&
+                getInfo().getProcessId().equals(other.getInfo().getProcessId());
+    }
 
     //todo: override hashcode!
 }

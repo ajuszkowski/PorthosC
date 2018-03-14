@@ -71,11 +71,11 @@ class XBlockContext {
         breakingEvents.add(previousEvent);
     }
 
-    public boolean needToBindContinueEvents() {
+    public boolean hasContinueEvents() {
         return continueingEvents != null && continueingEvents.size() > 0;
     }
 
-    public boolean needToBindBreakEvents() {
+    public boolean hasBreakEvents() {
         return breakingEvents != null && breakingEvents.size() > 0;
     }
 

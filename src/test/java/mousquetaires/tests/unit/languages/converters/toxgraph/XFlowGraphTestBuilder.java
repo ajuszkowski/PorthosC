@@ -84,22 +84,22 @@ public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
 
     public void processFirstEvent(XEvent postEntryEvent) {
         entryEvent = new XEntryEvent(createEventInfo());
-        edges.put(entryEvent, postEntryEvent);
+        addEventImpl(edges, entryEvent, postEntryEvent);
     }
 
     public void processLastEvents(XEvent... preExitEvents) {
         exitEvent = new XExitEvent(createEventInfo());
         for (XEvent event : preExitEvents) {
-            edges.put(event, exitEvent);
+            addEventImpl(edges, event, exitEvent);
         }
     }
 
     public void processNextEvent(XEvent first, XEvent second, XEvent... others) {
-        edges.put(first, second);
+        addEventImpl(edges, first, second);
         XEvent previous = second, next;
         for (int i = 0; i < others.length; i++) {
             next = others[i];
-            edges.put(previous, next);
+            addEventImpl(edges, previous, next);
             previous = next;
         }
     }
@@ -108,7 +108,7 @@ public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
     public void processBranchingEvent(XEvent condition, XEvent firstThen, XEvent firstElse) {
         // todo: make checks more systematic in this builder
         //assert condition instanceof XComputationEvent || (condition instanceof XEventRef && ((XEventRef)condition).getOriginalNode() instanceof XComputationEvent);
-        edges.put(condition, firstThen);
+        addEventImpl(edges, condition, firstThen);
         alternativeEdges.put(condition, firstElse);
     }
 
@@ -116,12 +116,11 @@ public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
         return new XEventInfo(processId);
     }
 
-    private void putEvent(ImmutableMap.Builder<XEvent, XEvent> map, XEvent from, XEvent to) {
+    private void addEventImpl(ImmutableMap.Builder<XEvent, XEvent> map, XEvent from, XEvent to) {
         map.put(from, to);
         if (!edgesReversed.containsKey(to)) {
             edgesReversed.put(to, new HashSet<>());
         }
         edgesReversed.get(to).add(from);
     }
-
 }

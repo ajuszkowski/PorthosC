@@ -36,7 +36,6 @@ public abstract class XEventBase implements XEvent {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(getInfo());
     }
 }

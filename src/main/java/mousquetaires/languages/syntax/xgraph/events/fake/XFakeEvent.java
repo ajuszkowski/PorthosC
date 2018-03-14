@@ -8,7 +8,7 @@ import mousquetaires.utils.exceptions.NotSupportedException;
 
 public abstract class XFakeEvent extends XEventBase {
 
-    public XFakeEvent(XEventInfo info) {
+    XFakeEvent(XEventInfo info) {
         super(info);
     }
 

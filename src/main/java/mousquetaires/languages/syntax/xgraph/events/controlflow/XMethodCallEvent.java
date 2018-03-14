@@ -5,7 +5,7 @@ import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
-public class XMethodCallEvent extends XEventBase implements XControlFlowEvent {
+public class XMethodCallEvent extends XEventBase {
 
     // todo
     public XMethodCallEvent(XEventInfo info) {

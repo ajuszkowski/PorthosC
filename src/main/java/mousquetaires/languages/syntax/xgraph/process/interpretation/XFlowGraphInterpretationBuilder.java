@@ -2,15 +2,15 @@ package mousquetaires.languages.syntax.xgraph.process.interpretation;
 
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
-import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOperator;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XFakeEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
@@ -20,8 +20,8 @@ import mousquetaires.utils.exceptions.xgraph.XCompilerUsageError;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import mousquetaires.utils.patterns.Builder;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 
 
@@ -50,7 +50,7 @@ public class XFlowGraphInterpretationBuilder extends Builder<XFlowGraph> {
 
     // todo: add add/put methods with non-null checks
     private final Stack<XBlockContext> contextStack;
-    private final Set<XBlockContext> readyContexts;
+    private final Queue<XBlockContext> readyContexts;
 
 
     private XEvent previousEvent;
@@ -64,7 +64,7 @@ public class XFlowGraphInterpretationBuilder extends Builder<XFlowGraph> {
         this.graphBuilder = new XFlowGraphBuilder(processId);
         contextStack = new Stack<>();
         //loopsStack = new ContextStack();
-        readyContexts = new HashSet<>();
+        readyContexts = new LinkedList<>();
         //readyLoops = new HashSet<>();
 
         XBlockContext linearContext = new XBlockContext(XBlockContextKind.Linear);
@@ -215,6 +215,25 @@ public class XFlowGraphInterpretationBuilder extends Builder<XFlowGraph> {
         if (!readyContexts.isEmpty()) {
             for (XBlockContext context : readyContexts) {
 
+                boolean hasBreaks = context.hasBreakEvents();
+                boolean hasContinues = context.hasContinueEvents();
+                if (hasBreaks || hasContinues) {
+                    assert context.firstElseBranchEvent == null : context.firstElseBranchEvent.toString();
+                    assert context.lastElseBranchEvent == null  : context.lastElseBranchEvent.toString();
+
+                    if (hasContinues) {
+                        for (XFakeEvent continueingEvent : context.continueingEvents) {
+                            graphBuilder.replaceEvent(continueingEvent, context.conditionEvent);
+                        }
+                    }
+                    if (hasBreaks) {
+                        for (XFakeEvent breakingEvent : context.breakingEvents) {
+                            graphBuilder.replaceEvent(breakingEvent, nextEvent);
+                            alreadySetEdgeToNextEvent = true;
+                        }
+                    }
+                }
+
                 if (context.firstThenBranchEvent != null) { // && !(context.firstThenBranchEvent instanceof XFakeEvent)) {
                     switch (context.kind) {
                         case Linear:
@@ -222,7 +241,7 @@ public class XFlowGraphInterpretationBuilder extends Builder<XFlowGraph> {
                             break;
                         case Branching:
                         case Loop:
-                            graphBuilder.addEdge/*addThenEdge*/(context.conditionEvent, context.firstThenBranchEvent);
+                            graphBuilder.addEdge(context.conditionEvent, context.firstThenBranchEvent);
                             break;
                     }
                 }
@@ -232,25 +251,26 @@ public class XFlowGraphInterpretationBuilder extends Builder<XFlowGraph> {
                             assert false;
                             break;
                         case Branching:
-                            graphBuilder.addEdge/*addThenEdge*/(context.conditionEvent, nextEvent);
+                            graphBuilder.addEdge(context.conditionEvent, nextEvent);
                             alreadySetEdgeToNextEvent = true;
                             break;
                         case Loop:
-                            graphBuilder.addEdge/*addThenEdge*/(context.conditionEvent, context.conditionEvent);
+                            graphBuilder.addEdge(context.conditionEvent, context.conditionEvent);
                             break;
                     }
                 }
+
                 if (context.lastThenBranchEvent != null) {// && !(context.lastThenBranchEvent instanceof XFakeEvent)) {
                     switch (context.kind) {
                         case Linear:
                             assert false;
                             break;
                         case Branching:
-                            graphBuilder.addEdge/*addLinearEdge*/(context.lastThenBranchEvent, nextEvent);
+                            graphBuilder.addEdge(context.lastThenBranchEvent, nextEvent);
                             alreadySetEdgeToNextEvent = true;
                             break;
                         case Loop:
-                            graphBuilder.addEdge/*addLinearEdge*/(context.lastThenBranchEvent, context.entryEvent);
+                            graphBuilder.addEdge(context.lastThenBranchEvent, context.entryEvent);
                             break;
                     }
                 }
@@ -274,20 +294,20 @@ public class XFlowGraphInterpretationBuilder extends Builder<XFlowGraph> {
                             assert false;
                             break;
                         case Branching:
-                            graphBuilder.addAlternativeEdge(context.conditionEvent, nextEvent);
-                            alreadySetEdgeToNextEvent = true; //todo: check here
                         case Loop:
-                            // ok, loops should have no else branches
+                            graphBuilder.addAlternativeEdge(context.conditionEvent, nextEvent);
+                            alreadySetEdgeToNextEvent = true;
                             break;
                     }
                 }
+
                 if (context.lastElseBranchEvent != null) {// && !(context.lastElseBranchEvent instanceof XFakeEvent)) {
                     switch (context.kind) {
                         case Linear:
                             assert false;
                             break;
                         case Branching:
-                            graphBuilder.addEdge/*addLinearEdge*/(context.lastElseBranchEvent, nextEvent);
+                            graphBuilder.addEdge(context.lastElseBranchEvent, nextEvent);
                             alreadySetEdgeToNextEvent = true;
                             break;
                         case Loop:
@@ -296,38 +316,43 @@ public class XFlowGraphInterpretationBuilder extends Builder<XFlowGraph> {
                     }
                 }
 
-                if (context.kind == XBlockContextKind.Loop) {
-                    graphBuilder.addAlternativeEdge(context.conditionEvent, nextEvent);
-                    assert context.firstElseBranchEvent == null : context.firstElseBranchEvent.toString();
-                    assert context.lastElseBranchEvent == null  : context.lastElseBranchEvent.toString();
-
-                    if (context.needToBindContinueEvents()) {
-                        for (XFakeEvent continueingEvent : context.continueingEvents) {
-                            graphBuilder.replaceEvent(continueingEvent, context.conditionEvent);
-                        }
-                    }
-                    if (context.needToBindBreakEvents()) {
-                        for (XFakeEvent breakingEvent : context.breakingEvents) {
-                            graphBuilder.replaceEvent(breakingEvent, nextEvent);
-                            alreadySetEdgeToNextEvent = true;
-                        }
-                    }
-                } else {
-                    assert !context.needToBindBreakEvents();
-                    assert !context.needToBindContinueEvents();
-                }
+                //boolean hasBreaks = context.hasBreakEvents();
+                //boolean hasContinues = context.hasContinueEvents();
+                //if (hasBreaks || hasContinues) {
+                //    assert context.firstElseBranchEvent == null : context.firstElseBranchEvent.toString();
+                //    assert context.lastElseBranchEvent == null  : context.lastElseBranchEvent.toString();
+                //
+                //    if (hasContinues) {
+                //        for (XFakeEvent continueingEvent : context.continueingEvents) {
+                //            graphBuilder.replaceEvent(continueingEvent, context.conditionEvent);
+                //        }
+                //    }
+                //    if (hasBreaks) {
+                //        for (XFakeEvent breakingEvent : context.breakingEvents) {
+                //            graphBuilder.replaceEvent(breakingEvent, nextEvent);
+                //            alreadySetEdgeToNextEvent = true;
+                //        }
+                //    }
+                //}
             }
             readyContexts.clear();
         }
 
+        boolean isJumpEvent = nextEvent instanceof XJumpEvent;
+
         assert !contextStack.empty();
         for (int i = contextStack.size() - 1; i >= 0; i--) { //NonlinearBlock context : contextStack) {
             XBlockContext context = contextStack.get(i);
+
+            //if (isJumpEvent && context.kind != XBlockContextKind.Loop) {
+            //    continue;
+            //}
+
             switch (context.state) {
                 case WaitingNextLinearEvent: {
                     if (!alreadySetEdgeToNextEvent) {
                         if (previousEvent != null) {
-                            graphBuilder.addEdge/*addLinearEdge*/(previousEvent, nextEvent);
+                            graphBuilder.addEdge(previousEvent, nextEvent);
                         }
                         alreadySetEdgeToNextEvent = true;
                     }
@@ -361,7 +386,7 @@ public class XFlowGraphInterpretationBuilder extends Builder<XFlowGraph> {
                             break;
                     }
                     context.setState(ContextState.WaitingNextLinearEvent);
-                    alreadySetEdgeToNextEvent = true; //delayed edge set
+                    alreadySetEdgeToNextEvent = true; //delayed edge set (in traversing ready-contexts)
                 }
                 break;
 
@@ -461,14 +486,16 @@ public class XFlowGraphInterpretationBuilder extends Builder<XFlowGraph> {
     }
 
     public void processLoopBreakStatement() {
-        XBlockContext context = currentNearestLoopContext();
-        context.addBreakEvent(emitJumpEvent());
+        XJumpEvent jumpEvent = emitJumpEvent();
+        XBlockContext context = currentNearestLoopContext(); //context should peeked after the jump event was emitted
+        context.addBreakEvent(jumpEvent);
         context.state = ContextState.JustJumped;
     }
 
     public void processLoopContinueStatement() {
-        XBlockContext context = currentNearestLoopContext();
-        context.addContinueEvent(emitJumpEvent());
+        XJumpEvent jumpEvent = emitJumpEvent();
+        XBlockContext context = currentNearestLoopContext(); //context should peeked after the jump event was emitted
+        context.addContinueEvent(jumpEvent);
         context.state = ContextState.JustJumped;
     }
 
