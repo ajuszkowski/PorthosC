@@ -4,23 +4,19 @@ import com.google.common.collect.ImmutableMap;
 import mousquetaires.utils.patterns.Builder;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 
-public abstract class FlowGraphBuilder<T extends GraphNode> extends Builder<FlowGraph<T>> {
+public abstract class FlowGraphBuilder<T extends GraphNode, G extends FlowGraph<T>>
+        extends Builder<G> {
 
     private final String processId;
-
-    private T source;
-    private T sink;
-
     protected final Map<T, T> edges;
     protected final Map<T, T> altEdges;
-
+    private T source;
+    private T sink;
     private boolean isUnrolled;
 
-    private HashSet<T> leaves = new HashSet<>();
 
     public FlowGraphBuilder(String processId) {
         this.processId = processId;
@@ -56,13 +52,10 @@ public abstract class FlowGraphBuilder<T extends GraphNode> extends Builder<Flow
     // --
 
     public void finishBuilding() {
+        // TODO: maybe add some more checks here
+        assert getSource() != null : "source node is not set";
+        assert getSink() != null : "sink node is not set";
         markFinished();
-        assert source != null : "source node is set";
-        assert sink != null : "sink node is set";
-        for (T leaf : leaves) {
-            addEdge(leaf, sink);
-        }
-        leaves = null;
     }
 
     public void setSource(T source) {
@@ -87,19 +80,9 @@ public abstract class FlowGraphBuilder<T extends GraphNode> extends Builder<Flow
         this.isUnrolled = true;
     }
 
-    private void preprocessNewEdge(T from, T to) {
-        if (leaves.contains(from)) {
-            leaves.remove(from);
-        }
-        if (!edges.containsKey(to)) {
-            leaves.add(to);
-        }
-    }
-
     private void addEdgeImpl(Map<T, T> edges, T from, T to) {
-        preprocessNewEdge(from, to);
         assert (from != null) : "attempt to add to graph the null node";
-        assert (to != null)   : "attempt to add to graph the null node";
+        assert (to != null) : "attempt to add to graph the null node";
 
         // TODO: this check is for debug only
         if (edges.containsKey(from)) {

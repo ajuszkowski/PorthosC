@@ -12,13 +12,13 @@ public class XFlowGraph extends FlowGraph<XEvent> implements XEntity {
     private final String processId;
 
     public XFlowGraph(String processId,
-               XEvent entry,
-               XExitEvent exit,
+               XEvent source,
+               XExitEvent sink,
                ImmutableMap<XEvent, XEvent> edges,
                ImmutableMap<XEvent, XEvent> alternativeEdges,
                //ImmutableMap<XEvent, ImmutableSet<XEvent>> edgesReversed,
                boolean isUnrolled) {
-        super(entry, exit, edges, alternativeEdges, isUnrolled);
+        super(source, sink, edges, alternativeEdges, isUnrolled);
         this.processId = processId;
     }
 

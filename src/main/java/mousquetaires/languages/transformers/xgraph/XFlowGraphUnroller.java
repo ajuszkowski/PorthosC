@@ -1,27 +1,25 @@
 package mousquetaires.languages.transformers.xgraph;
 
+import mousquetaires.languages.common.graph.traverse.FlowGraphTraverseActor;
+import mousquetaires.languages.common.graph.traverse.FlowGraphUnroller;
+import mousquetaires.languages.common.graph.traverse.FlowGraphUnrollingTraverser;
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.XEventRef;
 import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
-import mousquetaires.utils.exceptions.NotImplementedException;
+import mousquetaires.languages.syntax.xgraph.process.XFlowGraphBuilder;
 
 
-public class XFlowGraphUnroller {
+public class XFlowGraphUnroller extends FlowGraphUnrollingTraverser<XEvent, XFlowGraph> {
 
-    private final int bound;
+    // TODO: pass settings structure: bound, flags which agents to use
 
-    public XFlowGraphUnroller(int bound) {
-        this.bound = bound;
+    public XFlowGraphUnroller(XFlowGraph graph,
+                              int unrollingBound,
+                              FlowGraphTraverseActor<XEvent>... actors) {
+        super(graph, XEventRef::new, unrollingBound, getUnrollingActor(graph.processId()), actors);
     }
 
-    public XFlowGraph unroll(XFlowGraph graph) {
-        throw new NotImplementedException();
-        /*FlowGraphUnroller<XEvent> unroller = new FlowGraphUnroller<>(graph, bound) {
-            @Override
-            protected XEvent createNodeRef(XEvent node, int refId) {
-                return new XEventRef(node, refId);
-            }
-        };
-        XFlowGraphBuilder builder = new XFlowGraphBuilder(graph.processId());
-        unroller.unrollIntoBuilder(builder);
-        return builder.build();*/
+    private static FlowGraphUnroller<XEvent, XFlowGraph> getUnrollingActor(String processId) {
+        return new FlowGraphUnroller<>(new XFlowGraphBuilder(processId));
     }
 }

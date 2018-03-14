@@ -49,7 +49,9 @@ public class UnrollerTestBase extends AbstractUnitTest<XFlowGraph> {
 
 
     protected void run(XFlowGraph expectedUnrolled, XFlowGraph actualNonUnrolled, int bound) {
-        XFlowGraph actualUnrolled = new XFlowGraphUnroller(bound).unroll(actualNonUnrolled);
+        XFlowGraphUnroller unroller = new XFlowGraphUnroller(actualNonUnrolled, bound);
+        unroller.doUnroll();
+        XFlowGraph actualUnrolled = unroller.getUnrolledGraph();
         compareResults(CollectionUtils.createIteratorFrom(expectedUnrolled),
                        CollectionUtils.createIteratorFrom(actualUnrolled));
     }
@@ -76,10 +78,10 @@ public class UnrollerTestBase extends AbstractUnitTest<XFlowGraph> {
         FlowGraphComparer.assertGraphsEqual(expected, actual);
     }
 
-    private XFlowGraphTestBuilder fakeTestBuilder = createTestGraphBuilder();
+    private XFlowGraphTestBuilder fakeTestBuilder;
     private XFlowGraphTestBuilder getFakeTestBuilder() {
         return fakeTestBuilder == null
-                ? fakeTestBuilder = createTestGraphBuilder()
+                ? (fakeTestBuilder = createTestGraphBuilder())
                 : fakeTestBuilder;
     }
 }

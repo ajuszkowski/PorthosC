@@ -7,10 +7,12 @@ import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XFakeEvent;
 import mousquetaires.utils.StringUtils;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 
-public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent> {
+public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent, XFlowGraph> {
 
     public XFlowGraphBuilder(String processId) {
         super(processId);

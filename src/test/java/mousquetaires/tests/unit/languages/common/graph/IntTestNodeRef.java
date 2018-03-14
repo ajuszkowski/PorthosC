@@ -3,10 +3,10 @@ package mousquetaires.tests.unit.languages.common.graph;
 import java.util.Objects;
 
 
-public class TestNodeRef extends TestNode {
+public class IntTestNodeRef extends IntTestNode {
     private final int refId;
 
-    public TestNodeRef(TestNode node, int refId) {
+    public IntTestNodeRef(IntTestNode node, int refId) {
         super(node.getValue());
         this.refId = refId;
     }
@@ -18,9 +18,9 @@ public class TestNodeRef extends TestNode {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TestNodeRef)) return false;
+        if (!(o instanceof IntTestNodeRef)) return false;
         if (!super.equals(o)) return false;
-        TestNodeRef that = (TestNodeRef) o;
+        IntTestNodeRef that = (IntTestNodeRef) o;
         return getRefId() == that.getRefId();
     }
 

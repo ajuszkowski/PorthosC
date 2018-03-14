@@ -12,6 +12,10 @@ public abstract class FlowGraph<T extends GraphNode> {
     private final ImmutableMap<T, T> altEdges;
     private final boolean isUnrolled;
 
+    public FlowGraph(FlowGraph<T> mother) {
+        this(mother.source, mother.sink, mother.edges, mother.altEdges, mother.isUnrolled);
+    }
+
     public FlowGraph(T source,
                      T sink,
                      ImmutableMap<T, T> edges,

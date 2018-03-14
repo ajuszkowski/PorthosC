@@ -9,7 +9,7 @@ import mousquetaires.languages.syntax.zformula.ZBoolFormula;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
-import mousquetaires.languages.transformers.xgraph.XProgramUnroller;
+import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
 import mousquetaires.tests.TestFailedException;
 import mousquetaires.tests.unit.languages.converters.AbstractConverterUnitTest;
 import mousquetaires.utils.CollectionUtils;
@@ -31,7 +31,7 @@ public abstract class C11ToZformula_UnitTestBase extends AbstractConverterUnitTe
             YSyntaxTree internalRepr = YtreeParser.parse(file, language);
             YtreeToXgraphConverter converter = new YtreeToXgraphConverter(language, dataModel);
             XProgram program = converter.convert(internalRepr);
-            XProgram unrolledProgram = XProgramUnroller.unroll(program, unrollBound);
+            XProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
             XProgramToZformulaConverter encoder = new XProgramToZformulaConverter();
             ZBoolFormula smtFormula = encoder.encode(unrolledProgram);
             return CollectionUtils.createIteratorFrom(smtFormula);

@@ -15,27 +15,24 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
 import mousquetaires.languages.syntax.xgraph.process.XFlowGraphBuilder;
-import mousquetaires.utils.exceptions.NotSupportedException;
+import mousquetaires.utils.patterns.Builder;
 
 
-public class XFlowGraphTestBuilder extends XFlowGraphBuilder {
+public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
 
-    // TODO: use integer-graph TestFlowGraph
+    private final XFlowGraphBuilder builder;
+
     public XFlowGraphTestBuilder(String processId) {
-        super(processId);
-        super.setSource(new XEntryEvent(createEventInfo()));
-        super.setSink(new XExitEvent(createEventInfo()));
+        builder = new XFlowGraphBuilder(processId);
+        builder.setSource(new XEntryEvent(createEventInfo()));
+        builder.setSink(new XExitEvent(createEventInfo()));
     }
 
     @Override
-    public void setSource(XEvent source) {
-        throw new NotSupportedException();
-    }
-
-    @Override
-    public void setSink(XEvent sink) {
-        throw new NotSupportedException();
+    public XFlowGraph build() {
+        return builder.build();
     }
 
     public XComputationEvent createComputationEvent(XLocalMemoryUnit first) {
@@ -63,31 +60,31 @@ public class XFlowGraphTestBuilder extends XFlowGraphBuilder {
     }
 
     public void processFirstEvent(XEvent postEntryEvent) {
-        addEdge(getSource(), postEntryEvent);
+        builder.addEdge(builder.getSource(), postEntryEvent);
     }
 
     public void processLastEvents(XEvent... preExitEvents) {
         for (XEvent event : preExitEvents) {
-            addEdge(event, getSink());
+            builder.addEdge(event, builder.getSink());
         }
     }
 
     public void processNextEvent(XEvent first, XEvent second, XEvent... others) {
-        addEdge(first, second);
+        builder.addEdge(first, second);
         XEvent previous = second, next;
         for (XEvent other : others) {
             next = other;
-            addEdge(previous, next);
+            builder.addEdge(previous, next);
             previous = next;
         }
     }
 
     public void processBranchingEvent(XEvent condition, XEvent firstThen, XEvent firstElse) {
-        addEdge(condition, firstThen);
-        addAlternativeEdge(condition, firstElse);
+        builder.addEdge(condition, firstThen);
+        builder.addAlternativeEdge(condition, firstElse);
     }
 
     private XEventInfo createEventInfo() {
-        return new XEventInfo(getProcessId());
+        return new XEventInfo(builder.getProcessId());
     }
 }

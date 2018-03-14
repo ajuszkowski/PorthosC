@@ -17,11 +17,11 @@ public class UnrollerDoubleNestedLoopTest extends UnrollerTestBase {
         XFlowGraph actualNonUnrolled = getNonUnrolledGraph();
         XFlowGraphTestBuilder expectedBuilder = createTestGraphBuilder();
         expectedBuilder.processFirstEvent(ref(assignX1, 1));
-        expectedBuilder.processNextEvent(ref(assignX1, 1), ref(assignX2, 2), ref(conditionXequals3, 3));
-        expectedBuilder.processBranchingEvent(ref(conditionXequals3, 3), ref(conditionXequals4, 4), ref(assignX2, 4));
-        expectedBuilder.processBranchingEvent(ref(conditionXequals4, 4), ref(assignX1, 5), ref(assignX5, 5));
-        expectedBuilder.processNextEvent(ref(assignX2, 4), ref(conditionXequals3, 5));
-        expectedBuilder.processLastEvents(ref(assignX1, 5), ref(conditionXequals3, 5), ref(assignX5, 5));
+        expectedBuilder.processNextEvent(ref(assignX1, 1), ref(assignX2, 1), ref(conditionXequals3, 1));
+        expectedBuilder.processBranchingEvent(ref(conditionXequals3, 1), ref(conditionXequals4, 1), ref(assignX2, 2));
+        expectedBuilder.processBranchingEvent(ref(conditionXequals4, 1), ref(assignX1, 2), ref(assignX5, 1));
+        expectedBuilder.processNextEvent(ref(assignX2, 2), ref(conditionXequals3, 2));
+        expectedBuilder.processLastEvents(ref(assignX1, 2), ref(conditionXequals3, 2), ref(assignX5, 1));
         XFlowGraph expectedUnrolled = expectedBuilder.build();
 
         run(expectedUnrolled, actualNonUnrolled, unrollingBound);

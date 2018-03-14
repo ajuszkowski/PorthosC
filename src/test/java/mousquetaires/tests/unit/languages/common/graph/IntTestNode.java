@@ -5,10 +5,10 @@ import mousquetaires.languages.common.graph.GraphNode;
 import java.util.Objects;
 
 
-public class TestNode implements GraphNode {
+public class IntTestNode implements GraphNode {
     private final int value;
 
-    public TestNode(int value) {
+    public IntTestNode(int value) {
         this.value = value;
     }
 
@@ -24,8 +24,8 @@ public class TestNode implements GraphNode {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TestNode)) return false;
-        TestNode testNode = (TestNode) o;
+        if (!(o instanceof IntTestNode)) return false;
+        IntTestNode testNode = (IntTestNode) o;
         return getValue() == testNode.getValue();
     }
 

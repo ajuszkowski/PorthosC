@@ -2,19 +2,21 @@ package mousquetaires.languages.transformers.xgraph;
 
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.XProgramBuilder;
-import mousquetaires.utils.exceptions.NotImplementedException;
+import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
 
 
-public class XProgramUnroller {
+public class XProgramTransformer {
 
     public static XProgram unroll(XProgram program, int bound) {
         XProgramBuilder builder = new XProgramBuilder();
-        throw new NotImplementedException();
-        /*XFlowGraphUnroller unroller = new XFlowGraphUnroller(bound);
         for (XFlowGraph process : program.getAllProcesses()) {
-            builder.addProcess(unroller.unroll(process));
+            // TODO: fix heap pollution here
+            XFlowGraphUnroller unroller = new XFlowGraphUnroller(process, bound); // TODO: pass additional actors here
+            unroller.doUnroll();
+
+            builder.addProcess(unroller.getUnrolledGraph());
         }
         builder.markUnrolled();
-        return builder.build();*/
+        return builder.build();
     }
 }

@@ -19,13 +19,13 @@ public class UnrollerLooplessTest extends UnrollerTestBase {
         // EXPECTED GRAPH CONSTRUCTION
         XFlowGraphTestBuilder expectedBuilder5 = createTestGraphBuilder();
         expectedBuilder5.processFirstEvent(ref(conditionXequals1, 1));
-        expectedBuilder5.processBranchingEvent(ref(conditionXequals1, 1), ref(assignY2, 2), ref(conditionXgreater2, 2));
-        expectedBuilder5.processNextEvent(ref(assignY2, 2), ref(conditionXequals2, 3));
-        expectedBuilder5.processBranchingEvent(ref(conditionXequals2, 3), ref(assignXY, 4), ref(assignX4, 5));
-        expectedBuilder5.processNextEvent(ref(assignXY, 4), ref(assignX4, 5));
-        expectedBuilder5.processBranchingEvent(ref(conditionXgreater2, 2), ref(assignY3, 3), ref(assignX4, 5));
-        expectedBuilder5.processNextEvent(ref(assignY3, 3), ref(assignX4, 5));
-        expectedBuilder5.processLastEvents(ref(assignX4, 5));
+        expectedBuilder5.processBranchingEvent(ref(conditionXequals1, 1), ref(assignY2, 1), ref(conditionXgreater2, 1));
+        expectedBuilder5.processNextEvent(ref(assignY2, 1), ref(conditionXequals2, 1));
+        expectedBuilder5.processBranchingEvent(ref(conditionXequals2, 1), ref(assignXY, 1), ref(assignX4, 1));
+        expectedBuilder5.processNextEvent(ref(assignXY, 1), ref(assignX4, 1));
+        expectedBuilder5.processBranchingEvent(ref(conditionXgreater2, 1), ref(assignY3, 1), ref(assignX4, 1));
+        expectedBuilder5.processNextEvent(ref(assignY3, 1), ref(assignX4, 1));
+        expectedBuilder5.processLastEvents(ref(assignX4, 1));
 
         // TODO: create separately constants, registers, ...
         XFlowGraph expectedUnrolled6 = expectedBuilder5.build();

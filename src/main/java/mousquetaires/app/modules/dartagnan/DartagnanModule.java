@@ -14,7 +14,7 @@ import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModelLP64;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.zformula.ZFormula;
-import mousquetaires.languages.transformers.xgraph.XProgramUnroller;
+import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
 import mousquetaires.memorymodels.old.MemoryModel;
 import mousquetaires.memorymodels.old.MemoryModelFactory;
 
@@ -51,7 +51,7 @@ public class DartagnanModule extends AppModule {
             YtreeToXgraphConverter yConverter = new YtreeToXgraphConverter(language, dataModel);
             XProgram program = yConverter.convert(internalRepr);
 
-            XProgram programUnrolled = XProgramUnroller.unroll(program, unrollBound);
+            XProgram programUnrolled = XProgramTransformer.unroll(program, unrollBound);
             XProgramToZformulaConverter zConverter = new XProgramToZformulaConverter(); //todo: pass timeout
             ZFormula formula = zConverter.encode(programUnrolled);
 
