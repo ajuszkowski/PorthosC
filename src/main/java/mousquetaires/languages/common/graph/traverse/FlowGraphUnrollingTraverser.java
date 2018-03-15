@@ -2,7 +2,7 @@ package mousquetaires.languages.common.graph.traverse;
 
 import com.google.common.collect.ImmutableSet;
 import mousquetaires.languages.common.graph.FlowGraph;
-import mousquetaires.languages.common.graph.GraphNode;
+import mousquetaires.languages.common.graph.Node;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -10,23 +10,24 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 
-public abstract class FlowGraphUnrollingTraverser<T extends GraphNode, G extends FlowGraph<T>> {
+public abstract class FlowGraphUnrollingTraverser<T extends Node, G extends FlowGraph<T>> {
 
     private final int unrollingBound;
     private final FlowGraph<T> graph;
     private final BiFunction<T, Integer, T> createNodeRef;
 
-    private final FlowGraphUnroller<T, G> unrollingActor;
+    private final FlowGraphUnrollingActor<T, G> unrollingActor;
     private final CompositeFlowGraphTraverseActor<T> actors;
 
     private HashMap<T, Integer> nodeCounterMap;
-    private Stack<T> enteredStack;
+    private Stack<T> enteredNodesStack;
+    private Set<T> visitedRefs;
 
     // TODO: check this heap pollution!
     protected FlowGraphUnrollingTraverser(FlowGraph<T> graph,
                                           BiFunction<T, Integer, T> createNodeRef,
                                           int unrollingBound,
-                                          FlowGraphUnroller<T, G> unrollingActor,
+                                          FlowGraphUnrollingActor<T, G> unrollingActor,
                                           FlowGraphTraverseActor<T>... actors) {
         this.graph = graph;
         this.createNodeRef = createNodeRef;
@@ -39,9 +40,9 @@ public abstract class FlowGraphUnrollingTraverser<T extends GraphNode, G extends
         this.actors = new CompositeFlowGraphTraverseActor<>(allActors);
 
         this.nodeCounterMap = new HashMap<>();
-        this.enteredStack = new Stack<>();
+        this.enteredNodesStack = new Stack<>();
+        this.visitedRefs = new HashSet<>();
     }
-
 
     public ImmutableSet<FlowGraphTraverseActor<T>> getActors() {
         return actors.getActors();
@@ -63,25 +64,20 @@ public abstract class FlowGraphUnrollingTraverser<T extends GraphNode, G extends
         // TODO: Probably algorithm breaks if the DFS firstly discovers node with not largest path ?
 
         T nodeRef = getParentRef(node);
-        enteredStack.push(node);
+        enteredNodesStack.push(node);
+        visitedRefs.add(nodeRef);
 
         int childCounter = counter + 1;
 
-        if (counter == unrollingBound - 1) {
-            unrollChildRecursively(node, nodeRef, childCounter, (n) -> graph.sink(), actors::onVisitEdge);
-            actors.onBoundAchieved(nodeRef);
+        if (graph.hasChild(node)) {
+            unrollChildRecursively(node, nodeRef, childCounter, graph::child, actors::onVisitEdge);
         }
-        else {
-            if (graph.hasChild(node)) {
-                unrollChildRecursively(node, nodeRef, childCounter, graph::child, actors::onVisitEdge);
-            }
-            if (graph.hasAlternativeChild(node)) {
-                unrollChildRecursively(node, nodeRef, childCounter, graph::alternativeChild, actors::onVisitAltEdge);
-            }
+        if (graph.hasAlternativeChild(node)) {
+            unrollChildRecursively(node, nodeRef, childCounter, graph::alternativeChild, actors::onVisitAltEdge);
         }
 
         decrementNodeIndex(node);
-        T popped =  enteredStack.pop();
+        T popped =  enteredNodesStack.pop();
         assert popped == node : popped + " must be " + node;
     }
 
@@ -91,13 +87,18 @@ public abstract class FlowGraphUnrollingTraverser<T extends GraphNode, G extends
                                         Function<T, T> getChild,
                                         BiConsumer<T, T> onVisitAction) {
         T child = getChild.apply(node);
-        boolean childIsSink = child == graph.sink();
-        T childRef = childIsSink
-                ? child
-                : getOrCreateChildRef(child);
+        boolean childIsSink = (child == graph.sink());
+        boolean boundAchieved = (childrensCounter > unrollingBound);
+
+        T childRef = childIsSink ? child : getOrCreateChildRef(child);
+        boolean childRefIsVisited = visitedRefs.contains(childRef);
+
         onVisitAction.accept(nodeRef, childRef);
 
-        if (!childIsSink) {
+        if (childIsSink || boundAchieved) {
+            actors.onBoundAchieved(nodeRef, graph.sink());
+        }
+        else if (!childRefIsVisited) {
             unrollRecursively(child, childrensCounter);
         }
     }
@@ -134,14 +135,13 @@ public abstract class FlowGraphUnrollingTraverser<T extends GraphNode, G extends
     }
 
     private boolean inLoop(T node) {
-        return enteredStack.contains(node);
+        return enteredNodesStack.contains(node);
     }
 
     private T getNodeRef(T node, int index) {
         if (node == graph.source() || node == graph.sink()) {
             return node;
         }
-        // already checked
         return createNodeRef.apply(node, index);
     }
 }

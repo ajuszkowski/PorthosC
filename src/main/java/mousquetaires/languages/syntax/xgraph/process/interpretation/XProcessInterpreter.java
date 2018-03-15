@@ -282,7 +282,7 @@ public class XProcessInterpreter {
                             assert false;
                             break;
                         case Branching:
-                            graphBuilder.addAlternativeEdge(context.conditionEvent, context.firstElseBranchEvent);
+                            graphBuilder.addAltEdge(context.conditionEvent, context.firstElseBranchEvent);
                             break;
                         case Loop:
                             assert false;
@@ -296,7 +296,7 @@ public class XProcessInterpreter {
                             break;
                         case Branching:
                         case Loop:
-                            graphBuilder.addAlternativeEdge(context.conditionEvent, nextEvent);
+                            graphBuilder.addAltEdge(context.conditionEvent, nextEvent);
                             alreadySetEdgeToNextEvent = true;
                             break;
                     }

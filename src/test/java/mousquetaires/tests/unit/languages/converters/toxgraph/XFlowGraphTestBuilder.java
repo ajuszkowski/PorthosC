@@ -81,7 +81,7 @@ public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
 
     public void processBranchingEvent(XEvent condition, XEvent firstThen, XEvent firstElse) {
         builder.addEdge(condition, firstThen);
-        builder.addAlternativeEdge(condition, firstElse);
+        builder.addAltEdge(condition, firstElse);
     }
 
     private XEventInfo createEventInfo() {

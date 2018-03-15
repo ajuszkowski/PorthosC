@@ -1,7 +1,7 @@
 package mousquetaires.languages.transformers.xgraph;
 
 import mousquetaires.languages.common.graph.traverse.FlowGraphTraverseActor;
-import mousquetaires.languages.common.graph.traverse.FlowGraphUnroller;
+import mousquetaires.languages.common.graph.traverse.FlowGraphUnrollingActor;
 import mousquetaires.languages.common.graph.traverse.FlowGraphUnrollingTraverser;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventRef;
@@ -19,7 +19,7 @@ public class XFlowGraphUnroller extends FlowGraphUnrollingTraverser<XEvent, XFlo
         super(graph, XEventRef::new, unrollingBound, getUnrollingActor(graph.processId()), actors);
     }
 
-    private static FlowGraphUnroller<XEvent, XFlowGraph> getUnrollingActor(String processId) {
-        return new FlowGraphUnroller<>(new XFlowGraphBuilder(processId));
+    private static FlowGraphUnrollingActor<XEvent, XFlowGraph> getUnrollingActor(String processId) {
+        return new FlowGraphUnrollingActor<>(new XFlowGraphBuilder(processId));
     }
 }

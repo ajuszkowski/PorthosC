@@ -1,45 +1,40 @@
 package mousquetaires.tests.unit.unroller;
 
-import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
-import mousquetaires.tests.unit.languages.converters.toxgraph.XFlowGraphTestBuilder;
+import mousquetaires.tests.unit.languages.common.graph.IntNode;
+import mousquetaires.tests.unit.languages.common.graph.IntTestFlowGraph;
+import mousquetaires.tests.unit.languages.common.graph.IntTestFlowGraphBuilder;
 import org.junit.Test;
 
-import static mousquetaires.tests.unit.unroller.FlowGraphHelper.ref;
+import static mousquetaires.tests.unit.languages.common.graph.IntTestFlowGraphBuilder.node;
+import static mousquetaires.tests.unit.languages.common.graph.IntTestFlowGraphBuilder.r;
 
 
 public class UnrollerDoubleNestedLoopTest extends UnrollerTestBase {
 
     @Test
-    public void test_unrollingBound6() {
-        final int unrollingBound = 6; //TODO: pass as parameter?
+    public void test_boundMeetsOnce() {
+        final int bound = 6;
+        IntTestFlowGraph actualNonUnrolled = getNonUnrolledGraph();
 
-        // EXPECTED GRAPH CONSTRUCTION
-        XFlowGraph actualNonUnrolled = getNonUnrolledGraph();
-        XFlowGraphTestBuilder expectedBuilder = createTestGraphBuilder();
-        expectedBuilder.processFirstEvent(ref(assignX1, 1));
-        expectedBuilder.processNextEvent(ref(assignX1, 1), ref(assignX2, 1), ref(conditionXequals3, 1));
-        expectedBuilder.processBranchingEvent(ref(conditionXequals3, 1), ref(conditionXequals4, 1), ref(assignX2, 2));
-        expectedBuilder.processBranchingEvent(ref(conditionXequals4, 1), ref(assignX1, 2), ref(assignX5, 1));
-        expectedBuilder.processNextEvent(ref(assignX2, 2), ref(conditionXequals3, 2));
-        expectedBuilder.processLastEvents(ref(assignX1, 2), ref(conditionXequals3, 2), ref(assignX5, 1));
-        XFlowGraph expectedUnrolled = expectedBuilder.build();
+        // expected graph construction:
+        IntNode source = node(0), sink = node(-1);
+        IntTestFlowGraphBuilder builder = new IntTestFlowGraphBuilder(source, sink);
+        builder.addPath(source,  r(1, 1), r(2, 1), r(3, 1), r(4, 1), r(1, 2), sink);
+        builder.addPath(r(3, 1), r(2, 2), r(3, 2), sink);
+        builder.addPath(r(4, 1), r(5, 1), sink);
+        IntTestFlowGraph expectedUnrolled = builder.build();
 
-        run(expectedUnrolled, actualNonUnrolled, unrollingBound);
+        run(expectedUnrolled, actualNonUnrolled, bound);
     }
 
-
-
-
-    private XFlowGraph getNonUnrolledGraph() {
-        // ACTUAL GRAPH CONSTRUCTION
-        XFlowGraphTestBuilder actualBuilder = createTestGraphBuilder(); //TODO: process id
-
-        actualBuilder.processFirstEvent(assignX1);
-        actualBuilder.processNextEvent(assignX1, assignX2, conditionXequals3);
-        actualBuilder.processBranchingEvent(conditionXequals3, conditionXequals4, assignX2);
-        actualBuilder.processBranchingEvent(conditionXequals4, assignX1, assignX5);
-        actualBuilder.processLastEvents(assignX5);
-
-        return actualBuilder.build();
+    @Override
+    protected IntTestFlowGraph getNonUnrolledGraph() {
+        // length = 5
+        IntNode source = node(0), sink = node(-1);
+        IntTestFlowGraphBuilder builder = new IntTestFlowGraphBuilder(source, sink);
+        builder.addPath(source, node(1), node(2), node(3), node(4), sink);
+        builder.addAltEdge(node(3), node(2));
+        builder.addAltEdge(node(4), node(1));
+        return builder.build();
     }
 }

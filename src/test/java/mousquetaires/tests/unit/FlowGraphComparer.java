@@ -1,7 +1,7 @@
 package mousquetaires.tests.unit;
 
 import mousquetaires.languages.common.graph.FlowGraph;
-import mousquetaires.languages.common.graph.GraphNode;
+import mousquetaires.languages.common.graph.Node;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.utils.StringUtils;
@@ -11,23 +11,24 @@ import java.util.Map;
 
 
 public class FlowGraphComparer {
-    public static <T extends GraphNode> void assertGraphsEqual(FlowGraph<T> expected, FlowGraph<T> actual) {
+    public static <T extends Node> void assertGraphsEqual(FlowGraph<T> expected, FlowGraph<T> actual) {
         Assert.assertEquals("entry events do not match", expected.source(), actual.source());
         Assert.assertEquals("exit events do not match", expected.sink(), actual.sink());
         assertMapsEqual("edges set mismatch", expected.edges(), actual.edges());
         assertMapsEqual("alternative edges set mismatch", expected.alternativeEdges(), actual.alternativeEdges());
     }
 
-    private static <T extends GraphNode> void assertMapsEqual(String info,
-                                       Map<? extends T, ? extends T> expected,
-                                       Map<? extends T, ? extends T> actual) {
+    private static <T extends Node> void assertMapsEqual(String info,
+                                                         Map<? extends T, ? extends T> expected,
+                                                         Map<? extends T, ? extends T> actual) {
         for (Map.Entry<? extends T, ? extends T> entry : actual.entrySet()) {
-            T actualKey = entry.getKey();
+            T actualKey = entry.getKey(), actualValue = entry.getValue();
             //TODO: hack, somehow entry and exit events cannot be found in another immutable map even if equals() works fine
             if (actualKey instanceof XEntryEvent || actualKey instanceof XExitEvent) {
                 continue;
             }
-            Assert.assertTrue(info + ": key " + StringUtils.wrap(actualKey) + " was not found in expected-map",
+            Assert.assertTrue(info + ": key " + StringUtils.wrap(actualKey) + " was not found in expected-map"
+                        + " (entry in actual-map: " + actualKey + "=" + actualValue +")",
                     expected.containsKey(actualKey));
             Assert.assertEquals(info + ": expected value mismatch for the key " + StringUtils.wrap(actualKey),
                     expected.get(actualKey),

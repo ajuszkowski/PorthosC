@@ -7,26 +7,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public abstract class FlowGraphBuilder<T extends GraphNode, G extends FlowGraph<T>>
+public abstract class FlowGraphBuilder<T extends Node, G extends FlowGraph<T>>
         extends Builder<G> {
 
-    private final String processId;
     protected final Map<T, T> edges;
     protected final Map<T, T> altEdges;
     private T source;
     private T sink;
     private boolean isUnrolled;
 
-
-    public FlowGraphBuilder(String processId) {
-        this.processId = processId;
+    public FlowGraphBuilder() {
         this.edges = new HashMap<>();
         this.altEdges = new HashMap<>();
         this.isUnrolled = false;
-    }
-
-    public String getProcessId() {
-        return processId;
     }
 
     public T getSource() {
@@ -72,7 +65,7 @@ public abstract class FlowGraphBuilder<T extends GraphNode, G extends FlowGraph<
         addEdgeImpl(edges, from, to);
     }
 
-    public void addAlternativeEdge(T from, T to) {
+    public void addAltEdge(T from, T to) {
         addEdgeImpl(altEdges, from, to);
     }
 
@@ -80,15 +73,32 @@ public abstract class FlowGraphBuilder<T extends GraphNode, G extends FlowGraph<
         this.isUnrolled = true;
     }
 
+    protected boolean hasEdgeFrom(T node) {
+        return edges.containsKey(node);
+    }
+
+    protected boolean hasAltEdgeFrom(T node) {
+        return altEdges.containsKey(node);
+    }
+
+    protected boolean hasEdge(T from, T to) {
+        return hasEdgeFrom(from) && edges.get(from).equals(to);
+    }
+
+    protected boolean hasAltEdge(T from, T to) {
+        return hasAltEdgeFrom(from) && altEdges.get(from).equals(to);
+    }
+
     private void addEdgeImpl(Map<T, T> edges, T from, T to) {
         assert (from != null) : "attempt to add to graph the null node";
         assert (to != null) : "attempt to add to graph the null node";
 
         // TODO: this check is for debug only
+        // TODO: remove this after tests are completed
         if (edges.containsKey(from)) {
             T oldTo = edges.get(from);
-            if (!oldTo.equals(to)) { // TODO: remove this // && !(oldTo instanceof XFakeEvent) || (to instanceof XFakeEvent)) {
-                System.out.println("WARNING: overwriting edge " + from + " -> " + oldTo + " with edge " + from + " -> " + to);
+            if (!oldTo.equals(to)) {
+                System.err.println("WARNING: overwriting edge " + from + " -> " + oldTo + " with edge " + from + " -> " + to);
             }
         }
 

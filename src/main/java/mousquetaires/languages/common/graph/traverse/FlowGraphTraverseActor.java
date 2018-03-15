@@ -1,9 +1,9 @@
 package mousquetaires.languages.common.graph.traverse;
 
-import mousquetaires.languages.common.graph.GraphNode;
+import mousquetaires.languages.common.graph.Node;
 
 
-public interface FlowGraphTraverseActor<T extends GraphNode> {
+public interface FlowGraphTraverseActor<T extends Node> {
 
     void onStart();
 
@@ -11,7 +11,7 @@ public interface FlowGraphTraverseActor<T extends GraphNode> {
 
     void onVisitAltEdge(T from, T to);
 
-    void onBoundAchieved(T lastNode);
+    void onBoundAchieved(T lastNode, T sinkNode);
 
     void onFinish();
 }

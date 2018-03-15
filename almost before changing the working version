@@ -1,0 +1,155 @@
+//almost before changing the working version
+//deleteme
+
+package com.helpers;
+
+import com.*;
+import com.google.common.collect.ImmutableSet;
+
+import java.util.*;
+
+
+public class LoopsCollector {
+
+    private final IFlowGraph graph;
+    private IGraph reversedGraph;
+    private List<NestedLoopsCollection> collectedLoops;
+
+    private Map<INode, Set<INode>> backEdges;
+    private Map<INode, Set<INode>> crossEdges;
+
+    public LoopsCollector(IFlowGraph graph) {
+        this.graph = graph;
+    }
+
+    public Iterable<NestedLoopsCollection> collectLoops() {
+        if (collectedLoops != null) {
+            return collectedLoops;
+        }
+
+        if (backEdges == null || crossEdges == null) {
+            fillLoopEdges();
+        }
+        assert backEdges != null;
+        assert crossEdges != null;
+
+        if (reversedGraph == null) {
+            reversedGraph = GraphHelper.reverseGraph(graph);
+        }
+
+        collectedLoops = new ArrayList<>();
+
+        for (Map.Entry<INode, Set<INode>> entry : backEdges.entrySet()) {
+            INode currentLoopTail = entry.getKey();
+            for (INode currentLoopHead : entry.getValue()) {
+
+                Loop currentLoop = getLoopSubgraph(currentLoopHead, currentLoopTail);
+
+                Set<INode> currentLoopNodes = currentLoop.getNodes();
+                boolean needToAddLoop = true;
+                for (int index = 0; index < collectedLoops.size(); index++) {
+                    Loop collectedLoop = collectedLoops.get(index);
+                    Set<INode> collectedLoopNodes = collectedLoop.getNodes();
+                    if (CollectionUtils.isSuperset(currentLoopNodes, collectedLoopNodes)) {
+                        if (currentLoopNodes.size() > collectedLoopNodes.size()) {
+                            continue;
+                        }
+                        // else: current loop is equal to already collected, skip it
+                        needToAddLoop = false;
+                        break;
+                    }
+
+                    if (CollectionUtils.isSuperset(collectedLoopNodes, currentLoopNodes)) {
+                        collectedLoops.add(index, currentLoop);
+                    }
+                    else if (collectedLoop.getHead().equals(currentLoop.getHead())) { // disjoint => merge two into single loop
+                        collectedLoops.remove(collectedLoop);
+                        Loop joinedLoop = joinLoopsWithSameHeads(currentLoop, collectedLoop);
+                        collectedLoops.add(index, joinedLoop);
+                    }
+                    needToAddLoop = false;
+                    break;
+                }
+                if (needToAddLoop) {
+                    collectedLoops.add(currentLoop);
+                }
+            }
+        }
+        return collectedLoops;
+    }
+
+    private Loop getLoopSubgraph(INode currentLoopHead, INode currentLoopTail) {
+        ImmutableSet.Builder<INode> loopNodesBuilder = ImmutableSet.builder();
+        loopNodesBuilder.add(currentLoopHead);
+
+        DepthFirstGraphIterator reversedIterator = new DepthFirstGraphIterator(reversedGraph, currentLoopTail);
+        reversedIterator.markVisited(currentLoopHead);
+
+        while (reversedIterator.hasNext()) {
+            INode node = reversedIterator.next();
+            loopNodesBuilder.add(node);
+        }
+        ImmutableSet<INode> loopNodes = loopNodesBuilder.build();
+        //ImmutableMap<INode, ImmutableSet<INode>> loopEdges = GraphHelper.extractSubgraphEdges(graph, loopNodes);
+        //return new GraphLoop(loopNodes, loopEdges, currentLoopHead);
+        return new Loop(currentLoopHead, loopNodes);
+    }
+
+    private void fillLoopEdges() {
+        // traverse graph for finding loop edges
+        DepthFirstGraphIterator iterator = new DepthFirstGraphIterator(graph, graph.source());
+        while (iterator.hasNext()); //TODO: change API
+        this.backEdges = iterator.getBackEdges();
+        this.crossEdges = iterator.getCrossEdges();
+    }
+
+    public static Loop joinLoopsWithSameHeads(Loop... loops) {
+        // first, validate arguments
+        assert loops.length > 1;
+        INode loopsHead = null;
+        for (Loop currentLoop : loops) {
+            INode currentHead = currentLoop.getHead();
+            if (loopsHead != null && !currentHead.equals(loopsHead)) {
+                throw new IllegalArgumentException("Loops must have same head");
+            }
+            loopsHead = currentHead;
+        }
+
+        // TODO: check with multiple sinks
+        ImmutableSet.Builder<INode> builder = new ImmutableSet.Builder<>();
+        for (Loop loop : loops) {
+            builder.addAll(loop.getNodes());
+        }
+        return new Loop(loopsHead, builder.build());
+    }
+
+    /*public static GraphBuilder joinLoopsWithSameHeads(INode head, IGraph... graphs) {
+        assert graphs.length > 1;
+        for (IGraph loopGraph : graphs) {
+            assert loopGraph.getEdges().containsKey(head);
+        }
+
+        // TODO: check with multiple sinks
+        GraphBuilder builder = new GraphBuilder(); //sink is source for loops
+        for (IGraph loopGraph : graphs) {
+            for (Map.Entry<INode, ImmutableSet<INode>> entry : loopGraph.getEdges().entrySet()) {
+                INode from = entry.getKey();
+                for (INode to : entry.getValue()) {
+                    builder.addEdge(from, to);
+                }
+            }
+        }
+        return builder;
+    }*/
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("LoopsCollector{");
+        sb.append("graph=").append(graph);
+        if (backEdges != null) sb.append(", backEdges=").append(backEdges);
+        if (crossEdges != null) sb.append(", crossEdges=").append(crossEdges);
+        if (collectedLoops != null) sb.append(", loops=").append(collectedLoops);
+        sb.append('}');
+        return sb.toString();
+    }
+}

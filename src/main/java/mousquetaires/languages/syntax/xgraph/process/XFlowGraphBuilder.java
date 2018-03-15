@@ -14,8 +14,14 @@ import java.util.Map;
 
 public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent, XFlowGraph> {
 
+    private final String processId;
+
     public XFlowGraphBuilder(String processId) {
-        super(processId);
+        this.processId = processId;
+    }
+
+    public String getProcessId() {
+        return processId;
     }
 
     @Override

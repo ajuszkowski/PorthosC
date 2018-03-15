@@ -70,14 +70,14 @@
 //        if (graph.hasAlternativeChild(node)) {
 //            T altChild = graph.alternativeChild(node);
 //            if (altChild.equals(graph.sink())) {
-//                builder.addAlternativeEdge(nodeRef, altChild);
+//                builder.addAltEdge(nodeRef, altChild);
 //            }
 //            else {
 //                T altChildRef = enteredStack.contains(altChild)
 //                        ? createNodeRef     (altChild, counterForChildren)
 //                        : getOrCreateNodeRef(altChild, counterForChildren);
 //
-//                builder.addAlternativeEdge(nodeRef, altChildRef);
+//                builder.addAltEdge(nodeRef, altChildRef);
 //                buildUnrolledGraphRecursively(altChild, counterForChildren, builder);
 //            }
 //        }

@@ -1,12 +1,12 @@
 package mousquetaires.languages.common.graph.traverse;
 
 import com.google.common.collect.ImmutableSet;
-import mousquetaires.languages.common.graph.GraphNode;
+import mousquetaires.languages.common.graph.Node;
 
 import java.util.Set;
 
 
-class CompositeFlowGraphTraverseActor<T extends GraphNode> implements FlowGraphTraverseActor<T> {
+class CompositeFlowGraphTraverseActor<T extends Node> implements FlowGraphTraverseActor<T> {
 
     private final ImmutableSet<FlowGraphTraverseActor<T>> actors;
 
@@ -44,9 +44,9 @@ class CompositeFlowGraphTraverseActor<T extends GraphNode> implements FlowGraphT
     }
 
     @Override
-    public void onBoundAchieved(T lastNode) {
+    public void onBoundAchieved(T lastNode, T sinkNode) {
         for (FlowGraphTraverseActor<T> actor : actors) {
-            actor.onBoundAchieved(lastNode);
+            actor.onBoundAchieved(lastNode, sinkNode);
         }
     }
 
