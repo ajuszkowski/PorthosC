@@ -7,11 +7,9 @@ public interface FlowGraphTraverseActor<T extends Node> {
 
     void onStart();
 
-    void onVisitEdge(T from, T to);
+    void onVisitEdge(boolean condition, T from, T to);
 
-    void onVisitAltEdge(T from, T to);
-
-    void onBoundAchieved(T lastNode, T sinkNode);
+    void onBoundAchieved(T lastNode);
 
     void onFinish();
 }

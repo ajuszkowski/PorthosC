@@ -10,7 +10,7 @@ public class IntTestFlowGraphBuilder extends TestFlowGraphBuilderBase<IntNode, I
     @Override
     public IntTestFlowGraph build() {
         finishBuilding();
-        return new IntTestFlowGraph(getSource(), getSink(), buildEdges(), buildAltEdges(), isUnrolled());
+        return new IntTestFlowGraph(getSource(), getSink(), buildEdges(true), buildEdges(false), isUnrolled());
     }
 
     public static IntNode node(int value) {

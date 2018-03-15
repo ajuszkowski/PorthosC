@@ -30,23 +30,16 @@ class CompositeFlowGraphTraverseActor<T extends Node> implements FlowGraphTraver
     }
 
     @Override
-    public void onVisitEdge(T from, T to) {
+    public void onVisitEdge(boolean condition, T from, T to) {
         for (FlowGraphTraverseActor<T> actor : actors) {
-            actor.onVisitEdge(from, to);
+            actor.onVisitEdge(condition, from, to);
         }
     }
 
     @Override
-    public void onVisitAltEdge(T from, T to) {
+    public void onBoundAchieved(T lastNode) {
         for (FlowGraphTraverseActor<T> actor : actors) {
-            actor.onVisitAltEdge(from, to);
-        }
-    }
-
-    @Override
-    public void onBoundAchieved(T lastNode, T sinkNode) {
-        for (FlowGraphTraverseActor<T> actor : actors) {
-            actor.onBoundAchieved(lastNode, sinkNode);
+            actor.onBoundAchieved(lastNode);
         }
     }
 

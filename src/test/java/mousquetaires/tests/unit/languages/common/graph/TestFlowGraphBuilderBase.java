@@ -8,7 +8,6 @@ import mousquetaires.languages.common.graph.Node;
 abstract class TestFlowGraphBuilderBase<T extends Node, G extends FlowGraph<T>>
         extends FlowGraphBuilder<T, G> {
 
-
     @Override
     public void setSource(T source) {
         super.setSource(source);
@@ -20,30 +19,17 @@ abstract class TestFlowGraphBuilderBase<T extends Node, G extends FlowGraph<T>>
     }
 
     @Override
-    public void addEdge(T from, T to) {
-        super.addEdge(from, to);
-    }
-
-    @Override
-    public void addAltEdge(T from, T to) {
-        super.addAltEdge(from, to);
+    public void addEdge(boolean edgeSign, T from, T to) {
+        super.addEdge(edgeSign, from, to);
     }
 
     // TODO: HEAP POLLUTION HERE
-    public void addPath(T from, T to, T... other) {
-        addEitherEdge(from, to);
+    public void addPath(boolean edgeSign, T from, T to, T... other) {
+        addEdge(edgeSign, from, to);
         T previous = to;
         for (T node : other) {
-            addEitherEdge(previous, node);
+            addEdge(edgeSign, previous, node);
             previous = node;
-        }
-    }
-
-    private void addEitherEdge(T from, T to) {
-        if (!hasEdgeFrom(from)) {
-            super.addEdge(from, to);
-        } else {
-            super.addAltEdge(from, to);
         }
     }
 }

@@ -1,5 +1,6 @@
 package mousquetaires.utils;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -68,7 +69,7 @@ public class CollectionUtils {
         T element = iterator.next();
 
         if (iterator.hasNext()) {
-            throw new RuntimeException("Set contains more than one item");
+            throw new RuntimeException("Set contains more than one item: [" + Joiner.on(",").join(set) + "]");
         }
 
         return element;

@@ -53,17 +53,17 @@
 //        int counterForChildren = counter + 1;
 //
 //        // epsilon edge or true-edge
-//        T child = graph.child(node);
-//        if (child.equals(graph.sink())) {
-//            builder.addEdge(nodeRef, child);
+//        T successor = graph.successor(node);
+//        if (successor.equals(graph.sink())) {
+//            builder.addEdge(nodeRef, successor);
 //        }
 //        else {
-//            T childRef = enteredStack.contains(child)
-//                    ? createNodeRef     (child, counterForChildren)
-//                    : getOrCreateNodeRef(child, counterForChildren);
+//            T childRef = enteredStack.contains(successor)
+//                    ? createNodeRef     (successor, counterForChildren)
+//                    : getOrCreateNodeRef(successor, counterForChildren);
 //
 //            builder.addEdge(nodeRef, childRef);
-//            buildUnrolledGraphRecursively(child, counterForChildren, builder);
+//            buildUnrolledGraphRecursively(successor, counterForChildren, builder);
 //        }
 //
 //        // false-edge

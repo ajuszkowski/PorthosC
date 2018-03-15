@@ -14,8 +14,8 @@ public class FlowGraphComparer {
     public static <T extends Node> void assertGraphsEqual(FlowGraph<T> expected, FlowGraph<T> actual) {
         Assert.assertEquals("entry events do not match", expected.source(), actual.source());
         Assert.assertEquals("exit events do not match", expected.sink(), actual.sink());
-        assertMapsEqual("edges set mismatch", expected.edges(), actual.edges());
-        assertMapsEqual("alternative edges set mismatch", expected.alternativeEdges(), actual.alternativeEdges());
+        assertMapsEqual("edges set mismatch", expected.getEdges(true), actual.getEdges(true));
+        assertMapsEqual("alternative edges set mismatch", expected.getEdges(false), actual.getEdges(false));
     }
 
     private static <T extends Node> void assertMapsEqual(String info,

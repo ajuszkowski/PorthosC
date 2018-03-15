@@ -34,12 +34,8 @@ public abstract class FlowGraphBuilder<T extends Node, G extends FlowGraph<T>>
         return isUnrolled;
     }
 
-    public ImmutableMap<T, T> buildEdges() {
-        return ImmutableMap.copyOf(edges);
-    }
-
-    public ImmutableMap<T, T> buildAltEdges() {
-        return ImmutableMap.copyOf(altEdges);
+    public ImmutableMap<T, T> buildEdges(boolean edgeSign) {
+        return ImmutableMap.copyOf(getEdges(edgeSign));
     }
 
     // --
@@ -61,47 +57,43 @@ public abstract class FlowGraphBuilder<T extends Node, G extends FlowGraph<T>>
         this.sink = sink;
     }
 
-    public void addEdge(T from, T to) {
-        addEdgeImpl(edges, from, to);
-    }
-
-    public void addAltEdge(T from, T to) {
-        addEdgeImpl(altEdges, from, to);
+    public void addEdge(boolean edgeSign, T from, T to) {
+        if (!edgeSign && hasEdge(true, from, to)) {
+            return; // do not add 'false' edge that duplicates the 'true' edge
+        }
+        addEdgeImpl(getEdges(edgeSign), from, to);
     }
 
     public void markAsUnrolled() {
         this.isUnrolled = true;
     }
 
-    protected boolean hasEdgeFrom(T node) {
-        return edges.containsKey(node);
+    public boolean hasEdgesFrom(T node) {
+        return getEdges(true).containsKey(node) || getEdges(false).containsKey(node);
     }
 
-    protected boolean hasAltEdgeFrom(T node) {
-        return altEdges.containsKey(node);
+    public boolean hasEdge(boolean edgeSign, T from, T to) {
+        Map<T, T> map = getEdges(edgeSign);
+        return map.containsKey(from) && map.get(from).equals(to);
     }
 
-    protected boolean hasEdge(T from, T to) {
-        return hasEdgeFrom(from) && edges.get(from).equals(to);
+    protected Map<T, T> getEdges(boolean edgeSign) {
+        return edgeSign ? edges : altEdges;
     }
 
-    protected boolean hasAltEdge(T from, T to) {
-        return hasAltEdgeFrom(from) && altEdges.get(from).equals(to);
-    }
-
-    private void addEdgeImpl(Map<T, T> edges, T from, T to) {
+    private void addEdgeImpl(Map<T, T> edgesMap, T from, T to) {
         assert (from != null) : "attempt to add to graph the null node";
         assert (to != null) : "attempt to add to graph the null node";
 
         // TODO: this check is for debug only
         // TODO: remove this after tests are completed
-        if (edges.containsKey(from)) {
-            T oldTo = edges.get(from);
+        if (edgesMap.containsKey(from)) {
+            T oldTo = edgesMap.get(from);
             if (!oldTo.equals(to)) {
                 System.err.println("WARNING: overwriting edge " + from + " -> " + oldTo + " with edge " + from + " -> " + to);
             }
         }
 
-        edges.put(from, to);
+        edgesMap.put(from, to);
     }
 }

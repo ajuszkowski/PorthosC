@@ -242,7 +242,7 @@ public class XProcessInterpreter {
                             break;
                         case Branching:
                         case Loop:
-                            graphBuilder.addEdge(context.conditionEvent, context.firstThenBranchEvent);
+                            graphBuilder.addEdge(true, context.conditionEvent, context.firstThenBranchEvent);
                             break;
                     }
                 }
@@ -252,11 +252,11 @@ public class XProcessInterpreter {
                             assert false;
                             break;
                         case Branching:
-                            graphBuilder.addEdge(context.conditionEvent, nextEvent);
+                            graphBuilder.addEdge(true, context.conditionEvent, nextEvent);
                             alreadySetEdgeToNextEvent = true;
                             break;
                         case Loop:
-                            graphBuilder.addEdge(context.conditionEvent, context.conditionEvent);
+                            graphBuilder.addEdge(true, context.conditionEvent, context.conditionEvent);
                             break;
                     }
                 }
@@ -267,11 +267,11 @@ public class XProcessInterpreter {
                             assert false;
                             break;
                         case Branching:
-                            graphBuilder.addEdge(context.lastThenBranchEvent, nextEvent);
+                            graphBuilder.addEdge(true,context.lastThenBranchEvent, nextEvent);
                             alreadySetEdgeToNextEvent = true;
                             break;
                         case Loop:
-                            graphBuilder.addEdge(context.lastThenBranchEvent, context.entryEvent);
+                            graphBuilder.addEdge(true,context.lastThenBranchEvent, context.entryEvent);
                             break;
                     }
                 }
@@ -282,7 +282,7 @@ public class XProcessInterpreter {
                             assert false;
                             break;
                         case Branching:
-                            graphBuilder.addAltEdge(context.conditionEvent, context.firstElseBranchEvent);
+                            graphBuilder.addEdge(false, context.conditionEvent, context.firstElseBranchEvent);
                             break;
                         case Loop:
                             assert false;
@@ -296,7 +296,7 @@ public class XProcessInterpreter {
                             break;
                         case Branching:
                         case Loop:
-                            graphBuilder.addAltEdge(context.conditionEvent, nextEvent);
+                            graphBuilder.addEdge(false, context.conditionEvent, nextEvent);
                             alreadySetEdgeToNextEvent = true;
                             break;
                     }
@@ -308,7 +308,7 @@ public class XProcessInterpreter {
                             assert false;
                             break;
                         case Branching:
-                            graphBuilder.addEdge(context.lastElseBranchEvent, nextEvent);
+                            graphBuilder.addEdge(true,context.lastElseBranchEvent, nextEvent);
                             alreadySetEdgeToNextEvent = true;
                             break;
                         case Loop:
@@ -334,7 +334,7 @@ public class XProcessInterpreter {
                 case WaitingNextLinearEvent: {
                     if (!alreadySetEdgeToNextEvent) {
                         if (previousEvent != null) {
-                            graphBuilder.addEdge(previousEvent, nextEvent);
+                            graphBuilder.addEdge(true,previousEvent, nextEvent);
                         }
                         alreadySetEdgeToNextEvent = true;
                     }

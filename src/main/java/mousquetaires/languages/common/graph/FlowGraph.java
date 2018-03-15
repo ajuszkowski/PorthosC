@@ -38,21 +38,12 @@ public abstract class FlowGraph<T extends Node> {
         return sink;
     }
 
-    public T child(T node) {
-        return edges.get(node);
+    public T successor(boolean edgeSign, T node) {
+        return getEdges(edgeSign).get(node);
     }
 
-    // TODO: rename to getAltChild()
-    public T alternativeChild(T node) {
-        return altEdges.get(node);
-    }
-
-    public boolean hasChild(T node) {
-        return edges.containsKey(node);
-    }
-
-    public boolean hasAlternativeChild(T node) {
-        return altEdges.containsKey(node);
+    public boolean hasChild(boolean edgeSign, T node) {
+        return getEdges(edgeSign).containsKey(node);
     }
 
     public boolean isUnrolled() { //todo: this is computable property of graph!
@@ -67,7 +58,6 @@ public abstract class FlowGraph<T extends Node> {
         sb.append(", edges=").append(edges);
         sb.append(", altEdges=").append(altEdges);
         sb.append(", isUnrolled=").append(isUnrolled);
-        //sb.append(", edgesReversed=").append(edgesReversed);
         sb.append('}');
         return sb.toString();
     }
@@ -75,13 +65,10 @@ public abstract class FlowGraph<T extends Node> {
     // TODO: after debugging, probably remove these methods?
     // ================================================ optional methods (to be removed) ===============================
 
-    public ImmutableMap<T, T> edges() {
-        return edges;
+    public ImmutableMap<T, T> getEdges(boolean edgesSign) {
+        return edgesSign ? edges : altEdges;
     }
 
-    public ImmutableMap<T, T> alternativeEdges() {
-        return altEdges;
-    }
 
     public int nodesCount() {
         // todo: count nodes while single-pass via information collector!
@@ -96,5 +83,4 @@ public abstract class FlowGraph<T extends Node> {
     //    }
     //    return edgesReversed.get(node);
     //}
-
 }

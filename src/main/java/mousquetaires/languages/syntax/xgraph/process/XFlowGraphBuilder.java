@@ -28,7 +28,7 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent, XFlowGraph> {
     public XFlowGraph build() {
         finishBuilding();
         return new XFlowGraph(getProcessId(), getSource(), getSink(),
-                buildEdges(), buildAltEdges(), isUnrolled());
+                buildEdges(true), buildEdges(false), isUnrolled());
     }
 
     @Override
@@ -55,13 +55,14 @@ public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent, XFlowGraph> {
 
     // TODO  : inefficient now
     public void replaceEvent(XFakeEvent fakeEvent, XEvent replaceWithEvent) {
-        boolean replaced    = replaceEventImpl(edges, fakeEvent, replaceWithEvent);
-        boolean altReplaced = replaceEventImpl(altEdges, fakeEvent, replaceWithEvent);
+        boolean replaced    = replaceEventImpl(true,  fakeEvent, replaceWithEvent);
+        boolean altReplaced = replaceEventImpl(false, fakeEvent, replaceWithEvent);
         // TODO: check that the second call is not removed by java optimiser
         assert replaced || altReplaced: "could not find any predecessor for continueing event " + StringUtils.wrap(fakeEvent);
     }
 
-    private boolean replaceEventImpl(Map<XEvent, XEvent> map, XFakeEvent fakeEvent, XEvent replacement) {
+    private boolean replaceEventImpl(boolean edgesCondition, XFakeEvent fakeEvent, XEvent replacement) {
+        Map<XEvent, XEvent> map = getEdges(edgesCondition);
         assert fakeEvent != null : "event to be replaced is null";
         assert replacement != null : "event to be replace with is null";
         map.remove(fakeEvent);

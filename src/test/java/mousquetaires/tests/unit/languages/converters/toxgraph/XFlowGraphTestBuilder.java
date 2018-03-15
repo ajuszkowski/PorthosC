@@ -20,6 +20,7 @@ import mousquetaires.languages.syntax.xgraph.process.XFlowGraphBuilder;
 import mousquetaires.utils.patterns.Builder;
 
 
+// TODO:!!!!! inherit it from TestFlowGraphBuilderBase!
 public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
 
     private final XFlowGraphBuilder builder;
@@ -60,28 +61,28 @@ public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
     }
 
     public void processFirstEvent(XEvent postEntryEvent) {
-        builder.addEdge(builder.getSource(), postEntryEvent);
+        builder.addEdge(true, builder.getSource(), postEntryEvent);
     }
 
     public void processLastEvents(XEvent... preExitEvents) {
         for (XEvent event : preExitEvents) {
-            builder.addEdge(event, builder.getSink());
+            builder.addEdge(true, event, builder.getSink());
         }
     }
 
     public void processNextEvent(XEvent first, XEvent second, XEvent... others) {
-        builder.addEdge(first, second);
+        builder.addEdge(true, first, second);
         XEvent previous = second, next;
         for (XEvent other : others) {
             next = other;
-            builder.addEdge(previous, next);
+            builder.addEdge(true, previous, next);
             previous = next;
         }
     }
 
     public void processBranchingEvent(XEvent condition, XEvent firstThen, XEvent firstElse) {
-        builder.addEdge(condition, firstThen);
-        builder.addAltEdge(condition, firstElse);
+        builder.addEdge(true, condition, firstThen);
+        builder.addEdge(false, condition, firstElse);
     }
 
     private XEventInfo createEventInfo() {
