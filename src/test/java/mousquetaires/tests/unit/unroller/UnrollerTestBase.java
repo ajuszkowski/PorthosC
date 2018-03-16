@@ -1,10 +1,13 @@
 package mousquetaires.tests.unit.unroller;
 
+import mousquetaires.languages.common.graph.render.GraphDumper;
 import mousquetaires.tests.unit.AbstractUnitTest;
-import mousquetaires.tests.unit.FlowGraphComparer;
+import mousquetaires.tests.unit.Assertion;
+import mousquetaires.tests.unit.languages.common.graph.AssertionGraphsEqual;
 import mousquetaires.tests.unit.languages.common.graph.IntTestFlowGraph;
 import mousquetaires.tests.unit.languages.common.graph.IntTestFlowGraphUnroller;
 import mousquetaires.utils.CollectionUtils;
+import org.junit.Assert;
 
 
 public abstract class UnrollerTestBase extends AbstractUnitTest<IntTestFlowGraph> {
@@ -14,14 +17,31 @@ public abstract class UnrollerTestBase extends AbstractUnitTest<IntTestFlowGraph
                 expectedUnrolled.source(), expectedUnrolled.sink());
         unroller.doUnroll();
         IntTestFlowGraph actualUnrolled = unroller.getUnrolledGraph();
-        compareResults(CollectionUtils.createIteratorFrom(expectedUnrolled),
-                       CollectionUtils.createIteratorFrom(actualUnrolled));
+        Assertion assertion = compareMultipleResults(CollectionUtils.createIteratorFrom(expectedUnrolled),
+                                                     CollectionUtils.createIteratorFrom(actualUnrolled));
+        if (!assertion.checkSuccess()) {
+            if (GraphDumper.tryDumpToFile(actualNonUnrolled, "original")) {
+                System.out.println("original graph is dumped");
+            }
+            Assert.fail(assertion.getErrorMessage());
+        }
     }
+
 
     protected abstract IntTestFlowGraph getNonUnrolledGraph();
 
     @Override
-    protected void assertObjectsEqual(IntTestFlowGraph expected, IntTestFlowGraph actual) {
-        FlowGraphComparer.assertGraphsEqual(expected, actual);
+    protected Assertion compareResults(IntTestFlowGraph expected, IntTestFlowGraph actual) {
+        return new AssertionGraphsEqual<>(expected, actual);
+    }
+
+    @Override
+    public boolean dumpExpected(IntTestFlowGraph graph) {
+        return GraphDumper.tryDumpToFile(graph, "expected");
+    }
+
+    @Override
+    public boolean dumpActual(IntTestFlowGraph graph) {
+        return GraphDumper.tryDumpToFile(graph, "actual");
     }
 }

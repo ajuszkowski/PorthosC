@@ -1,14 +1,14 @@
 package mousquetaires.tests.unit.languages.common.graph;
 
-import mousquetaires.languages.common.graph.Node;
+import mousquetaires.languages.common.graph.GraphNode;
 
 import java.util.Objects;
 
 
-public class IntNode implements Node {
+public class IntGraphNode implements GraphNode {
     private final int value;
 
-    IntNode(int value) {
+    IntGraphNode(int value) {
         this.value = value;
     }
 
@@ -17,15 +17,20 @@ public class IntNode implements Node {
     }
 
     @Override
+    public String getLabel() {
+        return "" + getValue();
+    }
+
+    @Override
     public String toString() {
-        return "[" + value + "]";
+        return /*"[" + */ "node" + value /*+ "]"*/;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IntNode)) return false;
-        IntNode testNode = (IntNode) o;
+        if (!(o instanceof IntGraphNode)) return false;
+        IntGraphNode testNode = (IntGraphNode) o;
         return getValue() == testNode.getValue();
     }
 

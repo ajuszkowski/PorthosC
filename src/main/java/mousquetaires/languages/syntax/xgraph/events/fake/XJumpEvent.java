@@ -22,12 +22,12 @@ public final class XJumpEvent extends XFakeEvent {
 
     @Override
     public String toString() {
-        return "[" + getUniqueId() + "]";
+        return "[" + getLabel() + "]";
     }
 
     @Override
-    public String getUniqueId() {
-        return super.getUniqueId() + "_jump" + getUniqueJumpIndex();
+    public String getLabel() {
+        return super.getLabel() + "_jump" + getUniqueJumpIndex();
     }
 
     public int getUniqueJumpIndex() {

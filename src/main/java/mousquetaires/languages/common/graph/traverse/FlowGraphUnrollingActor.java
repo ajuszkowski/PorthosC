@@ -2,7 +2,7 @@ package mousquetaires.languages.common.graph.traverse;
 
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.common.graph.FlowGraphBuilder;
-import mousquetaires.languages.common.graph.Node;
+import mousquetaires.languages.common.graph.GraphNode;
 import mousquetaires.utils.CollectionUtils;
 import mousquetaires.utils.StringUtils;
 import mousquetaires.utils.patterns.Builder;
@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class FlowGraphUnrollingActor<T extends Node, G extends FlowGraph<T>>
+public class FlowGraphUnrollingActor<T extends GraphNode, G extends FlowGraph<T>>
         extends Builder<G>
         implements FlowGraphTraverseActor<T> {
 

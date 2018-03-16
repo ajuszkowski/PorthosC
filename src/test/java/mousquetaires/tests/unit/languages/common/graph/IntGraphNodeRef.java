@@ -3,14 +3,14 @@ package mousquetaires.tests.unit.languages.common.graph;
 import java.util.Objects;
 
 
-public class IntNodeRef extends IntNode {
+public class IntGraphNodeRef extends IntGraphNode {
     private final int index;
 
-    public IntNodeRef(int value, int index) {
-        this(new IntNode(value), index);
+    public IntGraphNodeRef(int value, int index) {
+        this(new IntGraphNode(value), index);
     }
 
-    public IntNodeRef(IntNode node, int index) {
+    public IntGraphNodeRef(IntGraphNode node, int index) {
         super(node.getValue());
         this.index = index;
     }
@@ -20,11 +20,16 @@ public class IntNodeRef extends IntNode {
     }
 
     @Override
+    public String getLabel() {
+        return super.getLabel() + "_" + getIndex();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IntNodeRef)) return false;
+        if (!(o instanceof IntGraphNodeRef)) return false;
         if (!super.equals(o)) return false;
-        IntNodeRef that = (IntNodeRef) o;
+        IntGraphNodeRef that = (IntGraphNodeRef) o;
         return getIndex() == that.getIndex();
     }
 
@@ -36,6 +41,6 @@ public class IntNodeRef extends IntNode {
 
     @Override
     public String toString() {
-        return "[" + getValue() + "_" + getIndex() + "]";
+        return "[" + getLabel() + "]";
     }
 }

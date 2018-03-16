@@ -24,8 +24,13 @@ dependencies {
     compile "commons-io:commons-io:2.5"
     compile "com.google.guava:guava:23.6-jre"
 
+    // https://mvnrepository.com/artifact/guru.nidi/graphviz-java
+    compile group: 'guru.nidi', name: 'graphviz-java', version: '0.2.3'
+
+
     // local dependencies:
     compile name: "com.microsoft.z3"
+
 }
 
 idea {

@@ -9,7 +9,7 @@ import static mousquetaires.tests.unit.languages.common.graph.IntTestFlowGraphBu
 import static mousquetaires.tests.unit.languages.common.graph.IntTestFlowGraphBuilder.r;
 
 
-public class UnrollerDoubleNestedLoopTest extends UnrollerTestBase {
+public class UnrollerLoopWithBranchTest extends UnrollerTestBase {
 
     @Test
     public void test_boundMeetsTwice() {
@@ -52,9 +52,10 @@ public class UnrollerDoubleNestedLoopTest extends UnrollerTestBase {
         // length = 5
         IntGraphNode source = node(0), sink = node(-1);
         IntTestFlowGraphBuilder builder = new IntTestFlowGraphBuilder(source, sink);
-        builder.addPath(true, source, node(1), node(2), node(3), node(4), sink);
-        builder.addEdge(false, node(3), node(2));
-        builder.addEdge(false, node(4), node(1));
+        builder.addPath(true, source, node(1), node(2), node(3), node(4), node(5), sink);
+        builder.addEdge(false, node(5), node(1)); //loop back edge
+        builder.addEdge(false, node(2), node(6)); //branching edge
+        builder.addEdge(true, node(6), node(5)); //merge branch
         return builder.build();
     }
 }

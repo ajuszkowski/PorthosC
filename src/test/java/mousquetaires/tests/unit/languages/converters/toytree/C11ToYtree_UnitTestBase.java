@@ -6,8 +6,9 @@ import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.tests.TestFailedException;
+import mousquetaires.tests.unit.Assertion;
+import mousquetaires.tests.unit.AssertionObjectsEqual;
 import mousquetaires.tests.unit.languages.converters.AbstractConverterUnitTest;
-import org.junit.Assert;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +31,7 @@ public abstract class C11ToYtree_UnitTestBase extends AbstractConverterUnitTest<
     }
 
     @Override
-    protected void assertObjectsEqual(YEntity expected, YEntity actual) {
-        Assert.assertEquals(expected, actual);
+    protected Assertion compareResults(YEntity expected, YEntity actual) {
+        return new AssertionObjectsEqual(expected, actual);
     }
 }

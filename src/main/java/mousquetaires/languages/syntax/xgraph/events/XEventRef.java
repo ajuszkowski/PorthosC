@@ -29,9 +29,8 @@ public class XEventRef implements XEvent {
         return null;
     }
 
-    @Override
-    public String getUniqueId() {
-        return null;
+    public String getLabel() {
+        return event.getLabel() + "_" + getRefId();
     }
 
     @Override

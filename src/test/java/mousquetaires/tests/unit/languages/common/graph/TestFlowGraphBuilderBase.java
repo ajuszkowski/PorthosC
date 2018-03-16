@@ -2,10 +2,10 @@ package mousquetaires.tests.unit.languages.common.graph;
 
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.common.graph.FlowGraphBuilder;
-import mousquetaires.languages.common.graph.Node;
+import mousquetaires.languages.common.graph.GraphNode;
 
 
-abstract class TestFlowGraphBuilderBase<T extends Node, G extends FlowGraph<T>>
+abstract class TestFlowGraphBuilderBase<T extends GraphNode, G extends FlowGraph<T>>
         extends FlowGraphBuilder<T, G> {
 
     @Override

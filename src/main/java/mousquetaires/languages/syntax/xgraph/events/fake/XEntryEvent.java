@@ -12,7 +12,7 @@ public final class XEntryEvent extends XFakeEvent {
     }
 
     @Override
-    public String getUniqueId() {
+    public String getLabel() {
         return "[ENTRY+" + getInfo().getProcessId() + "]";
     }
 

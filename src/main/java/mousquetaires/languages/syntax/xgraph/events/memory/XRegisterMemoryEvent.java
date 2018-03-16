@@ -40,7 +40,7 @@ public final class XRegisterMemoryEvent extends XMemoryEventBase implements XLoc
     }
 
     @Override
-    public String getUniqueId() {
-        return super.getUniqueId() + "_regreg";
+    public String getLabel() {
+        return super.getLabel() + "_regreg";
     }
 }

@@ -1,15 +1,15 @@
 package mousquetaires.languages.syntax.xgraph.events;
 
-import mousquetaires.languages.common.graph.Node;
+import mousquetaires.languages.common.graph.GraphNode;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
-public interface XEvent extends XEntity, Node {
+public interface XEvent extends XEntity, GraphNode {
 
     XEventInfo getInfo();
 
-    String getUniqueId();
+    //String getLabel();
 
     //void setNextEvent(XEvent next);
     //

@@ -37,7 +37,7 @@ public final class XStoreMemoryEvent extends XMemoryEventBase implements XShared
     }
 
     @Override
-    public String getUniqueId() {
-        return super.getUniqueId() + "_store";
+    public String getLabel() {
+        return super.getLabel() + "_store";
     }
 }

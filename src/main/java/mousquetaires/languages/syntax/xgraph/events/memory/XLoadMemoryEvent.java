@@ -40,7 +40,7 @@ public final class XLoadMemoryEvent extends XMemoryEventBase implements XSharedM
     }
 
     @Override
-    public String getUniqueId() {
-        return super.getUniqueId() + "_load";
+    public String getLabel() {
+        return super.getLabel() + "_load";
     }
 }

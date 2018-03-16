@@ -111,8 +111,8 @@ public class XFlowGraphToZformulaConverter {
     //        XEvent previousEvent = transition.from;
     //        XEvent currentEvent  = transition.to;
     //
-    //        BoolExpr previoiusEventId = boolConst(previousEvent.getUniqueId());
-    //        BoolExpr currentEventId   = boolConst(currentEvent.getUniqueId());
+    //        BoolExpr previoiusEventId = boolConst(previousEvent.getLabel());
+    //        BoolExpr currentEventId   = boolConst(currentEvent.getLabel());
     //
     //        // control-flow:
     //        BoolExpr controlFlow = implies(currentEventId, previoiusEventId);
@@ -126,8 +126,8 @@ public class XFlowGraphToZformulaConverter {
     //            XEvent nextThen = traverser.getNextThenBranchingEvent(currentEvent);
     //            XEvent nextElse = traverser.getNextElseBranchingEvent(currentEvent);
     //            // add constraint 'not both then and else'
-    //            BoolExpr nextThenId = boolConst(nextThen.getUniqueId());
-    //            BoolExpr nextElseId = boolConst(nextElse.getUniqueId());
+    //            BoolExpr nextThenId = boolConst(nextThen.getLabel());
+    //            BoolExpr nextElseId = boolConst(nextElse.getLabel());
     //
     //            BoolExpr branchingControlFlow = not(and(nextThenId, nextElseId));
     //            formulaBuilder.addSubFormula(branchingControlFlow);

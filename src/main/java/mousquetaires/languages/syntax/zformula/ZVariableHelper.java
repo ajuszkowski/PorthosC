@@ -6,8 +6,8 @@ import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 
 public class ZVariableHelper {
     public static ZBoolVariable createEventVariable(XEvent event) {
-        //todo: use 'event.getUniqueId()', toString() is just for debugging
-        return new ZBoolVariable(event.toString());//event.getUniqueId());
+        //todo: use 'event.getLabel()', toString() is just for debugging
+        return new ZBoolVariable(event.toString());//event.getLabel());
     }
 
     public static ZBoolVariable createConstantMemoryUnitVariable(XMemoryUnit constant) {

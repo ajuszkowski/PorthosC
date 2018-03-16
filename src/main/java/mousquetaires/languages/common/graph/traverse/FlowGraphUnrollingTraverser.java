@@ -2,16 +2,13 @@ package mousquetaires.languages.common.graph.traverse;
 
 import com.google.common.collect.ImmutableSet;
 import mousquetaires.languages.common.graph.FlowGraph;
-import mousquetaires.languages.common.graph.Node;
+import mousquetaires.languages.common.graph.GraphNode;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Stack;
+import java.util.*;
 import java.util.function.BiFunction;
 
 
-public abstract class FlowGraphUnrollingTraverser<T extends Node, G extends FlowGraph<T>> {
+public abstract class FlowGraphUnrollingTraverser<T extends GraphNode, G extends FlowGraph<T>> {
 
     private final int unrollingBound;
     private final FlowGraph<T> graph;
@@ -22,7 +19,7 @@ public abstract class FlowGraphUnrollingTraverser<T extends Node, G extends Flow
 
     private HashMap<T, Integer> nodeCounterMap;
     private Stack<T> enteredNodesStack;
-    private Stack<T> loopsStack;
+    private Set<T> finishedNodesRefs;
 
     // TODO: check this heap pollution!
     protected FlowGraphUnrollingTraverser(FlowGraph<T> graph,
@@ -42,7 +39,7 @@ public abstract class FlowGraphUnrollingTraverser<T extends Node, G extends Flow
 
         this.nodeCounterMap = new HashMap<>();
         this.enteredNodesStack = new Stack<>();
-        this.loopsStack = new Stack<>();
+        this.finishedNodesRefs = new HashSet<>();
     }
 
     public ImmutableSet<FlowGraphTraverseActor<T>> getActors() {
@@ -63,9 +60,6 @@ public abstract class FlowGraphUnrollingTraverser<T extends Node, G extends Flow
         if (node.equals(graph.sink())) { return; }
 
         T nodeRef = getParentRef(node);
-        if (enteredNodesStack.contains(node)) {
-            loopsStack.push(node);
-        }
         enteredNodesStack.push(node);
 
         int childCounter = counter + 1;
@@ -78,10 +72,8 @@ public abstract class FlowGraphUnrollingTraverser<T extends Node, G extends Flow
         }
 
         T popped =  enteredNodesStack.pop();
-        assert popped == node : popped + " must be " + nodeRef;
-        if (!loopsStack.isEmpty() && node.equals(loopsStack.peek())) {
-            loopsStack.pop();
-        }
+        assert popped == node : popped + " must be " + node;
+        finishedNodesRefs.add(nodeRef);
     }
 
     private void unrollChildRecursively(T node, T nodeRef, int childrensCounter, boolean edgeSign) {
@@ -99,7 +91,7 @@ public abstract class FlowGraphUnrollingTraverser<T extends Node, G extends Flow
         if (finished) {
             actors.onBoundAchieved(nodeRef);
         }
-        else {
+        else if (!finishedNodesRefs.contains(childRef)) {
             unrollRecursively(child, childrensCounter);
         }
     }
@@ -109,7 +101,7 @@ public abstract class FlowGraphUnrollingTraverser<T extends Node, G extends Flow
     }
 
     private T getOrCreateChildRef(T node) {
-        int index = inLoop(node)
+        int index = isBackEdgeDestination(node)
                 ? incrementNodeIndex(node)
                 : lastNodeIndex(node);
         return getNodeRef(node, index);
@@ -128,8 +120,8 @@ public abstract class FlowGraphUnrollingTraverser<T extends Node, G extends Flow
         return nodeCounterMap.get(node);
     }
 
-    private boolean inLoop(T node) {
-        return !loopsStack.isEmpty() || enteredNodesStack.contains(node);
+    private boolean isBackEdgeDestination(T node) {
+        return enteredNodesStack.contains(node);
     }
 
     private T getNodeRef(T node, int index) {

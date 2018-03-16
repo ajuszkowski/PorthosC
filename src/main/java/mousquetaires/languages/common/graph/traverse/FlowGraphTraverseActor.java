@@ -1,9 +1,9 @@
 package mousquetaires.languages.common.graph.traverse;
 
-import mousquetaires.languages.common.graph.Node;
+import mousquetaires.languages.common.graph.GraphNode;
 
 
-public interface FlowGraphTraverseActor<T extends Node> {
+public interface FlowGraphTraverseActor<T extends GraphNode> {
 
     void onStart();
 

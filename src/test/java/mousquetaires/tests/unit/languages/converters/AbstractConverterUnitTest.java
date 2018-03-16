@@ -13,7 +13,7 @@ public abstract class AbstractConverterUnitTest<TElement> extends AbstractUnitTe
     protected void run(String testFile,
                        Iterator<? extends TElement> expectedResultIterator) {
         Iterator<? extends TElement> actualResultIterator = parseTestFile(testFile);
-        compareResults(expectedResultIterator, actualResultIterator);
+        assertIteratorsEqual(expectedResultIterator, actualResultIterator);
     }
 
     // TODO: fix heap pollution

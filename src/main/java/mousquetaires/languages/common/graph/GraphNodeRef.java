@@ -1,5 +1,5 @@
 package mousquetaires.languages.common.graph;
 
-public interface NodeRef extends Node {
+public interface GraphNodeRef extends GraphNode {
     int getRefId();
 }

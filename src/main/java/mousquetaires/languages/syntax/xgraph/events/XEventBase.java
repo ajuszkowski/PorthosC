@@ -16,14 +16,13 @@ public abstract class XEventBase implements XEvent {
         return info;
     }
 
-    @Override
-    public String getUniqueId() {
+    public String getLabel() {
         return getInfo().getProcessId() + "_e" + hashCode();//getInfo().getStamp();
     }
 
     @Override
     public String toString() {
-        return getUniqueId();
+        return getLabel();
     }
 
     @Override

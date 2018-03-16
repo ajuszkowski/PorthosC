@@ -12,7 +12,7 @@ public final class XExitEvent extends XFakeEvent {
     }
 
     @Override
-    public String getUniqueId() {
+    public String getLabel() {
         return "[EXIT+" + getInfo().getProcessId() + "]";
     }
 

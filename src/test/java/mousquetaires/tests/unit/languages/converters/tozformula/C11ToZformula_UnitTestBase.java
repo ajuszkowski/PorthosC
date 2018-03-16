@@ -11,8 +11,10 @@ import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
 import mousquetaires.tests.TestFailedException;
+import mousquetaires.tests.unit.Assertion;
 import mousquetaires.tests.unit.languages.converters.AbstractConverterUnitTest;
 import mousquetaires.utils.CollectionUtils;
+import mousquetaires.utils.exceptions.NotImplementedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,9 +44,7 @@ public abstract class C11ToZformula_UnitTestBase extends AbstractConverterUnitTe
     }
 
     @Override
-    protected void assertObjectsEqual(ZBoolFormula expected, ZBoolFormula actual) {
-        // todo: add helper to the utils 'compare trees'
+    protected Assertion compareResults(ZBoolFormula expected, ZBoolFormula actual) {
+        throw new NotImplementedException();
     }
-
-
 }
