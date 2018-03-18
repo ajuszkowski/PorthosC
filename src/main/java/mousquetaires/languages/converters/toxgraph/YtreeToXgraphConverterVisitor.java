@@ -52,6 +52,13 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
     private final XProgramInterpretationBuilder program;
     private final MemoryUnitConverter memoryUnitConverter;
 
+    YtreeToXgraphConverterVisitor(ProgramLanguage language, DataModel dataModel) {
+        //this.interpreter = interpreter;
+        XMemoryManager memoryManager = new XMemoryManager(language, dataModel);
+        this.program = new XProgramInterpretationBuilder(memoryManager);
+        this.memoryUnitConverter = new MemoryUnitConverter(memoryManager);
+    }
+
     public XProgram getProgram() {
         return program.build();
     }
@@ -79,6 +86,8 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
         throw new NotImplementedException();
     }
 
+    // start of Litmus-specific visits:
+
     @Override
     public XEvent visit(YProcessStatement node) {
         program.startProcessDefinition(node.getProcessId());
@@ -86,8 +95,6 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
         program.finishProcessDefinition();
         return result;
     }
-
-    // start of Litmus-specific visits:
 
     @Override
     public XEvent visit(YCompoundStatement node) {
@@ -97,14 +104,14 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
         return null;
     }
 
+    // end of Litmus-specific visits.
+
     @Override
     public XComputationEvent visit(YConstant node) {
         XMemoryUnit constant = memoryUnitConverter.convert(node);
         XLocalMemoryUnit constantLocal = program.currentProcess.copyToLocalMemoryIfNecessary(constant);
         return program.currentProcess.emitComputationEvent(constantLocal);
     }
-
-    // end of Litmus-specific visits.
 
     @Override
     public XEvent visit(YIndexerExpression node) {
@@ -274,13 +281,6 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
         throw new NotImplementedException();
     }
 
-    private XLocalMemoryUnit convertOrEvaluateExpression(YExpression expression) {
-        XMemoryUnit converted = memoryUnitConverter.tryConvert(expression);
-        return converted != null
-                ? program.currentProcess.copyToLocalMemoryIfNecessary(converted)
-                : program.currentProcess.copyToLocalMemoryIfNecessary(expression.accept(this));
-    }
-
 
     //private XComputationEvent evaluate(XEntity expression) {
     //    XLocalMemoryUnit conditionLocal = TypeCastHelper.castToLocalMemoryUnitOrThrow(expression);
@@ -297,10 +297,10 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
     //    //throw new XCompilatorUsageError("Unexpected expression type: " + expression.getClass().getSimpleName());
     //}
 
-    YtreeToXgraphConverterVisitor(ProgramLanguage language, DataModel dataModel) {
-        //this.interpreter = interpreter;
-        XMemoryManager memoryManager = new XMemoryManager(language, dataModel);
-        this.program = new XProgramInterpretationBuilder(memoryManager);
-        this.memoryUnitConverter = new MemoryUnitConverter(memoryManager);
+    private XLocalMemoryUnit convertOrEvaluateExpression(YExpression expression) {
+        XMemoryUnit converted = memoryUnitConverter.tryConvert(expression);
+        return converted != null
+                ? program.currentProcess.copyToLocalMemoryIfNecessary(converted)
+                : program.currentProcess.copyToLocalMemoryIfNecessary(expression.accept(this));
     }
 }

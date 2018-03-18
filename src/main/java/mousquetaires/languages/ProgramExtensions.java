@@ -26,7 +26,7 @@ public class ProgramExtensions {
     }
 
     public static ProgramLanguage parseProgramLanguage(String fileName) {
-        ProgramLanguage result = inputProgramExtensionsMap.get(FilenameUtils.getExtension(fileName));
+        ProgramLanguage result = ProgramLanguage.C11; // TODO: UNCOMMENT AFTER DEBUG //inputProgramExtensionsMap.get(FilenameUtils.getExtension(fileName));
         if (result == null) {
             throw new IllegalArgumentException(fileName);
         }

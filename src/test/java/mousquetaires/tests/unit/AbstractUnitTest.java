@@ -20,7 +20,7 @@ public abstract class AbstractUnitTest<T> extends AbstractTest {
         while (actualIterator.hasNext() && expectedIterator.hasNext()) {
             T actual = actualIterator.next();
             T expected = expectedIterator.next();
-            Assertion assertion = compareResults(expected, actual);
+            Assertion assertion = getComparingAssertion(expected, actual);
             if (!assertion.checkSuccess()) {
                 dumpExpected(expected);
                 dumpActual(actual);
@@ -40,7 +40,7 @@ public abstract class AbstractUnitTest<T> extends AbstractTest {
         return AssertionSuccess.instance();
     }
 
-    protected abstract Assertion compareResults(T expected, T actual);
+    protected abstract Assertion getComparingAssertion(T expected, T actual);
 
     protected boolean dumpExpected(T result) {
         return false;

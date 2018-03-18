@@ -1,6 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.process;
 
-import mousquetaires.languages.common.graph.FlowGraphBuilder;
+import mousquetaires.languages.common.graph.FlowGraph;
+import mousquetaires.languages.common.graph.FlowGraphBuilderBase;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
@@ -12,23 +13,16 @@ import java.util.List;
 import java.util.Map;
 
 
-public class XFlowGraphBuilder extends FlowGraphBuilder<XEvent, XFlowGraph> {
+abstract class XProcessBuilderBase<G extends FlowGraph<XEvent>> extends FlowGraphBuilderBase<XEvent, G> {
 
     private final String processId;
 
-    public XFlowGraphBuilder(String processId) {
+    public XProcessBuilderBase(String processId) {
         this.processId = processId;
     }
 
     public String getProcessId() {
         return processId;
-    }
-
-    @Override
-    public XFlowGraph build() {
-        finishBuilding();
-        return new XFlowGraph(getProcessId(), getSource(), getSink(),
-                buildEdges(true), buildEdges(false), isUnrolled());
     }
 
     @Override

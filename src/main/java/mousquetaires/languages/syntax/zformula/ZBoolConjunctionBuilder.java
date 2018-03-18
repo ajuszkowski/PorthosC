@@ -1,10 +1,10 @@
 package mousquetaires.languages.syntax.zformula;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.utils.patterns.Builder;
+import mousquetaires.utils.patterns.BuilderBase;
 
 
-public class ZBoolConjunctionBuilder extends Builder<ZBoolConjunction> {
+public class ZBoolConjunctionBuilder extends BuilderBase<ZBoolConjunction> {
     private ImmutableList.Builder<ZBoolFormula> expressions;
 
     public ZBoolConjunctionBuilder() {

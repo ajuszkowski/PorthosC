@@ -15,24 +15,24 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
-import mousquetaires.languages.syntax.xgraph.process.XFlowGraphBuilder;
-import mousquetaires.utils.patterns.Builder;
+import mousquetaires.languages.syntax.xgraph.process.XProcess;
+import mousquetaires.languages.syntax.xgraph.process.XProcessBuilder;
+import mousquetaires.utils.patterns.BuilderBase;
 
 
 // TODO:!!!!! inherit it from TestFlowGraphBuilderBase!
-public class XFlowGraphTestBuilder extends Builder<XFlowGraph> {
+public class XFlowGraphTestBuilder extends BuilderBase<XProcess> {
 
-    private final XFlowGraphBuilder builder;
+    private final XProcessBuilder builder;
 
     public XFlowGraphTestBuilder(String processId) {
-        builder = new XFlowGraphBuilder(processId);
+        builder = new XProcessBuilder(processId);
         builder.setSource(new XEntryEvent(createEventInfo()));
         builder.setSink(new XExitEvent(createEventInfo()));
     }
 
     @Override
-    public XFlowGraph build() {
+    public XProcess build() {
         return builder.build();
     }
 

@@ -1,33 +1,38 @@
 package mousquetaires.tests.unit.languages.common.graph;
 
 import mousquetaires.languages.common.graph.FlowGraph;
-import mousquetaires.languages.common.graph.FlowGraphBuilder;
+import mousquetaires.languages.common.graph.FlowGraphBuilderBase;
 import mousquetaires.languages.common.graph.GraphNode;
 
 
-abstract class TestFlowGraphBuilderBase<T extends GraphNode, G extends FlowGraph<T>>
-        extends FlowGraphBuilder<T, G> {
+abstract class TestFlowGraphBuilderBase<N extends GraphNode, G extends FlowGraph<N>>
+        extends FlowGraphBuilderBase<N, G> {
+
+    public TestFlowGraphBuilderBase(N source, N sink) {
+            setSource(source);
+            setSink(sink);
+    }
 
     @Override
-    public void setSource(T source) {
+    public void setSource(N source) {
         super.setSource(source);
     }
 
     @Override
-    public void setSink(T sink) {
+    public void setSink(N sink) {
         super.setSink(sink);
     }
 
     @Override
-    public void addEdge(boolean edgeSign, T from, T to) {
+    public void addEdge(boolean edgeSign, N from, N to) {
         super.addEdge(edgeSign, from, to);
     }
 
     // TODO: HEAP POLLUTION HERE
-    public void addPath(boolean edgeSign, T from, T to, T... other) {
+    public void addPath(boolean edgeSign, N from, N to, N... other) {
         addEdge(edgeSign, from, to);
-        T previous = to;
-        for (T node : other) {
+        N previous = to;
+        for (N node : other) {
             addEdge(edgeSign, previous, node);
             previous = node;
         }

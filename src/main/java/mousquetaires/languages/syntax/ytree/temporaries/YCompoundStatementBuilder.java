@@ -7,12 +7,12 @@ import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.statements.YStatement;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.patterns.Builder;
+import mousquetaires.utils.patterns.BuilderBase;
 
 import java.util.Iterator;
 
 
-public class YCompoundStatementBuilder extends Builder<YCompoundStatement> implements YTempEntity {
+public class YCompoundStatementBuilder extends BuilderBase<YCompoundStatement> implements YTempEntity {
 
     private boolean hasBraces;
     private YTempListBuilder<YStatement> statementsBuilder;

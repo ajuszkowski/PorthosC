@@ -1,12 +1,10 @@
 package mousquetaires.tests.unit.unroller;
 
-import mousquetaires.tests.unit.languages.common.graph.IntGraphNode;
-import mousquetaires.tests.unit.languages.common.graph.IntTestFlowGraph;
-import mousquetaires.tests.unit.languages.common.graph.IntTestFlowGraphBuilder;
+import mousquetaires.tests.unit.languages.common.graph.*;
 import org.junit.Test;
 
-import static mousquetaires.tests.unit.languages.common.graph.IntTestFlowGraphBuilder.node;
-import static mousquetaires.tests.unit.languages.common.graph.IntTestFlowGraphBuilder.r;
+import static mousquetaires.tests.unit.languages.common.graph.IntGraphHelper.node;
+import static mousquetaires.tests.unit.languages.common.graph.IntGraphHelper.r;
 
 
 public class UnrollerDoubleNestedLoopTest extends UnrollerTestBase {
@@ -16,7 +14,7 @@ public class UnrollerDoubleNestedLoopTest extends UnrollerTestBase {
         final int bound = 8;
         // expected graph construction:
         IntGraphNode source = node(0), sink = node(-1);
-        IntTestFlowGraphBuilder builder = new IntTestFlowGraphBuilder(source, sink);
+        UnrolledIntFlowGraphBuilder builder = new UnrolledIntFlowGraphBuilder(source, sink);
 
         //first forward path:
         builder.addEdge(true, source,  r(1, 1));
@@ -42,16 +40,16 @@ public class UnrollerDoubleNestedLoopTest extends UnrollerTestBase {
         builder.addEdge(false, r(3, 4), r(2, 7));
         builder.addPath(true, r(2, 7), sink);
 
-        IntTestFlowGraph expectedUnrolled = builder.build();
+        UnrolledIntFlowGraph expectedUnrolled = builder.build();
 
-        run(expectedUnrolled, getNonUnrolledGraph(), bound);
+        run(expectedUnrolled, getOriginalGraph(), bound);
     }
 
     @Override
-    protected IntTestFlowGraph getNonUnrolledGraph() {
+    protected IntFlowGraph getOriginalGraph() {
         // length = 5
         IntGraphNode source = node(0), sink = node(-1);
-        IntTestFlowGraphBuilder builder = new IntTestFlowGraphBuilder(source, sink);
+        IntFlowGraphBuilder builder = new IntFlowGraphBuilder(source, sink);
         builder.addPath(true, source, node(1), node(2), node(3), node(4), sink);
         builder.addEdge(false, node(3), node(2));
         builder.addEdge(false, node(4), node(1));

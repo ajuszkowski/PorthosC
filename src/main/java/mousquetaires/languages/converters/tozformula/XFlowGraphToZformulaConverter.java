@@ -2,13 +2,16 @@ package mousquetaires.languages.converters.tozformula;
 
 import mousquetaires.languages.converters.tozformula.helpers.ZDataFlowEncoder;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
-import mousquetaires.languages.syntax.zformula.ZBoolConjunctionBuilder;
-import mousquetaires.languages.syntax.zformula.ZBoolFormula;
-import mousquetaires.utils.exceptions.NotImplementedException;
+import mousquetaires.languages.syntax.xgraph.process.XUnrolledProcess;
+import mousquetaires.languages.syntax.zformula.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import static mousquetaires.languages.syntax.zformula.ZHelper.*;
+import static mousquetaires.languages.syntax.zformula.ZVariableHelper.createEventVariable;
 
 
 // TODO: generalize this class
@@ -24,21 +27,17 @@ public class XFlowGraphToZformulaConverter {
         //this.operatorEncoder = new XOperatorEncoder(ctx);
     }
 
-    public ZBoolFormula encode(XFlowGraph graph) {
+    public ZBoolFormula encode(XUnrolledProcess process) {
         ZBoolConjunctionBuilder resultFormula = new ZBoolConjunctionBuilder();
 
-        Set<XEvent> visited = new HashSet<>(graph.nodesCount());
-        //Deque<XEvent> queue = new ArrayDeque<>(graph.edges().size());
-        //queue.add(graph.source());
+        Set<XEvent> visited = new HashSet<>(process.nodesCount());
+        //Deque<XEvent> queue = new ArrayDeque<>(process.edges().size());
+        //queue.add(process.source());
 
-        throw new NotImplementedException();
-        /*GraphLineariser<XEvent> lineariser = new GraphLineariser<>(graph);
-        Iterable<XEvent> topologicallySortedNodes = lineariser.computeLinearisedNodes();
+        visited.add(process.source());
+        visited.add(process.sink());
 
-        visited.add(graph.source());
-        visited.add(graph.sink());
-
-        for (XEvent current : topologicallySortedNodes) {
+        for (XEvent current : process.getNodesLinearised()) {
 
         //while (!queue.isEmpty()) {
         //    XEvent current = queue.removeFirst();
@@ -50,8 +49,8 @@ public class XFlowGraphToZformulaConverter {
             ZBoolVariable currentId = createEventVariable(current);
 
             // encode control-flow, 'next -> prev'
-            //if (!current.equals(graph.source())) {
-            Set<XEvent> parents = graph.parents(current);
+            //if (!current.equals(process.source())) {
+            Set<XEvent> parents = process.predecessors(current);
             assert parents.size() > 0;
             List<ZBoolFormula> parentsIds = new ArrayList<>(parents.size());
             for (XEvent parent : parents) {
@@ -69,14 +68,14 @@ public class XFlowGraphToZformulaConverter {
                 resultFormula.addSubFormula(implies(currentId, dataFlowAssertion));
             }
 
-            //if (!current.equals(graph.sink())) {
-            //    //XEvent nextThen = graph.child(current);
+            //if (!current.equals(process.sink())) {
+            //    //XEvent nextThen = process.child(current);
             //    //queue.addLast(nextThen);
             //    //ZBoolVariable nextThenId = createEventVariable(nextThen);
             //
             //    //// encode control-flow, 'if(c){a}else{b}' as 'not (a and b)'
-            //    //if (graph.hasAlternativeChild(current)) {
-            //    //    XEvent nextElse = graph.alternativeChild(current);
+            //    //if (process.hasAlternativeChild(current)) {
+            //    //    XEvent nextElse = process.alternativeChild(current);
             //    //    //queue.addLast(nextElse);
             //    //
             //    //    // add constraint 'not both then and else'
@@ -89,7 +88,7 @@ public class XFlowGraphToZformulaConverter {
             visited.add(current);
         }
 
-        return resultFormula.build();*/
+        return resultFormula.build();
     }
 
 

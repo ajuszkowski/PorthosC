@@ -31,7 +31,7 @@ public abstract class C11ToYtree_UnitTestBase extends AbstractConverterUnitTest<
     }
 
     @Override
-    protected Assertion compareResults(YEntity expected, YEntity actual) {
+    protected Assertion getComparingAssertion(YEntity expected, YEntity actual) {
         return new AssertionObjectsEqual(expected, actual);
     }
 }

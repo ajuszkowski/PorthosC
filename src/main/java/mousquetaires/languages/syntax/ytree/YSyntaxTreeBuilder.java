@@ -1,10 +1,10 @@
 package mousquetaires.languages.syntax.ytree;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.utils.patterns.Builder;
+import mousquetaires.utils.patterns.BuilderBase;
 
 
-public class YSyntaxTreeBuilder extends Builder<YSyntaxTree> {
+public class YSyntaxTreeBuilder extends BuilderBase<YSyntaxTree> {
 
     private final ImmutableList.Builder<YEntity> roots;
     //private final Stack<Pair<YFakeStatement, YFakeStatement>> loopContextStack = new Stack<>();

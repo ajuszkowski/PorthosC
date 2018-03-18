@@ -5,10 +5,11 @@ import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.converters.toxgraph.YtreeToXgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.converters.tozformula.XProgramToZformulaConverter;
-import mousquetaires.languages.syntax.zformula.ZBoolFormula;
 import mousquetaires.languages.syntax.xgraph.XProgram;
+import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
+import mousquetaires.languages.syntax.zformula.ZBoolFormula;
 import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
 import mousquetaires.tests.TestFailedException;
 import mousquetaires.tests.unit.Assertion;
@@ -33,7 +34,7 @@ public abstract class C11ToZformula_UnitTestBase extends AbstractConverterUnitTe
             YSyntaxTree internalRepr = YtreeParser.parse(file, language);
             YtreeToXgraphConverter converter = new YtreeToXgraphConverter(language, dataModel);
             XProgram program = converter.convert(internalRepr);
-            XProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
+            XUnrolledProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
             XProgramToZformulaConverter encoder = new XProgramToZformulaConverter();
             ZBoolFormula smtFormula = encoder.encode(unrolledProgram);
             return CollectionUtils.createIteratorFrom(smtFormula);
@@ -44,7 +45,7 @@ public abstract class C11ToZformula_UnitTestBase extends AbstractConverterUnitTe
     }
 
     @Override
-    protected Assertion compareResults(ZBoolFormula expected, ZBoolFormula actual) {
+    protected Assertion getComparingAssertion(ZBoolFormula expected, ZBoolFormula actual) {
         throw new NotImplementedException();
     }
 }

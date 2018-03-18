@@ -1,26 +1,26 @@
 package mousquetaires.languages.common.graph.traverse;
 
-import mousquetaires.languages.common.graph.FlowGraph;
-import mousquetaires.languages.common.graph.FlowGraphBuilder;
 import mousquetaires.languages.common.graph.GraphNode;
+import mousquetaires.languages.common.graph.UnrolledFlowGraph;
+import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
 import mousquetaires.utils.CollectionUtils;
 import mousquetaires.utils.StringUtils;
-import mousquetaires.utils.patterns.Builder;
+import mousquetaires.utils.patterns.BuilderBase;
 
 import java.util.HashSet;
 import java.util.Set;
 
 
-public class FlowGraphUnrollingActor<T extends GraphNode, G extends FlowGraph<T>>
-        extends Builder<G>
-        implements FlowGraphTraverseActor<T> {
+public class UnrollingDfsActor<T extends GraphNode, G extends UnrolledFlowGraph<T>>
+        extends BuilderBase<G>
+        implements FlowGraphDfsActor<T, G> {
 
-    private final FlowGraphBuilder<T, G> builder;
+    private final UnrolledFlowGraphBuilder<T, G> builder;
     private Set<T> leaves;
 
     private boolean waitingForStartEvent = true;
 
-    public FlowGraphUnrollingActor(FlowGraphBuilder<T, G> builder) {
+    public UnrollingDfsActor(UnrolledFlowGraphBuilder<T, G> builder) {
         this.builder = builder;
         this.leaves = new HashSet<>();
     }
@@ -31,14 +31,9 @@ public class FlowGraphUnrollingActor<T extends GraphNode, G extends FlowGraph<T>
     }
 
     @Override
-    public void onStart() {
-        // do nothing
-    }
-
-    @Override
-    public final void onVisitEdge(boolean condition, T from, T to) {
+    public final void onEdgeVisit(boolean edgeKind, T from, T to) {
         preProcessEdge(from, to);
-        builder.addEdge(condition, from, to);
+        builder.addEdge(edgeKind, from, to);
     }
 
     @Override
@@ -50,12 +45,6 @@ public class FlowGraphUnrollingActor<T extends GraphNode, G extends FlowGraph<T>
         else {
             assert builder.getSink().equals(computedSink) : "sinks mismatch: old=" + builder.getSink() + ", new=" + computedSink;
         }
-        //builder.addEdge(true, lastNode, builder.getSink()); //already added
-    }
-
-    @Override
-    public void onFinish() {
-        builder.markAsUnrolled();
     }
 
     private void preProcessEdge(T from, T to) {

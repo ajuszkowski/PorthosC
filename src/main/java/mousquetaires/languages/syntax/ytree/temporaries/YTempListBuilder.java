@@ -3,14 +3,14 @@ package mousquetaires.languages.syntax.ytree.temporaries;
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.patterns.Builder;
+import mousquetaires.utils.patterns.BuilderBase;
 
 import java.util.Collection;
 import java.util.Iterator;
 
 
 public class YTempListBuilder<T extends YEntity>
-        extends Builder<ImmutableList<T>>
+        extends BuilderBase<ImmutableList<T>>
         implements YTempEntity {
     private final ImmutableList.Builder<T> values;
 

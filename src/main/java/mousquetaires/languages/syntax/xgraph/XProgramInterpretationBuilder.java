@@ -2,15 +2,15 @@ package mousquetaires.languages.syntax.xgraph;
 
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
-import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
+import mousquetaires.languages.syntax.xgraph.process.XProcess;
 import mousquetaires.languages.syntax.xgraph.process.interpretation.XProcessInterpreter;
-import mousquetaires.utils.patterns.Builder;
+import mousquetaires.utils.patterns.BuilderBase;
 
 
-public class XProgramInterpretationBuilder extends Builder<XProgram> {
+public class XProgramInterpretationBuilder extends BuilderBase<XProgram> {
 
     public XProcessInterpreter currentProcess;
-    private ImmutableList.Builder<XFlowGraph> processes;
+    private ImmutableList.Builder<XProcess> processes;
 
     public XProgramInterpretationBuilder(XMemoryManager memoryManager) {
         this.memoryManager = memoryManager;

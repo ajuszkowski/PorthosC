@@ -1,29 +1,24 @@
 package mousquetaires.languages.syntax.xgraph;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
-import mousquetaires.utils.patterns.Builder;
+import mousquetaires.languages.syntax.xgraph.process.XProcess;
+import mousquetaires.utils.patterns.BuilderBase;
 
 
-public class XProgramBuilder extends Builder<XProgram> {
+public class XProgramBuilder extends BuilderBase<XProgram> {
 
-    private ImmutableList.Builder<XFlowGraph> processes;
-    private boolean isUnrolled = false;
+    private ImmutableList.Builder<XProcess> processes;
 
     public XProgramBuilder() {
         this.processes = new ImmutableList.Builder<>();
     }
 
-    public void markUnrolled() {
-        isUnrolled = true;
-    }
-
-    public void addProcess(XFlowGraph process) {
+    public void addProcess(XProcess process) {
         processes.add(process);
     }
 
     @Override
     public XProgram build() {
-        return new XProgram(processes.build(), isUnrolled);
+        return new XProgram(processes.build());
     }
 }

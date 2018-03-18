@@ -13,8 +13,8 @@ import mousquetaires.languages.syntax.xgraph.events.fake.XFakeEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.*;
-import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
-import mousquetaires.languages.syntax.xgraph.process.XFlowGraphBuilder;
+import mousquetaires.languages.syntax.xgraph.process.XProcess;
+import mousquetaires.languages.syntax.xgraph.process.XProcessBuilder;
 import mousquetaires.utils.StringUtils;
 import mousquetaires.utils.exceptions.xgraph.XCompilerUsageError;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
@@ -45,8 +45,8 @@ public class XProcessInterpreter {
     }
 
     private final String processId;
-    private final XFlowGraphBuilder graphBuilder;
-    private XFlowGraph result;
+    private final XProcessBuilder graphBuilder;
+    private XProcess result;
 
     // todo: add add/put methods with non-null checks
     private final Stack<XBlockContext> contextStack;
@@ -61,7 +61,7 @@ public class XProcessInterpreter {
     public XProcessInterpreter(String processId, XMemoryManager memoryManager) {
         this.memoryManager = memoryManager;
         this.processId = processId; //todo: non-uniqueness case
-        this.graphBuilder = new XFlowGraphBuilder(processId);
+        this.graphBuilder = new XProcessBuilder(processId);
         contextStack = new Stack<>();
         readyContexts = new LinkedList<>();
 
@@ -81,7 +81,7 @@ public class XProcessInterpreter {
         result = graphBuilder.build();
     }
 
-    public XFlowGraph getResult() {
+    public XProcess getResult() {
         if (result == null) {
             finish();
         }

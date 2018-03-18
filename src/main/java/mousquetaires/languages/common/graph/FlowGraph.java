@@ -10,24 +10,22 @@ public abstract class FlowGraph<T extends GraphNode> {
     private final T sink;
     private final ImmutableMap<T, T> edges;
     private final ImmutableMap<T, T> altEdges;
-    private final boolean isUnrolled;
 
     public FlowGraph(FlowGraph<T> mother) {
-        this(mother.source, mother.sink, mother.edges, mother.altEdges, mother.isUnrolled);
+        this(mother.source, mother.sink, mother.edges, mother.altEdges);
     }
 
     public FlowGraph(T source,
                      T sink,
                      ImmutableMap<T, T> edges,
-                     ImmutableMap<T, T> altEdges,
-                     //ImmutableMap<T, ImmutableSet<T>> edgesReversed,
-                     boolean isUnrolled) {
+                     ImmutableMap<T, T> altEdges
+                     //ImmutableMap<T, ImmutableSet<T>> edgesReversed
+                     ) {
         this.source = source;
         this.sink = sink;
         this.edges = edges;
         this.altEdges = altEdges;
         //this.edgesReversed = edgesReversed; // TODO: also, compute reversed edges while single-pass via info collector
-        this.isUnrolled = isUnrolled;
     }
 
     public T source() {
@@ -46,10 +44,6 @@ public abstract class FlowGraph<T extends GraphNode> {
         return getEdges(edgeSign).containsKey(node);
     }
 
-    public boolean isUnrolled() { //todo: this is computable property of graph!
-        return isUnrolled;
-    }
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("FlowGraph{");
@@ -57,7 +51,6 @@ public abstract class FlowGraph<T extends GraphNode> {
         sb.append(", sink=").append(sink);
         sb.append(", edges=").append(edges);
         sb.append(", altEdges=").append(altEdges);
-        sb.append(", isUnrolled=").append(isUnrolled);
         sb.append('}');
         return sb.toString();
     }

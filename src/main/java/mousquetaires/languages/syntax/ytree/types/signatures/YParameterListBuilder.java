@@ -3,14 +3,14 @@ package mousquetaires.languages.syntax.ytree.types.signatures;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.temporaries.YTempEntity;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.patterns.Builder;
+import mousquetaires.utils.patterns.BuilderBase;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 
-public class YParameterListBuilder extends Builder<YParameter[]> implements YTempEntity {
+public class YParameterListBuilder extends BuilderBase<YParameter[]> implements YTempEntity {
 
     private List<YParameter> parameterList;
 
