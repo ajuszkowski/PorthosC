@@ -61,7 +61,7 @@ public abstract class FlowGraphBuilder<T extends GraphNode, G extends FlowGraph<
         if (!edgeSign && hasEdge(true, from, to)) {
             return; // do not add 'false' edge that duplicates the 'true' edge
         }
-        addEdgeImpl(getEdges(edgeSign), from, to);
+        addEdgeImpl(edgeSign, from, to);
     }
 
     public void markAsUnrolled() {
@@ -81,9 +81,12 @@ public abstract class FlowGraphBuilder<T extends GraphNode, G extends FlowGraph<
         return edgeSign ? edges : altEdges;
     }
 
-    private void addEdgeImpl(Map<T, T> edgesMap, T from, T to) {
+    private void addEdgeImpl(boolean edgeSign, T from, T to) {
         assert (from != null) : "attempt to add to graph the null node";
         assert (to != null) : "attempt to add to graph the null node";
+
+        Map<T, T> edgesMap = getEdges(edgeSign);
+        Map<T, T> altEdgesMap = getEdges(!edgeSign);
 
         // TODO: this check is for debug only
         // TODO: remove this after tests are completed
@@ -94,6 +97,15 @@ public abstract class FlowGraphBuilder<T extends GraphNode, G extends FlowGraph<
             }
         }
 
+        if (altEdgesMap.containsKey(from) && altEdgesMap.get(from).equals(to)) {
+            throw new IllegalArgumentException("Attempt to add " + getEdgeTypeText(edgeSign) + "-edge while already having " +
+                    getEdgeTypeText(!edgeSign) + "-edge " + from + " -> " + to);
+        }
+
         edgesMap.put(from, to);
+    }
+
+    private String getEdgeTypeText(boolean edgeSign) {
+        return (edgeSign) ? "true" : "false";
     }
 }

@@ -22,12 +22,8 @@ public abstract class AbstractUnitTest<T> extends AbstractTest {
             T expected = expectedIterator.next();
             Assertion assertion = compareResults(expected, actual);
             if (!assertion.checkSuccess()) {
-                if (dumpExpected(expected)) {
-                    System.out.println("expected-object is dumped");
-                }
-                if (dumpActual(expected)) {
-                    System.out.println("actual-object is dumped");
-                }
+                dumpExpected(expected);
+                dumpActual(actual);
                 System.out.println(getErrorString(counter));
                 return assertion;
             }

@@ -97,23 +97,23 @@ public abstract class FlowGraphUnrollingTraverser<T extends GraphNode, G extends
     }
 
     private T getParentRef(T node) {
-        return getNodeRef(node, lastNodeIndex(node));
+        return getNodeRef(node, getLastIndex(node));
     }
 
     private T getOrCreateChildRef(T node) {
         int index = isBackEdgeDestination(node)
-                ? incrementNodeIndex(node)
-                : lastNodeIndex(node);
+                ? getNewIndex(node)
+                : getLastIndex(node);
         return getNodeRef(node, index);
     }
 
-    private int incrementNodeIndex(T node) {
-        int index = lastNodeIndex(node) + 1;
+    private int getNewIndex(T node) {
+        int index = getLastIndex(node) + 1;
         nodeCounterMap.put(node, index);
         return index;
     }
 
-    private int lastNodeIndex(T node) {
+    private int getLastIndex(T node) {
         if (!nodeCounterMap.containsKey(node)) {
             nodeCounterMap.put(node, 1);
         }

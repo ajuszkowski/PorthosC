@@ -20,9 +20,7 @@ public abstract class UnrollerTestBase extends AbstractUnitTest<IntTestFlowGraph
         Assertion assertion = compareMultipleResults(CollectionUtils.createIteratorFrom(expectedUnrolled),
                                                      CollectionUtils.createIteratorFrom(actualUnrolled));
         if (!assertion.checkSuccess()) {
-            if (GraphDumper.tryDumpToFile(actualNonUnrolled, "original")) {
-                System.out.println("original graph is dumped");
-            }
+            GraphDumper.tryDumpToFile(actualNonUnrolled, getTestsRoot(), "original");
             Assert.fail(assertion.getErrorMessage());
         }
     }
@@ -37,11 +35,11 @@ public abstract class UnrollerTestBase extends AbstractUnitTest<IntTestFlowGraph
 
     @Override
     public boolean dumpExpected(IntTestFlowGraph graph) {
-        return GraphDumper.tryDumpToFile(graph, "expected");
+        return GraphDumper.tryDumpToFile(graph,getTestsRoot(), "expected");
     }
 
     @Override
     public boolean dumpActual(IntTestFlowGraph graph) {
-        return GraphDumper.tryDumpToFile(graph, "actual");
+        return GraphDumper.tryDumpToFile(graph,getTestsRoot(), "actual");
     }
 }

@@ -23,7 +23,7 @@ public class IntGraphNode implements GraphNode {
 
     @Override
     public String toString() {
-        return /*"[" + */ "node" + value /*+ "]"*/;
+        return "[" + getLabel() + "]";
     }
 
     @Override
