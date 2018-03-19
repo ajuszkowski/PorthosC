@@ -3,7 +3,6 @@ package mousquetaires.languages.syntax.ytree.visitors.ytree;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
-import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
@@ -34,18 +33,6 @@ public abstract class YtreeVisitorStrictBase<T> implements YtreeVisitor<T> {
     @Override
     public T visit(YSyntaxTree node) {
         throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
-    }
-
-    protected T visit(YEntity node) {
-        return node.accept(this);
-    }
-
-    protected T visit(YExpression node) {
-        return node.accept(this);
-    }
-
-    protected T visit(YStatement node) {
-        return node.accept(this);
     }
 
 

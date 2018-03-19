@@ -1,5 +1,9 @@
 package mousquetaires.languages.syntax.xgraph.events.computation.operators;
 
+import mousquetaires.languages.syntax.ytree.expressions.binary.YBinaryExpression;
+import mousquetaires.languages.syntax.ytree.temporaries.YUnaryOperatorKindTemp;
+
+
 // TODO: probably, make unique operator class
 public enum XZOperator {
     // logical operators:
@@ -27,6 +31,7 @@ public enum XZOperator {
     CompareGreaterOrEquals,
     // todo: more
     ;
+
 
     // TODO: after unification operators for X, Z (and probably Y), add here methods 'createX', 'createY', etc
 

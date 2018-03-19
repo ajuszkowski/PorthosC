@@ -27,7 +27,6 @@ import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
 
 
 public interface YtreeVisitor<T> {
-
     T visit(YSyntaxTree node);
 
     // -- Litmus-specific elements: ------------------------------------------------------------------------------------
@@ -56,7 +55,7 @@ public interface YtreeVisitor<T> {
     // unary expressions:
     T visit(YIntegerUnaryExpression node);
     T visit(YLogicalUnaryExpression node);
-    T visit(YPointerUnaryExpression node);
+    T visit(YPointerUnaryExpression node); //todo: remove YPointerUnaryExpression, instead use global YVariableRef or array of variables
 
     T visit(YTernaryExpression node);
 

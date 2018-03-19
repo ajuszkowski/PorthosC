@@ -107,18 +107,10 @@ public class XProcessInterpreter {
                 + memoryUnit.getClass().getSimpleName());
     }
 
-    public XRegister copyToLocalMemory(XLocation shared) {
+    public XRegister copyToLocalMemory(XSharedMemoryUnit shared) {
         XRegister tempLocal = memoryManager.newLocalMemoryUnit();
         emitMemoryEvent(tempLocal, shared);
         return tempLocal;
-    }
-
-    public XLocalMemoryUnit copyToLocalMemoryIfNecessary(XEvent event) {
-        if (event instanceof XComputationEvent) {
-            return (XComputationEvent) event;
-        }
-        throw new XInterpretationError("Attempt to write to the memory a non-memory event of type "
-                + event.getClass().getSimpleName());
     }
 
     // --
@@ -137,7 +129,7 @@ public class XProcessInterpreter {
         return emitComputationEvent(localMemoryUnit);
     }
 
-    public XComputationEvent evaluateSharedMemoryUnit(String name) { //todo: type
+    public XComputationEvent evaluateSharedMemoryUnit(String name) {
         XLocation location = getSharedMemoryUnit(name);
         XRegister register = copyToLocalMemory(location);
         return emitComputationEvent(register);

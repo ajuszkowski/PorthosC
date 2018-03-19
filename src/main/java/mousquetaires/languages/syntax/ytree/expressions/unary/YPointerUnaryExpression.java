@@ -6,7 +6,7 @@ import mousquetaires.languages.syntax.ytree.expressions.YMemoryLocation;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
-
+// TODO: get rid of pointer arithmetics before constructing the Y-level!
 public class YPointerUnaryExpression extends YUnaryExpression implements YAssignee, YMemoryLocation {
     public enum Kind implements YUnaryExpression.Kind {
         Reference,   // &

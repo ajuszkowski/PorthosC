@@ -46,7 +46,7 @@ public final class XLoadMemoryEvent extends XMemoryEventBase implements XSharedM
 
     @Override
     public String toString() {
-        return wrapWithBracketsAndReferenceId(getDestination() + ":=load(" + getSource() /*+ ", " + memoryOrder*/ + ")");
+        return wrapWithBracketsAndReferenceId("load(" + getDestination() + " := " + getSource() /*+ ", " + memoryOrder*/ + ")");
     }
 
     @Override

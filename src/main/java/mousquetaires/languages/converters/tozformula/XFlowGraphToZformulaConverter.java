@@ -39,9 +39,6 @@ public class XFlowGraphToZformulaConverter {
 
         for (XEvent current : process.getNodesLinearised()) {
 
-        //while (!queue.isEmpty()) {
-        //    XEvent current = queue.removeFirst();
-
             if (visited.contains(current)) {
                 continue;
             }

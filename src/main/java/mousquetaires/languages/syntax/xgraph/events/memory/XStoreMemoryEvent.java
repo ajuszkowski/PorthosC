@@ -43,7 +43,7 @@ public final class XStoreMemoryEvent extends XMemoryEventBase implements XShared
 
     @Override
     public String toString() {
-        return wrapWithBracketsAndReferenceId(getDestination() + ":=store(" + getSource() + /*", " + memoryOrder +*/ ")");
+        return wrapWithBracketsAndReferenceId("store(" + getDestination() + " := " + getSource() + /*", " + memoryOrder +*/ ")");
     }
 
     @Override
