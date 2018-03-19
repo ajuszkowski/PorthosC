@@ -3,17 +3,25 @@ package mousquetaires.languages.syntax.xgraph.events.fake;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
+import mousquetaires.utils.exceptions.NotSupportedException;
+
+import java.util.Objects;
 
 
 public final class XEntryEvent extends XFakeEvent {
 
     public XEntryEvent(XEventInfo info) {
-        super(info);
+        super(info, NON_REFERENCE_ID);
     }
 
     @Override
     public String getLabel() {
-        return "[ENTRY+" + getInfo().getProcessId() + "]";
+        return "ENTRY_" + getInfo().getProcessId();
+    }
+
+    @Override
+    public XEvent asReference(int referenceId) {
+        throw new NotSupportedException("Entry events cannot have references");
     }
 
     @Override
@@ -24,11 +32,7 @@ public final class XEntryEvent extends XFakeEvent {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof XEvent)) return false;
-        XEvent other = (XEvent) o;
-        return other instanceof XEntryEvent &&
-                getInfo().getProcessId().equals(other.getInfo().getProcessId());
+        if (!(o instanceof XEntryEvent)) return false;
+        return Objects.equals(getInfo().getProcessId(), ((XEntryEvent) o).getInfo().getProcessId());
     }
-
-    //todo: override hashcode!
 }

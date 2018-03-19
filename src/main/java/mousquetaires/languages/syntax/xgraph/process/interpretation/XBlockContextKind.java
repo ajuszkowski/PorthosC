@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.process.interpretation;
 
 enum XBlockContextKind {
-    Linear,
+    Sequential,
     Branching,
     Loop,
 }

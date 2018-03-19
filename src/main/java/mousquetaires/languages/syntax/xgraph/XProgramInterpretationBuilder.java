@@ -34,9 +34,10 @@ public class XProgramInterpretationBuilder extends BuilderBase<XProgram> {
         if (currentProcess != null) {
             throw new IllegalStateException("Attempt to start new process '" + processId +
                     "' definition while another process '" + currentProcess.getProcessId() +
-                    "'; is being constructed");
+                    "' is being constructed");
         }
         currentProcess = new XProcessInterpreter(processId, memoryManager);
+        currentProcess.emitEntryEvent();
     }
 
     public void finishProcessDefinition() {

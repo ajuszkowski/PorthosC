@@ -7,10 +7,7 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEven
 import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOperator;
-import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XFakeEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.*;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
@@ -65,16 +62,14 @@ public class XProcessInterpreter {
         contextStack = new Stack<>();
         readyContexts = new LinkedList<>();
 
-        XBlockContext linearContext = new XBlockContext(XBlockContextKind.Linear);
+        XBlockContext linearContext = new XBlockContext(XBlockContextKind.Sequential);
         linearContext.state = XProcessInterpreter.ContextState.WaitingNextLinearEvent;
         contextStack.push(linearContext);
-
-        addAndProcessEntryEvent();
     }
 
 
     public void finish() {
-        addAndProcessExitEvent();
+        emitExitEvent();
         //todo: verify
         assert contextStack.size() == 1; //linear entry context only
         assert readyContexts.isEmpty();
@@ -141,27 +136,29 @@ public class XProcessInterpreter {
 
     // --
 
-    private void addAndProcessEntryEvent() {
+    public XEntryEvent emitEntryEvent() {
         XEntryEvent entryEvent = new XEntryEvent(createEventInfo());
         graphBuilder.setSource(entryEvent);
         processNextEvent(entryEvent);
+        return entryEvent;
     }
 
-    private void addAndProcessExitEvent() {
+    public XExitEvent emitExitEvent() {
         XExitEvent exitEvent = new XExitEvent(createEventInfo());
         assert contextStack.size() == 1; //only entry linear context
         processNextEvent(exitEvent);
         graphBuilder.setSink(exitEvent);
+        return exitEvent;
     }
 
     ///**
     // * For modelling empty statement
     // */
-    //public XFakeComputationEvent emitFakeComputationEvent() {
-    //    XFakeComputationEvent event = new XFakeComputationEvent(createEventInfo());
-    //    processNextEvent(event);
-    //    return event;
-    //}
+    public XNopEvent emitNopEvent() {
+        XNopEvent event = new XNopEvent(createEventInfo());
+        processNextEvent(event);
+        return event;
+    }
 
     public XComputationEvent emitComputationEvent(XLocalMemoryUnit operand) {
         XComputationEvent event = new XNullaryComputationEvent(createEventInfo(), operand);
@@ -224,29 +221,10 @@ public class XProcessInterpreter {
         if (!readyContexts.isEmpty()) {
             for (XBlockContext context : readyContexts) {
 
-                boolean hasBreaks = context.hasBreakEvents();
-                boolean hasContinues = context.hasContinueEvents();
-                if (hasBreaks || hasContinues) {
-                    assert context.firstElseBranchEvent == null : context.firstElseBranchEvent.toString();
-                    assert context.lastElseBranchEvent == null  : context.lastElseBranchEvent.toString();
-
-                    if (hasContinues) {
-                        for (XFakeEvent continueingEvent : context.continueingEvents) {
-                            graphBuilder.replaceEvent(continueingEvent, context.conditionEvent);
-                        }
-                    }
-                    if (hasBreaks) {
-                        for (XFakeEvent breakingEvent : context.breakingEvents) {
-                            graphBuilder.replaceEvent(breakingEvent, nextEvent);
-                            alreadySetEdgeToNextEvent = true;
-                        }
-                    }
-                }
-
-                if (context.firstThenBranchEvent != null) { // && !(context.firstThenBranchEvent instanceof XFakeEvent)) {
+                if (context.firstThenBranchEvent != null) {
                     switch (context.kind) {
-                        case Linear:
-                            assert false;
+                        case Sequential:
+                            assert false : "no then-events are allowed for linear statements";
                             break;
                         case Branching:
                         case Loop:
@@ -256,71 +234,66 @@ public class XProcessInterpreter {
                 }
                 else {
                     switch (context.kind) {
-                        case Linear:
-                            assert false;
+                        case Sequential:
+                            assert false : "no then-events are allowed for linear statements";
                             break;
                         case Branching:
-                            graphBuilder.addEdge(true, context.conditionEvent, nextEvent);
+                        case Loop:
+                            assert false : "every branching statement must have at least one then-event (NOP if none)";
+                            break;
+                    }
+                }
+                if (context.lastThenBranchEvent != null) {
+                    switch (context.kind) {
+                        case Sequential:
+                            assert false : "no then-events are allowed for linear statements";
+                            break;
+                        case Branching:
+                            graphBuilder.addEdge(true, context.lastThenBranchEvent, nextEvent);
                             alreadySetEdgeToNextEvent = true;
                             break;
                         case Loop:
-                            graphBuilder.addEdge(true, context.conditionEvent, context.conditionEvent);
+                            graphBuilder.addEdge(true, context.lastThenBranchEvent, context.entryEvent);
                             break;
                     }
                 }
 
-                if (context.lastThenBranchEvent != null) {// && !(context.lastThenBranchEvent instanceof XFakeEvent)) {
+                if (context.firstElseBranchEvent != null) {
                     switch (context.kind) {
-                        case Linear:
-                            assert false;
-                            break;
-                        case Branching:
-                            graphBuilder.addEdge(true,context.lastThenBranchEvent, nextEvent);
-                            alreadySetEdgeToNextEvent = true;
-                            break;
-                        case Loop:
-                            graphBuilder.addEdge(true,context.lastThenBranchEvent, context.entryEvent);
-                            break;
-                    }
-                }
-
-                if (context.firstElseBranchEvent != null) {// && !(context.firstElseBranchEvent instanceof XFakeEvent)) {
-                    switch (context.kind) {
-                        case Linear:
-                            assert false;
+                        case Sequential:
+                            assert false : "no else-events are allowed for linear statements";
                             break;
                         case Branching:
                             graphBuilder.addEdge(false, context.conditionEvent, context.firstElseBranchEvent);
                             break;
                         case Loop:
-                            assert false;
+                            assert false : "no else-events are allowed for loop staements";
                             break;
                     }
                 }
                 else {
                     switch (context.kind) {
-                        case Linear:
+                        case Sequential:
                             assert false;
                             break;
                         case Branching:
+                            assert false : "every branching statement must have at least one then-event (NOP if none)";
+                            break;
                         case Loop:
-                            graphBuilder.addEdge(false, context.conditionEvent, nextEvent);
-                            alreadySetEdgeToNextEvent = true;
                             break;
                     }
                 }
-
-                if (context.lastElseBranchEvent != null) {// && !(context.lastElseBranchEvent instanceof XFakeEvent)) {
+                if (context.lastElseBranchEvent != null) {
                     switch (context.kind) {
-                        case Linear:
-                            assert false;
+                        case Sequential:
+                            assert false : "no else-events are allowed for linear statements";
                             break;
                         case Branching:
-                            graphBuilder.addEdge(true,context.lastElseBranchEvent, nextEvent);
+                            graphBuilder.addEdge(true, context.lastElseBranchEvent, nextEvent);
                             alreadySetEdgeToNextEvent = true;
                             break;
                         case Loop:
-                            assert false;
+                            assert false : "no else-events are allowed for loop staements";
                             break;
                     }
                 }
@@ -328,15 +301,10 @@ public class XProcessInterpreter {
             readyContexts.clear();
         }
 
-        boolean isJumpEvent = nextEvent instanceof XJumpEvent;
 
         assert !contextStack.empty();
         for (int i = contextStack.size() - 1; i >= 0; i--) { //NonlinearBlock context : contextStack) {
             XBlockContext context = contextStack.get(i);
-
-            //if (isJumpEvent && context.kind != XBlockContextKind.Loop) {
-            //    continue;
-            //}
 
             switch (context.state) {
                 case WaitingNextLinearEvent: {
@@ -454,10 +422,16 @@ public class XProcessInterpreter {
                 case Then:
                     assert context.lastThenBranchEvent == null;
                     context.lastThenBranchEvent = previousEvent;
+                    if (context.firstThenBranchEvent == null) { //TODO: kostyl?
+                        context.firstThenBranchEvent = previousEvent;
+                    }
                     break;
                 case Else:
                     assert context.lastElseBranchEvent == null;
                     context.lastElseBranchEvent = previousEvent;
+                    if (context.firstElseBranchEvent == null) { //TODO: kostyl?
+                        context.firstElseBranchEvent = previousEvent;
+                    }
                     break;
             }
         }

@@ -3,17 +3,25 @@ package mousquetaires.languages.syntax.xgraph.events.fake;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
+import mousquetaires.utils.exceptions.NotSupportedException;
+
+import java.util.Objects;
 
 
 public final class XExitEvent extends XFakeEvent {
 
     public XExitEvent(XEventInfo info) {
-        super(info);
+        super(info, NON_REFERENCE_ID);
     }
 
     @Override
     public String getLabel() {
-        return "[EXIT+" + getInfo().getProcessId() + "]";
+        return "EXIT_" + getInfo().getProcessId();
+    }
+
+    @Override
+    public XEvent asReference(int referenceId) {
+        throw new NotSupportedException("Exit events cannot have references");
     }
 
     @Override
@@ -21,15 +29,12 @@ public final class XExitEvent extends XFakeEvent {
         return visitor.visit(this);
     }
 
+    // TODO: split exit into  two types: bound-achieved / bound-not-achieved
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof XEvent)) return false;
-        XEvent other = (XEvent) o;
-        return other instanceof XExitEvent &&
-                getInfo().getProcessId().equals(other.getInfo().getProcessId());
+        if (!(o instanceof XExitEvent)) return false;
+        return Objects.equals(getInfo().getProcessId(), ((XExitEvent) o).getInfo().getProcessId());
     }
-
-    //todo: override hashcode!
-
 }

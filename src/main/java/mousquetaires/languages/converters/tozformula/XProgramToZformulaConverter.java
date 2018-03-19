@@ -22,7 +22,8 @@ public class XProgramToZformulaConverter {
         ZBoolConjunctionBuilder programFormula = new ZBoolConjunctionBuilder();
         for (XUnrolledProcess graph : program.getAllProcesses()) {
             XFlowGraphToZformulaConverter processEncoder = new XFlowGraphToZformulaConverter(dataFlowEncoder);
-            programFormula.addSubFormula(processEncoder.encode(graph));
+            ZBoolFormula processFormula = processEncoder.encode(graph);
+            programFormula.addSubFormula(processFormula);
         }
         return programFormula.build();
     }

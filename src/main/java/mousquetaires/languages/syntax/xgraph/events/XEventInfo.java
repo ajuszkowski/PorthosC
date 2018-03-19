@@ -25,6 +25,7 @@ public class XEventInfo {
 
     //todo: package-private (after removing the folder 'tests' from tests project root)
     public XEventInfo(String processId) {
+        // TODO: verify process id string for bad symbols
         this.processId = processId;
         this.stamp = newStamp();
     }

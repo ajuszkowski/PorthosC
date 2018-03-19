@@ -33,7 +33,6 @@ import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
 import mousquetaires.languages.syntax.ytree.specific.YVariableAssertion;
 import mousquetaires.languages.syntax.ytree.statements.*;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
-import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
 import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitorBase;
@@ -45,6 +44,7 @@ import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
 
     // Every visit() may not return something, but MUST process an XEvent or throw an exception
+    // is above actual now?..
 
     // TODO: non-null checks everywhere!
 
@@ -97,20 +97,17 @@ public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
 
     @Override
     public XEvent visit(YCompoundStatement node) {
+        XEvent lastEvent = null;
         for (YStatement statement : node.getStatements()) {
-            statement.accept(this);
+            lastEvent = statement.accept(this);
         }
-        return null;
+        if (lastEvent == null) {
+            lastEvent = program.currentProcess.emitNopEvent();
+        }
+        return lastEvent;
     }
 
     // end of Litmus-specific visits.
-
-    //@Override
-    //public XComputationEvent visit(YConstant node) {
-    //    XMemoryUnit constant = memoryUnitConverter.convert(node);
-    //    XLocalMemoryUnit constantLocal = program.currentProcess.copyToLocalMemoryIfNecessary(constant);
-    //    return program.currentProcess.emitComputationEvent(constantLocal);
-    //}
 
     @Override
     public XEvent visit(YIndexerExpression node) {
@@ -235,7 +232,7 @@ public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
                 return xExpression;
             }
         }
-        return null;//program.currentProcess.emitFakeComputationEvent();
+        return program.currentProcess.emitNopEvent();
     }
 
     @Override
@@ -244,21 +241,6 @@ public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
         //return program.memoryManager.newLocalMemoryUnit(node.getVariable().getName());
         throw new NotImplementedException();
     }
-
-    @Override
-    public XEvent visit(YType node) {
-        //todo: parse type
-        //return new XMockType();
-        // todo: do this via helper, not visit!
-        throw new IllegalStateException("Should be visited by another visitor");
-    }
-
-    //@Override
-    //public XComputationEvent visit(YVariableRef node) {
-    //    XMemoryUnit variable = memoryUnitConverter.convert(node);
-    //    XLocalMemoryUnit variableLocal = program.currentProcess.copyToLocalMemoryIfNecessary(variable);
-    //    return program.currentProcess.emitComputationEvent(variableLocal);
-    //}
 
     @Override
     public XEvent visit(YBranchingStatement node) {
@@ -273,11 +255,16 @@ public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
         program.currentProcess.finishBranchDefinition();
 
         YStatement elseBranch = node.getElseBranch();
+        program.currentProcess.startElseBranchDefinition();
         if (elseBranch != null) {
-            program.currentProcess.startElseBranchDefinition();
             elseBranch.accept(this);
-            program.currentProcess.finishBranchDefinition();
         }
+        else {
+            program.currentProcess.emitNopEvent();
+        }
+        program.currentProcess.finishBranchDefinition();
+
+
 
         program.currentProcess.finishNonlinearBlockDefinition();
 
