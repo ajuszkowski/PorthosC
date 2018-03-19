@@ -1,7 +1,6 @@
 package mousquetaires.languages.syntax.xgraph.events.fake;
 
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
-import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 import java.util.Objects;
 
@@ -13,11 +12,6 @@ public final class XJumpEvent extends XFakeEvent {
     public XJumpEvent(XEventInfo info) {
         super(info);
         this.uniqueJumpIndex = generateUniqueIndex();
-    }
-
-    @Override
-    public <T> T accept(XEventVisitor<T> visitor) {
-        return visitor.visit(this);
     }
 
     @Override

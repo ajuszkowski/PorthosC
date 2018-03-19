@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.xgraph.events.computation;
 
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOperator;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
@@ -14,12 +15,21 @@ public class XUnaryComputationEvent extends XNullaryComputationEvent {
     private final XZOperator operator;
 
     public XUnaryComputationEvent(XEventInfo info, XZOperator operator, XLocalMemoryUnit operand1) {
-        super(info, operand1);
+        this(info, operator, operand1, NON_REFERENCE_ID);
+    }
+
+    protected XUnaryComputationEvent(XEventInfo info, XZOperator operator, XLocalMemoryUnit operand1, int referenceId) {
+        super(info, operand1, referenceId);
         this.operator = operator;
     }
 
     public XZOperator getOperator() {
         return operator;
+    }
+
+    @Override
+    public XEvent asReference(int referenceId) {
+        return new XUnaryComputationEvent(getInfo(), getOperator(), getFirstOperand(), referenceId);
     }
 
     @Override
@@ -34,7 +44,7 @@ public class XUnaryComputationEvent extends XNullaryComputationEvent {
 
     @Override
     public String toString() {
-        return "eval(" + getOperator() + " " + getFirstOperand() + ")";
+        return wrapWithBracketsAndReferenceId("eval(" + getOperator() + " " + getFirstOperand() + ")");
     }
 
     @Override

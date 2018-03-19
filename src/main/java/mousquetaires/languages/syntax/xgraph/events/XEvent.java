@@ -11,9 +11,7 @@ public interface XEvent extends XEntity, GraphNode {
 
     //String getLabel();
 
-    //void setNextEvent(XEvent next);
-    //
-    //XEvent getNextEvent();
+    XEvent asReference(int referenceId);
 
     <T> T accept(XEventVisitor<T> visitor);
 }

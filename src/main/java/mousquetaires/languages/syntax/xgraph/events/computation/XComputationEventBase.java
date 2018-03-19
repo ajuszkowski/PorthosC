@@ -9,8 +9,8 @@ public abstract class XComputationEventBase extends XEventBase implements XCompu
 
     private final Bitness bitness;
 
-    XComputationEventBase(XEventInfo info, Bitness bitness) {
-        super(info);
+    XComputationEventBase(XEventInfo info, Bitness bitness, int referenceId) {
+        super(info, referenceId);
         this.bitness = bitness;
     }
 

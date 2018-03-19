@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.xgraph.events.computation;
 
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOperator;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
@@ -12,13 +13,29 @@ public class XBinaryComputationEvent extends XUnaryComputationEvent {
 
     private final XLocalMemoryUnit secondOperand;
 
-    public XBinaryComputationEvent(XEventInfo info, XZOperator operator, XLocalMemoryUnit operand1, XLocalMemoryUnit secondOperand) {
-        super(info, operator, operand1);
+    public XBinaryComputationEvent(XEventInfo info,
+                                   XZOperator operator,
+                                   XLocalMemoryUnit operand1,
+                                   XLocalMemoryUnit secondOperand) {
+        this(info, operator, operand1, secondOperand, NON_REFERENCE_ID);
+    }
+
+    private XBinaryComputationEvent(XEventInfo info,
+                                   XZOperator operator,
+                                   XLocalMemoryUnit operand1,
+                                   XLocalMemoryUnit secondOperand,
+                                   int referenceId) {
+        super(info, operator, operand1, referenceId);
         this.secondOperand = secondOperand;
     }
 
     public XLocalMemoryUnit getSecondOperand() {
         return secondOperand;
+    }
+
+    @Override
+    public XEvent asReference(int referenceId) {
+        return new XBinaryComputationEvent(getInfo(), getOperator(), getFirstOperand(), getSecondOperand(), referenceId);
     }
 
     @Override
@@ -28,7 +45,7 @@ public class XBinaryComputationEvent extends XUnaryComputationEvent {
 
     @Override
     public String toString() {
-        return "eval(" + getFirstOperand() + " " + getOperator() + " " + getSecondOperand() + ")";
+        return wrapWithBracketsAndReferenceId("eval(" + getFirstOperand() + " " + getOperator() + " " + getSecondOperand() + ")");
     }
 
     @Override

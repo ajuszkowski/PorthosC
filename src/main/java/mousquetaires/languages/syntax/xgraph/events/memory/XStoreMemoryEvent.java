@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.xgraph.events.memory;
 
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
@@ -13,7 +14,11 @@ public final class XStoreMemoryEvent extends XMemoryEventBase implements XShared
     //public final XMemoryOrder memoryOrder;
 
     public XStoreMemoryEvent(XEventInfo info, XSharedMemoryUnit destination, XLocalMemoryUnit source) {
-        super(info, destination, source);
+        this(info, destination, source, NON_REFERENCE_ID);
+    }
+
+    private XStoreMemoryEvent(XEventInfo info, XSharedMemoryUnit destination, XLocalMemoryUnit source, int referenceId) {
+        super(info, destination, source, referenceId);
     }
 
     @Override
@@ -27,13 +32,18 @@ public final class XStoreMemoryEvent extends XMemoryEventBase implements XShared
     }
 
     @Override
+    public XEvent asReference(int referenceId) {
+        return new XStoreMemoryEvent(getInfo(), getDestination(), getSource(), referenceId);
+    }
+
+    @Override
     public <T> T accept(XEventVisitor<T> visitor) {
         return visitor.visit(this);
     }
 
     @Override
     public String toString() {
-        return getDestination() + ":=store(" + getSource() + /*", " + memoryOrder +*/ ")";
+        return wrapWithBracketsAndReferenceId(getDestination() + ":=store(" + getSource() + /*", " + memoryOrder +*/ ")");
     }
 
     @Override

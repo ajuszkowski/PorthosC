@@ -1,9 +1,10 @@
 package mousquetaires.languages.syntax.xgraph.events.memory;
 
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
@@ -12,7 +13,11 @@ import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 public final class XLoadMemoryEvent extends XMemoryEventBase implements XSharedMemoryEvent {
 
     public XLoadMemoryEvent(XEventInfo info, XLocalMemoryUnit destination, XSharedMemoryUnit source/*, XMemoryOrder memoryOrder*/) {
-        super(info, destination, source);
+        this(info, destination, source, NON_REFERENCE_ID);
+    }
+
+    private XLoadMemoryEvent(XEventInfo info, XLocalMemoryUnit destination, XSharedMemoryUnit source, int referenceId) {
+        super(info, destination, source, referenceId);
         if (destination instanceof XConstant) {
             throw new IllegalArgumentException("Memory event with assignment to " + XConstant.class.getName()
                     + " is not allowed");
@@ -30,13 +35,18 @@ public final class XLoadMemoryEvent extends XMemoryEventBase implements XSharedM
     }
 
     @Override
+    public XEvent asReference(int referenceId) {
+        return new XLoadMemoryEvent(getInfo(), getDestination(), getSource(), referenceId);
+    }
+
+    @Override
     public <T> T accept(XEventVisitor<T> visitor) {
         return visitor.visit(this);
     }
 
     @Override
     public String toString() {
-        return getDestination() + ":=load(" + getSource() /*+ ", " + memoryOrder*/ + ")";
+        return wrapWithBracketsAndReferenceId(getDestination() + ":=load(" + getSource() /*+ ", " + memoryOrder*/ + ")");
     }
 
     @Override
