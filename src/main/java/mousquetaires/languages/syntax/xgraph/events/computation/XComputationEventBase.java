@@ -4,6 +4,7 @@ import mousquetaires.languages.syntax.xgraph.events.XEventBase;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 
 
+// TODO: remove nullary computation event, inherit the XLocalMemoryUnit from XEventBase and XComputationEvent (because it's read from registry)
 public abstract class XComputationEventBase extends XEventBase implements XComputationEvent {
 
     private final Bitness bitness;

@@ -2,15 +2,19 @@ package mousquetaires.languages.syntax.ytree.visitors.ytree;
 
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
-import mousquetaires.languages.syntax.ytree.expressions.ternary.YTernaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.ternary.YTernaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.specific.YPostludeStatement;
 import mousquetaires.languages.syntax.ytree.specific.YPreludeStatement;
 import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
@@ -45,17 +49,15 @@ public interface YtreeVisitor<T> {
     T visit(YFunctionDefinition node);
 
     // binary expressions:
-    //T visit(YRelativeBinaryExpression node);
-    //T visit(YLogicalBinaryExpression node);
-    //T visit(YIntegerBinaryExpression node);
+    T visit(YRelativeBinaryExpression node);
+    T visit(YLogicalBinaryExpression node);
+    T visit(YIntegerBinaryExpression node);
 
     // unary expressions:
-    //T visit(YLogicalUnaryExpression node);
-    //T visit(YPointerUnaryExpression node);
-    //T visit(YIntegerUnaryExpression node);
+    T visit(YIntegerUnaryExpression node);
+    T visit(YLogicalUnaryExpression node);
+    T visit(YPointerUnaryExpression node);
 
-    T visit(YUnaryExpression node);
-    T visit(YBinaryExpression node);
     T visit(YTernaryExpression node);
 
     T visit(YVariableRef node);

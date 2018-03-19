@@ -60,12 +60,12 @@
 //        put(LongDouble, YPrimitiveType.i64);
 //    }};
 //
-//    public static YPrimitiveType tryConvert(CminKeyword keyword) {
+//    public static YPrimitiveType convertOrNull(CminKeyword keyword) {
 //        return CminKeyword.bitnessMap.get(keyword);
 //    }
 //
 //    public static YPrimitiveType convert(CminKeyword keyword) {
-//        YPrimitiveType result = tryConvert(keyword);
+//        YPrimitiveType result = convertOrNull(keyword);
 //        if (result == null) {
 //            throw new IllegalArgumentException(keyword.id());
 //        }

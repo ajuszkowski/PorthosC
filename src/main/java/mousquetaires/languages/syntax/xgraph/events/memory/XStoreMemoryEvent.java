@@ -17,8 +17,8 @@ public final class XStoreMemoryEvent extends XMemoryEventBase implements XShared
     }
 
     @Override
-    public XLocalMemoryUnit getDestination() {
-        return (XLocalMemoryUnit) super.getDestination();
+    public XSharedMemoryUnit getDestination() {
+        return (XSharedMemoryUnit) super.getDestination();
     }
 
     @Override

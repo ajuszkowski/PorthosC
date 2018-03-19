@@ -2,7 +2,6 @@ package mousquetaires.languages.syntax.xgraph.memories;
 
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
-import mousquetaires.utils.exceptions.xgraph.UndeclaredMemoryUnitError;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,22 +40,21 @@ public final class XMemoryManager {
     }
 
     public XRegister getLocalMemoryUnit(String name) {
-        XRegister result = localLocations.get(name);
-        if (result == null) {
+        if (!localLocations.containsKey(name)) {
             // todo: probably, do not need to declare local memoryevents (registers)
             //throw new UndeclaredMemoryUnitError(name);
             return newLocalMemoryUnit(name);//todo: type
         }
-        return result;
+        return localLocations.get(name);
     }
 
     public XLocation getSharedMemoryUnit(String name) {
-        XLocation result = sharedLocations.get(name);
-        if (result == null) {
+        if (!sharedLocations.containsKey(name)) {
             // todo: probably processName undeclared shared memoryevents units as well
-            throw new UndeclaredMemoryUnitError(name);
+            //throw new UndeclaredMemoryUnitError(name);
+            return newSharedMemoryUnit(name);//todo: type
         }
-        return result;
+        return sharedLocations.get(name);
     }
 
     //// TO-DO: do we really need to declare local memory units? or we have infinitely many registers in our model?
@@ -110,10 +108,10 @@ public final class XMemoryManager {
 
     private int tempNamesCounter = 1;
     private String newTempLocalName() {
-        return getNewName("reg", tempNamesCounter++);
+        return getNewName(tempNamesCounter++);
     }
 
-    private String getNewName(String baseName, int count) {
-        return baseName + '_' + count;
+    private String getNewName(int count) {
+        return "" + count;
     }
 }

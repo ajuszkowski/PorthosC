@@ -6,7 +6,7 @@ import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 public class XLocation extends XMemoryUnitBase implements XSharedMemoryUnit {
 
     XLocation(String name, Bitness bitness) {
-        super("l_" + name, bitness);
+        super("loc_" + name, bitness);
     }
 
     @Override

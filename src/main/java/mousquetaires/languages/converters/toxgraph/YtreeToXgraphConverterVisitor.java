@@ -3,7 +3,7 @@ package mousquetaires.languages.converters.toxgraph;
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.converters.toxgraph.helpers.MemoryUnitConverter;
 import mousquetaires.languages.converters.toxgraph.helpers.XBinaryOperatorConverter;
-import mousquetaires.languages.converters.toxgraph.helpers.XUnaryOperatorHelper;
+import mousquetaires.languages.converters.toxgraph.helpers.XIntegerUnaryOperatorHelper;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.XProgramInterpretationBuilder;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
@@ -26,8 +26,13 @@ import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentE
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.ternary.YTernaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.specific.YPostludeStatement;
 import mousquetaires.languages.syntax.ytree.specific.YPreludeStatement;
 import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
@@ -137,30 +142,51 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
     }
 
     @Override
-    public XLocalMemoryEvent visit(YUnaryExpression node) {
-        XEvent base = node.getExpression().accept(this); //todo:evaluate
-        XLocalMemoryUnit baseLocal = program.currentProcess.copyToLocalMemoryIfNecessary(base);
-        YUnaryExpression.Kind yOperator = node.getKind();
-        if (XUnaryOperatorHelper.isPrefixIntegerOperator(yOperator)) {
-            XZOperator xOperator = XUnaryOperatorHelper.isPrefixIncrement(yOperator)
+    public XEvent visit(YIntegerUnaryExpression node) {
+        YIntegerUnaryExpression.Kind yOperator = node.getKind();
+        YExpression yBaseExpression = node.getExpression();
+
+        if (XIntegerUnaryOperatorHelper.isPrefixOperator(yOperator)) {
+            XEvent base = yBaseExpression.accept(this); //todo:evaluate // == ?
+            XLocalMemoryUnit baseLocal = program.currentProcess.copyToLocalMemoryIfNecessary(base);
+            XZOperator xOperator = XIntegerUnaryOperatorHelper.isPrefixIncrement(yOperator)
                     ? XZOperator.IntegerPlus
                     : XZOperator.IntegerMinus;
             XConstant one = program.currentProcess.getConstant(1);
             XComputationEvent incremented = program.currentProcess.emitComputationEvent(xOperator, baseLocal, one);
             return program.currentProcess.emitMemoryEvent(baseLocal, incremented);
-        } else if (XUnaryOperatorHelper.isPostfixIntegerOperator(yOperator)) {
+        }
+        else if (XIntegerUnaryOperatorHelper.isPostfixOperator(yOperator)) {
             throw new NotImplementedException("Postfix operators are not supported for now");
         }
 
-        throw new NotImplementedException("Unsupported unary operator: " + yOperator); //todo
+        throw new NotImplementedException();
     }
 
     @Override
-    public XComputationEvent visit(YBinaryExpression node) {
-        XLocalMemoryUnit leftLocal = convertOrEvaluateExpression(node.getLeftExpression());
-        XLocalMemoryUnit rightLocal = convertOrEvaluateExpression(node.getRightExpression());
-        XZOperator operator = XBinaryOperatorConverter.convert(node.getKind());
-        return program.currentProcess.emitComputationEvent(operator, leftLocal, rightLocal);
+    public XEvent visit(YLogicalUnaryExpression node) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public XEvent visit(YPointerUnaryExpression node) {
+        XMemoryUnit location = memoryUnitConverter.convert(node);
+        return program.currentProcess.evaluateMemoryUnit(location);
+    }
+
+    @Override
+    public XEvent visit(YRelativeBinaryExpression node) {
+        return visitBinaryExpression(node);
+    }
+
+    @Override
+    public XEvent visit(YLogicalBinaryExpression node) {
+        return visitBinaryExpression(node);
+    }
+
+    @Override
+    public XEvent visit(YIntegerBinaryExpression node) {
+        return visitBinaryExpression(node);
     }
 
     @Override
@@ -281,26 +307,18 @@ class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
         throw new NotImplementedException();
     }
 
-
-    //private XComputationEvent evaluate(XEntity expression) {
-    //    XLocalMemoryUnit conditionLocal = TypeCastHelper.castToLocalMemoryUnitOrThrow(expression);
-    //    return conditionLocal instanceof XComputationEvent
-    //            ? (XComputationEvent) conditionLocal
-    //            :  program.currentProcess.emitComputationEvent(conditionLocal);
-    //}
-
-    //private XEvent WTFprocessExpression(XEvent event) {
-    //    if (event instanceof XRegister) {
-    //        return program.currentProcess.emitComputationEvent((XRegister) event);
-    //    }
-    //    return event;
-    //    //throw new XCompilatorUsageError("Unexpected expression type: " + expression.getClass().getSimpleName());
-    //}
-
     private XLocalMemoryUnit convertOrEvaluateExpression(YExpression expression) {
-        XMemoryUnit converted = memoryUnitConverter.tryConvert(expression);
+        XMemoryUnit converted = memoryUnitConverter.convertOrNull(expression);
         return converted != null
                 ? program.currentProcess.copyToLocalMemoryIfNecessary(converted)
                 : program.currentProcess.copyToLocalMemoryIfNecessary(expression.accept(this));
+    }
+
+    private XComputationEvent visitBinaryExpression(YBinaryExpression node) {
+        // TODO: It's incorrect to break visiting expressions here! We need one more visitor over memory units that will try to convert first, if failes, then evaluate
+        XLocalMemoryUnit leftLocal = convertOrEvaluateExpression(node.getLeftExpression());
+        XLocalMemoryUnit rightLocal = convertOrEvaluateExpression(node.getRightExpression());
+        XZOperator operator = XBinaryOperatorConverter.convert(node.getKind());
+        return program.currentProcess.emitComputationEvent(operator, leftLocal, rightLocal);
     }
 }

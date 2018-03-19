@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import static mousquetaires.languages.syntax.zformula.ZHelper.*;
-import static mousquetaires.languages.syntax.zformula.ZVariableHelper.createEventVariable;
+import static mousquetaires.languages.syntax.zformula.ZVariableHelper.constructEventVariable;
 
 
 // TODO: generalize this class
@@ -46,7 +46,7 @@ public class XFlowGraphToZformulaConverter {
                 continue;
             }
 
-            ZBoolVariable currentId = createEventVariable(current);
+            ZBoolVariable currentId = constructEventVariable(current);
 
             // encode control-flow, 'next -> prev'
             //if (!current.equals(process.source())) {
@@ -54,13 +54,13 @@ public class XFlowGraphToZformulaConverter {
             assert parents.size() > 0;
             List<ZBoolFormula> parentsIds = new ArrayList<>(parents.size());
             for (XEvent parent : parents) {
-                parentsIds.add(createEventVariable(parent));
+                parentsIds.add(constructEventVariable(parent));
             }
             ZBoolFormula nextImpliesPreviouses = implies(currentId, or(parentsIds));
             resultFormula.addSubFormula(nextImpliesPreviouses);
 
             // update references from all parents
-            //dataFlowEncoder.updateReferences(current, parents);
+            dataFlowEncoder.updateReferences(current, parents);
 
             // encode dataflow if needed AND set up ssa map
             ZBoolFormula dataFlowAssertion = current.accept(dataFlowEncoder); //TODO: do not implicitly update references while visit
@@ -71,7 +71,7 @@ public class XFlowGraphToZformulaConverter {
             //if (!current.equals(process.sink())) {
             //    //XEvent nextThen = process.child(current);
             //    //queue.addLast(nextThen);
-            //    //ZBoolVariable nextThenId = createEventVariable(nextThen);
+            //    //ZBoolVariable nextThenId = constructEventVariable(nextThen);
             //
             //    //// encode control-flow, 'if(c){a}else{b}' as 'not (a and b)'
             //    //if (process.hasAlternativeChild(current)) {
@@ -79,7 +79,7 @@ public class XFlowGraphToZformulaConverter {
             //    //    //queue.addLast(nextElse);
             //    //
             //    //    // add constraint 'not both then and else'
-            //    //    ZBoolVariable nextElseId = createEventVariable(nextElse);
+            //    //    ZBoolVariable nextElseId = constructEventVariable(nextElse);
             //    //    ZBoolFormula branchingControlFlow = not(and(nextThenId, nextElseId)); //TODO: <--- THIS IS NOT CORRECT!!!
             //    //    resultFormula.addSubFormula(branchingControlFlow);
             //    //}
@@ -219,7 +219,7 @@ public class XFlowGraphToZformulaConverter {
     //private Expr visitMemoryEvent(XMemoryEvent event) {
     //    Expr source = memoryUnitEncoder.encode(event.getSource());
     //    Expr destination = memoryUnitEncoder.encode(event.getDestination());
-    //    BoolExpr eventExecutedExpr = createEventVariable(event);
+    //    BoolExpr eventExecutedExpr = constructEventVariable(event);
     //    return ctx.mkImplies(eventExecutedExpr, ctx.mkEq(source, destination));
     //}
 

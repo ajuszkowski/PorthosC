@@ -6,7 +6,7 @@ import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 public class XRegister extends XMemoryUnitBase implements XLocalMemoryUnit {
 
     protected XRegister(String name, Bitness bitness) {
-        super("r_" + name, bitness);
+        super("reg_" + name, bitness);
     }
 
     @Override

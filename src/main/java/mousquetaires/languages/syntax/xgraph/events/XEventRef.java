@@ -15,7 +15,6 @@ public class XEventRef implements XEvent {
         this.refId = refId;
     }
 
-
     public XEvent getOriginalNode() {
         return event;
     }

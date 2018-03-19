@@ -41,4 +41,9 @@ public abstract class AppError {
     public String getAdditionalMessage() {
         return additionalInfo;
     }
+
+    @Override
+    public String toString() {
+        return "AppError: " + getSeverity() + ": " + getMessage() + "\n" + getAdditionalMessage();
+    }
 }

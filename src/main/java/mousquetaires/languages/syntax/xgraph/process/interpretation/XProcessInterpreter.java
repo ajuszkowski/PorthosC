@@ -123,8 +123,24 @@ public class XProcessInterpreter {
 
     // --
 
+    public XLocation getSharedMemoryUnit(String name) { //todo: type
+        return memoryManager.getSharedMemoryUnit(name);
+    }
+
     public XConstant getConstant(Object value) {
         return memoryManager.getConstant(value);
+    }
+
+
+    public XComputationEvent evaluateMemoryUnit(XMemoryUnit memoryUnit) { //todo: type?
+        XLocalMemoryUnit localMemoryUnit = copyToLocalMemoryIfNecessary(memoryUnit);
+        return emitComputationEvent(localMemoryUnit);
+    }
+
+    public XComputationEvent evaluateSharedMemoryUnit(String name) { //todo: type
+        XLocation location = getSharedMemoryUnit(name);
+        XRegister register = copyToLocalMemory(location);
+        return emitComputationEvent(register);
     }
 
     public XComputationEvent evaluateConstant(XConstant constant) {

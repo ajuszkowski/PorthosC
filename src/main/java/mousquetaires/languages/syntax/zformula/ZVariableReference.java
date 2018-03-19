@@ -1,5 +1,8 @@
 package mousquetaires.languages.syntax.zformula;
 
+import java.util.Objects;
+
+
 public class ZVariableReference extends ZVariable implements ZAtom {
     private final int index;
 
@@ -8,9 +11,27 @@ public class ZVariableReference extends ZVariable implements ZAtom {
         this.index = index;
     }
 
-    //String.format("%s_%d", name, index)
-
     public int getIndex() {
         return index;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + getName() + ":" + getIndex() + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ZVariableReference)) return false;
+        if (!super.equals(o)) return false;
+        ZVariableReference that = (ZVariableReference) o;
+        return getIndex() == that.getIndex();
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(super.hashCode(), getIndex());
     }
 }

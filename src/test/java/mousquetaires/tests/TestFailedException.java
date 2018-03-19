@@ -19,4 +19,14 @@ public class TestFailedException extends RuntimeException {
         errors = new ArrayList<>(1);
         errors.add(new UnrecognisedError(AppError.Severity.Critical, e));
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Test errors:\n");
+        int i = 1;
+        for (AppError error : errors) {
+            sb.append(i++).append(") ").append(error).append("--\n");
+        }
+        return sb.toString();
+    }
 }
