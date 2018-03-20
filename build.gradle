@@ -50,6 +50,22 @@ task getHomeDir {
     println gradle.gradleHomeDir
 }
 
-mainClassName = 'mousquetaires.Program'
+// For now, gradle allows running application in dummy
+
+task runDartagnan(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'dartagnan.Dartagnan'
+    if(project.hasProperty('args')){
+        args project.args.split('\\s+')
+    }
+}
+
+task runPorthos(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'porthos.Porthos'
+    if(project.hasProperty('args')){
+        args project.args.split('\\s+')
+    }
+}
 
 
