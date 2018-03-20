@@ -4,8 +4,8 @@ apply plugin: 'antlr'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
-sourceCompatibility = 1.9
-targetCompatibility = 1.9
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     flatDir {
@@ -31,6 +31,7 @@ ext.antlr = [
     resultPackage: "mousquetaires.languages.parsers",
 ]
 
+mainClassName = "dartagnan.Dartagnan"
 
 generateGrammarSource {
     arguments = (["-visitor", "-listener", "-package", antlr.resultPackage] + arguments)
@@ -40,6 +41,7 @@ generateGrammarSource {
 compileJava {
     dependsOn generateGrammarSource
     source "${project.projectDir}/${antlr.generatedSourceDir}"
+    project.buildDir = 'out'
 }
 
 clean {
