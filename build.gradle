@@ -4,6 +4,9 @@ apply plugin: 'antlr'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
+sourceCompatibility = 1.9
+targetCompatibility = 1.9
+
 repositories {
     flatDir {
         dirs 'lib'

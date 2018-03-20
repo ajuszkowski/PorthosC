@@ -19,6 +19,7 @@ src/generated/*
 *.sw[op]
 
 # Eclipse --
+.project
 .metadata
 *.tmp
 *.bak
