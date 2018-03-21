@@ -4,21 +4,21 @@ import com.google.common.collect.ImmutableMap;
 
 
 // TODO: generalise these interfaces into abstract classes (+ builders) !
-public abstract class FlowGraph<T extends GraphNode> {
+public abstract class FlowGraph<N extends GraphNode> {
 
-    private final T source;
-    private final T sink;
-    private final ImmutableMap<T, T> edges;
-    private final ImmutableMap<T, T> altEdges;
+    private final N source;
+    private final N sink;
+    private final ImmutableMap<N, N> edges;
+    private final ImmutableMap<N, N> altEdges;
 
-    public FlowGraph(FlowGraph<T> mother) {
-        this(mother.source, mother.sink, mother.edges, mother.altEdges);
-    }
+    //public FlowGraph(FlowGraph<N> mother) {
+    //    this(mother.source, mother.sink, mother.edges, mother.altEdges);
+    //}
 
-    public FlowGraph(T source,
-                     T sink,
-                     ImmutableMap<T, T> edges,
-                     ImmutableMap<T, T> altEdges
+    public FlowGraph(N source,
+                     N sink,
+                     ImmutableMap<N, N> edges,
+                     ImmutableMap<N, N> altEdges
                      //ImmutableMap<T, ImmutableSet<T>> edgesReversed
                      ) {
         this.source = source;
@@ -28,19 +28,27 @@ public abstract class FlowGraph<T extends GraphNode> {
         //this.edgesReversed = edgesReversed; // TODO: also, compute reversed edges while single-pass via info collector
     }
 
-    public T source() {
+    public N source() {
         return source;
     }
 
-    public T sink() {
+    public N sink() {
         return sink;
     }
 
-    public T successor(boolean edgeSign, T node) {
+    public boolean isSource(N node) {
+        return node == source;
+    }
+
+    public boolean isSink(N node) {
+        return node == sink;
+    }
+
+    public N successor(boolean edgeSign, N node) {
         return getEdges(edgeSign).get(node);
     }
 
-    public boolean hasChild(boolean edgeSign, T node) {
+    public boolean hasChild(boolean edgeSign, N node) {
         return getEdges(edgeSign).containsKey(node);
     }
 
@@ -58,7 +66,7 @@ public abstract class FlowGraph<T extends GraphNode> {
     // TODO: after debugging, probably remove these methods?
     // ================================================ optional methods (to be removed) ===============================
 
-    public ImmutableMap<T, T> getEdges(boolean edgesSign) {
+    public ImmutableMap<N, N> getEdges(boolean edgesSign) {
         return edgesSign ? edges : altEdges;
     }
 

@@ -6,7 +6,7 @@ public class IntGraphHelper {
         return new IntGraphNode(value);
     }
 
-    public static IntGraphNodeRef r(int value, int index) {
-        return new IntGraphNodeRef(value, index);
+    public static IntGraphNode r(int value, int index) {
+        return new IntGraphNode(value, index);
     }
 }

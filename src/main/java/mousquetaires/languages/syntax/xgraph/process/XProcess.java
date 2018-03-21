@@ -13,11 +13,9 @@ public class XProcess extends FlowGraph<XEvent> implements XProcessEntity {
 
     XProcess(String processId,
              XEvent source,
-             XExitEvent sink,
+             XEvent sink,
              ImmutableMap<XEvent, XEvent> trueEdges,
-             ImmutableMap<XEvent, XEvent> falseEdges
-             //ImmutableMap<XEvent, ImmutableSet<XEvent>> edgesReversed,
-                        ) {
+             ImmutableMap<XEvent, XEvent> falseEdges) {
         super(source, sink, trueEdges, falseEdges);
         this.processId = processId;
     }

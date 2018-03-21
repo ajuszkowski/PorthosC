@@ -3,6 +3,7 @@ package mousquetaires.tests.unit.unroller;
 import mousquetaires.tests.unit.languages.common.graph.*;
 import org.junit.Test;
 
+import static mousquetaires.tests.unit.languages.common.graph.IntFlowGraphBuilderHelper.addPath;
 import static mousquetaires.tests.unit.languages.common.graph.IntGraphHelper.node;
 import static mousquetaires.tests.unit.languages.common.graph.IntGraphHelper.r;
 
@@ -15,9 +16,9 @@ public class UnrollerLooplessTest extends UnrollerTestBase {
         // expected graph construction:
         IntGraphNode source = node(0), sink = node(-1);
         UnrolledIntFlowGraphBuilder builder = new UnrolledIntFlowGraphBuilder(source, sink);
-        builder.addPath(true, source, r(1, 1), r(2, 1), r(3, 1), r(4, 1), sink);
-        builder.addPath(false, r(2, 1), r(6, 1), r(4, 1));
-        builder.addPath(false, r(1, 1), r(5, 1), r(4, 1));
+        addPath(builder, true, source, r(1, 1), r(2, 1), r(3, 1), r(4, 1), sink);
+        addPath(builder, false, r(2, 1), r(6, 1), r(4, 1));
+        addPath(builder, false, r(1, 1), r(5, 1), r(4, 1));
         UnrolledIntFlowGraph expectedUnrolled = builder.build();
 
         run(expectedUnrolled, getOriginalGraph(), bound);
@@ -30,9 +31,9 @@ public class UnrollerLooplessTest extends UnrollerTestBase {
         // expected graph construction:
         IntGraphNode source = node(0), sink = node(-1);
         UnrolledIntFlowGraphBuilder builder = new UnrolledIntFlowGraphBuilder(source, sink);
-        builder.addPath(true, source, r(1, 1), r(2, 1), r(3, 1), sink);
-        builder.addPath(false, r(2, 1), r(6, 1), sink);
-        builder.addPath(false, r(1, 1), r(5, 1), r(4, 1), sink);
+        addPath(builder, true, source, r(1, 1), r(2, 1), r(3, 1), sink);
+        addPath(builder, false, r(2, 1), r(6, 1), sink);
+        addPath(builder, false, r(1, 1), r(5, 1), r(4, 1), sink);
         UnrolledIntFlowGraph expectedUnrolled = builder.build();
 
         run(expectedUnrolled, getOriginalGraph(), bound);
@@ -43,9 +44,9 @@ public class UnrollerLooplessTest extends UnrollerTestBase {
         // length = 4
         IntGraphNode source = node(0), sink = node(-1);
         IntFlowGraphBuilder builder = new IntFlowGraphBuilder(source, sink);
-        builder.addPath(true, source, node(1), node(2), node(3), node(4), sink);
-        builder.addPath(false, node(2), node(6), node(4));
-        builder.addPath(false, node(1), node(5), node(4));
+        addPath(builder, true, source, node(1), node(2), node(3), node(4), sink);
+        addPath(builder, false, node(2), node(6), node(4));
+        addPath(builder, false, node(1), node(5), node(4));
         return builder.build();
     }
 }

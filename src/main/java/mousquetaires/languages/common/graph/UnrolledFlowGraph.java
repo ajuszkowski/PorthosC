@@ -1,32 +1,43 @@
 package mousquetaires.languages.common.graph;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
+import java.util.Iterator;
 
-public abstract class UnrolledFlowGraph<T extends GraphNode> extends FlowGraph<T> {
 
-    private final ImmutableList<T> nodesLinearised; // TODO: need new builder for test unrolled graph
-    private final ImmutableMap<T, ImmutableSet<T>> predecessorsMap;
+public abstract class UnrolledFlowGraph<N extends GraphNode> extends FlowGraph<N> {
 
-    public UnrolledFlowGraph(T source,
-                             T sink,
-                             ImmutableMap<T, T> edges,
-                             ImmutableMap<T, T> altEdges,
-                             ImmutableList<T> nodesLinearised,
-                             ImmutableMap<T, ImmutableSet<T>> predecessorsMap) {
+    private final ImmutableMap<Integer, UnrolledNodesLayer<N>> layers; // TODO: need new builder for test unrolled graph
+
+    private ImmutableMap<N, ImmutableSet<N>> reversedEdges;
+    private ImmutableMap<N, ImmutableSet<N>> altReversedEdges;
+
+    public UnrolledFlowGraph(N source,
+                             N sink,
+                             ImmutableMap<N, N> edges,
+                             ImmutableMap<N, N> altEdges,
+                             ImmutableMap<N, ImmutableSet<N>> reversedEdges,
+                             ImmutableMap<N, ImmutableSet<N>> altReversedEdges,
+                             ImmutableMap<Integer, UnrolledNodesLayer<N>> layers) {
         super(source, sink, edges, altEdges);
-        this.nodesLinearised = nodesLinearised;
-        this.predecessorsMap = predecessorsMap;
+        this.reversedEdges = reversedEdges;
+        this.altReversedEdges = altReversedEdges;
+        this.layers = layers;
     }
 
-    public ImmutableList<T> getNodesLinearised() {
-        return nodesLinearised;
+    public Iterator<UnrolledNodesLayer<N>> layersIterator() {
+
+        //return layers.values().iterator(); // TODO: check whether we can iterate multiple times via same iterator layersIterator()
     }
 
-    public ImmutableSet<T> predecessors(T node) {
-        assert predecessorsMap.containsKey(node) : node + ", " + predecessorsMap;
-        return predecessorsMap.get(node);
+    public ImmutableSet<N> predecessors(boolean edgeKind, N node) {
+        ImmutableMap<N, ImmutableSet<N>> reversedMap = getReversedEdges(edgeKind);
+        assert reversedMap.containsKey(node);
+        return reversedMap.get(node);
+    }
+
+    public ImmutableMap<N, ImmutableSet<N>> getReversedEdges(boolean edgesSign) {
+        return edgesSign ? reversedEdges : altReversedEdges;
     }
 }

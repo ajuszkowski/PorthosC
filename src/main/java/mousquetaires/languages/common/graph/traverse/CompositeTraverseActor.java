@@ -18,8 +18,6 @@ class CompositeTraverseActor<N extends GraphNode, G extends UnrolledFlowGraph<N>
         // Add here new actors that gather information about graph during graph traverse
         ImmutableSet.Builder<FlowGraphTraverseActor<N, G>> actorsBuilder = new ImmutableSet.Builder<>();
         actorsBuilder.add(new UnrollingActor<>(graphBuilder));
-        actorsBuilder.add(new LinearisationActor<>(graphBuilder));
-        actorsBuilder.add(new PredecessorCollectionActor<>(graphBuilder));
         this.actors = actorsBuilder.build();
     }
 

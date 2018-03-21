@@ -11,7 +11,7 @@ public class ZVariableReferenceMap extends HashMap<XMemoryUnit, Integer> {
     public ZVariableReferenceMap() {
     }
 
-    public ZVariableReferenceMap(Map<? extends XMemoryUnit, ? extends Integer> m) {
-        super(m);
+    public ZVariableReferenceMap(Map<? extends XMemoryUnit, ? extends Integer> map) {
+        super(map);
     }
 }

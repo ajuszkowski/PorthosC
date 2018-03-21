@@ -11,7 +11,7 @@ import java.util.Objects;
 public final class XExitEvent extends XFakeEvent {
 
     public XExitEvent(XEventInfo info) {
-        super(info, NON_REFERENCE_ID);
+        super(info, LAST_REFERENCE_ID);
     }
 
     @Override

@@ -1,9 +1,13 @@
 package mousquetaires.tests.unit.languages.common.graph;
 
-public class IntFlowGraphBuilder extends TestFlowGraphBuilderBase<IntGraphNode, IntFlowGraph> {
+import mousquetaires.languages.common.graph.FlowGraphBuilder;
+
+
+public class IntFlowGraphBuilder extends FlowGraphBuilder<IntGraphNode, IntFlowGraph> {
 
     public IntFlowGraphBuilder(IntGraphNode source, IntGraphNode sink) {
-        super(source, sink);
+        setSource(source);
+        setSink(sink);
     }
 
     @Override

@@ -4,7 +4,6 @@ import mousquetaires.languages.common.graph.GraphNode;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
-
 public interface XEvent extends XEntity, GraphNode {
 
     XEventInfo getInfo();

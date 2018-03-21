@@ -1,26 +1,111 @@
 package mousquetaires.languages.common.graph;
 
 import com.google.common.collect.ImmutableMap;
-import mousquetaires.utils.patterns.Builder;
+import mousquetaires.utils.patterns.BuilderBase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
-public interface FlowGraphBuilder<N extends GraphNode, G extends FlowGraph<N>> extends Builder<G> {
+public abstract class FlowGraphBuilder<N extends GraphNode, G extends FlowGraph<N>>
+        extends BuilderBase<G>
+        implements IFlowGraphBuilder<N, G> {
 
-    N getSource();
+    protected final Map<N, N> edges;
+    protected final Map<N, N> altEdges;
+    private N source;
+    private N sink;
 
-    N getSink();
+    public FlowGraphBuilder() {
+        this.edges = new HashMap<>();
+        this.altEdges = new HashMap<>();
+    }
 
-    ImmutableMap<N, N> buildEdges(boolean edgeSign);
+    @Override
+    public N getSource() {
+        return source;
+    }
 
-    void finishBuilding();
+    @Override
+    public N getSink() {
+        return sink;
+    }
 
-    void setSource(N source);
+    @Override
+    public ImmutableMap<N, N> buildEdges(boolean edgeSign) {
+        return ImmutableMap.copyOf(getEdges(edgeSign));
+    }
 
-    void setSink(N sink);
+    // --
 
-    void addEdge(boolean edgeSign, N from, N to);
+    @Override
+    public void finishBuilding() {
+        // TODO: maybe add some more checks here
+        assert getSource() != null : "source node is not set";
+        assert getSink() != null : "sink node is not set";
+        markFinished();
+    }
 
-    boolean hasEdgesFrom(N node);
+    @Override
+    public void setSource(N source) {
+        assert this.source == null : "source node has already been set";
+        this.source = source;
+    }
 
-    boolean hasEdge(boolean edgeSign, N from, N to);
+    @Override
+    public void setSink(N sink) {
+        assert this.sink == null : "sink node has already been set";
+        this.sink = sink;
+    }
+
+    @Override
+    public void addEdge(boolean edgeSign, N from, N to) {
+        if (!edgeSign && hasEdge(true, from, to)) {
+            return; // do not add 'false' edge that duplicates the 'true' edge
+        }
+        addEdgeImpl(edgeSign, from, to);
+    }
+
+    @Override
+    public boolean hasEdgesFrom(N node) {
+        return getEdges(true).containsKey(node) || getEdges(false).containsKey(node);
+    }
+
+    @Override
+    public boolean hasEdge(boolean edgeSign, N from, N to) {
+        Map<N, N> map = getEdges(edgeSign);
+        return map.containsKey(from) && map.get(from).equals(to);
+    }
+
+    protected Map<N, N> getEdges(boolean edgeSign) {
+        return edgeSign ? edges : altEdges;
+    }
+
+    private void addEdgeImpl(boolean edgeSign, N from, N to) {
+        assert (from != null) : "attempt to add to graph the null node";
+        assert (to != null) : "attempt to add to graph the null node";
+
+        Map<N, N> edgesMap = getEdges(edgeSign);
+        Map<N, N> altEdgesMap = getEdges(!edgeSign);
+
+        // TODO: this check is for debug only
+        // TODO: remove this after tests are completed
+        if (edgesMap.containsKey(from)) {
+            N oldTo = edgesMap.get(from);
+            if (!oldTo.equals(to)) {
+                System.err.println("WARNING: overwriting edge " + from + " -> " + oldTo + " with edge " + from + " -> " + to);
+            }
+        }
+
+        if (altEdgesMap.containsKey(from) && altEdgesMap.get(from).equals(to)) {
+            throw new IllegalArgumentException("Attempt to add " + getEdgeTypeText(edgeSign) + "-edge while already having " +
+                    getEdgeTypeText(!edgeSign) + "-edge " + from + " -> " + to);
+        }
+
+        edgesMap.put(from, to);
+    }
+
+    private String getEdgeTypeText(boolean edgeSign) {
+        return (edgeSign) ? "true" : "false";
+    }
 }

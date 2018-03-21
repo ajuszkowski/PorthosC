@@ -4,48 +4,51 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.utils.CollectionUtils;
 
+import javax.xml.stream.XMLEventWriter;
 import java.util.*;
 
 
-public class XUnrolledProcessBuilder
-        extends XProcessBuilderBase<XUnrolledProcess>
-        implements UnrolledFlowGraphBuilder<XEvent, XUnrolledProcess> {
+public class XUnrolledProcessBuilder extends UnrolledFlowGraphBuilder<XEvent, XUnrolledProcess> {
+    private final String processId;
 
-    private Deque<XEvent> linearisedQueue;
-    private Map<XEvent, Set<XEvent>> predecessorsMap;
 
     public XUnrolledProcessBuilder(String processId) {
-        super(processId);
-        this.linearisedQueue = new ArrayDeque<>();
-        this.predecessorsMap = new HashMap<>();
+        this.processId = processId;
     }
 
     @Override
     public XUnrolledProcess build() {
-        return new XUnrolledProcess(getProcessId(), getSource(), getSink(),
-                ImmutableMap.copyOf(getEdges(true)),
-                ImmutableMap.copyOf(getEdges(false)),
-                ImmutableList.copyOf(linearisedQueue),
-                CollectionUtils.buildMapOfSets(predecessorsMap));
+        finishBuilding();
+        return new XUnrolledProcess(getProcessId(),
+                                    getSource(),
+                                    getSink(),
+                                    buildEdges(true),
+                                    buildEdges(false),
+                                    buildReversedEdges(true),
+                                    buildReversedEdges(false),
+                                    buildLayers());
+    }
+
+    public String getProcessId() {
+        return processId;
+    }
+
+
+
+
+    @Override
+    public void setSource(XEvent source) {
+        assert source instanceof XEntryEvent : source.getClass().getSimpleName();
+        super.setSource(source);
     }
 
     @Override
-    public void addNextLinearisedNode(XEvent event) {
-        if (linearisedQueue.size() == 0) {
-            linearisedQueue.add(event);
-        }
-        if (!linearisedQueue.contains(event)) { // no loops => safe (check is for not to add multiple [EXIT] nodes)
-            linearisedQueue.addFirst(event);
-        }
-    }
-
-    @Override
-    public void addPredecessorPair(XEvent child, XEvent parent) {
-        if (!predecessorsMap.containsKey(child)) {
-            predecessorsMap.put(child, new HashSet<>());
-        }
-        predecessorsMap.get(child).add(parent);
+    public void setSink(XEvent sink) {
+        assert sink instanceof XExitEvent : sink.getClass().getSimpleName();
+        super.setSink(sink);
     }
 }

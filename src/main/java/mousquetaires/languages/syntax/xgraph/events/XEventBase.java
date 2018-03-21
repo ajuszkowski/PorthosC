@@ -5,7 +5,6 @@ import java.util.Objects;
 
 
 public abstract class XEventBase implements XEvent {
-    protected static int NON_REFERENCE_ID = 0;
 
     private final XEventInfo info;
     private final int referenceId;
@@ -20,12 +19,13 @@ public abstract class XEventBase implements XEvent {
         return info;
     }
 
-    public boolean isReference() {
-        return getReferenceId() == NON_REFERENCE_ID;
-    }
-
+    @Override
     public int getReferenceId() {
         return referenceId;
+    }
+
+    public boolean isReference() {
+        return referenceId != NON_REFERENCE_ID;
     }
 
     public String getLabel() {
@@ -52,7 +52,10 @@ public abstract class XEventBase implements XEvent {
 
 
     protected String wrapWithBracketsAndReferenceId(String line) {
-        String referenceSuffix = (getReferenceId() == NON_REFERENCE_ID) ? "" : ", " + getReferenceId();
-        return"[" + line + referenceSuffix + "]";
+        return"[" + line + getReferenceIdSuffix() + "]";
+    }
+
+    private String getReferenceIdSuffix() {
+        return isReference() ? "" : ", " + referenceId;
     }
 }
