@@ -22,7 +22,7 @@ public class C11ToXgraph_LoopStatement_UnitTest extends C11ToXgraph_UnitTestBase
         XRegister registerX = memoryManager.getLocalMemoryUnit("x");
         XRegister registerY = memoryManager.getLocalMemoryUnit("y");
 
-        XComputationEvent conditionXequals0 = builder.createComputationEvent(XZOperator.CompareEquals,  registerX, memoryManager.getConstant(0));
+        XComputationEvent conditionXequals0 = builder.createComputationEvent(XZOperator.CompareEquals, registerX, memoryManager.getConstant(0));
         XComputationEvent conditionXgreater2 = builder.createComputationEvent(XZOperator.CompareGreater, registerX, memoryManager.getConstant(2));
         XComputationEvent conditionXgreater3 = builder.createComputationEvent(XZOperator.CompareGreater, registerX, memoryManager.getConstant(3));
         XComputationEvent conditionXgreater4 = builder.createComputationEvent(XZOperator.CompareGreater, registerX, memoryManager.getConstant(4));

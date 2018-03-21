@@ -1,7 +1,6 @@
 package mousquetaires.languages.converters.toytree.c11;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.converters.toytree.c11.helpers.C11ParserHelper;
 import mousquetaires.languages.parsers.C11Parser;
 import mousquetaires.languages.parsers.C11Visitor;
 import mousquetaires.languages.syntax.ytree.YEntity;

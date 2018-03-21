@@ -1,6 +1,5 @@
 package mousquetaires.languages.converters.tozformula;
 
-import mousquetaires.languages.converters.tozformula.helpers.ZDataFlowEncoder;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.process.XUnrolledProcess;
 import mousquetaires.languages.syntax.zformula.*;
@@ -10,7 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static mousquetaires.languages.syntax.zformula.ZHelper.*;
+import static mousquetaires.languages.syntax.zformula.ZBoolFormulaHelper.*;
 import static mousquetaires.languages.syntax.zformula.ZVariableHelper.constructEventVariable;
 
 
@@ -19,7 +18,7 @@ public class XFlowGraphToZformulaConverter {
 
     private final ZDataFlowEncoder dataFlowEncoder;
 
-    public XFlowGraphToZformulaConverter(ZDataFlowEncoder dataFlowEncoder) {
+    XFlowGraphToZformulaConverter(ZDataFlowEncoder dataFlowEncoder) {
         this.dataFlowEncoder = dataFlowEncoder;
         //this.controlFlowEncoder = new XControlFlowEncoder(ctx, process);
         //this.dataFlowEncoder = new XDataFlowEncoder(ctx, process);
@@ -60,7 +59,7 @@ public class XFlowGraphToZformulaConverter {
             dataFlowEncoder.updateReferences(current, parents);
 
             // encode dataflow if needed AND set up ssa map
-            ZBoolFormula dataFlowAssertion = current.accept(dataFlowEncoder); //TODO: do not implicitly update references while visit
+            ZBoolFormula dataFlowAssertion = dataFlowEncoder.encodeOrNull(current); //TODO: do not implicitly update references while visit
             if (dataFlowAssertion != null) {
                 resultFormula.addSubFormula(implies(currentId, dataFlowAssertion));
             }

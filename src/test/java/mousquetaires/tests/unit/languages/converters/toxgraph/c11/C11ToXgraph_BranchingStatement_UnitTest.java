@@ -27,7 +27,7 @@ public class C11ToXgraph_BranchingStatement_UnitTest extends C11ToXgraph_UnitTes
         XConstant const3 = memoryManager.getConstant(3);
         XConstant const4 = memoryManager.getConstant(4);
 
-        XComputationEvent conditionXequals1 = builder.createComputationEvent(XZOperator.CompareEquals,  registerX, const1);
+        XComputationEvent conditionXequals1 = builder.createComputationEvent(XZOperator.CompareEquals, registerX, const1);
         XComputationEvent conditionXgreater2 = builder.createComputationEvent(XZOperator.CompareGreater, registerX, const2);
         XMemoryEvent assignY2 = builder.createAssignmentEvent(registerY, const2);
         XMemoryEvent assignXY = builder.createAssignmentEvent(registerX, registerY);

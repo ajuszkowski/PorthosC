@@ -18,7 +18,7 @@ public class XUnaryComputationEvent extends XNullaryComputationEvent {
         this(info, operator, operand1, NON_REFERENCE_ID);
     }
 
-    protected XUnaryComputationEvent(XEventInfo info, XZOperator operator, XLocalMemoryUnit operand1, int referenceId) {
+    XUnaryComputationEvent(XEventInfo info, XZOperator operator, XLocalMemoryUnit operand1, int referenceId) {
         super(info, operand1, referenceId);
         this.operator = operator;
     }

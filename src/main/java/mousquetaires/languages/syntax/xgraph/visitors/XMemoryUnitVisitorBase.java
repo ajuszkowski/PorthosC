@@ -6,38 +6,38 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputatio
 import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XLocation;
 import mousquetaires.languages.syntax.xgraph.memories.XRegister;
-import mousquetaires.utils.exceptions.encoding.XEncoderIllegalStateException;
+import mousquetaires.utils.exceptions.encoding.XVisitorIllegalStateException;
 
 
 public class XMemoryUnitVisitorBase<T> implements XMemoryUnitVisitor<T> {
 
     @Override
     public T visit(XRegister entity) {
-        throw new XEncoderIllegalStateException();
+        throw new XVisitorIllegalStateException();
     }
 
     @Override
     public T visit(XLocation entity) {
-        throw new XEncoderIllegalStateException();
+        throw new XVisitorIllegalStateException();
     }
 
     @Override
     public T visit(XConstant entity) {
-        throw new XEncoderIllegalStateException();
+        throw new XVisitorIllegalStateException();
     }
 
     @Override
     public T visit(XNullaryComputationEvent entity) {
-        throw new XEncoderIllegalStateException();
+        throw new XVisitorIllegalStateException();
     }
 
     @Override
     public T visit(XUnaryComputationEvent entity) {
-        throw new XEncoderIllegalStateException();
+        throw new XVisitorIllegalStateException();
     }
 
     @Override
     public T visit(XBinaryComputationEvent entity) {
-        throw new XEncoderIllegalStateException();
+        throw new XVisitorIllegalStateException();
     }
 }

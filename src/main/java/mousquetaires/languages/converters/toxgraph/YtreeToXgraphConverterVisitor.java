@@ -1,8 +1,6 @@
 package mousquetaires.languages.converters.toxgraph;
 
 import mousquetaires.languages.ProgramLanguage;
-import mousquetaires.languages.converters.toxgraph.helpers.MemoryUnitConverter;
-import mousquetaires.languages.converters.toxgraph.helpers.XIntegerUnaryOperatorHelper;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.XProgramInterpretationBuilder;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
@@ -40,27 +38,22 @@ import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 
 
-// TODO: move this visitor to converter (replace conv. with visitor)
 public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
 
-    // Every visit() may not return something, but MUST process an XEvent or throw an exception
-    // is above actual now?..
-
-    // TODO: non-null checks everywhere!
-
+    private final XMemoryManager memoryManager;
     private final XProgramInterpretationBuilder program;
-    private final MemoryUnitConverter memoryUnitConverter;
+    private final YExpressionToXMemoryUnitConverter memoryUnitConverter;
 
-    YtreeToXgraphConverterVisitor(ProgramLanguage language, DataModel dataModel) {
-        //this.interpreter = interpreter;
-        XMemoryManager memoryManager = new XMemoryManager(language, dataModel);
+    public YtreeToXgraphConverterVisitor(ProgramLanguage language, DataModel dataModel) {
+        this.memoryManager = new XMemoryManager(language, dataModel);
         this.program = new XProgramInterpretationBuilder(memoryManager);
-        this.memoryUnitConverter = new MemoryUnitConverter(memoryManager, program, this);
+        this.memoryUnitConverter = new YExpressionToXMemoryUnitConverter(memoryManager, program);
     }
 
     public XProgram getProgram() {
         return program.build();
     }
+
 
     @Override
     public XEvent visit(YSyntaxTree node) {
@@ -109,6 +102,15 @@ public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
 
     // end of Litmus-specific visits.
 
+
+    @Override
+    public XEvent visit(YMethodSignature node) {
+        throw new NotImplementedException();
+    }
+
+    // =================================================================================================================
+
+
     @Override
     public XEvent visit(YIndexerExpression node) {
         throw new NotImplementedException();
@@ -137,16 +139,16 @@ public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
         YIntegerUnaryExpression.Kind yOperator = node.getKind();
         YExpression yBaseExpression = node.getExpression();
 
-        if (XIntegerUnaryOperatorHelper.isPrefixOperator(yOperator)) {
-            XLocalMemoryUnit baseLocal = memoryUnitConverter.convertToLocal(yBaseExpression);
-            XZOperator xOperator = XIntegerUnaryOperatorHelper.isPrefixIncrement(yOperator)
+        if (XOperatorHelper.isPrefixOperator(yOperator)) {
+            XLocalMemoryUnit baseLocal = memoryUnitConverter.tryConvertToLocalOrNull(yBaseExpression);
+            XZOperator xOperator = XOperatorHelper.isPrefixIncrement(yOperator)
                     ? XZOperator.IntegerPlus
                     : XZOperator.IntegerMinus;
             XConstant one = program.currentProcess.getConstant(1);
             XComputationEvent incremented = program.currentProcess.emitComputationEvent(xOperator, baseLocal, one);
             return program.currentProcess.emitMemoryEvent(baseLocal, incremented);
         }
-        else if (XIntegerUnaryOperatorHelper.isPostfixOperator(yOperator)) {
+        else if (XOperatorHelper.isPostfixOperator(yOperator)) {
             throw new NotImplementedException("Postfix operators are not supported for now");
         }
 
@@ -160,14 +162,14 @@ public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
 
     @Override
     public XEvent visit(YPointerUnaryExpression node) {
-        XMemoryUnit location = memoryUnitConverter.convert(node);
+        XMemoryUnit location = memoryUnitConverter.tryConvertOrThrow(node);
         return program.currentProcess.evaluateMemoryUnit(location);
     }
 
     @Override
     public XComputationEvent visit(YRelativeBinaryExpression node) {
-        XLocalMemoryUnit left  = memoryUnitConverter.convertToLocal(node.getLeftExpression());
-        XLocalMemoryUnit right = memoryUnitConverter.convertToLocal(node.getRightExpression());
+        XLocalMemoryUnit left  = memoryUnitConverter.tryConvertToLocalOrThrow(node.getLeftExpression());
+        XLocalMemoryUnit right = memoryUnitConverter.tryConvertToLocalOrThrow(node.getRightExpression());
         XZOperator operator = XZOperatorHelper.convert(node.getKind());
         return program.currentProcess.emitComputationEvent(operator, left, right);
     }
@@ -189,8 +191,8 @@ public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
 
     @Override
     public XMemoryEvent visit(YAssignmentExpression node) {
-        XMemoryUnit left = node.getAssignee().accept(memoryUnitConverter);
-        XMemoryUnit right = node.getExpression().accept(memoryUnitConverter);
+        XMemoryUnit left = memoryUnitConverter.tryConvertOrThrow(node.getAssignee());
+        XMemoryUnit right = memoryUnitConverter.tryConvertOrThrow(node.getExpression());
 
         XLocalMemoryUnit rightLocal, leftLocal;
         if (left instanceof XSharedMemoryUnit) {
@@ -306,11 +308,6 @@ public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
                 throw new XInterpretationError("Unknown jump statement kind: " + node.getKind());
         }
         return null; //program.currentProcess.emitFakeEvent();
-    }
-
-    @Override
-    public XEvent visit(YMethodSignature node) {
-        throw new NotImplementedException();
     }
 
     @Override

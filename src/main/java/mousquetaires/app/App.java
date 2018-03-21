@@ -25,6 +25,7 @@ public abstract class App {
         } catch (ParameterException e) {
             // TODO: log
             System.out.println(e.getMessage() + "\n");
+            System.out.println(options.getUsageString());
         }
         return null;
     }

@@ -17,7 +17,7 @@ public class XNullaryComputationEvent extends XComputationEventBase {
         this(info, firstOperand, NON_REFERENCE_ID);
     }
 
-    protected XNullaryComputationEvent(XEventInfo info, XLocalMemoryUnit firstOperand, int referenceId) {
+    XNullaryComputationEvent(XEventInfo info, XLocalMemoryUnit firstOperand, int referenceId) {
         super(info, firstOperand.getBitness(), referenceId);
         this.firstOperand = firstOperand;
     }

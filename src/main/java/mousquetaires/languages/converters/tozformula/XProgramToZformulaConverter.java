@@ -1,7 +1,5 @@
 package mousquetaires.languages.converters.tozformula;
 
-import mousquetaires.languages.converters.tozformula.helpers.ZDataFlowEncoder;
-import mousquetaires.languages.converters.tozformula.helpers.ZOperatorEncoder;
 import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
 import mousquetaires.languages.syntax.xgraph.process.XUnrolledProcess;
 import mousquetaires.languages.syntax.zformula.ZBoolConjunctionBuilder;
@@ -16,8 +14,7 @@ public class XProgramToZformulaConverter {
 
     // TODO: unify names 'encode', 'convert', ...
     public ZBoolFormula encode(XUnrolledProgram program) {
-        ZOperatorEncoder operatorEncoder = new ZOperatorEncoder();
-        ZDataFlowEncoder dataFlowEncoder = new ZDataFlowEncoder(operatorEncoder, program);
+        ZDataFlowEncoder dataFlowEncoder = new ZDataFlowEncoder(program);
 
         ZBoolConjunctionBuilder programFormula = new ZBoolConjunctionBuilder();
         for (XUnrolledProcess graph : program.getAllProcesses()) {

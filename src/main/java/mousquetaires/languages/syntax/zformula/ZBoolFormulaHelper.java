@@ -6,7 +6,7 @@ import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOper
 import java.util.List;
 
 
-public class ZHelper {
+public class ZBoolFormulaHelper {
 
     public static ZBoolFormula and(ZBoolFormula... expressions) {
         return and(List.of(expressions));

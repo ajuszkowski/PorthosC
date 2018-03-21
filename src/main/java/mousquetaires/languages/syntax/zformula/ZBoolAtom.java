@@ -7,6 +7,7 @@ import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOper
 
 public class ZBoolAtom extends ZBoolMultiFormula<ZAtom> implements ZBoolFormula, ZAtom {
 
+    // TODO: new abstraction or string
     private final XZOperator operator;
 
     public ZBoolAtom(XZOperator operator, ZAtom leftExpression, ZAtom rightExpression) {
