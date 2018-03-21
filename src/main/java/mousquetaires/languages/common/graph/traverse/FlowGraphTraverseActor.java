@@ -4,7 +4,7 @@ import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.common.graph.GraphNode;
 
 
-public interface FlowGraphDfsActor<N extends GraphNode, G extends FlowGraph<N>> {
+interface FlowGraphTraverseActor<N extends GraphNode, G extends FlowGraph<N>> {
 
     default void onStart() {
         // do nothing yet
@@ -29,6 +29,4 @@ public interface FlowGraphDfsActor<N extends GraphNode, G extends FlowGraph<N>> 
     default void onFinish() {
         // do nothing yet
     }
-
-
 }

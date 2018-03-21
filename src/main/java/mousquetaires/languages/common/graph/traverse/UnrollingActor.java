@@ -11,16 +11,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class UnrollingDfsActor<T extends GraphNode, G extends UnrolledFlowGraph<T>>
+class UnrollingActor<T extends GraphNode, G extends UnrolledFlowGraph<T>>
         extends BuilderBase<G>
-        implements FlowGraphDfsActor<T, G> {
+        implements FlowGraphTraverseActor<T, G> {
 
     private final UnrolledFlowGraphBuilder<T, G> builder;
     private Set<T> leaves;
 
     private boolean waitingForStartEvent = true;
 
-    public UnrollingDfsActor(UnrolledFlowGraphBuilder<T, G> builder) {
+    UnrollingActor(UnrolledFlowGraphBuilder<T, G> builder) {
         this.builder = builder;
         this.leaves = new HashSet<>();
     }

@@ -5,12 +5,12 @@ import mousquetaires.languages.common.graph.UnrolledFlowGraph;
 import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
 
 
-public class LineariserDfsActor<N extends GraphNode, G extends UnrolledFlowGraph<N>>
-        implements FlowGraphDfsActor<N, G> {
+class LinearisationActor<N extends GraphNode, G extends UnrolledFlowGraph<N>>
+        implements FlowGraphTraverseActor<N, G> {
 
     private final UnrolledFlowGraphBuilder<N, G> builder;
 
-    public LineariserDfsActor(UnrolledFlowGraphBuilder<N, G> builder) {
+    LinearisationActor(UnrolledFlowGraphBuilder<N, G> builder) {
         this.builder = builder;
     }
 
