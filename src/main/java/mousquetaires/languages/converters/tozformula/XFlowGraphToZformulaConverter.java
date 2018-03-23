@@ -39,64 +39,62 @@ public class XFlowGraphToZformulaConverter {
         visited.add(process.sink());
 
 
-        Iterator<UnrolledNodesLayer<XEvent>> layersIterator = process.layersIterator();
+        Iterator<XEvent> layersIterator = process.layersIterator();
 
         while (layersIterator.hasNext()) {
-            UnrolledNodesLayer<XEvent> layer = layersIterator.next();
-            for (XEvent current : layer.getNodes()) {
+            XEvent current = layersIterator.next();
 
-                if (visited.contains(current)) {
-                    continue;
-                }
-
-                ZBoolVariable currentId = constructEventVariable(current);
-
-                // encode control-flow, 'next -> prev'
-                //if (!current.equals(process.source())) {
-                for (boolean edgeKind : new boolean[] { true, false }) {
-                    Set<XEvent> parents = process.predecessors(edgeKind, current);
-                    assert parents.size() > 0;
-                    List<ZBoolFormula> parentsIds = new ArrayList<>(parents.size());
-                    for (XEvent parent : parents) {
-                        parentsIds.add(constructEventVariable(parent));
-                    }
-
-                    ZBoolFormula parentsSubFormula = edgeKind
-                            ? or(parentsIds)
-                            : not(or(parentsIds));
-                    ZBoolFormula nextImpliesPreviouses = implies(currentId, parentsSubFormula);
-                    resultFormula.addSubFormula(nextImpliesPreviouses);
-
-                    // update references from all parents
-                    dataFlowEncoder.updateReferences(current, parents);
-                }
-
-                // encode dataflow if needed AND set up ssa map
-                ZBoolFormula dataFlowAssertion = dataFlowEncoder.encodeOrNull(
-                        current); //TODO: do not implicitly update references while visit
-                if (dataFlowAssertion != null) {
-                    resultFormula.addSubFormula(implies(currentId, dataFlowAssertion));
-                }
-
-                //if (!current.equals(process.sink())) {
-                //    //XEvent nextThen = process.child(current);
-                //    //queue.addLast(nextThen);
-                //    //ZBoolVariable nextThenId = constructEventVariable(nextThen);
-                //
-                //    //// encode control-flow, 'if(c){a}else{b}' as 'not (a and b)'
-                //    //if (process.hasAlternativeChild(current)) {
-                //    //    XEvent nextElse = process.alternativeChild(current);
-                //    //    //queue.addLast(nextElse);
-                //    //
-                //    //    // add constraint 'not both then and else'
-                //    //    ZBoolVariable nextElseId = constructEventVariable(nextElse);
-                //    //    ZBoolFormula branchingControlFlow = not(and(nextThenId, nextElseId)); //TODO: <--- THIS IS NOT CORRECT!!!
-                //    //    resultFormula.addSubFormula(branchingControlFlow);
-                //    //}
-                //}
-
-                visited.add(current);
+            if (visited.contains(current)) {
+                continue;
             }
+
+            ZBoolVariable currentId = constructEventVariable(current);
+
+            // encode control-flow, 'next -> prev'
+            //if (!current.equals(process.source())) {
+            for (boolean edgeKind : new boolean[] { true, false }) {
+                Set<XEvent> parents = process.predecessors(edgeKind, current);
+                assert parents.size() > 0;
+                List<ZBoolFormula> parentsIds = new ArrayList<>(parents.size());
+                for (XEvent parent : parents) {
+                    parentsIds.add(constructEventVariable(parent));
+                }
+
+                ZBoolFormula parentsSubFormula = edgeKind
+                        ? or(parentsIds)
+                        : not(or(parentsIds));
+                ZBoolFormula nextImpliesPreviouses = implies(currentId, parentsSubFormula);
+                resultFormula.addSubFormula(nextImpliesPreviouses);
+
+                // update references from all parents
+                dataFlowEncoder.updateReferences(current, parents);
+            }
+
+            // encode dataflow if needed AND set up ssa map
+            ZBoolFormula dataFlowAssertion = dataFlowEncoder.encodeOrNull(
+                    current); //TODO: do not implicitly update references while visit
+            if (dataFlowAssertion != null) {
+                resultFormula.addSubFormula(implies(currentId, dataFlowAssertion));
+            }
+
+            //if (!current.equals(process.sink())) {
+            //    //XEvent nextThen = process.child(current);
+            //    //queue.addLast(nextThen);
+            //    //ZBoolVariable nextThenId = constructEventVariable(nextThen);
+            //
+            //    //// encode control-flow, 'if(c){a}else{b}' as 'not (a and b)'
+            //    //if (process.hasAlternativeChild(current)) {
+            //    //    XEvent nextElse = process.alternativeChild(current);
+            //    //    //queue.addLast(nextElse);
+            //    //
+            //    //    // add constraint 'not both then and else'
+            //    //    ZBoolVariable nextElseId = constructEventVariable(nextElse);
+            //    //    ZBoolFormula branchingControlFlow = not(and(nextThenId, nextElseId)); //TODO: <--- THIS IS NOT CORRECT!!!
+            //    //    resultFormula.addSubFormula(branchingControlFlow);
+            //    //}
+            //}
+
+            visited.add(current);
         }
 
         return resultFormula.build();

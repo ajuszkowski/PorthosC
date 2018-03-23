@@ -2,13 +2,14 @@ package mousquetaires.languages.common.graph;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedMap;
 
 import java.util.Iterator;
 
 
 public abstract class UnrolledFlowGraph<N extends GraphNode> extends FlowGraph<N> {
 
-    private final ImmutableMap<Integer, UnrolledNodesLayer<N>> layers; // TODO: need new builder for test unrolled graph
+    private final ImmutableSortedMap<Integer, UnrolledNodesLayer<N>> layers; // TODO: need new builder for test unrolled graph
 
     private ImmutableMap<N, ImmutableSet<N>> reversedEdges;
     private ImmutableMap<N, ImmutableSet<N>> altReversedEdges;
@@ -19,16 +20,15 @@ public abstract class UnrolledFlowGraph<N extends GraphNode> extends FlowGraph<N
                              ImmutableMap<N, N> altEdges,
                              ImmutableMap<N, ImmutableSet<N>> reversedEdges,
                              ImmutableMap<N, ImmutableSet<N>> altReversedEdges,
-                             ImmutableMap<Integer, UnrolledNodesLayer<N>> layers) {
+                             ImmutableSortedMap<Integer, UnrolledNodesLayer<N>> layers) {
         super(source, sink, edges, altEdges);
         this.reversedEdges = reversedEdges;
         this.altReversedEdges = altReversedEdges;
         this.layers = layers;
     }
 
-    public Iterator<UnrolledNodesLayer<N>> layersIterator() {
-
-        //return layers.values().iterator(); // TODO: check whether we can iterate multiple times via same iterator layersIterator()
+    public Iterator<N> layersIterator() {
+        return new LinearisationIterator(layers);
     }
 
     public ImmutableSet<N> predecessors(boolean edgeKind, N node) {
@@ -39,5 +39,40 @@ public abstract class UnrolledFlowGraph<N extends GraphNode> extends FlowGraph<N
 
     public ImmutableMap<N, ImmutableSet<N>> getReversedEdges(boolean edgesSign) {
         return edgesSign ? reversedEdges : altReversedEdges;
+    }
+
+    public class LinearisationIterator implements Iterator<N> {
+        private final ImmutableSortedMap<Integer, UnrolledNodesLayer<N>> nodesLayers;
+        private int currentLayerNumber;
+        private Iterator<N> currentLayerIterator;
+
+        public LinearisationIterator(ImmutableSortedMap<Integer, UnrolledNodesLayer<N>> nodesLayers) {
+            this.nodesLayers = nodesLayers;
+            this.currentLayerNumber = 0;
+            this.currentLayerIterator = nodesLayers.firstEntry().getValue().getNodesIterator();
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (currentLayerIterator.hasNext()) {
+                return true;
+            }
+            currentLayerNumber++;
+            if (!nodesLayers.containsKey(currentLayerNumber)) {
+                return false;
+            }
+            UnrolledNodesLayer<N> layer = nodesLayers.get(currentLayerNumber);
+            currentLayerIterator = layer.getNodesIterator();
+            if (!currentLayerIterator.hasNext()) {
+                throw new IllegalStateException("layers must have at least single node. The layer " +
+                                                        layer.getDepth() + " does not have any.");
+            }
+            return true;
+        }
+
+        @Override
+        public N next() {
+            return currentLayerIterator.next();
+        }
     }
 }

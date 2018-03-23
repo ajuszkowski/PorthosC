@@ -2,24 +2,22 @@ package mousquetaires.languages.common.graph;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedMap;
 import mousquetaires.utils.CollectionUtils;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 public abstract class UnrolledFlowGraphBuilder<N extends GraphNode, G extends FlowGraph<N>>
         extends FlowGraphBuilder<N, G> {
 
-    private Map<Integer, Set<N>> layers; // TODO: need new builder for test unrolled graph
+    private TreeMap<Integer, Set<N>> layers; // TODO: need new builder for test unrolled graph
 
     private Map<N, Set<N>> reversedEdges;
     private Map<N, Set<N>> altReversedEdges;
 
     public UnrolledFlowGraphBuilder() {
-        this.layers = new HashMap<>();
+        this.layers = new TreeMap<>();
         this.reversedEdges = new HashMap<>();
         this.altReversedEdges = new HashMap<>();
     }
@@ -28,8 +26,9 @@ public abstract class UnrolledFlowGraphBuilder<N extends GraphNode, G extends Fl
         return CollectionUtils.buildMapOfSets(getReversedEdges(edgeSign));
     }
 
-    public ImmutableMap<Integer, UnrolledNodesLayer<N>> buildLayers() {
-        ImmutableMap.Builder<Integer, UnrolledNodesLayer<N>> builder = new ImmutableMap.Builder<>();
+    public ImmutableSortedMap<Integer, UnrolledNodesLayer<N>> buildLayers() {
+        // TODO: probably overhead with iterating over sorted map + integer comparator
+        ImmutableSortedMap.Builder<Integer, UnrolledNodesLayer<N>> builder = new ImmutableSortedMap.Builder<>(Integer::compareTo);
         for (Map.Entry<Integer, Set<N>> pair : layers.entrySet()) {
             int depth = pair.getKey();
             ImmutableSet<N> nodes = ImmutableSet.copyOf(pair.getValue());

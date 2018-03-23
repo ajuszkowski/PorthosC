@@ -2,6 +2,8 @@ package mousquetaires.languages.common.graph;
 
 import com.google.common.collect.ImmutableSet;
 
+import java.util.Iterator;
+
 
 public class UnrolledNodesLayer<N extends GraphNode> {
     private final int depth;
@@ -19,4 +21,9 @@ public class UnrolledNodesLayer<N extends GraphNode> {
     public ImmutableSet<N> getNodes() {
         return nodes;
     }
+
+    public Iterator<N> getNodesIterator() {
+        return nodes.iterator();
+    }
+
 }

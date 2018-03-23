@@ -3,6 +3,7 @@ package mousquetaires.languages.syntax.xgraph.process;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedMap;
 import mousquetaires.languages.common.graph.UnrolledFlowGraph;
 import mousquetaires.languages.common.graph.UnrolledNodesLayer;
 import mousquetaires.languages.syntax.xgraph.XProcessEntity;
@@ -19,7 +20,7 @@ public final class XUnrolledProcess extends UnrolledFlowGraph<XEvent> implements
                             ImmutableMap<XEvent, XEvent> altEdges,
                             ImmutableMap<XEvent, ImmutableSet<XEvent>> edgesReversed,
                             ImmutableMap<XEvent, ImmutableSet<XEvent>> altEdgesReversed,
-                            ImmutableMap<Integer, UnrolledNodesLayer<XEvent>> layers) {
+                            ImmutableSortedMap<Integer, UnrolledNodesLayer<XEvent>> layers) {
         super(source, sink, edges, altEdges, edgesReversed, altEdgesReversed, layers);
         this.processId = processId;
     }
