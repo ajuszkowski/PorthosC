@@ -47,14 +47,15 @@ public abstract class UnrolledFlowGraph<N extends GraphNode> extends FlowGraph<N
     }
 
     public class LinearisationIterator implements Iterator<N> {
-        private final ImmutableSortedMap<Integer, UnrolledNodesLayer<N>> nodesLayers;
-        private int currentLayerNumber;
+        private Iterator<UnrolledNodesLayer<N>> layersIterator;
         private Iterator<N> currentLayerIterator;
 
-        public LinearisationIterator(ImmutableSortedMap<Integer, UnrolledNodesLayer<N>> nodesLayers) {
-            this.nodesLayers = nodesLayers;
-            this.currentLayerNumber = 0;
-            this.currentLayerIterator = nodesLayers.firstEntry().getValue().getNodesIterator();
+        LinearisationIterator(ImmutableSortedMap<Integer, UnrolledNodesLayer<N>> nodesLayers) {
+            this.layersIterator = nodesLayers.values().iterator();
+            if (!this.layersIterator.hasNext()) {
+                throw new IllegalStateException("graph must have at least single layer");
+            }
+            this.currentLayerIterator = this.layersIterator.next().getNodesIterator();
         }
 
         @Override
@@ -62,15 +63,14 @@ public abstract class UnrolledFlowGraph<N extends GraphNode> extends FlowGraph<N
             if (currentLayerIterator.hasNext()) {
                 return true;
             }
-            currentLayerNumber++;
-            if (!nodesLayers.containsKey(currentLayerNumber)) {
+            if (!layersIterator.hasNext()) {
                 return false;
             }
-            UnrolledNodesLayer<N> layer = nodesLayers.get(currentLayerNumber);
-            currentLayerIterator = layer.getNodesIterator();
+            UnrolledNodesLayer<N> nextLayer = layersIterator.next();
+            currentLayerIterator = nextLayer.getNodesIterator();
             if (!currentLayerIterator.hasNext()) {
                 throw new IllegalStateException("layers must have at least single node. The layer " +
-                                                        layer.getDepth() + " does not have any.");
+                                                        nextLayer + " does not have any");
             }
             return true;
         }

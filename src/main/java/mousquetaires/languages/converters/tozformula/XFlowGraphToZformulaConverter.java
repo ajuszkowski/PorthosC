@@ -35,8 +35,7 @@ public class XFlowGraphToZformulaConverter {
         //queue.add(process.source());
 
         visited.add(process.source());
-        visited.add(process.sink());
-
+        //visited.add(process.sink());
 
         Iterator<XEvent> layersIterator = process.layersIterator();
 
