@@ -71,7 +71,7 @@ public abstract class FlowGraph<N extends GraphNode> {
     }
 
 
-    public int nodesCount() {
+    public int size() {
         // todo: count nodes while single-pass via information collector!
         return edges.keySet().size();
     }

@@ -1,6 +1,5 @@
 package mousquetaires.languages.converters.tozformula;
 
-import mousquetaires.languages.common.graph.UnrolledNodesLayer;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.process.XUnrolledProcess;
 import mousquetaires.languages.syntax.zformula.ZBoolConjunctionBuilder;
@@ -31,7 +30,7 @@ public class XFlowGraphToZformulaConverter {
     public ZBoolFormula encode(XUnrolledProcess process) {
         ZBoolConjunctionBuilder resultFormula = new ZBoolConjunctionBuilder();
 
-        Set<XEvent> visited = new HashSet<>(process.nodesCount());
+        Set<XEvent> visited = new HashSet<>(process.size());
         //Deque<XEvent> queue = new ArrayDeque<>(process.edges().size());
         //queue.add(process.source());
 
@@ -53,16 +52,21 @@ public class XFlowGraphToZformulaConverter {
             // encode control-flow, 'next -> prev'
             //if (!current.equals(process.source())) {
             for (boolean edgeKind : new boolean[] { true, false }) {
-                Set<XEvent> parents = process.predecessors(edgeKind, current);
+                if (!process.hasParent(edgeKind, current)) {
+                    continue;
+                }
+
+                Set<XEvent> parents = process.parents(edgeKind, current);
                 assert parents.size() > 0;
-                List<ZBoolFormula> parentsIds = new ArrayList<>(parents.size());
+                Set<ZBoolFormula> parentsVariables = new HashSet<>(parents.size());
                 for (XEvent parent : parents) {
-                    parentsIds.add(constructEventVariable(parent));
+                    assert visited.contains(parent) : parent;
+                    parentsVariables.add(constructEventVariable(parent));
                 }
 
                 ZBoolFormula parentsSubFormula = edgeKind
-                        ? or(parentsIds)
-                        : not(or(parentsIds));
+                        ? or(parentsVariables)
+                        : not(or(parentsVariables));
                 ZBoolFormula nextImpliesPreviouses = implies(currentId, parentsSubFormula);
                 resultFormula.addSubFormula(nextImpliesPreviouses);
 
@@ -71,8 +75,7 @@ public class XFlowGraphToZformulaConverter {
             }
 
             // encode dataflow if needed AND set up ssa map
-            ZBoolFormula dataFlowAssertion = dataFlowEncoder.encodeOrNull(
-                    current); //TODO: do not implicitly update references while visit
+            ZBoolFormula dataFlowAssertion = dataFlowEncoder.encodeOrNull(current); //TODO: do not implicitly update references while visit
             if (dataFlowAssertion != null) {
                 resultFormula.addSubFormula(implies(currentId, dataFlowAssertion));
             }
@@ -99,7 +102,6 @@ public class XFlowGraphToZformulaConverter {
 
         return resultFormula.build();
     }
-
 
         //public Expr encode_OLD(XProcess process) {
         //    XgraphLinearisedTraverser traverser = new XgraphLinearisedTraverser(process);

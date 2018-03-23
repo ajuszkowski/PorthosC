@@ -54,9 +54,9 @@ class CompositeTraverseActor<N extends GraphNode, G extends UnrolledFlowGraph<N>
     }
 
     @Override
-    public void onBoundAchieved(N lastNode) {
+    public void onLastNodeVisit(N lastNode) {
         for (FlowGraphTraverseActor<N, G> actor : actors) {
-            actor.onBoundAchieved(lastNode);
+            actor.onLastNodeVisit(lastNode);
         }
     }
 

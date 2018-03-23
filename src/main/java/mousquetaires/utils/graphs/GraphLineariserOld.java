@@ -25,7 +25,7 @@
 //
 //    public ImmutableList<T> computeLinearisedNodes() {
 //        if (result == null) {
-//            resultQueue = new ArrayDeque<>(graph.nodesCount());
+//            resultQueue = new ArrayDeque<>(graph.size());
 //            visited = new HashSet<>();
 //            visit(graph.source());
 //            result = ImmutableList.copyOf(resultQueue);

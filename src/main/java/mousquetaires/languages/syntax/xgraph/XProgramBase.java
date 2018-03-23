@@ -11,7 +11,6 @@ public abstract class XProgramBase<G extends FlowGraph<XEvent>> implements XEnti
     private final ImmutableList<G> processes;
     //private final XPostProcess postlude;
 
-
     XProgramBase(ImmutableList<G> processes) {
         //this.prelude = prelude;
         this.processes = processes;
@@ -20,6 +19,14 @@ public abstract class XProgramBase<G extends FlowGraph<XEvent>> implements XEnti
 
     public ImmutableList<G> getAllProcesses() {
         return processes;
+    }
+
+    public int size() {
+        int result = 0;
+        for (G process : processes) {
+            result += process.size();
+        }
+        return result;
     }
 
     public G getProcess(int index) {

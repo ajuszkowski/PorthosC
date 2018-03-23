@@ -59,17 +59,17 @@ public class CollectionUtils {
         return builder.build();
     }
 
-    public static <T> T getSingleElement(Set<T> set) {
-        Iterator<T> iterator = set.iterator();
+    public static <T> T getSingleElement(Collection<T> collection) {
+        Iterator<T> iterator = collection.iterator();
 
         if (!iterator.hasNext()) {
-            throw new RuntimeException("Set is empty");
+            throw new RuntimeException("Collection is empty");
         }
 
         T element = iterator.next();
 
         if (iterator.hasNext()) {
-            throw new RuntimeException("Set contains more than one item: [" + Joiner.on(",").join(set) + "]");
+            throw new RuntimeException("Collection contains more than one item: [" + Joiner.on(",").join(collection) + "]");
         }
 
         return element;

@@ -1,8 +1,11 @@
 package mousquetaires.languages.syntax.zformula;
 
-public class ZBoolVariable extends ZVariable implements ZBoolFormula, ZAtom {
+import mousquetaires.languages.syntax.zformula.visitors.ZBoolAtom;
 
-    public ZBoolVariable(String name) {
+
+public class ZBoolVariable extends ZVariable implements ZBoolAtom {
+
+    ZBoolVariable(String name) {
         super(name);
     }
 }

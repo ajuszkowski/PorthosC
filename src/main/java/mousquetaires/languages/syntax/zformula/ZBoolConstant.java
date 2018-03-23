@@ -1,6 +1,9 @@
 package mousquetaires.languages.syntax.zformula;
 
-public enum ZBoolConstant implements ZBoolFormula, ZAtom {
+import mousquetaires.languages.syntax.zformula.visitors.ZBoolAtom;
+
+
+public enum ZBoolConstant implements ZBoolAtom {
     True,
     False,
     ;

@@ -22,7 +22,7 @@ interface FlowGraphTraverseActor<N extends GraphNode, G extends FlowGraph<N>> {
         // do nothing yet
     }
 
-    default void onBoundAchieved(N lastNode) {
+    default void onLastNodeVisit(N lastNode) {
         // do nothing yet
     }
 

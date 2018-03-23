@@ -14,6 +14,7 @@ import mousquetaires.utils.CollectionUtils;
 import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.encoding.XVisitorIllegalStateException;
 
+import java.util.Collection;
 import java.util.Set;
 
 
@@ -22,25 +23,20 @@ class ZDataFlowEncoder extends XEventVisitorBase<ZBoolFormula> {
     private final ZStaticSingleAssignmentMap ssaMap;
     //private final ZOperatorEncoder operatorEncoder;
 
-    public ZDataFlowEncoder(XUnrolledProgram program) {
-        this.ssaMap = new ZStaticSingleAssignmentMap();
+    ZDataFlowEncoder(XUnrolledProgram program) {
+        this.ssaMap = new ZStaticSingleAssignmentMap(program.size());
         //this.operatorEncoder = new ZOperatorEncoder();
     }
 
-    public void updateReferences(XEvent current, Set<XEvent> parents) {
-        if (parents.size() == 1) {
-            XEvent parent = CollectionUtils.getSingleElement(parents);
-            ssaMap.copyValues(current, parent);
-        }
-        else {
-            assert parents.size() > 1 : parents.size();
-            throw new NotImplementedException();
+    public void updateReferences(XEvent current, Collection<XEvent> parents) {
+        for (XEvent parent : parents) {
+            ssaMap.copyValues(parent, current);
         }
     }
 
     public ZBoolFormula encodeOrNull(XEvent current) {
         try {
-            return current.accept(this);
+            return null;//current.accept(this);//TODO
         }
         catch (XVisitorIllegalStateException e) {
             return null;

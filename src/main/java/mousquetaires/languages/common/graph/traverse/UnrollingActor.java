@@ -37,14 +37,8 @@ class UnrollingActor<T extends GraphNode, G extends UnrolledFlowGraph<T>>
     }
 
     @Override
-    public final void onBoundAchieved(T lastNode) {
-        T computedSink = CollectionUtils.getSingleElement(leaves); //must be exactly 1 element in collection
-        if (builder.getSink() == null) {
-            builder.setSink(computedSink);
-        }
-        else {
-            assert builder.getSink().equals(computedSink) : "sinks mismatch: old=" + builder.getSink() + ", new=" + computedSink;
-        }
+    public void onFinish() {
+        setSink();
     }
 
     private void preProcessEdge(T from, T to) {
@@ -62,6 +56,16 @@ class UnrollingActor<T extends GraphNode, G extends UnrolledFlowGraph<T>>
         leaves.remove(from);
         if (!builder.hasEdgesFrom(to)) {
             leaves.add(to);
+        }
+    }
+
+    private void setSink() {
+        T computedSink = CollectionUtils.getSingleElement(leaves); //must be exactly 1 element in collection
+        if (builder.getSink() == null) {
+            builder.setSink(computedSink);
+        }
+        else {
+            assert builder.getSink().equals(computedSink) : "sinks mismatch: old=" + builder.getSink() + ", new=" + computedSink;
         }
     }
 }

@@ -31,9 +31,14 @@ public abstract class UnrolledFlowGraph<N extends GraphNode> extends FlowGraph<N
         return new LinearisationIterator(layers);
     }
 
-    public ImmutableSet<N> predecessors(boolean edgeKind, N node) {
+
+    public boolean hasParent(boolean edgeSign, N node) {
+        return getReversedEdges(edgeSign).containsKey(node);
+    }
+
+    public ImmutableSet<N> parents(boolean edgeKind, N node) {
         ImmutableMap<N, ImmutableSet<N>> reversedMap = getReversedEdges(edgeKind);
-        assert reversedMap.containsKey(node);
+        assert reversedMap.containsKey(node) : node;
         return reversedMap.get(node);
     }
 
