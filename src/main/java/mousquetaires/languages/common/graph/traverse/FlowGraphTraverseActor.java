@@ -2,31 +2,37 @@ package mousquetaires.languages.common.graph.traverse;
 
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.common.graph.GraphNode;
+import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
 
 
-interface FlowGraphTraverseActor<N extends GraphNode, G extends FlowGraph<N>> {
+abstract class FlowGraphTraverseActor<N extends GraphNode, G extends FlowGraph<N>> {
+    protected final UnrolledFlowGraphBuilder<N, G> builder;
 
-    default void onStart() {
+    FlowGraphTraverseActor(UnrolledFlowGraphBuilder<N, G> builder) {
+        this.builder = builder;
+    }
+
+    public void onStart() {
         // do nothing yet
     }
 
-    default void onNodePreVisit(N node) {
+    public void onNodePreVisit(N node) {
         // do nothing yet
     }
 
-    default void onEdgeVisit(boolean edgeKind, N from, N to) {
+    public void onEdgeVisit(boolean edgeKind, N from, N to) {
         // do nothing yet
     }
 
-    default void onNodePostVisit(N node) {
+    public void onNodePostVisit(N node) {
         // do nothing yet
     }
 
-    default void onLastNodeVisit(N lastNode) {
+    public void onLastNodeVisit(N lastNode) {
         // do nothing yet
     }
 
-    default void onFinish() {
+    public void onFinish() {
         // do nothing yet
     }
 }

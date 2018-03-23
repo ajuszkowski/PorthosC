@@ -5,33 +5,26 @@ import mousquetaires.languages.common.graph.UnrolledFlowGraph;
 import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
 import mousquetaires.utils.CollectionUtils;
 import mousquetaires.utils.StringUtils;
-import mousquetaires.utils.patterns.BuilderBase;
 
 import java.util.HashSet;
 import java.util.Set;
 
 
-class UnrollingActor<T extends GraphNode, G extends UnrolledFlowGraph<T>>
-        extends BuilderBase<G>
-        implements FlowGraphTraverseActor<T, G> {
+class UnrollingActor<N extends GraphNode, G extends UnrolledFlowGraph<N>>
+        extends FlowGraphTraverseActor<N, G> {
 
-    private final UnrolledFlowGraphBuilder<T, G> builder;
-    private Set<T> leaves;
+    private Set<N> leaves;
 
     private boolean waitingForStartEvent = true;
 
-    UnrollingActor(UnrolledFlowGraphBuilder<T, G> builder) {
-        this.builder = builder;
+    UnrollingActor(UnrolledFlowGraphBuilder<N, G> builder) {
+        super(builder);
         this.leaves = new HashSet<>();
     }
 
-    @Override
-    public G build() {
-        return builder.build();
-    }
 
     @Override
-    public final void onEdgeVisit(boolean edgeKind, T from, T to) {
+    public final void onEdgeVisit(boolean edgeKind, N from, N to) {
         preProcessEdge(from, to);
         builder.addEdge(edgeKind, from, to);
     }
@@ -41,7 +34,7 @@ class UnrollingActor<T extends GraphNode, G extends UnrolledFlowGraph<T>>
         setSink();
     }
 
-    private void preProcessEdge(T from, T to) {
+    private void preProcessEdge(N from, N to) {
         if (waitingForStartEvent) {
             if (builder.getSource() == null) {
                 builder.setSource(from);
@@ -54,13 +47,13 @@ class UnrollingActor<T extends GraphNode, G extends UnrolledFlowGraph<T>>
         }
 
         leaves.remove(from);
-        if (!builder.hasChildren(to)) {
+        if (!builder.hasEdgesFrom(to)) {
             leaves.add(to);
         }
     }
 
     private void setSink() {
-        T computedSink = CollectionUtils.getSingleElement(leaves); //must be exactly 1 element in collection
+        N computedSink = CollectionUtils.getSingleElement(leaves); //must be exactly 1 element in collection
         if (builder.getSink() == null) {
             builder.setSink(computedSink);
         }

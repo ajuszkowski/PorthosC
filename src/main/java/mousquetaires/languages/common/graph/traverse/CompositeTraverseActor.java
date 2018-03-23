@@ -5,24 +5,23 @@ import mousquetaires.languages.common.graph.GraphNode;
 import mousquetaires.languages.common.graph.UnrolledFlowGraph;
 import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
 
-import java.util.HashSet;
 
+class CompositeTraverseActor<N extends GraphNode, G extends UnrolledFlowGraph<N>>
+        extends FlowGraphTraverseActor<N, G> {
 
-class CompositeTraverseActor<N extends GraphNode, G extends UnrolledFlowGraph<N>> implements
-                                                                                  FlowGraphTraverseActor<N, G> {
-    private final UnrolledFlowGraphBuilder<N, G> graphBuilder;
     private final ImmutableSet<FlowGraphTraverseActor<N, G>> actors;
 
-    CompositeTraverseActor(UnrolledFlowGraphBuilder<N, G> graphBuilder) {
-        this.graphBuilder = graphBuilder;
+    CompositeTraverseActor(UnrolledFlowGraphBuilder<N, G> builder) {
+        super(builder);
         // Add here new actors that gather information about graph during graph traverse
         ImmutableSet.Builder<FlowGraphTraverseActor<N, G>> actorsBuilder = new ImmutableSet.Builder<>();
-        actorsBuilder.add(new UnrollingActor<>(graphBuilder));
+        actorsBuilder.add(new UnrollingActor<>(builder));
+        actorsBuilder.add(new DfsLinearisationActor<>(builder));
         this.actors = actorsBuilder.build();
     }
 
     public G buildGraph() {
-        return graphBuilder.build();
+        return builder.build();
     }
 
     @Override

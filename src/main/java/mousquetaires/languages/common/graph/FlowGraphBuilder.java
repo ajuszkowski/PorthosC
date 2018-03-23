@@ -67,7 +67,7 @@ public abstract class FlowGraphBuilder<N extends GraphNode, G extends FlowGraph<
     }
 
     @Override
-    public boolean hasChildren(N node) {
+    public boolean hasEdgesFrom(N node) {
         return getEdges(true).containsKey(node) || getEdges(false).containsKey(node);
     }
 

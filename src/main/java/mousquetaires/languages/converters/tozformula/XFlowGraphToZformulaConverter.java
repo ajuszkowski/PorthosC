@@ -41,6 +41,7 @@ public class XFlowGraphToZformulaConverter {
 
         while (layersIterator.hasNext()) {
             XEvent current = layersIterator.next();
+            assert current.isReference() : "not unrolled graph?";
 
             if (visited.contains(current)) {
                 continue;
@@ -48,8 +49,7 @@ public class XFlowGraphToZformulaConverter {
 
             ZBoolVariable currentId = constructEventVariable(current);
 
-            // encode control-flow, 'next -> prev'
-            //if (!current.equals(process.source())) {
+            // encode control-flow, 'current -> (parent1 \/ parent2 \/ ...)'
             for (boolean edgeKind : new boolean[] { true, false }) {
                 if (!process.hasParent(edgeKind, current)) {
                     continue;
@@ -59,18 +59,17 @@ public class XFlowGraphToZformulaConverter {
                 assert parents.size() > 0;
                 Set<ZBoolFormula> parentsVariables = new HashSet<>(parents.size());
                 for (XEvent parent : parents) {
-                    assert visited.contains(parent) : parent;
+                    assert visited.contains(parent) : parent + " violates topological sorting";
+                    // update references from all parents:
+                    dataFlowEncoder.updateReferences(current, parent);
                     parentsVariables.add(constructEventVariable(parent));
                 }
 
                 ZBoolFormula parentsSubFormula = edgeKind
                         ? or(parentsVariables)
                         : not(or(parentsVariables));
-                ZBoolFormula nextImpliesPreviouses = implies(currentId, parentsSubFormula);
-                resultFormula.addSubFormula(nextImpliesPreviouses);
-
-                // update references from all parents
-                dataFlowEncoder.updateReferences(current, parents);
+                ZBoolFormula currentImpliesParents = implies(currentId, parentsSubFormula);
+                resultFormula.addSubFormula(currentImpliesParents);
             }
 
             // encode dataflow if needed AND set up ssa map

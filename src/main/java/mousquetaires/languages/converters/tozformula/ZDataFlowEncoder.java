@@ -28,10 +28,8 @@ class ZDataFlowEncoder extends XEventVisitorBase<ZBoolFormula> {
         //this.operatorEncoder = new ZOperatorEncoder();
     }
 
-    public void updateReferences(XEvent current, Collection<XEvent> parents) {
-        for (XEvent parent : parents) {
-            ssaMap.copyValues(parent, current);
-        }
+    public void updateReferences(XEvent current, XEvent parent) {
+        ssaMap.copyValues(parent, current);
     }
 
     public ZBoolFormula encodeOrNull(XEvent current) {
