@@ -18,7 +18,7 @@ public class UnrolledIntFlowGraphBuilder extends UnrolledFlowGraphBuilder<IntGra
                                         buildEdges(false),
                                         buildReversedEdges(true),
                                         buildReversedEdges(false),
-                                        buildLayers());
+                                        buildNodesLinearised());
     }
 
 }

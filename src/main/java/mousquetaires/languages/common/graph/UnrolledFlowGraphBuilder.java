@@ -1,5 +1,6 @@
 package mousquetaires.languages.common.graph;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
@@ -11,13 +12,14 @@ import java.util.*;
 public abstract class UnrolledFlowGraphBuilder<N extends GraphNode, G extends FlowGraph<N>>
         extends FlowGraphBuilder<N, G> {
 
-    private TreeMap<Integer, Set<N>> layers; // TODO: need new builder for test unrolled graph
+    // TODO: need new builder to test unrolled graph
+    private Deque<N> linearisationQueue;
 
     private Map<N, Set<N>> reversedEdges;
     private Map<N, Set<N>> altReversedEdges;
 
     public UnrolledFlowGraphBuilder() {
-        this.layers = new TreeMap<>();
+        this.linearisationQueue = new LinkedList<>();
         this.reversedEdges = new HashMap<>();
         this.altReversedEdges = new HashMap<>();
     }
@@ -26,29 +28,28 @@ public abstract class UnrolledFlowGraphBuilder<N extends GraphNode, G extends Fl
         return CollectionUtils.buildMapOfSets(getReversedEdges(edgeSign));
     }
 
-    public ImmutableSortedMap<Integer, UnrolledNodesLayer<N>> buildLayers() {
-        // TODO: probably overhead with iterating over sorted map + integer comparator
-        ImmutableSortedMap.Builder<Integer, UnrolledNodesLayer<N>> builder = new ImmutableSortedMap.Builder<>(Integer::compareTo);
-        for (Map.Entry<Integer, Set<N>> pair : layers.entrySet()) {
-            int depth = pair.getKey();
-            ImmutableSet<N> nodes = ImmutableSet.copyOf(pair.getValue());
-            UnrolledNodesLayer<N> layer = new UnrolledNodesLayer<>(depth, nodes);
-            builder.put(depth, layer);
-        }
-        return builder.build();
+    public void processTopologicallyNextNode(N node) {
+        linearisationQueue.addFirst(node); // todo: addLast ?
+    }
+
+    public ImmutableList<N> buildNodesLinearised() {
+        return ImmutableList.copyOf(linearisationQueue);
+    }
+
+    @Override
+    public void finishBuilding() {
+        super.finishBuilding();
     }
 
     @Override
     public void setSource(N source) {
         super.setSource(source);
-        addToLayers(source);
     }
 
     @Override
     public void addEdge(boolean edgeSign, N from, N to) {
         super.addEdge(edgeSign, from, to);
         this.addReversedEdgeImpl(edgeSign, to, from);
-        addToLayers(to);
     }
 
     protected Map<N, Set<N>> getReversedEdges(boolean edgeSign) {
@@ -61,13 +62,5 @@ public abstract class UnrolledFlowGraphBuilder<N extends GraphNode, G extends Fl
             reversedEdgesMap.put(child, new HashSet<>());
         }
         reversedEdgesMap.get(child).add(parent);
-    }
-
-    private void addToLayers(N node) {
-        int depth = node.getReferenceId();
-        if (!layers.containsKey(depth)) {
-            layers.put(depth, new HashSet<>());
-        }
-        layers.get(depth).add(node);
     }
 }

@@ -30,7 +30,7 @@ public class XUnrolledProcessBuilder extends UnrolledFlowGraphBuilder<XEvent, XU
                                     buildEdges(false),
                                     buildReversedEdges(true),
                                     buildReversedEdges(false),
-                                    buildLayers());
+                                    buildNodesLinearised());
     }
 
     public String getProcessId() {

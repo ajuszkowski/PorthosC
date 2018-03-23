@@ -1,5 +1,6 @@
 package mousquetaires.languages.common.graph;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
@@ -9,7 +10,7 @@ import java.util.Iterator;
 
 public abstract class UnrolledFlowGraph<N extends GraphNode> extends FlowGraph<N> {
 
-    private final ImmutableSortedMap<Integer, UnrolledNodesLayer<N>> layers; // TODO: need new builder for test unrolled graph
+    private final ImmutableList<N> nodesLinearised; // TODO: need new builder for test unrolled graph
 
     private ImmutableMap<N, ImmutableSet<N>> reversedEdges;
     private ImmutableMap<N, ImmutableSet<N>> altReversedEdges;
@@ -20,15 +21,15 @@ public abstract class UnrolledFlowGraph<N extends GraphNode> extends FlowGraph<N
                              ImmutableMap<N, N> altEdges,
                              ImmutableMap<N, ImmutableSet<N>> reversedEdges,
                              ImmutableMap<N, ImmutableSet<N>> altReversedEdges,
-                             ImmutableSortedMap<Integer, UnrolledNodesLayer<N>> layers) {
+                             ImmutableList<N> nodesLinearised) {
         super(source, sink, edges, altEdges);
         this.reversedEdges = reversedEdges;
         this.altReversedEdges = altReversedEdges;
-        this.layers = layers;
+        this.nodesLinearised = nodesLinearised;
     }
 
     public Iterator<N> layersIterator() {
-        return new LinearisationIterator(layers);
+        return nodesLinearised.iterator();
     }
 
 
@@ -44,40 +45,5 @@ public abstract class UnrolledFlowGraph<N extends GraphNode> extends FlowGraph<N
 
     public ImmutableMap<N, ImmutableSet<N>> getReversedEdges(boolean edgesSign) {
         return edgesSign ? reversedEdges : altReversedEdges;
-    }
-
-    public class LinearisationIterator implements Iterator<N> {
-        private Iterator<UnrolledNodesLayer<N>> layersIterator;
-        private Iterator<N> currentLayerIterator;
-
-        LinearisationIterator(ImmutableSortedMap<Integer, UnrolledNodesLayer<N>> nodesLayers) {
-            this.layersIterator = nodesLayers.values().iterator();
-            if (!this.layersIterator.hasNext()) {
-                throw new IllegalStateException("graph must have at least single layer");
-            }
-            this.currentLayerIterator = this.layersIterator.next().getNodesIterator();
-        }
-
-        @Override
-        public boolean hasNext() {
-            if (currentLayerIterator.hasNext()) {
-                return true;
-            }
-            if (!layersIterator.hasNext()) {
-                return false;
-            }
-            UnrolledNodesLayer<N> nextLayer = layersIterator.next();
-            currentLayerIterator = nextLayer.getNodesIterator();
-            if (!currentLayerIterator.hasNext()) {
-                throw new IllegalStateException("layers must have at least single node. The layer " +
-                                                        nextLayer + " does not have any");
-            }
-            return true;
-        }
-
-        @Override
-        public N next() {
-            return currentLayerIterator.next();
-        }
     }
 }
