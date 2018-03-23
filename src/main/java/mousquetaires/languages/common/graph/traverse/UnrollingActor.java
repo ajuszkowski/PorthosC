@@ -54,7 +54,7 @@ class UnrollingActor<T extends GraphNode, G extends UnrolledFlowGraph<T>>
         }
 
         leaves.remove(from);
-        if (!builder.hasEdgesFrom(to)) {
+        if (!builder.hasChildren(to)) {
             leaves.add(to);
         }
     }

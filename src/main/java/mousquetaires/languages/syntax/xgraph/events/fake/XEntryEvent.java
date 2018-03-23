@@ -11,7 +11,7 @@ import java.util.Objects;
 public final class XEntryEvent extends XFakeEvent {
 
     public XEntryEvent(XEventInfo info) {
-        super(info, NON_REFERENCE_ID);
+        super(info, FIRST_NODE_REFERENCE_ID);
     }
 
     @Override

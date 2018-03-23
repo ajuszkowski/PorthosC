@@ -24,10 +24,6 @@ public abstract class XEventBase implements XEvent {
         return referenceId;
     }
 
-    public boolean isReference() {
-        return referenceId != NON_REFERENCE_ID;
-    }
-
     public String getLabel() {
         return getInfo().getProcessId() + "_e" + hashCode();//getInfo().getStamp();
     }
@@ -56,6 +52,6 @@ public abstract class XEventBase implements XEvent {
     }
 
     private String getReferenceIdSuffix() {
-        return isReference() ? "" : ", " + referenceId;
+        return isReference() ? ", " + referenceId : "";
     }
 }

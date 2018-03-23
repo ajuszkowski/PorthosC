@@ -6,8 +6,6 @@ import java.util.Objects;
 
 
 public final class IntGraphNode implements GraphNode {
-    private static int NON_REFERENCE_ID = 0;
-
     private final int value;
     private final int referenceId;
 

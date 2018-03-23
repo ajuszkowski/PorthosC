@@ -20,7 +20,7 @@ public interface IFlowGraphBuilder<N extends GraphNode, G extends FlowGraph<N>> 
 
     void addEdge(boolean edgeSign, N from, N to);
 
-    boolean hasEdgesFrom(N node);
+    boolean hasChildren(N node);
 
     boolean hasEdge(boolean edgeSign, N from, N to);
 }
