@@ -11,10 +11,10 @@ public class ZVariableHelper {
     }
 
     public static ZBoolVariable constructConstantVariable(XMemoryUnit constant) {
-        return new ZBoolVariable(constant.getName());
+        return new ZBoolVariable(constant.getSmtLabel());
     }
 
     public static ZVariableReference constructMemoryUnitVariable(XMemoryUnit memoryUnit, int localityIndex) {
-        return new ZVariableReference(memoryUnit.getName(), localityIndex);
+        return new ZVariableReference(memoryUnit.getSmtLabel(), localityIndex);
     }
 }

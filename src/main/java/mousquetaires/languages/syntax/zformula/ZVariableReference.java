@@ -6,7 +6,7 @@ import java.util.Objects;
 public class ZVariableReference extends ZVariable implements ZAtom {
     private final int index;
 
-    public ZVariableReference(String name, int index) {
+    ZVariableReference(String name, int index) {
         super(name);
         this.index = index;
     }

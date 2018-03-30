@@ -10,6 +10,7 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitorBase;
 import mousquetaires.languages.syntax.xgraph.visitors.XVisitorIllegalStateException;
 import mousquetaires.languages.syntax.zformula.ZBoolFormula;
+import mousquetaires.languages.syntax.zformula.ZVariable;
 import mousquetaires.languages.syntax.zformula.ZVariableReference;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
@@ -52,21 +53,24 @@ class ZDataFlowEncoder extends XEventVisitorBase<ZBoolFormula> {
     @Override
     public ZBoolFormula visit(XBinaryComputationEvent event) {
         ZVariableReferenceMap map = ssaMap.getEventMapOrThrow(event);
-        ZVariableReference left = map.getReferenceOrThrow(event.getFirstOperand());
-        ZVariableReference right = map.getReferenceOrThrow(event.getSecondOperand());
+        ZVariable left = map.getReferenceOrThrow(event.getFirstOperand());
+        ZVariable right = map.getReferenceOrThrow(event.getSecondOperand());
         return equality(left, right);
     }
 
     @Override
     public ZBoolFormula visit(XStoreMemoryEvent event) {
-        throw new NotImplementedException();
+        ZVariableReferenceMap map = ssaMap.getEventMapOrThrow(event);
+        ZVariable srcLocal = map.getReferenceOrThrow(event.getSource());
+        ZVariable dstShared = map.updateReference(event.getDestination());
+        return equality(srcLocal, dstShared);
     }
 
     @Override
     public ZBoolFormula visit(XLoadMemoryEvent event) {
         ZVariableReferenceMap map = ssaMap.getEventMapOrThrow(event);
-        ZVariableReference sourceRef = map.getReferenceOrThrow(event.getSource());
-        ZVariableReference destRef = map.getReferenceOrThrow(event.getDestination());
-        return equality(sourceRef, destRef);
+        ZVariable srcShared = map.updateReference(event.getSource());
+        ZVariable dstLocal = map.updateReference(event.getDestination());
+        return equality(srcShared, dstLocal);
     }
 }
