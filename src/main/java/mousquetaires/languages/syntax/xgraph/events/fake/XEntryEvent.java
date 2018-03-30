@@ -15,7 +15,7 @@ public final class XEntryEvent extends XFakeEvent {
     }
 
     @Override
-    public String getLabel() {
+    public String getSmtLabel() {
         return "ENTRY_" + getInfo().getProcessId();
     }
 

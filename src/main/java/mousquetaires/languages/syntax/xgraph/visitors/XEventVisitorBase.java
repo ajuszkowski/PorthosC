@@ -10,7 +10,6 @@ import mousquetaires.languages.syntax.xgraph.events.fake.XNopEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
-import mousquetaires.utils.exceptions.encoding.XVisitorIllegalStateException;
 
 
 public abstract class XEventVisitorBase<T> implements XEventVisitor<T> {

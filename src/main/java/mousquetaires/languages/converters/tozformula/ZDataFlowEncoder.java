@@ -7,15 +7,13 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputat
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
-import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitorBase;
+import mousquetaires.languages.syntax.xgraph.visitors.XVisitorIllegalStateException;
 import mousquetaires.languages.syntax.zformula.ZBoolFormula;
-import mousquetaires.utils.CollectionUtils;
+import mousquetaires.languages.syntax.zformula.ZVariableReference;
 import mousquetaires.utils.exceptions.NotImplementedException;
-import mousquetaires.utils.exceptions.encoding.XVisitorIllegalStateException;
 
-import java.util.Collection;
-import java.util.Set;
+import static mousquetaires.languages.syntax.zformula.ZBoolFormulaHelper.equality;
 
 
 class ZDataFlowEncoder extends XEventVisitorBase<ZBoolFormula> {
@@ -34,7 +32,7 @@ class ZDataFlowEncoder extends XEventVisitorBase<ZBoolFormula> {
 
     public ZBoolFormula encodeOrNull(XEvent current) {
         try {
-            return null;//current.accept(this);//TODO
+            return current.accept(this);//TODO
         }
         catch (XVisitorIllegalStateException e) {
             return null;
@@ -48,15 +46,15 @@ class ZDataFlowEncoder extends XEventVisitorBase<ZBoolFormula> {
 
     @Override
     public ZBoolFormula visit(XUnaryComputationEvent event) {
-        throw new NotImplementedException();
+        throw new NotImplementedException(); // ?
     }
 
     @Override
     public ZBoolFormula visit(XBinaryComputationEvent event) {
-        XLocalMemoryUnit left = event.getFirstOperand();
-        XLocalMemoryUnit right = event.getSecondOperand();
-
-        throw new NotImplementedException();
+        ZVariableReferenceMap map = ssaMap.getEventMapOrThrow(event);
+        ZVariableReference left = map.getReferenceOrThrow(event.getFirstOperand());
+        ZVariableReference right = map.getReferenceOrThrow(event.getSecondOperand());
+        return equality(left, right);
     }
 
     @Override
@@ -66,6 +64,9 @@ class ZDataFlowEncoder extends XEventVisitorBase<ZBoolFormula> {
 
     @Override
     public ZBoolFormula visit(XLoadMemoryEvent event) {
-        throw new NotImplementedException();
+        ZVariableReferenceMap map = ssaMap.getEventMapOrThrow(event);
+        ZVariableReference sourceRef = map.getReferenceOrThrow(event.getSource());
+        ZVariableReference destRef = map.getReferenceOrThrow(event.getDestination());
+        return equality(sourceRef, destRef);
     }
 }

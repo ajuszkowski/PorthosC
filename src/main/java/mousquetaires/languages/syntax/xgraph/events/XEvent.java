@@ -8,8 +8,6 @@ public interface XEvent extends XEntity, GraphNode {
 
     XEventInfo getInfo();
 
-    //String getLabel();
-
     XEvent asReference(int referenceId);
 
     <T> T accept(XEventVisitor<T> visitor);

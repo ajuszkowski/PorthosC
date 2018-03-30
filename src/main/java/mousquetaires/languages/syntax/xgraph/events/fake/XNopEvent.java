@@ -14,8 +14,8 @@ public final class XNopEvent extends XFakeEvent {
     }
 
     @Override
-    public String getLabel() {
-        return "NOP_" + super.getLabel() + "_" + getFakeEventId();
+    public String getSmtLabel() {
+        return "NOP_" + super.getSmtLabel() + "_" + getFakeEventId();
     }
 
     @Override

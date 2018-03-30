@@ -51,7 +51,7 @@ public final class XRegisterMemoryEvent extends XMemoryEventBase implements XLoc
     }
 
     @Override
-    public String getLabel() {
-        return super.getLabel() + "_regreg";
+    public String getSmtLabel() {
+        return super.getSmtLabel() + "_regreg";
     }
 }

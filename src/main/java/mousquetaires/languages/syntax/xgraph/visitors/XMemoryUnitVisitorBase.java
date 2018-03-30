@@ -6,7 +6,6 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputatio
 import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XLocation;
 import mousquetaires.languages.syntax.xgraph.memories.XRegister;
-import mousquetaires.utils.exceptions.encoding.XVisitorIllegalStateException;
 
 
 public class XMemoryUnitVisitorBase<T> implements XMemoryUnitVisitor<T> {

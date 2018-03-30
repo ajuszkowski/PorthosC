@@ -1,5 +1,5 @@
 package mousquetaires.languages.syntax.xgraph;
 
-public interface XProcessEntity extends XEntity {
+public interface XProcessEntity {
     String processId();
 }

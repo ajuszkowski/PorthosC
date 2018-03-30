@@ -5,7 +5,7 @@ import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 
 
-public abstract class XProgramBase<G extends FlowGraph<XEvent>> implements XEntity {
+public abstract class XProgramBase<G extends FlowGraph<XEvent>> {
 
     //private final XPreProcess prelude;
     private final ImmutableList<G> processes;

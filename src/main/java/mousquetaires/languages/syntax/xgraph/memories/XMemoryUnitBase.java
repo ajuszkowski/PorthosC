@@ -22,13 +22,18 @@ public abstract class XMemoryUnitBase implements XMemoryUnit {
     }
 
     @Override
+    public String getSmtLabel() {
+        return getName(); //TODO: add bitness to the smt label
+    }
+
+    @Override
     public Bitness getBitness() {
         return bitness;
     }
 
     @Override
     public String toString() {
-        return getName();// + " " + getBitness();
+        return getSmtLabel();
     }
 
     // todo: hashcode

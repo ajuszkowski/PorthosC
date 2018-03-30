@@ -47,7 +47,7 @@ public final class XStoreMemoryEvent extends XMemoryEventBase implements XShared
     }
 
     @Override
-    public String getLabel() {
-        return super.getLabel() + "_store";
+    public String getSmtLabel() {
+        return super.getSmtLabel() + "_store";
     }
 }

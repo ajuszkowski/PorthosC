@@ -8,7 +8,7 @@ import mousquetaires.languages.syntax.zformula.ZBoolVariable;
 
 import java.util.*;
 
-import static mousquetaires.languages.syntax.zformula.ZBoolFormulaHelper.implies;
+import static mousquetaires.languages.syntax.zformula.ZBoolFormulaHelper.implication;
 import static mousquetaires.languages.syntax.zformula.ZBoolFormulaHelper.not;
 import static mousquetaires.languages.syntax.zformula.ZBoolFormulaHelper.or;
 import static mousquetaires.languages.syntax.zformula.ZVariableHelper.constructEventVariable;
@@ -68,14 +68,14 @@ public class XFlowGraphToZformulaConverter {
                 ZBoolFormula parentsSubFormula = edgeKind
                         ? or(parentsVariables)
                         : not(or(parentsVariables));
-                ZBoolFormula currentImpliesParents = implies(currentId, parentsSubFormula);
+                ZBoolFormula currentImpliesParents = implication(currentId, parentsSubFormula);
                 resultFormula.addSubFormula(currentImpliesParents);
             }
 
             // encode dataflow if needed AND set up ssa map
             ZBoolFormula dataFlowAssertion = dataFlowEncoder.encodeOrNull(current); //TODO: do not implicitly update references while visit
             if (dataFlowAssertion != null) {
-                resultFormula.addSubFormula(implies(currentId, dataFlowAssertion));
+                resultFormula.addSubFormula(implication(currentId, dataFlowAssertion));
             }
 
             //if (!current.equals(process.sink())) {
@@ -119,11 +119,11 @@ public class XFlowGraphToZformulaConverter {
         //        XEvent previousEvent = transition.from;
         //        XEvent currentEvent  = transition.to;
         //
-        //        BoolExpr previoiusEventId = boolConst(previousEvent.getLabel());
-        //        BoolExpr currentEventId   = boolConst(currentEvent.getLabel());
+        //        BoolExpr previoiusEventId = boolConst(previousEvent.getSmtLabel());
+        //        BoolExpr currentEventId   = boolConst(currentEvent.getSmtLabel());
         //
         //        // control-flow:
-        //        BoolExpr controlFlow = implies(currentEventId, previoiusEventId);
+        //        BoolExpr controlFlow = implication(currentEventId, previoiusEventId);
         //        formulaBuilder.addSubFormula(controlFlow);
         //
         //        dataFlowEncoder
@@ -134,8 +134,8 @@ public class XFlowGraphToZformulaConverter {
         //            XEvent nextThen = traverser.getNextThenBranchingEvent(currentEvent);
         //            XEvent nextElse = traverser.getNextElseBranchingEvent(currentEvent);
         //            // add constraint 'not both then and else'
-        //            BoolExpr nextThenId = boolConst(nextThen.getLabel());
-        //            BoolExpr nextElseId = boolConst(nextElse.getLabel());
+        //            BoolExpr nextThenId = boolConst(nextThen.getSmtLabel());
+        //            BoolExpr nextElseId = boolConst(nextElse.getSmtLabel());
         //
         //            BoolExpr branchingControlFlow = not(and(nextThenId, nextElseId));
         //            formulaBuilder.addSubFormula(branchingControlFlow);

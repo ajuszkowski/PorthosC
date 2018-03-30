@@ -24,13 +24,14 @@ public abstract class XEventBase implements XEvent {
         return referenceId;
     }
 
-    public String getLabel() {
+    @Override
+    public String getSmtLabel() {
         return getInfo().getProcessId() + "_e" + hashCode();//getInfo().getStamp();
     }
 
     @Override
     public String toString() {
-        return wrapWithBracketsAndReferenceId(getLabel());
+        return wrapWithBracketsAndReferenceId(getSmtLabel());
     }
 
     @Override

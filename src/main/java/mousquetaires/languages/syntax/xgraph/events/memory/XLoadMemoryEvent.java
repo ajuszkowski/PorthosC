@@ -50,7 +50,7 @@ public final class XLoadMemoryEvent extends XMemoryEventBase implements XSharedM
     }
 
     @Override
-    public String getLabel() {
-        return super.getLabel() + "_load";
+    public String getSmtLabel() {
+        return super.getSmtLabel() + "_load";
     }
 }

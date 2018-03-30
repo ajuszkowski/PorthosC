@@ -32,13 +32,13 @@ public final class IntGraphNode implements GraphNode {
     }
 
     @Override
-    public String getLabel() {
+    public String getSmtLabel() {
         return "" + getValue();
     }
 
     @Override
     public String toString() {
-        return "[" + getLabel() + getReferenceIdSuffix() + "]";
+        return "[" + getSmtLabel() + getReferenceIdSuffix() + "]";
     }
 
     @Override

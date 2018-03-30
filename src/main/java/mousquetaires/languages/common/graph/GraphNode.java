@@ -5,7 +5,7 @@ public interface GraphNode {
     int FIRST_NODE_REFERENCE_ID = 0;
     int LAST_NODE_REFERENCE_ID = Integer.MAX_VALUE;
 
-    String getLabel(); // for encoding
+    String getSmtLabel(); // for encoding
 
     int getReferenceId();
 

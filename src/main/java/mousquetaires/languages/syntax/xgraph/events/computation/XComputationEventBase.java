@@ -15,13 +15,13 @@ public abstract class XComputationEventBase extends XEventBase implements XCompu
     }
 
     @Override
-    public String getLabel() {
-        return super.getLabel() + "_comp";
+    public String getSmtLabel() {
+        return super.getSmtLabel() + "_comp";
     }
 
     @Override
     public String getName() {
-        return getLabel();
+        return getSmtLabel();
     }
 
     @Override

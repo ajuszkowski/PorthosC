@@ -20,8 +20,8 @@ public final class XJumpEvent extends XFakeEvent {
     }
 
     @Override
-    public String getLabel() {
-        return "JUMP_" + super.getLabel() + "_" + getFakeEventId();
+    public String getSmtLabel() {
+        return "JUMP_" + super.getSmtLabel() + "_" + getFakeEventId();
     }
 
     @Override

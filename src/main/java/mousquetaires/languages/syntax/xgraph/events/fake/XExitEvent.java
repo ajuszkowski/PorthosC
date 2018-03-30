@@ -15,7 +15,7 @@ public final class XExitEvent extends XFakeEvent {
     }
 
     @Override
-    public String getLabel() {
+    public String getSmtLabel() {
         return "EXIT_" + getInfo().getProcessId();
     }
 

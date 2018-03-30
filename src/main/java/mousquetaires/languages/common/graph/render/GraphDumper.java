@@ -27,8 +27,8 @@ public class GraphDumper {
         Graph vizGraph = graph("graph").directed();
         for (boolean edgeType : new boolean[]{true, false}) {
             for (Map.Entry<T, T> pair : graph.getEdges(edgeType).entrySet()) {
-                Node fromNode = node(pair.getKey().getLabel());
-                Node toNode = node(pair.getValue().getLabel());
+                Node fromNode = node(pair.getKey().getSmtLabel());
+                Node toNode = node(pair.getValue().getSmtLabel());
                 Link edge = to(toNode).with( edgeType ? Style.SOLID : Style.DASHED );
                 vizGraph = vizGraph.with(fromNode.link(edge));
             }

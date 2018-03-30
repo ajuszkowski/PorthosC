@@ -8,6 +8,7 @@ import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 
+import javax.management.StandardEmitterMBean;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,15 +17,15 @@ class ZStaticSingleAssignmentMap {
 
     private final XMemoryUnitCollector memoryUnitCollector;
     private final Map<XEvent, ZVariableReferenceMap> eventVariableMap;
-    private final ReferencableMemoryDetector referencableMemoryDetector;
+    private final ReferableMemoryUnitsDetector detector;
 
     ZStaticSingleAssignmentMap(int initialCapacity) {
         this.eventVariableMap = new HashMap<>(initialCapacity);
         this.memoryUnitCollector = new XMemoryUnitCollector();
-        this.referencableMemoryDetector = new ReferencableMemoryDetector();
+        this.detector = new ReferableMemoryUnitsDetector();
     }
 
-    public void copyValues(XEvent parent, XEvent child) {
+    void copyValues(XEvent parent, XEvent child) {
         if (!eventVariableMap.containsKey(parent)) {
             assert parent instanceof XEntryEvent : parent + ", " + this;
             eventVariableMap.put(parent, new ZVariableReferenceMap());
@@ -36,7 +37,7 @@ class ZStaticSingleAssignmentMap {
             childMap.addAllVariables(eventVariableMap.get(child));
         }
         for (XMemoryUnit memoryUnit : child.accept(memoryUnitCollector)) {
-            if (referencableMemoryDetector.isReferenceable(memoryUnit)) {
+            if (detector.isReferable(memoryUnit)) {
                 childMap.addVariableIfNotPresent(memoryUnit);
                 if (XMemoryUnitHelper.isSharedMemoryUnit(memoryUnit)) { // TODO: also do this with visitor
                     childMap.updateVariable(memoryUnit);
@@ -46,7 +47,15 @@ class ZStaticSingleAssignmentMap {
         eventVariableMap.put(child, childMap);
     }
 
+    ZVariableReferenceMap getEventMapOrThrow(XEvent event) {
+        if (!eventVariableMap.containsKey(event)) {
+            // TODO: more eloquent message
+            throw new IllegalStateException("variable map for event " + event + " not found");
+        }
+        return eventVariableMap.get(event);
+    }
 
+    // debug-method
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("SSA{");
@@ -55,9 +64,10 @@ class ZStaticSingleAssignmentMap {
         return sb.toString();
     }
 
-    class ReferencableMemoryDetector implements XMemoryUnitVisitor<Boolean> {
 
-        public boolean isReferenceable(XMemoryUnit memoryUnit) {
+    private class ReferableMemoryUnitsDetector implements XMemoryUnitVisitor<Boolean> {
+
+        public boolean isReferable(XMemoryUnit memoryUnit) {
             return memoryUnit.accept(this);
         }
 

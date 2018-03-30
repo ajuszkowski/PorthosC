@@ -46,11 +46,11 @@ public class ZBoolFormulaHelper {
                 : new ZBoolNegationAtom(expression);
     }
 
-    public static ZBoolImplication implies(ZBoolFormula left, ZBoolFormula right) {
+    public static ZBoolImplication implication(ZBoolFormula left, ZBoolFormula right) {
         return new ZBoolImplication(left, right);
     }
 
-    public static ZBoolExpression equals(ZAtom leftExpression, ZAtom rightExpression) {
+    public static ZBoolExpression equality(ZAtom leftExpression, ZAtom rightExpression) {
         return new ZBoolExpression(XZOperator.CompareEquals, leftExpression, rightExpression);
     }
 }
