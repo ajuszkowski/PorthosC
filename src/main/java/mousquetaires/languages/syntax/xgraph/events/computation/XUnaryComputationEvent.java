@@ -15,11 +15,7 @@ public class XUnaryComputationEvent extends XNullaryComputationEvent {
     private final XZOperator operator;
 
     public XUnaryComputationEvent(XEventInfo info, XZOperator operator, XLocalMemoryUnit operand1) {
-        this(info, operator, operand1, NON_REFERENCE_ID);
-    }
-
-    XUnaryComputationEvent(XEventInfo info, XZOperator operator, XLocalMemoryUnit operand1, int referenceId) {
-        super(info, operand1, referenceId);
+        super(info, operand1);
         this.operator = operator;
     }
 
@@ -28,8 +24,8 @@ public class XUnaryComputationEvent extends XNullaryComputationEvent {
     }
 
     @Override
-    public XEvent asReference(int referenceId) {
-        return new XUnaryComputationEvent(getInfo(), getOperator(), getFirstOperand(), referenceId);
+    public XUnaryComputationEvent withInfo(XEventInfo newInfo) {
+        return new XUnaryComputationEvent(newInfo, getOperator(), getFirstOperand());
     }
 
     @Override
@@ -44,7 +40,7 @@ public class XUnaryComputationEvent extends XNullaryComputationEvent {
 
     @Override
     public String toString() {
-        return wrapWithBracketsAndReferenceId("eval(" + getOperator() + " " + getFirstOperand() + ")");
+        return wrapWithBracketsAndDepth("eval(" + getOperator() + " " + getFirstOperand() + ")");
     }
 
     @Override

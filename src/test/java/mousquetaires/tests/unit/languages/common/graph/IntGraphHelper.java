@@ -2,11 +2,11 @@ package mousquetaires.tests.unit.languages.common.graph;
 
 public class IntGraphHelper {
 
-    public static IntFlowGraphNode node(int value) {
-        return new IntFlowGraphNode(value);
+    public static IntNode node(int value) {
+        return new IntNode(value);
     }
 
-    public static IntFlowGraphNode r(int value, int index) {
-        return new IntFlowGraphNode(value, index);
+    public static IntNode r(int value, int depth) {
+        return new IntNode(value, new IntNodeInfo(depth));
     }
 }

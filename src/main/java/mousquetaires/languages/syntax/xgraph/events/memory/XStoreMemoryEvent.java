@@ -1,24 +1,19 @@
 package mousquetaires.languages.syntax.xgraph.events.memory;
 
-import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
-/** Write event from local memory (registry, {@link XLocalMemoryUnit})
- * to the shared memory ({@link XLocalMemoryUnit}) */
+/**
+ * Write event from local memory (registry, {@link XLocalMemoryUnit})
+ * to the shared memory ({@link XLocalMemoryUnit})
+ */
 public final class XStoreMemoryEvent extends XMemoryEventBase implements XSharedMemoryEvent {
 
-    //public final XMemoryOrder memoryOrder;
-
     public XStoreMemoryEvent(XEventInfo info, XSharedMemoryUnit destination, XLocalMemoryUnit source) {
-        this(info, destination, source, NON_REFERENCE_ID);
-    }
-
-    private XStoreMemoryEvent(XEventInfo info, XSharedMemoryUnit destination, XLocalMemoryUnit source, int referenceId) {
-        super(info, destination, source, referenceId);
+        super(info, destination, source);
     }
 
     @Override
@@ -32,8 +27,8 @@ public final class XStoreMemoryEvent extends XMemoryEventBase implements XShared
     }
 
     @Override
-    public XEvent asReference(int referenceId) {
-        return new XStoreMemoryEvent(getInfo(), getDestination(), getSource(), referenceId);
+    public XStoreMemoryEvent withInfo(XEventInfo newInfo) {
+        return new XStoreMemoryEvent(newInfo, getDestination(), getSource());
     }
 
     @Override
@@ -43,6 +38,6 @@ public final class XStoreMemoryEvent extends XMemoryEventBase implements XShared
 
     @Override
     public String toString() {
-        return wrapWithBracketsAndReferenceId("store(" + getDestination() + " := " + getSource() + /*", " + memoryOrder +*/ ")");
+        return wrapWithBracketsAndDepth("store(" + getDestination() + " := " + getSource() + /*", " + memoryOrder +*/ ")");
     }
 }

@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.xgraph.events.computation;
 
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventBase;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.utils.exceptions.NotImplementedException;
@@ -10,8 +11,8 @@ public abstract class XComputationEventBase extends XEventBase implements XCompu
 
     private final Bitness bitness;
 
-    XComputationEventBase(XEventInfo info, Bitness bitness, int referenceId) {
-        super(info, referenceId);
+    XComputationEventBase(XEventInfo info, Bitness bitness) {
+        super(info);
         this.bitness = bitness;
     }
 

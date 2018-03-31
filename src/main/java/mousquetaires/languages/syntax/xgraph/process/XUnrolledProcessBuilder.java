@@ -1,15 +1,10 @@
 package mousquetaires.languages.syntax.xgraph.process;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
-import mousquetaires.utils.CollectionUtils;
-
-import javax.xml.stream.XMLEventWriter;
-import java.util.*;
 
 
 public class XUnrolledProcessBuilder extends UnrolledFlowGraphBuilder<XEvent, XUnrolledProcess> {
@@ -35,6 +30,12 @@ public class XUnrolledProcessBuilder extends UnrolledFlowGraphBuilder<XEvent, XU
 
     public String getProcessId() {
         return processId;
+    }
+
+    @Override
+    public XEvent createNodeReference(XEvent node, int depth) {
+        XEventInfo newInfo = node.getInfo().withUnrollingDepth(depth);
+        return node.withInfo(newInfo);
     }
 
     @Override

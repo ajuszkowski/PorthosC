@@ -41,7 +41,6 @@ public class XFlowGraphToZformulaConverter {
 
         while (layersIterator.hasNext()) {
             XEvent current = layersIterator.next();
-            assert current.isReference() : "not unrolled graph?";
 
             if (visited.contains(current)) {
                 continue;

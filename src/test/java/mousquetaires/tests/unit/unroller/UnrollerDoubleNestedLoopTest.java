@@ -14,7 +14,7 @@ public class UnrollerDoubleNestedLoopTest extends UnrollerTestBase {
     public void test_boundMeetsTwice() {
         final int bound = 8;
         // expected graph construction:
-        IntFlowGraphNode source = node(0), sink = node(-1);
+        IntNode source = node(0), sink = node(-1);
         UnrolledIntFlowGraphBuilder builder = new UnrolledIntFlowGraphBuilder(source, sink);
 
         //first forward path:
@@ -49,7 +49,7 @@ public class UnrollerDoubleNestedLoopTest extends UnrollerTestBase {
     @Override
     protected IntFlowGraph getOriginalGraph() {
         // length = 5
-        IntFlowGraphNode source = node(0), sink = node(-1);
+        IntNode source = node(0), sink = node(-1);
         IntFlowGraphBuilder builder = new IntFlowGraphBuilder(source, sink);
         addPath(builder, true, source, node(1), node(2), node(3), node(4), sink);
         builder.addEdge(false, node(3), node(2));

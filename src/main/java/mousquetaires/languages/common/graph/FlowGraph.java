@@ -19,7 +19,6 @@ public abstract class FlowGraph<N extends FlowGraphNode> {
                      N sink,
                      ImmutableMap<N, N> edges,
                      ImmutableMap<N, N> altEdges
-                     //ImmutableMap<T, ImmutableSet<T>> edgesReversed
                      ) {
         this.source = source;
         this.sink = sink;

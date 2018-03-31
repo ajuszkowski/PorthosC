@@ -1,9 +1,6 @@
 package mousquetaires.languages.common.graph.traverse;
 
-import mousquetaires.languages.common.graph.FlowGraph;
-import mousquetaires.languages.common.graph.FlowGraphNode;
-import mousquetaires.languages.common.graph.UnrolledFlowGraph;
-import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
+import mousquetaires.languages.common.graph.*;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -13,9 +10,8 @@ public abstract class FlowGraphDfsTraverser<N extends FlowGraphNode, G extends U
 
     private final int unrollingBound;
     private final FlowGraph<N> graph;
-    private final BiFunction<N, Integer, N> createNodeRef;
 
-    private final CompositeTraverseActor<N, G> actor;
+    private final CompositeTraverseActor<N, G> compositeActor;
 
     private Set<N> visitedRefs;
     private Stack<N> depthStack;
@@ -23,44 +19,42 @@ public abstract class FlowGraphDfsTraverser<N extends FlowGraphNode, G extends U
 
     protected FlowGraphDfsTraverser(FlowGraph<N> graph,
                                     UnrolledFlowGraphBuilder<N, G> builder,
-                                    BiFunction<N, Integer, N> createNodeRef,
                                     int unrollingBound) {
         this.graph = graph;
-        this.createNodeRef = createNodeRef;
         this.unrollingBound = unrollingBound;
-        this.actor = new CompositeTraverseActor<>(builder);
+        this.compositeActor = new CompositeTraverseActor<>(builder);
         this.visitedRefs = new HashSet<>();
         this.depthStack = new Stack<>();
         this.backEdges = new HashMap<>();
     }
 
     public G getProcessedGraph() {
-        return actor.buildGraph();
+        return compositeActor.buildGraph();
     }
 
     public void doUnroll() {
-        actor.onStart();
+        compositeActor.onStart();
         unrollRecursively(graph.source(), graph.source(), 0, true);
-        actor.onFinish();
+        compositeActor.onFinish();
     }
 
     private void unrollRecursively(N node, N nodeRef, int depth, boolean needToUnrollChildren) {
         if (alreadyVisited(nodeRef)) { return; }
 
         depthStack.push(node);
-        actor.onNodePreVisit(nodeRef);
+        compositeActor.onNodePreVisit(nodeRef);
 
         if (needToUnrollChildren) {
             unrollChildRecursively(true, node, nodeRef, depth + 1);
             unrollChildRecursively(false, node, nodeRef, depth + 1);
         }
         else {
-            actor.onLastNodeVisit(node);
+            compositeActor.onLastNodeVisit(node);
         }
 
         N popped = depthStack.pop();
         assert popped == node : popped + " must be " + node;
-        actor.onNodePostVisit(nodeRef);
+        compositeActor.onNodePostVisit(nodeRef);
     }
 
     private void unrollChildRecursively(boolean edgeSign, N parent, N parentRef, int childDepth) {
@@ -79,10 +73,10 @@ public abstract class FlowGraphDfsTraverser<N extends FlowGraphNode, G extends U
         boolean needToUnrollGrandChildren = !(isSink || boundAchieved);
 
         N childRef = needToUnrollGrandChildren
-                ? createNodeRef.apply(child, childDepth)
+                ? compositeActor.builder.createNodeReference(child, childDepth)
                 : getSinkNode(isSink || isBackEdge);
 
-        actor.onEdgeVisit(edgeSign, parentRef, childRef);
+        compositeActor.onEdgeVisit(edgeSign, parentRef, childRef);
         unrollRecursively(child, childRef, childDepth, needToUnrollGrandChildren);
     }
 

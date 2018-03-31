@@ -12,6 +12,6 @@ class XFlowGraphUnroller extends FlowGraphDfsTraverser<XEvent, XUnrolledProcess>
     // TODO: pass settings structure: bound, flags which agents to use
 
     XFlowGraphUnroller(XProcess graph, int unrollingBound) {
-        super(graph, new XUnrolledProcessBuilder(graph.processId()), XEvent::asReference, unrollingBound);
+        super(graph, new XUnrolledProcessBuilder(graph.processId()), unrollingBound);
     }
 }

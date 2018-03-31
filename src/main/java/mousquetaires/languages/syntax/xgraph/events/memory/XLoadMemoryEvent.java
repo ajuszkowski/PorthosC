@@ -1,6 +1,5 @@
 package mousquetaires.languages.syntax.xgraph.events.memory;
 
-import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
@@ -13,11 +12,7 @@ import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 public final class XLoadMemoryEvent extends XMemoryEventBase implements XSharedMemoryEvent {
 
     public XLoadMemoryEvent(XEventInfo info, XLocalMemoryUnit destination, XSharedMemoryUnit source/*, XMemoryOrder memoryOrder*/) {
-        this(info, destination, source, NON_REFERENCE_ID);
-    }
-
-    private XLoadMemoryEvent(XEventInfo info, XLocalMemoryUnit destination, XSharedMemoryUnit source, int referenceId) {
-        super(info, destination, source, referenceId);
+        super(info, destination, source);
         if (destination instanceof XConstant) {
             throw new IllegalArgumentException("Memory event with assignment to " + XConstant.class.getName()
                     + " is not allowed");
@@ -35,8 +30,8 @@ public final class XLoadMemoryEvent extends XMemoryEventBase implements XSharedM
     }
 
     @Override
-    public XEvent asReference(int referenceId) {
-        return new XLoadMemoryEvent(getInfo(), getDestination(), getSource(), referenceId);
+    public XLoadMemoryEvent withInfo(XEventInfo newInfo) {
+        return new XLoadMemoryEvent(newInfo, getDestination(), getSource());
     }
 
     @Override
@@ -46,6 +41,6 @@ public final class XLoadMemoryEvent extends XMemoryEventBase implements XSharedM
 
     @Override
     public String toString() {
-        return wrapWithBracketsAndReferenceId("load(" + getDestination() + " := " + getSource() /*+ ", " + memoryOrder*/ + ")");
+        return wrapWithBracketsAndDepth("load(" + getDestination() + " := " + getSource() /*+ ", " + memoryOrder*/ + ")");
     }
 }

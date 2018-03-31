@@ -14,11 +14,7 @@ public class XNullaryComputationEvent extends XComputationEventBase {
     private final XLocalMemoryUnit firstOperand;
 
     public XNullaryComputationEvent(XEventInfo info, XLocalMemoryUnit firstOperand) {
-        this(info, firstOperand, NON_REFERENCE_ID);
-    }
-
-    XNullaryComputationEvent(XEventInfo info, XLocalMemoryUnit firstOperand, int referenceId) {
-        super(info, firstOperand.getBitness(), referenceId);
+        super(info, firstOperand.getBitness());
         this.firstOperand = firstOperand;
     }
 
@@ -27,8 +23,8 @@ public class XNullaryComputationEvent extends XComputationEventBase {
     }
 
     @Override
-    public XEvent asReference(int referenceId) {
-        return new XNullaryComputationEvent(getInfo(), getFirstOperand(), referenceId);
+    public XNullaryComputationEvent withInfo(XEventInfo newInfo) {
+        return new XNullaryComputationEvent(newInfo, getFirstOperand());
     }
 
     @Override
@@ -43,7 +39,7 @@ public class XNullaryComputationEvent extends XComputationEventBase {
 
     @Override
     public String toString() {
-        return wrapWithBracketsAndReferenceId("eval(" + getFirstOperand() + ")");
+        return wrapWithBracketsAndDepth("eval(" + getFirstOperand() + ")");
     }
 
     @Override

@@ -12,6 +12,7 @@ public interface XMemoryUnit extends XEntity {
 
     <T> T accept(XMemoryUnitVisitor<T> visitor);
 
+
     enum Bitness {
         bit1,
         bit16,

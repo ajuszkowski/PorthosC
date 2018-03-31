@@ -1,9 +1,11 @@
 package mousquetaires.languages.syntax.xgraph.events;
 
+import mousquetaires.languages.common.graph.FlowGraphNodeInfo;
+
 import java.util.Objects;
 
 
-public class XEventInfo {
+public class XEventInfo extends FlowGraphNodeInfo {
 
     private static int stampGlobalCounter = 0;
 
@@ -24,11 +26,17 @@ public class XEventInfo {
      */
     private final int stamp;
 
+
     //todo: package-private (after removing the folder 'tests' from tests project root)
     public XEventInfo(String processId) {
+        this(processId, newStamp(), NON_UNROLLED_DEPTH);
+    }
+
+    private XEventInfo(String processId, int stamp, int unrollingDepth) {
+        super(unrollingDepth);
         // TODO: verify process id string for bad symbols
         this.processId = processId;
-        this.stamp = newStamp();
+        this.stamp = stamp;
     }
 
     public String getProcessId() {
@@ -39,19 +47,33 @@ public class XEventInfo {
         return stamp;
     }
 
+    @Override
+    public XEventInfo withUnrollingDepth(int newDepth) {
+        return new XEventInfo(getProcessId(), getStamp(), newDepth);
+    }
 
-    //TODO: review this and other equals/hashCode mehtods
+    @Override
+    public String toString() {
+        return "p" + processId + "_id" + getStamp();
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof XEventInfo)) return false;
+        if (this == o) { return true; }
+        if (!(o instanceof XEventInfo)) { return false; }
+        if (!super.equals(o)) { return false; }
         XEventInfo that = (XEventInfo) o;
-        return Objects.equals(processId, that.processId);
+        return getStamp() == that.getStamp() &&
+                Objects.equals(getProcessId(), that.getProcessId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(processId);
+        return Objects.hash(super.hashCode(), getProcessId(), getStamp());
+    }
+
+    public int stamplessHashCode() {
+        return Objects.hash(super.hashCode(), getProcessId());
     }
 
     private static int newStamp() {

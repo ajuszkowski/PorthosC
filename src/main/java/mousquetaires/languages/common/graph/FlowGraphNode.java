@@ -1,15 +1,8 @@
 package mousquetaires.languages.common.graph;
 
-public interface FlowGraphNode {
-    int NON_REFERENCE_ID = -1;
-    int FIRST_NODE_REFERENCE_ID = 0;
-    int LAST_NODE_REFERENCE_ID = Integer.MAX_VALUE;
+public interface FlowGraphNode<T extends FlowGraphNodeInfo> {
 
-    String nodeId(); // for encoding
+    T getInfo();
 
-    int getReferenceId();
-
-    default boolean isReference() {
-        return getReferenceId() != NON_REFERENCE_ID;
-    }
+    FlowGraphNode withInfo(T newInfo);
 }

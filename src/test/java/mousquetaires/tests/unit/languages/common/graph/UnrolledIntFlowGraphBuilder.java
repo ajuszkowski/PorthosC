@@ -3,9 +3,9 @@ package mousquetaires.tests.unit.languages.common.graph;
 import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
 
 
-public class UnrolledIntFlowGraphBuilder extends UnrolledFlowGraphBuilder<IntFlowGraphNode, UnrolledIntFlowGraph> {
+public class UnrolledIntFlowGraphBuilder extends UnrolledFlowGraphBuilder<IntNode, UnrolledIntFlowGraph> {
 
-    public UnrolledIntFlowGraphBuilder(IntFlowGraphNode source, IntFlowGraphNode sink) {
+    public UnrolledIntFlowGraphBuilder(IntNode source, IntNode sink) {
         setSource(source);
         setSink(sink);
     }
@@ -21,4 +21,9 @@ public class UnrolledIntFlowGraphBuilder extends UnrolledFlowGraphBuilder<IntFlo
                                         buildNodesLinearised());
     }
 
+    @Override
+    public IntNode createNodeReference(IntNode node, int depth) {
+        IntNodeInfo newInfo = node.getInfo().withUnrollingDepth(depth);
+        return node.withInfo(newInfo);
+    }
 }

@@ -23,6 +23,8 @@ public abstract class UnrolledFlowGraphBuilder<N extends FlowGraphNode, G extend
         this.altReversedEdges = new HashMap<>();
     }
 
+    public abstract N createNodeReference(N node, int depth);
+
     public ImmutableMap<N, ImmutableSet<N>> buildReversedEdges(boolean edgeSign) {
         return CollectionUtils.buildMapOfSets(getReversedEdges(edgeSign));
     }

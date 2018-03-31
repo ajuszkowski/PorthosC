@@ -9,6 +9,7 @@ import guru.nidi.graphviz.model.Link;
 import guru.nidi.graphviz.model.Node;
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.common.graph.FlowGraphNode;
+import mousquetaires.languages.common.graph.FlowGraphNodeInfo;
 import mousquetaires.utils.StringUtils;
 
 import java.io.File;
@@ -27,8 +28,8 @@ public class GraphDumper {
         Graph vizGraph = graph("graph").directed();
         for (boolean edgeType : new boolean[]{true, false}) {
             for (Map.Entry<T, T> pair : graph.getEdges(edgeType).entrySet()) {
-                Node fromNode = node(pair.getKey().nodeId());
-                Node toNode = node(pair.getValue().nodeId());
+                Node fromNode = node(pair.getKey().toString());  // TODO: node serializer
+                Node toNode = node(pair.getValue().toString());  // TODO: node serializer
                 Link edge = to(toNode).with( edgeType ? Style.SOLID : Style.DASHED );
                 vizGraph = vizGraph.with(fromNode.link(edge));
             }

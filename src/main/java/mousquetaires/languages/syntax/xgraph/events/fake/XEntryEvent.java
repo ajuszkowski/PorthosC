@@ -11,12 +11,12 @@ import java.util.Objects;
 public final class XEntryEvent extends XFakeEvent {
 
     public XEntryEvent(XEventInfo info) {
-        super(info, FIRST_NODE_REFERENCE_ID);
+        super(info);
     }
 
     @Override
-    public XEvent asReference(int referenceId) {
-        throw new NotSupportedException("Entry events cannot have references");
+    public XEntryEvent withInfo(XEventInfo newInfo) {
+        return new XEntryEvent(newInfo);
     }
 
     @Override
@@ -34,5 +34,10 @@ public final class XEntryEvent extends XFakeEvent {
         if (this == o) return true;
         if (!(o instanceof XEntryEvent)) return false;
         return Objects.equals(getInfo().getProcessId(), ((XEntryEvent) o).getInfo().getProcessId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getInfo().stamplessHashCode());
     }
 }

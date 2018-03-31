@@ -1,6 +1,5 @@
 package mousquetaires.languages.syntax.xgraph.events.memory;
 
-import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
@@ -13,11 +12,7 @@ import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 public final class XRegisterMemoryEvent extends XMemoryEventBase implements XLocalMemoryEvent {
 
     public XRegisterMemoryEvent(XEventInfo info, XLocalMemoryUnit destination, XLocalMemoryUnit source) {
-        this(info, destination, source, NON_REFERENCE_ID);
-    }
-
-    private XRegisterMemoryEvent(XEventInfo info, XLocalMemoryUnit destination, XLocalMemoryUnit source, int referenceId) {
-        super(info, destination, source, referenceId);
+        super(info, destination, source);
         if (destination instanceof XConstant) {
             throw new IllegalArgumentException("Memory event with assignment to " +
                     XConstant.class.getName() + " is not allowed");
@@ -35,8 +30,8 @@ public final class XRegisterMemoryEvent extends XMemoryEventBase implements XLoc
     }
 
     @Override
-    public XEvent asReference(int referenceId) {
-        return new XRegisterMemoryEvent(getInfo(), getDestination(), getSource(), referenceId);
+    public XRegisterMemoryEvent withInfo(XEventInfo newInfo) {
+        return new XRegisterMemoryEvent(newInfo, getDestination(), getSource());
     }
 
     @Override
@@ -46,6 +41,6 @@ public final class XRegisterMemoryEvent extends XMemoryEventBase implements XLoc
 
     @Override
     public String toString() {
-        return wrapWithBracketsAndReferenceId(getDestination() + " := " + getSource());
+        return wrapWithBracketsAndDepth(getDestination() + " := " + getSource());
     }
 }

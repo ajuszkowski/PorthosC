@@ -6,6 +6,11 @@ import mousquetaires.languages.syntax.xgraph.XProgramInterpretationBuilder;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
+import mousquetaires.languages.syntax.xgraph.types.XMockType;
+import mousquetaires.languages.syntax.xgraph.types.XType;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
+import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.zformula.XZOperator;
 import mousquetaires.languages.syntax.xgraph.events.computation.XZOperatorHelper;
 import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
@@ -110,6 +115,24 @@ public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
 
     // =================================================================================================================
 
+
+    @Override
+    public XEvent visit(YConstant node) {
+        XLocalMemoryUnit local = memoryUnitConverter.tryConvertToLocalOrNull(node);
+        return evaluate(local);
+    }
+
+    @Override
+    public XEvent visit(YVariableRef node) {
+        XLocalMemoryUnit local = memoryUnitConverter.tryConvertToLocalOrNull(node);
+        return evaluate(local);
+
+    }
+
+    @Override
+    public XEvent visit(YType node) {
+        throw new NotImplementedException();
+    }
 
     @Override
     public XEvent visit(YIndexerExpression node) {
@@ -317,5 +340,9 @@ public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
 
     private static String getUnexpectedOperandTypeErrorMessage(XMemoryUnit operand) {
         return "Unexpected type of operand: " + operand + ", type of " + operand.getClass().getSimpleName();
+    }
+
+    private XComputationEvent evaluate(XLocalMemoryUnit local) {
+        return program.currentProcess.emitComputationEvent(local);
     }
 }

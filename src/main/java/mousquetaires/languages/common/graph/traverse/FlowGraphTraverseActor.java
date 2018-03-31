@@ -2,6 +2,7 @@ package mousquetaires.languages.common.graph.traverse;
 
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.common.graph.FlowGraphNode;
+import mousquetaires.languages.common.graph.FlowGraphNodeInfo;
 import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
 
 

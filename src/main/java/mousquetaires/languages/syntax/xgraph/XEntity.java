@@ -1,8 +1,11 @@
 package mousquetaires.languages.syntax.xgraph;
 
-public interface XEntity {
+import mousquetaires.languages.common.SmtSerialisable;
 
-    default String uniqueId() {
+
+public interface XEntity extends SmtSerialisable {
+    @Override
+    default String toSmt() {
         return "x_" + hashCode();
     }
 }

@@ -1,22 +1,22 @@
 package mousquetaires.languages.syntax.xgraph.events.fake;
 
-import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
-import mousquetaires.utils.exceptions.NotSupportedException;
 
 import java.util.Objects;
 
 
 public final class XExitEvent extends XFakeEvent {
 
+    //private final boolean boundAchieved;
+
     public XExitEvent(XEventInfo info) {
-        super(info, LAST_NODE_REFERENCE_ID);
+        super(info);
     }
 
     @Override
-    public XEvent asReference(int referenceId) {
-        throw new NotSupportedException("Exit events cannot have references");
+    public XExitEvent withInfo(XEventInfo newInfo) {
+        return new XExitEvent(newInfo);
     }
 
     @Override
@@ -33,8 +33,13 @@ public final class XExitEvent extends XFakeEvent {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof XExitEvent)) return false;
+        if (this == o) { return true; }
+        if (!(o instanceof XExitEvent)) { return false; }
         return Objects.equals(getInfo().getProcessId(), ((XExitEvent) o).getInfo().getProcessId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getInfo().stamplessHashCode());
     }
 }
