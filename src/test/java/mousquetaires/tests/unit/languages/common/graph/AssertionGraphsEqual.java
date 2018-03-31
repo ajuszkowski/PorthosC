@@ -1,7 +1,7 @@
 package mousquetaires.tests.unit.languages.common.graph;
 
 import mousquetaires.languages.common.graph.FlowGraph;
-import mousquetaires.languages.common.graph.GraphNode;
+import mousquetaires.languages.common.graph.FlowGraphNode;
 import mousquetaires.tests.unit.Assertion;
 import mousquetaires.tests.unit.AssertionMapContains;
 import mousquetaires.tests.unit.AssertionObjectsEqual;
@@ -11,7 +11,7 @@ import mousquetaires.utils.StringUtils;
 import java.util.Map;
 
 
-public class AssertionGraphsEqual<N extends GraphNode, G extends FlowGraph<N>> extends Assertion {
+public class AssertionGraphsEqual<N extends FlowGraphNode, G extends FlowGraph<N>> extends Assertion {
 
     private final G expected;
     private final G actual;
@@ -62,9 +62,9 @@ public class AssertionGraphsEqual<N extends GraphNode, G extends FlowGraph<N>> e
         return true;
     }
 
-    private static <T extends GraphNode> Assertion compareMaps(String info,
-                                                               Map<? extends T, ? extends T> expected,
-                                                               Map<? extends T, ? extends T> actualMap) {
+    private static <T extends FlowGraphNode> Assertion compareMaps(String info,
+                                                                   Map<? extends T, ? extends T> expected,
+                                                                   Map<? extends T, ? extends T> actualMap) {
         Assertion sizeAssert = new AssertionObjectsEqual(info + ": maps sizes mismatch", expected.size(), actualMap.size());
         if (!sizeAssert.checkSuccess()) {
             return sizeAssert;

@@ -14,7 +14,7 @@ public class UnrollerLooplessTest extends UnrollerTestBase {
     public void test_boundIsEnough() {
         final int bound = 6;
         // expected graph construction:
-        IntGraphNode source = node(0), sink = node(-1);
+        IntFlowGraphNode source = node(0), sink = node(-1);
         UnrolledIntFlowGraphBuilder builder = new UnrolledIntFlowGraphBuilder(source, sink);
         addPath(builder, true, source, r(1, 1), r(2, 1), r(3, 1), r(4, 1), sink);
         addPath(builder, false, r(2, 1), r(6, 1), r(4, 1));
@@ -29,7 +29,7 @@ public class UnrollerLooplessTest extends UnrollerTestBase {
         final int bound = 3;
 
         // expected graph construction:
-        IntGraphNode source = node(0), sink = node(-1);
+        IntFlowGraphNode source = node(0), sink = node(-1);
         UnrolledIntFlowGraphBuilder builder = new UnrolledIntFlowGraphBuilder(source, sink);
         addPath(builder, true, source, r(1, 1), r(2, 1), r(3, 1), sink);
         addPath(builder, false, r(2, 1), r(6, 1), sink);
@@ -42,7 +42,7 @@ public class UnrollerLooplessTest extends UnrollerTestBase {
     @Override
     protected IntFlowGraph getOriginalGraph() {
         // length = 4
-        IntGraphNode source = node(0), sink = node(-1);
+        IntFlowGraphNode source = node(0), sink = node(-1);
         IntFlowGraphBuilder builder = new IntFlowGraphBuilder(source, sink);
         addPath(builder, true, source, node(1), node(2), node(3), node(4), sink);
         addPath(builder, false, node(2), node(6), node(4));

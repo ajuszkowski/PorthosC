@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public abstract class FlowGraphBuilder<N extends GraphNode, G extends FlowGraph<N>>
+public abstract class FlowGraphBuilder<N extends FlowGraphNode, G extends FlowGraph<N>>
         extends BuilderBase<G>
         implements IFlowGraphBuilder<N, G> {
 

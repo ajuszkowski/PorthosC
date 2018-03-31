@@ -6,15 +6,15 @@ import com.google.common.collect.ImmutableSet;
 import mousquetaires.languages.common.graph.UnrolledFlowGraph;
 
 
-public class UnrolledIntFlowGraph extends UnrolledFlowGraph<IntGraphNode> {
+public class UnrolledIntFlowGraph extends UnrolledFlowGraph<IntFlowGraphNode> {
 
-    UnrolledIntFlowGraph(IntGraphNode source,
-                                IntGraphNode sink,
-                                ImmutableMap<IntGraphNode, IntGraphNode> edges,
-                                ImmutableMap<IntGraphNode, IntGraphNode> altEdges,
-                                ImmutableMap<IntGraphNode, ImmutableSet<IntGraphNode>> edgesReversed,
-                                ImmutableMap<IntGraphNode, ImmutableSet<IntGraphNode>> altEdgesReversed,
-                                ImmutableList<IntGraphNode> layers) {
+    UnrolledIntFlowGraph(IntFlowGraphNode source,
+                                IntFlowGraphNode sink,
+                                ImmutableMap<IntFlowGraphNode, IntFlowGraphNode> edges,
+                                ImmutableMap<IntFlowGraphNode, IntFlowGraphNode> altEdges,
+                                ImmutableMap<IntFlowGraphNode, ImmutableSet<IntFlowGraphNode>> edgesReversed,
+                                ImmutableMap<IntFlowGraphNode, ImmutableSet<IntFlowGraphNode>> altEdgesReversed,
+                                ImmutableList<IntFlowGraphNode> layers) {
         super(source, sink, edges, altEdges, edgesReversed, altEdgesReversed, layers);
     }
 }

@@ -8,7 +8,7 @@ import guru.nidi.graphviz.model.Graph;
 import guru.nidi.graphviz.model.Link;
 import guru.nidi.graphviz.model.Node;
 import mousquetaires.languages.common.graph.FlowGraph;
-import mousquetaires.languages.common.graph.GraphNode;
+import mousquetaires.languages.common.graph.FlowGraphNode;
 import mousquetaires.utils.StringUtils;
 
 import java.io.File;
@@ -23,7 +23,7 @@ import static guru.nidi.graphviz.model.Link.to;
 
 public class GraphDumper {
 
-    public static <T extends GraphNode> boolean tryDumpToFile(FlowGraph<T> graph, String filePath, String fileName) {
+    public static <T extends FlowGraphNode> boolean tryDumpToFile(FlowGraph<T> graph, String filePath, String fileName) {
         Graph vizGraph = graph("graph").directed();
         for (boolean edgeType : new boolean[]{true, false}) {
             for (Map.Entry<T, T> pair : graph.getEdges(edgeType).entrySet()) {

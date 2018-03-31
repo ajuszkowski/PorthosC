@@ -3,9 +3,9 @@ package mousquetaires.tests.unit.languages.common.graph;
 import mousquetaires.languages.common.graph.FlowGraphBuilder;
 
 
-public class IntFlowGraphBuilder extends FlowGraphBuilder<IntGraphNode, IntFlowGraph> {
+public class IntFlowGraphBuilder extends FlowGraphBuilder<IntFlowGraphNode, IntFlowGraph> {
 
-    public IntFlowGraphBuilder(IntGraphNode source, IntGraphNode sink) {
+    public IntFlowGraphBuilder(IntFlowGraphNode source, IntFlowGraphNode sink) {
         setSource(source);
         setSink(sink);
     }

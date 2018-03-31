@@ -1,6 +1,6 @@
 package mousquetaires.languages.common.graph;
 
-public interface GraphNode {
+public interface FlowGraphNode {
     int NON_REFERENCE_ID = -1;
     int FIRST_NODE_REFERENCE_ID = 0;
     int LAST_NODE_REFERENCE_ID = Integer.MAX_VALUE;

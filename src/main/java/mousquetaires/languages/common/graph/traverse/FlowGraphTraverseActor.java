@@ -1,11 +1,11 @@
 package mousquetaires.languages.common.graph.traverse;
 
 import mousquetaires.languages.common.graph.FlowGraph;
-import mousquetaires.languages.common.graph.GraphNode;
+import mousquetaires.languages.common.graph.FlowGraphNode;
 import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
 
 
-abstract class FlowGraphTraverseActor<N extends GraphNode, G extends FlowGraph<N>> {
+abstract class FlowGraphTraverseActor<N extends FlowGraphNode, G extends FlowGraph<N>> {
     protected final UnrolledFlowGraphBuilder<N, G> builder;
 
     FlowGraphTraverseActor(UnrolledFlowGraphBuilder<N, G> builder) {

@@ -1,12 +1,12 @@
 package mousquetaires.languages.common.graph.traverse;
 
 import com.google.common.collect.ImmutableSet;
-import mousquetaires.languages.common.graph.GraphNode;
+import mousquetaires.languages.common.graph.FlowGraphNode;
 import mousquetaires.languages.common.graph.UnrolledFlowGraph;
 import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
 
 
-class CompositeTraverseActor<N extends GraphNode, G extends UnrolledFlowGraph<N>>
+class CompositeTraverseActor<N extends FlowGraphNode, G extends UnrolledFlowGraph<N>>
         extends FlowGraphTraverseActor<N, G> {
 
     private final ImmutableSet<FlowGraphTraverseActor<N, G>> actors;

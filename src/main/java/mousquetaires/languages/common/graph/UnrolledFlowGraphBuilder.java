@@ -3,13 +3,12 @@ package mousquetaires.languages.common.graph;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSortedMap;
 import mousquetaires.utils.CollectionUtils;
 
 import java.util.*;
 
 
-public abstract class UnrolledFlowGraphBuilder<N extends GraphNode, G extends FlowGraph<N>>
+public abstract class UnrolledFlowGraphBuilder<N extends FlowGraphNode, G extends FlowGraph<N>>
         extends FlowGraphBuilder<N, G> {
 
     // TODO: need new builder to test unrolled graph

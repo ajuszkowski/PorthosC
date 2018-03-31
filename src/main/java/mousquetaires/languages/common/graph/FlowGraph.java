@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 
 
 // TODO: generalise these interfaces into abstract classes (+ builders) !
-public abstract class FlowGraph<N extends GraphNode> {
+public abstract class FlowGraph<N extends FlowGraphNode> {
 
     private final N source;
     private final N sink;

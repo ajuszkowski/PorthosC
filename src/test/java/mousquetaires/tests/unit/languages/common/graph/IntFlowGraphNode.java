@@ -1,23 +1,23 @@
 package mousquetaires.tests.unit.languages.common.graph;
 
-import mousquetaires.languages.common.graph.GraphNode;
+import mousquetaires.languages.common.graph.FlowGraphNode;
 
 import java.util.Objects;
 
 
-public final class IntGraphNode implements GraphNode {
+public final class IntFlowGraphNode implements FlowGraphNode {
     private final int value;
     private final int referenceId;
 
-    IntGraphNode(int value) {
+    IntFlowGraphNode(int value) {
         this(value, NON_REFERENCE_ID);
     }
 
-    IntGraphNode(IntGraphNode node, int referenceId) {
+    IntFlowGraphNode(IntFlowGraphNode node, int referenceId) {
         this(node.getValue(), referenceId);
     }
 
-    IntGraphNode(int value, int referenceId) {
+    IntFlowGraphNode(int value, int referenceId) {
         this.value = value;
         this.referenceId = referenceId;
     }
@@ -44,8 +44,8 @@ public final class IntGraphNode implements GraphNode {
     @Override
     public boolean equals(Object o) {
         if (this == o) { return true; }
-        if (!(o instanceof IntGraphNode)) { return false; }
-        IntGraphNode that = (IntGraphNode) o;
+        if (!(o instanceof IntFlowGraphNode)) { return false; }
+        IntFlowGraphNode that = (IntFlowGraphNode) o;
         return getValue() == that.getValue() &&
                 getReferenceId() == that.getReferenceId();
     }

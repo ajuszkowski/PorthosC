@@ -4,12 +4,12 @@ import com.google.common.collect.ImmutableMap;
 import mousquetaires.languages.common.graph.FlowGraph;
 
 
-public class IntFlowGraph extends FlowGraph<IntGraphNode> {
+public class IntFlowGraph extends FlowGraph<IntFlowGraphNode> {
 
-    public IntFlowGraph(IntGraphNode source,
-                        IntGraphNode sink,
-                        ImmutableMap<IntGraphNode, IntGraphNode> edges,
-                        ImmutableMap<IntGraphNode, IntGraphNode> altEdges) {
+    public IntFlowGraph(IntFlowGraphNode source,
+                        IntFlowGraphNode sink,
+                        ImmutableMap<IntFlowGraphNode, IntFlowGraphNode> edges,
+                        ImmutableMap<IntFlowGraphNode, IntFlowGraphNode> altEdges) {
         super(source, sink, edges, altEdges);
     }
 }

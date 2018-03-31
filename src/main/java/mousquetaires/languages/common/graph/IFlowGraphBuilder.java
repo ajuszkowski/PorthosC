@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import mousquetaires.utils.patterns.Builder;
 
 
-public interface IFlowGraphBuilder<N extends GraphNode, G extends FlowGraph<N>> extends Builder<G> {
+public interface IFlowGraphBuilder<N extends FlowGraphNode, G extends FlowGraph<N>> extends Builder<G> {
 
     N getSource();
 

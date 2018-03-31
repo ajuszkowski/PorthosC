@@ -1,7 +1,7 @@
 package mousquetaires.languages.common.graph.traverse;
 
 import mousquetaires.languages.common.graph.FlowGraph;
-import mousquetaires.languages.common.graph.GraphNode;
+import mousquetaires.languages.common.graph.FlowGraphNode;
 import mousquetaires.languages.common.graph.UnrolledFlowGraph;
 import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
 
@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 
 
-public abstract class FlowGraphDfsTraverser<N extends GraphNode, G extends UnrolledFlowGraph<N>> {
+public abstract class FlowGraphDfsTraverser<N extends FlowGraphNode, G extends UnrolledFlowGraph<N>> {
 
     private final int unrollingBound;
     private final FlowGraph<N> graph;
