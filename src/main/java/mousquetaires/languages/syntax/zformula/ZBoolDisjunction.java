@@ -1,11 +1,12 @@
 package mousquetaires.languages.syntax.zformula;
 
 import com.google.common.collect.ImmutableList;
+import mousquetaires.languages.syntax.zformula.visitors.ZformulaVisitor;
 
 
 public class ZBoolDisjunction extends ZBoolMultiFormula<ZBoolFormula> implements ZBoolFormula {
 
-    public ZBoolDisjunction(ZBoolFormula... expressions) {
+    ZBoolDisjunction(ZBoolFormula... expressions) {
         this(ImmutableList.copyOf(expressions));
     }
 
@@ -20,5 +21,10 @@ public class ZBoolDisjunction extends ZBoolMultiFormula<ZBoolFormula> implements
     @Override
     protected String getOperatorText() {
         return "\\/";
+    }
+
+    @Override
+    public <T> T accept(ZformulaVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

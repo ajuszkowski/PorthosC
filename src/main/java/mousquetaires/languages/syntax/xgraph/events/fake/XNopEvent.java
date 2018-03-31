@@ -9,13 +9,8 @@ public final class XNopEvent extends XFakeEvent {
         super(info, NON_REFERENCE_ID);
     }
 
-    XNopEvent(XEventInfo info, int fakeEventId, int referenceId) {
-        super(info, fakeEventId, referenceId);
-    }
-
-    @Override
-    public String getSmtLabel() {
-        return "NOP_" + super.getSmtLabel() + "_" + getFakeEventId();
+    XNopEvent(XEventInfo info, int referenceId) {
+        super(info, referenceId);
     }
 
     @Override
@@ -24,7 +19,12 @@ public final class XNopEvent extends XFakeEvent {
     }
 
     @Override
+    public String toString() {
+        return "NOP_" + super.toString();
+    }
+
+    @Override
     public XNopEvent asReference(int referenceId) {
-        return new XNopEvent(getInfo(), getFakeEventId(), referenceId);
+        return new XNopEvent(getInfo(), referenceId);
     }
 }

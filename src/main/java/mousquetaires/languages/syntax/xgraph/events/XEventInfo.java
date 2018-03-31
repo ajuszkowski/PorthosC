@@ -17,9 +17,10 @@ public class XEventInfo {
      * identifier of the process that event comes from
      */
     private final String processId;
+
     // todo: perhaps add nullable labels to the event info - for jumps // <- ??
     /**
-     * ensures that events in a trace are unique
+     * ensures that events are unique
      */
     private final int stamp;
 
@@ -38,6 +39,8 @@ public class XEventInfo {
         return stamp;
     }
 
+
+    //TODO: review this and other equals/hashCode mehtods
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

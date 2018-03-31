@@ -1,9 +1,12 @@
 package mousquetaires.languages.syntax.zformula;
 
+
+import mousquetaires.languages.syntax.zformula.visitors.ZformulaVisitor;
+
 import java.util.Objects;
 
 
-public class ZVariableReference extends ZVariable implements ZAtom {
+public class ZVariableReference extends ZNamedAtom implements ZFormula {
     private final int index;
 
     ZVariableReference(String name, int index) {
@@ -13,6 +16,11 @@ public class ZVariableReference extends ZVariable implements ZAtom {
 
     public int getIndex() {
         return index;
+    }
+
+    @Override
+    public <T> T accept(ZformulaVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 
     @Override

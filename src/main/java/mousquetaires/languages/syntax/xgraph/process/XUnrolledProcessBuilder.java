@@ -37,9 +37,6 @@ public class XUnrolledProcessBuilder extends UnrolledFlowGraphBuilder<XEvent, XU
         return processId;
     }
 
-
-
-
     @Override
     public void setSource(XEvent source) {
         assert source instanceof XEntryEvent : source.getClass().getSimpleName();

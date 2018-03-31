@@ -15,11 +15,6 @@ public final class XExitEvent extends XFakeEvent {
     }
 
     @Override
-    public String getSmtLabel() {
-        return "EXIT_" + getInfo().getProcessId();
-    }
-
-    @Override
     public XEvent asReference(int referenceId) {
         throw new NotSupportedException("Exit events cannot have references");
     }
@@ -27,6 +22,11 @@ public final class XExitEvent extends XFakeEvent {
     @Override
     public <T> T accept(XEventVisitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public String toString() {
+        return "EXIT_" + getInfo().getProcessId();
     }
 
     // TODO: split exit into  two types: bound-achieved / bound-not-achieved

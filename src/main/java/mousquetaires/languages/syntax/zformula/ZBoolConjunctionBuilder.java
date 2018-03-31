@@ -5,6 +5,7 @@ import mousquetaires.utils.patterns.BuilderBase;
 
 
 public class ZBoolConjunctionBuilder extends BuilderBase<ZBoolConjunction> {
+
     private ImmutableList.Builder<ZBoolFormula> expressions;
 
     public ZBoolConjunctionBuilder() {

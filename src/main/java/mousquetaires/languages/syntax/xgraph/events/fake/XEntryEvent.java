@@ -15,11 +15,6 @@ public final class XEntryEvent extends XFakeEvent {
     }
 
     @Override
-    public String getSmtLabel() {
-        return "ENTRY_" + getInfo().getProcessId();
-    }
-
-    @Override
     public XEvent asReference(int referenceId) {
         throw new NotSupportedException("Entry events cannot have references");
     }
@@ -27,6 +22,11 @@ public final class XEntryEvent extends XFakeEvent {
     @Override
     public <T> T accept(XEventVisitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public String toString() {
+        return "ENTRY_" + getInfo().getProcessId();
     }
 
     @Override

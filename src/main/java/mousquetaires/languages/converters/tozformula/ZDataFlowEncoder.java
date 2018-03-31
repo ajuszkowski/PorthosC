@@ -9,12 +9,10 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitorBase;
 import mousquetaires.languages.syntax.xgraph.visitors.XVisitorIllegalStateException;
+import mousquetaires.languages.syntax.zformula.XZOperator;
+import mousquetaires.languages.syntax.zformula.ZFormula;
 import mousquetaires.languages.syntax.zformula.ZBoolFormula;
-import mousquetaires.languages.syntax.zformula.ZVariable;
-import mousquetaires.languages.syntax.zformula.ZVariableReference;
 import mousquetaires.utils.exceptions.NotImplementedException;
-
-import static mousquetaires.languages.syntax.zformula.ZBoolFormulaHelper.equality;
 
 
 class ZDataFlowEncoder extends XEventVisitorBase<ZBoolFormula> {
@@ -53,24 +51,24 @@ class ZDataFlowEncoder extends XEventVisitorBase<ZBoolFormula> {
     @Override
     public ZBoolFormula visit(XBinaryComputationEvent event) {
         ZVariableReferenceMap map = ssaMap.getEventMapOrThrow(event);
-        ZVariable left = map.getReferenceOrThrow(event.getFirstOperand());
-        ZVariable right = map.getReferenceOrThrow(event.getSecondOperand());
-        return equality(left, right);
+        ZFormula left = map.getReferenceOrThrow(event.getFirstOperand());
+        ZFormula right = map.getReferenceOrThrow(event.getSecondOperand());
+        return XZOperator.CompareEquals.create(left, right);
     }
 
     @Override
     public ZBoolFormula visit(XStoreMemoryEvent event) {
         ZVariableReferenceMap map = ssaMap.getEventMapOrThrow(event);
-        ZVariable srcLocal = map.getReferenceOrThrow(event.getSource());
-        ZVariable dstShared = map.updateReference(event.getDestination());
-        return equality(srcLocal, dstShared);
+        ZFormula srcLocal = map.getReferenceOrThrow(event.getSource());
+        ZFormula dstShared = map.updateReference(event.getDestination());
+        return XZOperator.CompareEquals.create(srcLocal, dstShared);
     }
 
     @Override
     public ZBoolFormula visit(XLoadMemoryEvent event) {
         ZVariableReferenceMap map = ssaMap.getEventMapOrThrow(event);
-        ZVariable srcShared = map.updateReference(event.getSource());
-        ZVariable dstLocal = map.updateReference(event.getDestination());
-        return equality(srcShared, dstLocal);
+        ZFormula srcShared = map.updateReference(event.getSource());
+        ZFormula dstLocal = map.updateReference(event.getDestination());
+        return XZOperator.CompareEquals.create(srcShared, dstLocal);
     }
 }

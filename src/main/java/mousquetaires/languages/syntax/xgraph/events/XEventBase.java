@@ -25,15 +25,11 @@ public abstract class XEventBase implements XEvent {
     }
 
     @Override
-    public String getSmtLabel() {
-        return getInfo().getProcessId() + "_e" + hashCode();//getInfo().getStamp();
-    }
-
-    @Override
     public String toString() {
-        return wrapWithBracketsAndReferenceId(getSmtLabel());
+        return wrapWithBracketsAndReferenceId(getInfo().getProcessId() + "_e" + hashCode()); //getInfo().getStamp();
     }
 
+    // TODO: do we need to add referenceId to hashCode ?
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -47,12 +43,7 @@ public abstract class XEventBase implements XEvent {
         return Objects.hash(getInfo());
     }
 
-
     protected String wrapWithBracketsAndReferenceId(String line) {
-        return"[" + line + getReferenceIdSuffix() + "]";
-    }
-
-    private String getReferenceIdSuffix() {
-        return isReference() ? ", " + referenceId : "";
+        return"[" + (isReference() ? ", " + referenceId : "") + "]";
     }
 }

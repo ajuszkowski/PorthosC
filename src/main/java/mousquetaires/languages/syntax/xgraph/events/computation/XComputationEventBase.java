@@ -2,6 +2,7 @@ package mousquetaires.languages.syntax.xgraph.events.computation;
 
 import mousquetaires.languages.syntax.xgraph.events.XEventBase;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
+import mousquetaires.utils.exceptions.NotImplementedException;
 
 
 // TODO: remove nullary computation event, inherit the XLocalMemoryUnit from XEventBase and XComputationEvent (because it's read from registry)
@@ -15,13 +16,8 @@ public abstract class XComputationEventBase extends XEventBase implements XCompu
     }
 
     @Override
-    public String getSmtLabel() {
-        return super.getSmtLabel() + "_comp";
-    }
-
-    @Override
     public String getName() {
-        return getSmtLabel();
+        throw new NotImplementedException(); //??
     }
 
     @Override

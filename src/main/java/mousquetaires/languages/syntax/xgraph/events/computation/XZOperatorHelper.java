@@ -1,6 +1,7 @@
-package mousquetaires.languages.syntax.xgraph.events.computation.operators;
+package mousquetaires.languages.syntax.xgraph.events.computation;
 
 import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
+import mousquetaires.languages.syntax.zformula.XZOperator;
 
 
 public class XZOperatorHelper {

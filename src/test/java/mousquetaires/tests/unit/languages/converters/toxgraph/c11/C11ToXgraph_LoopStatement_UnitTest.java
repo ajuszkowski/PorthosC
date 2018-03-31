@@ -2,7 +2,7 @@ package mousquetaires.tests.unit.languages.converters.toxgraph.c11;
 
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOperator;
+import mousquetaires.languages.syntax.zformula.XZOperator;
 import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
 import mousquetaires.languages.syntax.xgraph.memories.XRegister;

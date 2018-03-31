@@ -5,13 +5,13 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputat
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
-import mousquetaires.languages.syntax.zformula.ZBoolVariable;
-import mousquetaires.languages.syntax.zformula.ZVariable;
-import mousquetaires.languages.syntax.zformula.ZVariableHelper;
-import mousquetaires.languages.syntax.zformula.ZVariableReference;
+import mousquetaires.languages.syntax.zformula.*;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static mousquetaires.languages.syntax.zformula.ZVariableFactory.createConstantVariable;
+import static mousquetaires.languages.syntax.zformula.ZVariableFactory.createMemoryUnitVariable;
 
 
 class ZVariableReferenceMap {
@@ -49,24 +49,24 @@ class ZVariableReferenceMap {
         }
     }
 
-    ZVariable updateReference(XMemoryUnit memoryUnit) {
-        if (!isReferableMemory(memoryUnit)) {
+    ZFormula updateReference(XMemoryUnit memoryUnit) {
+        if (isConstant(memoryUnit)) {
             throw new IllegalStateException("Cannot update reference for non-referable memory unit " + memoryUnit);
         }
         int index = variableRefMap.getOrDefault(memoryUnit, 0) + 1;
         variableRefMap.put(memoryUnit, index);
-        return ZVariableHelper.constructMemoryUnitVariable(memoryUnit, index);
+        return createMemoryUnitVariable(memoryUnit, index);
     }
 
-    ZVariable getReferenceOrThrow(XMemoryUnit memoryUnit) {
-        if (!isReferableMemory(memoryUnit)) {
-            return ZVariableHelper.constructConstantVariable(memoryUnit);
+    ZFormula getReferenceOrThrow(XMemoryUnit memoryUnit) {
+        if (isConstant(memoryUnit)) {
+            return createConstantVariable(memoryUnit);
         }
         if (!variableRefMap.containsKey(memoryUnit)) {
             // TODO: more eloquent message
             throw new IllegalStateException("key " + memoryUnit + "not found");
         }
-        return ZVariableHelper.constructMemoryUnitVariable(memoryUnit, variableRefMap.get(memoryUnit));
+        return createMemoryUnitVariable(memoryUnit, variableRefMap.get(memoryUnit));
     }
 
     @Override
@@ -74,8 +74,8 @@ class ZVariableReferenceMap {
         return "[" + variableRefMap + "]";
     }
 
-    boolean isReferableMemory(XMemoryUnit memoryUnit) {
-        return detector.isReferable(memoryUnit);
+    boolean isConstant(XMemoryUnit memoryUnit) {
+        return !detector.isReferable(memoryUnit);
     }
 
     boolean isSharedMemory(XMemoryUnit memoryUnit) {

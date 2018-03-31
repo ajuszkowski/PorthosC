@@ -45,9 +45,4 @@ public final class XStoreMemoryEvent extends XMemoryEventBase implements XShared
     public String toString() {
         return wrapWithBracketsAndReferenceId("store(" + getDestination() + " := " + getSource() + /*", " + memoryOrder +*/ ")");
     }
-
-    @Override
-    public String getSmtLabel() {
-        return super.getSmtLabel() + "_store";
-    }
 }

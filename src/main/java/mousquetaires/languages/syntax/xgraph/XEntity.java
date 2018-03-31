@@ -1,7 +1,8 @@
 package mousquetaires.languages.syntax.xgraph;
 
+public interface XEntity {
 
-public interface XEntity {  //extends Cloneable {
-    // TODO: unique identifier
-    String getSmtLabel();
+    default String uniqueId() {
+        return "x_" + hashCode();
+    }
 }

@@ -10,8 +10,8 @@ public final class XJumpEvent extends XFakeEvent {
         super(info, NON_REFERENCE_ID);
     }
 
-    private XJumpEvent(XEventInfo info, int fakeEventId, int referenceId) {
-        super(info, fakeEventId, referenceId);
+    private XJumpEvent(XEventInfo info, int referenceId) {
+        super(info, referenceId);
     }
 
     @Override
@@ -20,12 +20,12 @@ public final class XJumpEvent extends XFakeEvent {
     }
 
     @Override
-    public String getSmtLabel() {
-        return "JUMP_" + super.getSmtLabel() + "_" + getFakeEventId();
+    public String toString() {
+        return "JUMP_" + super.toString();
     }
 
     @Override
     public XJumpEvent asReference(int referenceId) {
-        return new XJumpEvent(getInfo(), getFakeEventId(), referenceId);
+        return new XJumpEvent(getInfo(), referenceId);
     }
 }

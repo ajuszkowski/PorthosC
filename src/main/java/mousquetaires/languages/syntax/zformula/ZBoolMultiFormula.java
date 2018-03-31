@@ -3,7 +3,7 @@ package mousquetaires.languages.syntax.zformula;
 import com.google.common.collect.ImmutableList;
 
 
-public abstract class ZBoolMultiFormula<T extends ZFormula> implements ZFormula {
+public abstract class ZBoolMultiFormula<T extends ZEntity> implements ZBoolFormula {
 
     private final ImmutableList<T> expressions;
 
@@ -27,7 +27,7 @@ public abstract class ZBoolMultiFormula<T extends ZFormula> implements ZFormula 
         else {
             // multi-ary operator
             boolean addSeparator = false;
-            for (ZFormula expression : getExpressions()) {
+            for (T expression : getExpressions()) {
                 if (addSeparator) {
                     sb.append(" ").append(getOperatorText()).append(" ");
                 }

@@ -6,7 +6,7 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputati
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOperator;
+import mousquetaires.languages.syntax.zformula.XZOperator;
 import mousquetaires.languages.syntax.xgraph.events.fake.*;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.*;

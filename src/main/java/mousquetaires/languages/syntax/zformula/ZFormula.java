@@ -1,5 +1,5 @@
 package mousquetaires.languages.syntax.zformula;
 
-public interface ZFormula {
 
+public interface ZFormula extends ZEntity {
 }

@@ -1,18 +1,16 @@
 package mousquetaires.languages.syntax.zformula;
 
-public class ZConstant implements ZAtom {
-    private final Object value;   // TODO: add type/bitness
 
-    public ZConstant(Object value) {
-        this.value = value;
-    }
+import mousquetaires.languages.syntax.zformula.visitors.ZformulaVisitor;
 
-    public Object getValue() {
-        return value;
+
+public class ZConstant extends ZNamedAtom {
+    ZConstant(String name) {
+        super(name);
     }
 
     @Override
-    public String toString() {
-        return "" + value;
+    public <T> T accept(ZformulaVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

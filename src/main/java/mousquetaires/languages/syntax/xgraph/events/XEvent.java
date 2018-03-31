@@ -8,6 +8,11 @@ public interface XEvent extends XEntity, GraphNode {
 
     XEventInfo getInfo();
 
+    @Override
+    default String nodeId() {
+        return uniqueId();
+    }
+
     XEvent asReference(int referenceId);
 
     <T> T accept(XEventVisitor<T> visitor);

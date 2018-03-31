@@ -44,14 +44,8 @@ public final class XRegisterMemoryEvent extends XMemoryEventBase implements XLoc
         return visitor.visit(this);
     }
 
-
     @Override
     public String toString() {
         return wrapWithBracketsAndReferenceId(getDestination() + " := " + getSource());
-    }
-
-    @Override
-    public String getSmtLabel() {
-        return super.getSmtLabel() + "_regreg";
     }
 }

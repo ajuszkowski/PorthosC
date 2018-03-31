@@ -1,11 +1,13 @@
 package mousquetaires.app.modules.dartagnan;
 
+import com.microsoft.z3.Expr;
 import mousquetaires.app.errors.AppError;
 import mousquetaires.app.errors.IOError;
 import mousquetaires.app.errors.UnrecognisedError;
 import mousquetaires.app.modules.AppModule;
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
+import mousquetaires.languages.converters.tosmt.toz3.ZFormulaToZ3Converter;
 import mousquetaires.languages.converters.toxgraph.YtreeToXgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.converters.tozformula.XProgramToZformulaConverter;
@@ -14,7 +16,7 @@ import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModelLP64;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
-import mousquetaires.languages.syntax.zformula.ZFormula;
+import mousquetaires.languages.syntax.zformula.ZBoolFormula;
 import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
 import mousquetaires.memorymodels.old.MemoryModel;
 import mousquetaires.memorymodels.old.MemoryModelFactory;
@@ -55,7 +57,11 @@ public class DartagnanModule extends AppModule {
             XUnrolledProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
 
             XProgramToZformulaConverter zConverter = new XProgramToZformulaConverter(); //todo: pass timeout
-            ZFormula formula = zConverter.encode(unrolledProgram);
+            ZBoolFormula zFormula = zConverter.encode(unrolledProgram);
+
+            ZFormulaToZ3Converter smtConverter = new ZFormulaToZ3Converter();
+            Expr smtFormula = zFormula.accept(smtConverter);
+
 
             // SmtEncoder.encode(program) ...
 

@@ -2,25 +2,35 @@ package mousquetaires.languages.syntax.zformula;
 
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOperator;
+import mousquetaires.languages.syntax.zformula.visitors.ZformulaVisitor;
 
 
-public class ZBoolExpression extends ZBoolMultiFormula<ZAtom> implements ZBoolFormula, ZAtom {
+
+public class ZBoolOperation extends ZBoolMultiFormula<ZFormula> {
 
     // TODO: new abstraction or string
     private final XZOperator operator;
 
-    public ZBoolExpression(XZOperator operator, ZAtom leftExpression, ZAtom rightExpression) {
+    ZBoolOperation(XZOperator operator, ZFormula leftExpression, ZFormula rightExpression) {
         super(ImmutableList.of(leftExpression, rightExpression));
         this.operator = operator;
     }
 
-    public ZAtom getLeft() {
+    public XZOperator getOperator() {
+        return operator;
+    }
+
+    public ZFormula getLeft() {
         return getExpressions().get(0);
     }
 
-    public ZAtom getRight() {
+    public ZFormula getRight() {
         return getExpressions().get(1);
+    }
+
+    @Override
+    public <T> T accept(ZformulaVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 
     @Override

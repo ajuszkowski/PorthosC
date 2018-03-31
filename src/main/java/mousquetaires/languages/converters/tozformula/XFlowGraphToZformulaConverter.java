@@ -4,14 +4,14 @@ import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.process.XUnrolledProcess;
 import mousquetaires.languages.syntax.zformula.ZBoolConjunctionBuilder;
 import mousquetaires.languages.syntax.zformula.ZBoolFormula;
-import mousquetaires.languages.syntax.zformula.ZBoolVariable;
+import mousquetaires.languages.syntax.zformula.ZVariable;
 
 import java.util.*;
 
-import static mousquetaires.languages.syntax.zformula.ZBoolFormulaHelper.implication;
-import static mousquetaires.languages.syntax.zformula.ZBoolFormulaHelper.not;
-import static mousquetaires.languages.syntax.zformula.ZBoolFormulaHelper.or;
-import static mousquetaires.languages.syntax.zformula.ZVariableHelper.constructEventVariable;
+import static mousquetaires.languages.syntax.zformula.ZBoolFormulaFactory.implication;
+import static mousquetaires.languages.syntax.zformula.ZBoolFormulaFactory.not;
+import static mousquetaires.languages.syntax.zformula.ZBoolFormulaFactory.or;
+import static mousquetaires.languages.syntax.zformula.ZVariableFactory.createEventVariable;
 
 
 // TODO: generalize this class
@@ -47,7 +47,7 @@ public class XFlowGraphToZformulaConverter {
                 continue;
             }
 
-            ZBoolVariable currentId = constructEventVariable(current);
+            ZVariable currentId = createEventVariable(current);
 
             // encode control-flow, 'current -> (parent1 \/ parent2 \/ ...)'
             for (boolean edgeKind : new boolean[] { true, false }) {
@@ -57,12 +57,12 @@ public class XFlowGraphToZformulaConverter {
 
                 Set<XEvent> parents = process.parents(edgeKind, current);
                 assert parents.size() > 0;
-                Set<ZBoolFormula> parentsVariables = new HashSet<>(parents.size());
+                Set<ZVariable> parentsVariables = new HashSet<>(parents.size());
                 for (XEvent parent : parents) {
                     assert visited.contains(parent) : parent + " violates topological sorting";
                     // update references from all parents:
                     dataFlowEncoder.updateReferences(current, parent);
-                    parentsVariables.add(constructEventVariable(parent));
+                    parentsVariables.add(createEventVariable(parent));
                 }
 
                 ZBoolFormula parentsSubFormula = edgeKind
@@ -101,7 +101,7 @@ public class XFlowGraphToZformulaConverter {
         return resultFormula.build();
     }
 
-        //public Expr encode_OLD(XProcess process) {
+    //public Expr encode_OLD(XProcess process) {
         //    XgraphLinearisedTraverser traverser = new XgraphLinearisedTraverser(process);
         //    Queue<Transition> visitQueue = new ArrayDeque<>();
         //    Set<XEvent> visitedEvents = new HashSet<>();

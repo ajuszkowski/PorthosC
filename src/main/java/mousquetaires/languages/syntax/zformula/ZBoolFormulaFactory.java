@@ -1,14 +1,13 @@
 package mousquetaires.languages.syntax.zformula;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.syntax.xgraph.events.computation.operators.XZOperator;
 import mousquetaires.utils.CollectionUtils;
 
 import java.util.Collection;
 import java.util.List;
 
 
-public class ZBoolFormulaHelper {
+public class ZBoolFormulaFactory {
 
     public static ZBoolFormula and(ZBoolFormula... expressions) {
         return and(List.of(expressions));
@@ -41,16 +40,12 @@ public class ZBoolFormulaHelper {
     }
 
     public static ZBoolFormula not(ZBoolFormula expression) {
-        return expression instanceof ZBoolNegationAtom
-                ? ((ZBoolNegationAtom) expression).getExpression()
-                : new ZBoolNegationAtom(expression);
+        return expression instanceof ZBoolNegation
+                ? ((ZBoolNegation) expression).getExpression()
+                : new ZBoolNegation(expression);
     }
 
     public static ZBoolImplication implication(ZBoolFormula left, ZBoolFormula right) {
         return new ZBoolImplication(left, right);
-    }
-
-    public static ZBoolExpression equality(ZAtom leftExpression, ZAtom rightExpression) {
-        return new ZBoolExpression(XZOperator.CompareEquals, leftExpression, rightExpression);
     }
 }

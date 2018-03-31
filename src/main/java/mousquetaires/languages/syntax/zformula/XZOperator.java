@@ -1,7 +1,8 @@
-package mousquetaires.languages.syntax.xgraph.events.computation.operators;
+package mousquetaires.languages.syntax.zformula;
 
 import mousquetaires.languages.syntax.ytree.expressions.binary.YBinaryExpression;
 import mousquetaires.languages.syntax.ytree.temporaries.YUnaryOperatorKindTemp;
+import mousquetaires.languages.syntax.zformula.ZBoolOperation;
 
 
 // TODO: probably, make unique operator class
@@ -31,6 +32,10 @@ public enum XZOperator {
     CompareGreaterOrEquals,
     // todo: more
     ;
+
+    public ZBoolOperation create(ZFormula leftOperand, ZFormula rightOperand) {
+        return new ZBoolOperation(this, leftOperand, rightOperand);
+    }
 
 
     // TODO: after unification operators for X, Z (and probably Y), add here methods 'createX', 'createY', etc
