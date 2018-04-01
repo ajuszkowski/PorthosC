@@ -6,14 +6,6 @@ import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
 public class YLogicalBinaryExpression extends YBinaryExpression {
 
-    //public static YLogicalBinaryExpression createConjunction() {
-    //    return new YLogicalBinaryExpression(Kind.Conjunction, leftExpression, rightExpression);
-    //}
-    //
-    //public static YLogicalBinaryExpression createDisjunction(YExpression leftExpression, YExpression rightExpression) {
-    //    return new YLogicalBinaryExpression(Kind.Disjunction, leftExpression, rightExpression);
-    //}
-
     private YLogicalBinaryExpression(Kind kind, YExpression leftExpression, YExpression rightExpression) {
         super(kind, leftExpression, rightExpression);
     }

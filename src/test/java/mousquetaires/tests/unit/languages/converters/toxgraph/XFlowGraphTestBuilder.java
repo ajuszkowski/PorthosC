@@ -2,11 +2,7 @@ package mousquetaires.tests.unit.languages.converters.toxgraph;
 
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
-import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
-import mousquetaires.languages.syntax.zformula.XZOperator;
+import mousquetaires.languages.syntax.xgraph.events.computation.*;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
@@ -37,14 +33,10 @@ public class XFlowGraphTestBuilder extends BuilderBase<XProcess> {
     }
 
     public XComputationEvent createComputationEvent(XLocalMemoryUnit first) {
-        return new XNullaryComputationEvent(createEventInfo(), first);
+        return new XUnaryComputationEvent(createEventInfo(), XUnaryOperator.NoOperation, first);
     }
 
-    public XComputationEvent createComputationEvent(XZOperator operator, XLocalMemoryUnit first) {
-        return new XUnaryComputationEvent(createEventInfo(), operator, first);
-    }
-
-    public XComputationEvent createComputationEvent(XZOperator operator, XLocalMemoryUnit first, XLocalMemoryUnit second) {
+    public XComputationEvent createComputationEvent(XBinaryOperator operator, XLocalMemoryUnit first, XLocalMemoryUnit second) {
         return new XBinaryComputationEvent(createEventInfo(), operator, first, second);
     }
 

@@ -1,12 +1,13 @@
 package mousquetaires.languages.syntax.xgraph.memories;
 
+import mousquetaires.languages.common.Bitness;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 
 
-public class XLocation extends XMemoryUnitBase implements XSharedMemoryUnit {
+public class XLocation extends XLvalueMemoryUnitBase implements XSharedMemoryUnit {
 
     XLocation(String name, Bitness bitness) {
-        super("loc_" + name, bitness);
+        super("loc_" + name,  bitness);
     }
 
     @Override

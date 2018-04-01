@@ -1,19 +1,10 @@
 package mousquetaires.languages.syntax.ytree.expressions.binary;
 
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
 
 public class YIntegerBinaryExpression extends YBinaryExpression {
-
-    public static YIntegerBinaryExpression createIncrementExpression(YExpression leftExpression) {
-        return new YIntegerBinaryExpression(Kind.Plus, leftExpression, YConstant.fromValue(1));
-    }
-
-    public static YIntegerBinaryExpression createDecrementExpression(YExpression leftExpression) {
-        return new YIntegerBinaryExpression(Kind.Minus, leftExpression, YConstant.fromValue(1));
-    }
 
     private YIntegerBinaryExpression(Kind kind, YExpression leftExpression, YExpression rightExpression) {
         super(kind, leftExpression, rightExpression);

@@ -1,24 +1,33 @@
 package mousquetaires.languages.syntax.xgraph.events.computation;
 
-import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
-import mousquetaires.languages.syntax.zformula.XZOperator;
+import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 
 import java.util.Objects;
 
 
-public class XBinaryComputationEvent extends XUnaryComputationEvent {
+public class XBinaryComputationEvent extends XComputationEventBase {
 
+    private final XLocalMemoryUnit firstOperand;
     private final XLocalMemoryUnit secondOperand;
 
     public XBinaryComputationEvent(XEventInfo info,
-                                   XZOperator operator,
-                                   XLocalMemoryUnit operand1,
+                                   XBinaryOperator operator,
+                                   XLocalMemoryUnit firstOperand,
                                    XLocalMemoryUnit secondOperand) {
-        super(info, operator, operand1);
+        super(info, XBitnessDeterminer.determineBitness(operator, firstOperand, secondOperand), operator);
+        this.firstOperand = firstOperand;
         this.secondOperand = secondOperand;
+    }
+
+    public XBinaryOperator getOperator() {
+        return (XBinaryOperator) super.getOperator();
+    }
+
+    public XLocalMemoryUnit getFirstOperand() {
+        return firstOperand;
     }
 
     public XLocalMemoryUnit getSecondOperand() {
@@ -36,22 +45,28 @@ public class XBinaryComputationEvent extends XUnaryComputationEvent {
     }
 
     @Override
+    public <T> T accept(XMemoryUnitVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
     public String toString() {
         return wrapWithBracketsAndDepth("eval(" + getFirstOperand() + " " + getOperator() + " " + getSecondOperand() + ")");
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof XBinaryComputationEvent)) return false;
-        if (!super.equals(o)) return false;
+        if (this == o) { return true; }
+        if (!(o instanceof XBinaryComputationEvent)) { return false; }
+        if (!super.equals(o)) { return false; }
         XBinaryComputationEvent that = (XBinaryComputationEvent) o;
-        return Objects.equals(getSecondOperand(), that.getSecondOperand());
+        return Objects.equals(getFirstOperand(), that.getFirstOperand()) &&
+                Objects.equals(getSecondOperand(), that.getSecondOperand());
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(super.hashCode(), getSecondOperand());
+        return Objects.hash(super.hashCode(), getFirstOperand(), getSecondOperand());
     }
 }

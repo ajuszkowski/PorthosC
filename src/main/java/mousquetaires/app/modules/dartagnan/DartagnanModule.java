@@ -16,7 +16,7 @@ import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModelLP64;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
-import mousquetaires.languages.syntax.zformula.ZBoolFormula;
+import mousquetaires.languages.syntax.zformula.ZLogicalFormula;
 import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
 import mousquetaires.memorymodels.old.MemoryModel;
 import mousquetaires.memorymodels.old.MemoryModelFactory;
@@ -46,6 +46,7 @@ public class DartagnanModule extends AppModule {
             int unrollBound = 6; // TODO: get from options
 
             MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
+
             File inputProgramFile = options.inputProgramFile;
             ProgramLanguage language = ProgramExtensions.parseProgramLanguage(inputProgramFile.getName());
             YSyntaxTree internalRepr = YtreeParser.parse(inputProgramFile, language);
@@ -57,10 +58,12 @@ public class DartagnanModule extends AppModule {
             XUnrolledProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
 
             XProgramToZformulaConverter zConverter = new XProgramToZformulaConverter(); //todo: pass timeout
-            ZBoolFormula zFormula = zConverter.encode(unrolledProgram);
+            ZLogicalFormula zFormula = zConverter.encode(unrolledProgram);
 
             ZFormulaToZ3Converter smtConverter = new ZFormulaToZ3Converter();
-            Expr smtFormula = zFormula.accept(smtConverter);
+            Expr programFormula = smtConverter.convert(zFormula);
+
+
 
 
             // SmtEncoder.encode(program) ...

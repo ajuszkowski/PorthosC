@@ -16,6 +16,11 @@ public abstract class XEventBase implements XEvent {
         return info;
     }
 
+    @Override
+    public String getName() {
+        return "e_" + getInfo().getText();
+    }
+
     //TODO: remove this debug method
     protected String wrapWithBracketsAndDepth(String message) {
         return "[" + message + ", " + getInfo().getUnrollingDepth() + "]";
@@ -23,7 +28,7 @@ public abstract class XEventBase implements XEvent {
 
     @Override
     public String toString() {
-        return "e_" + getInfo();
+        return getName();
     }
 
     @Override

@@ -1,7 +1,6 @@
 package mousquetaires.languages.syntax.zformula.visitors;
 
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
@@ -27,11 +26,6 @@ public class XEntityNameConverter implements XEventVisitor<String>, XMemoryUnitV
 
     @Override
     public String visit(XExitEvent event) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public String visit(XNullaryComputationEvent event) {
         throw new NotImplementedException();
     }
 

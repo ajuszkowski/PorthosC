@@ -1,11 +1,7 @@
 package mousquetaires.languages.syntax.xgraph;
 
-import mousquetaires.languages.common.SmtSerialisable;
+import mousquetaires.languages.common.NamedAtom;
 
 
-public interface XEntity extends SmtSerialisable {
-    @Override
-    default String toSmt() {
-        return "x_" + hashCode();
-    }
+public interface XEntity {
 }

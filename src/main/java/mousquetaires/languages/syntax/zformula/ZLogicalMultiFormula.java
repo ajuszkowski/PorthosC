@@ -3,11 +3,11 @@ package mousquetaires.languages.syntax.zformula;
 import com.google.common.collect.ImmutableList;
 
 
-public abstract class ZBoolMultiFormula<T extends ZEntity> implements ZBoolFormula {
+public abstract class ZLogicalMultiFormula<T extends ZEntity> implements ZLogicalFormula {
 
     private final ImmutableList<T> expressions;
 
-    protected ZBoolMultiFormula(ImmutableList<T> expressions) {
+    protected ZLogicalMultiFormula(ImmutableList<T> expressions) {
         this.expressions = expressions;
     }
 
@@ -15,21 +15,21 @@ public abstract class ZBoolMultiFormula<T extends ZEntity> implements ZBoolFormu
         return expressions;
     }
 
-    protected abstract String getOperatorText();
+    protected abstract String operatorToString();
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("(");
         if (expressions.size() == 1) {
             // unary operator
-            sb.append(getOperatorText()).append(expressions.get(0));
+            sb.append(operatorToString()).append(expressions.get(0));
         }
         else {
             // multi-ary operator
             boolean addSeparator = false;
             for (T expression : getExpressions()) {
                 if (addSeparator) {
-                    sb.append(" ").append(getOperatorText()).append(" ");
+                    sb.append(" ").append(operatorToString()).append(" ");
                 }
                 sb.append(expression);
                 addSeparator = true;

@@ -5,21 +5,21 @@ import mousquetaires.languages.syntax.zformula.*;
 
 public interface ZformulaVisitor<T> {
 
-    T visit(ZVariable formula);
+    T visit(ZGlobalVariable formula);
 
-    T visit(ZVariableReference formula);
+    T visit(ZIndexedVariable formula);
 
     T visit(ZConstant formula);
 
-    T visit(ZBoolConstant formula);
+    T visit(ZLogicalNegation formula);
 
-    T visit(ZBoolNegation formula);
+    T visit(ZUnaryOperation formula);
 
-    T visit(ZBoolOperation formula);
+    T visit(ZBinaryOperation formula);
 
-    T visit(ZBoolImplication formula);
+    T visit(ZLogicalImplication formula);
 
-    T visit(ZBoolDisjunction formula);
+    T visit(ZLogicalDisjunction formula);
 
-    T visit(ZBoolConjunction formula);
+    T visit(ZLogicalConjunction formula);
 }

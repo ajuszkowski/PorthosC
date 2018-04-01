@@ -2,15 +2,13 @@ package mousquetaires.languages.converters.tosmt.toz3;
 
 import com.microsoft.z3.*;
 import com.microsoft.z3.Expr;
-import mousquetaires.languages.syntax.zformula.XZOperator;
 import mousquetaires.languages.syntax.zformula.*;
 import mousquetaires.languages.syntax.zformula.visitors.ZformulaVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
+import org.apache.xpath.operations.Bool;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static mousquetaires.languages.syntax.zformula.ZBoolFormulaFactory.not;
 
 
 public class ZFormulaToZ3Converter implements ZformulaVisitor<Expr> {
@@ -25,57 +23,70 @@ public class ZFormulaToZ3Converter implements ZformulaVisitor<Expr> {
         this.ctx = ctx;
     }
 
+    public Expr convert(ZFormula formula) {
+        return formula.accept(this);
+    }
+
+
     @Override
-    public BoolExpr visit(ZVariable variable) {
+    public Expr visit(ZGlobalVariable variable) {
         return ctx.mkBoolConst(variable.getName());
     }
 
     @Override
-    public BoolExpr visit(ZVariableReference variable) {
-        return ctx.mkBoolConst(variable.getName() + "_" + variable.getIndex());
+    public Expr visit(ZIndexedVariable variable) {
+        Z3Type z3type = Z3Type.convert(variable.getBitness());
+        String name = variable.getName() + "_" + variable.getIndex();
+        return makeVariable(z3type, name);
     }
 
     @Override
-    public BoolExpr visit(ZConstant constant) {
-        return ctx.mkBoolConst(constant.getName());
+    public Expr visit(ZConstant constant) {
+        Z3Type z3type = Z3Type.convert(constant.getBitness());
+        return makeConstant(z3type, constant.getValue());
     }
 
     @Override
-    public BoolExpr visit(ZBoolNegation formula) {
+    public BoolExpr visit(ZLogicalNegation formula) {
         BoolExpr expression = visitBool(formula.getExpression());
         return ctx.mkNot(expression);
     }
 
     @Override
-    public BoolExpr visit(ZBoolConstant formula) {
-        return ctx.mkBoolConst(formula.name());
+    public Expr visit(ZUnaryOperation formula) {
+        // here we need to consider more Z3 types: bitvector, bitwise operations, ... see https://rise4fun.com/z3/tutorialcontent/guide
+        throw new NotImplementedException();
+        //ArithExpr operand = visitArith(formula.getOperand());
+        //ZUnaryOperator operator = formula.getOperator();
+        //switch (operator) {
+        //    case BitNegation:
+        //        return ctx.mkBVNot(operand)
+        //    case NoOperation:
+        //        break;
+        //}
     }
 
     @Override
-    public Expr visit(ZBoolOperation formula) {
-        ZFormula left = formula.getLeft();
-        ZFormula right = formula.getRight();
-        XZOperator operator = formula.getOperator();
+    public Expr visit(ZBinaryOperation formula) {
+        ZAtom left = formula.getLeft();
+        ZAtom right = formula.getRight();
+        ZBinaryOperator operator = formula.getOperator();
         switch (operator) {
-            case LogicalAnd:
-                throw new NotImplementedException();
-            case LogicalOr:
-                throw new NotImplementedException();
-            case LogicalNot:
-                throw new NotImplementedException();
-            case IntegerPlus:
+            case Addition:
                 return ctx.mkAdd(visitArith(left), visitArith(right));
-            case IntegerMinus:
+            case Subtraction:
                 return ctx.mkSub(visitArith(left), visitArith(right));
-            case IntegerMultiply:
+            case Multiplication:
                 return ctx.mkMul(visitArith(left), visitArith(right));
-            case IntegerDivide:
+            case Division:
                 return ctx.mkDiv(visitArith(left), visitArith(right));
-            case IntegerModulo:
+            case Modulo:
+                return ctx.mkMod(visitInt(left), visitInt(right));
+            case LeftShift:
+                // todo: need to consider signed/unsigned type here, see https://rise4fun.com/z3/tutorialcontent/guide
+                //return ctx.mkBVSHL(visitBitVec(left), visitBitVec(right));
                 throw new NotImplementedException();
-            case IntegerLeftShift:
-                throw new NotImplementedException();
-            case IntegerRightShift:
+            case RightShift:
                 throw new NotImplementedException();
             case BitAnd:
                 throw new NotImplementedException();
@@ -83,13 +94,10 @@ public class ZFormulaToZ3Converter implements ZformulaVisitor<Expr> {
                 throw new NotImplementedException();
             case BitXor:
                 throw new NotImplementedException();
-            case BitNot:
-                throw new NotImplementedException();
             case CompareEquals:
-                return ctx.mkEq(visitFormula(left), visitFormula(right));
+                return ctx.mkEq(visitExpr(left), visitExpr(right));
             case CompareNotEquals:
-                ZBoolFormula rewrapped = not(XZOperator.CompareEquals.create(left, right));
-                return visitBool(rewrapped);
+                return ctx.mkNot(ctx.mkEq(visitExpr(left), visitExpr(right)));
             case CompareLess:
                 return ctx.mkLt(visitArith(left), visitArith(right));
             case CompareLessOrEquals:
@@ -104,46 +112,102 @@ public class ZFormulaToZ3Converter implements ZformulaVisitor<Expr> {
     }
 
     @Override
-    public BoolExpr visit(ZBoolImplication formula) {
+    public BoolExpr visit(ZLogicalImplication formula) {
         BoolExpr left = visitBool(formula.getLeftExpression());
         BoolExpr right = visitBool(formula.getRightExpression());
         return ctx.mkImplies(left, right);
     }
 
     @Override
-    public BoolExpr visit(ZBoolDisjunction formula) {
+    public BoolExpr visit(ZLogicalDisjunction formula) {
         BoolExpr[] disjuncts = convertExpressions(formula.getExpressions());
-        return ctx.mkAnd(disjuncts);
+        return ctx.mkOr(disjuncts);
     }
 
     @Override
-    public BoolExpr visit(ZBoolConjunction formula) {
+    public BoolExpr visit(ZLogicalConjunction formula) {
         BoolExpr[] conjuncts = convertExpressions(formula.getExpressions());
-        return ctx.mkOr(conjuncts);
+        return ctx.mkAnd(conjuncts);
     }
 
-    private BoolExpr visitBool(ZBoolFormula formula) {
+
+    private BoolExpr visitBool(ZLogicalFormula formula) {
         Expr result = formula.accept(this);
         if (!(result instanceof BoolExpr)) {
-            throw new IllegalStateException();
+            throw new IllegalStateException(); //todo: message + exception type
         }
         return (BoolExpr) result;
     }
 
-    private ArithExpr visitArith(ZFormula formula) {
+    private ArithExpr visitArith(ZAtom formula) {
         // todo: type checking here
         return (ArithExpr) formula.accept(this);
     }
 
-    private Expr visitFormula(ZFormula formula) {
+    private IntExpr visitInt(ZAtom formula) {
+        // todo: type checking here
+        return (IntExpr) formula.accept(this);
+    }
+
+    //private BitVecExpr visitBitVec(ZAtom formula) {
+    //    // todo: type checking here
+    //    return (BitVecExpr) formula.accept(this);
+    //}
+
+    private Expr visitExpr(ZFormula formula) {
         return formula.accept(this);
     }
 
-    private BoolExpr[] convertExpressions(List<ZBoolFormula> expressions) {
+    private BoolExpr[] convertExpressions(List<ZLogicalFormula> expressions) {
         List<BoolExpr> disjunctList = new ArrayList<>(expressions.size());
-        for (ZBoolFormula expression : expressions) {
+        for (ZLogicalFormula expression : expressions) {
             disjunctList.add(visitBool(expression));
         }
         return disjunctList.toArray(new BoolExpr[0]);
     }
+
+    private Expr makeVariable(Z3Type z3Type, String name) {
+        switch (z3Type) {
+            case Bool: {
+                return ctx.mkBoolConst(name);
+            }
+            case Int: {
+                return ctx.mkIntConst(name);
+            }
+            case Real: {
+                throw new NotImplementedException();
+            }
+            case BitVector: {
+                throw new NotImplementedException();
+            }
+            default: {
+                throw new IllegalArgumentException(z3Type.name());
+            }
+        }
+    }
+
+    private Expr makeConstant(Z3Type z3Type, Object argument) {
+        switch (z3Type) {
+            case Bool: {
+                if (!(argument instanceof Boolean)) {
+                    throw new ToSmtConversionException("unexpected constant type: " + argument.getClass().getSimpleName());
+                }
+                return ctx.mkBool((Boolean) argument);
+            }
+            case Int:
+                if (!(argument instanceof Integer)) {
+                    throw new ToSmtConversionException("unexpected constant type: " + argument.getClass().getSimpleName());
+                }
+                return ctx.mkInt((Integer) argument);
+            case Real: {
+                throw new NotImplementedException();
+            }
+            case BitVector: {
+                throw new NotImplementedException();
+            }
+            default:
+                throw new IllegalArgumentException(z3Type.name());
+        }
+    }
+
 }

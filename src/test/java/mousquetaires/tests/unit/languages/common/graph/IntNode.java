@@ -34,8 +34,13 @@ public final class IntNode implements FlowGraphNode<IntNodeInfo> {
     }
 
     @Override
-    public String toString() {
+    public String getName() {
         return "[" + "n=" + value + "," + getInfo() + "]";
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
     @Override

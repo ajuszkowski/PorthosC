@@ -1,31 +1,34 @@
 package mousquetaires.languages.syntax.xgraph.events.computation;
 
-import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
-import mousquetaires.languages.syntax.zformula.XZOperator;
 
 import java.util.Objects;
 
 
-public class XUnaryComputationEvent extends XNullaryComputationEvent {
+public class XUnaryComputationEvent extends XComputationEventBase {
 
-    private final XZOperator operator;
+    private final XLocalMemoryUnit operand;
 
-    public XUnaryComputationEvent(XEventInfo info, XZOperator operator, XLocalMemoryUnit operand1) {
-        super(info, operand1);
-        this.operator = operator;
+    public XUnaryComputationEvent(XEventInfo info, XUnaryOperator operator, XLocalMemoryUnit operand) {
+        super(info, XBitnessDeterminer.determineBitness(operator, operand), operator);
+        this.operand = operand;
     }
 
-    public XZOperator getOperator() {
-        return operator;
+
+    public XUnaryOperator getOperator() {
+        return (XUnaryOperator) super.getOperator();
+    }
+
+    public XLocalMemoryUnit getOperand() {
+        return operand;
     }
 
     @Override
     public XUnaryComputationEvent withInfo(XEventInfo newInfo) {
-        return new XUnaryComputationEvent(newInfo, getOperator(), getFirstOperand());
+        return new XUnaryComputationEvent(newInfo, getOperator(), getOperand());
     }
 
     @Override
@@ -40,21 +43,21 @@ public class XUnaryComputationEvent extends XNullaryComputationEvent {
 
     @Override
     public String toString() {
-        return wrapWithBracketsAndDepth("eval(" + getOperator() + " " + getFirstOperand() + ")");
+        return wrapWithBracketsAndDepth("eval(" + getOperator() + getOperand() + ")");
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof XUnaryComputationEvent)) return false;
-        if (!super.equals(o)) return false;
+        if (this == o) { return true; }
+        if (!(o instanceof XUnaryComputationEvent)) { return false; }
+        if (!super.equals(o)) { return false; }
         XUnaryComputationEvent that = (XUnaryComputationEvent) o;
-        return getOperator() == that.getOperator();
+        return Objects.equals(getOperand(), that.getOperand());
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(super.hashCode(), getOperator());
+        return Objects.hash(super.hashCode(), getOperand());
     }
 }

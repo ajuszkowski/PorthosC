@@ -2,11 +2,7 @@ package mousquetaires.languages.syntax.xgraph.process.interpretation;
 
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
-import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
-import mousquetaires.languages.syntax.zformula.XZOperator;
+import mousquetaires.languages.syntax.xgraph.events.computation.*;
 import mousquetaires.languages.syntax.xgraph.events.fake.*;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.*;
@@ -121,17 +117,17 @@ public class XProcessInterpreter {
 
     public XComputationEvent evaluateMemoryUnit(XMemoryUnit memoryUnit) { //todo: type?
         XLocalMemoryUnit localMemoryUnit = copyToLocalMemoryIfNecessary(memoryUnit);
-        return emitComputationEvent(localMemoryUnit);
+        return emitComputationEvent(XUnaryOperator.NoOperation, localMemoryUnit);
     }
 
     public XComputationEvent evaluateSharedMemoryUnit(String name) {
         XLocation location = getSharedMemoryUnit(name);
         XRegister register = copyToLocalMemory(location);
-        return emitComputationEvent(register);
+        return emitComputationEvent(XUnaryOperator.NoOperation, register);
     }
 
     public XComputationEvent evaluateConstant(XConstant constant) {
-        return emitComputationEvent(constant);
+        return emitComputationEvent(XUnaryOperator.NoOperation, constant);
     }
 
     // --
@@ -160,28 +156,14 @@ public class XProcessInterpreter {
         return event;
     }
 
-    public XComputationEvent emitComputationEvent(XLocalMemoryUnit operand) {
-        XComputationEvent event = new XNullaryComputationEvent(createEventInfo(), operand);
-        processNextEvent(event);
-        return event;
-    }
-
-    //public XComputationEvent emitComputationEvent(XRegister operand) {
-    //    return emitUnaryComputationEvent(operand);
-    //}
-    //
-    //public XComputationEvent emitComputationEvent(XConstant operand) {
-    //    return emitUnaryComputationEvent(operand);
-    //}
-
-    public XComputationEvent emitComputationEvent(XZOperator operator, XLocalMemoryUnit operand) {
+    public XComputationEvent emitComputationEvent(XUnaryOperator operator, XLocalMemoryUnit operand) {
         XComputationEvent event = new XUnaryComputationEvent(createEventInfo(), operator, operand);
         processNextEvent(event);
         return event;
     }
 
 
-    public XComputationEvent emitComputationEvent(XZOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand) {
+    public XComputationEvent emitComputationEvent(XBinaryOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand) {
         XComputationEvent event = new XBinaryComputationEvent(createEventInfo(), operator, firstOperand, secondOperand);
         processNextEvent(event);
         return event;

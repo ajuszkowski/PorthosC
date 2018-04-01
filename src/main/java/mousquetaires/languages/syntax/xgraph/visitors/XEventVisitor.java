@@ -1,7 +1,6 @@
 package mousquetaires.languages.syntax.xgraph.visitors;
 
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XNullaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
@@ -17,7 +16,6 @@ public interface XEventVisitor<T> {
     T visit(XEntryEvent event);
     T visit(XExitEvent event);
 
-    T visit(XNullaryComputationEvent event);
     T visit(XUnaryComputationEvent event);
     T visit(XBinaryComputationEvent event);
 

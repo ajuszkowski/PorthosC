@@ -30,8 +30,8 @@ class ZStaticSingleAssignmentMap {
             childMap.addAllVariables(eventVariableMap.get(child));
         }
         for (XMemoryUnit memoryUnit : child.accept(memoryUnitCollector)) {
-            if (childMap.isConstant(memoryUnit)) {
-                childMap.addVariableIfAbsent(memoryUnit);
+            if (memoryUnit instanceof XLvalueMemoryUnit) {
+                childMap.addVariableIfAbsent((XLvalueMemoryUnit) memoryUnit);
             }
         }
         eventVariableMap.put(child, childMap);

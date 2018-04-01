@@ -20,10 +20,6 @@ public abstract class YMultiExpression implements YExpression {
         this.elements = elements;
     }
 
-    //protected YMultiExpression(Collection<YExpression> elements) {
-    //    this.elements = ImmutableList.copyOf(elements);
-    //}
-
     protected ImmutableList<YExpression> getElements() {
         return elements;
     }

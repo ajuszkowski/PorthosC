@@ -19,7 +19,7 @@ public class YIntegerUnaryExpression extends YUnaryExpression {
         PrefixDecrement,    // --x
         PostfixIncrement,   // x++
         PostfixDecrement,   // x--
-        IntegerNegation,           // -x
+        IntegerNegation,    // -x
         /**
          * 6.5.3.3 Unary arithmetic operators
          * Semantics

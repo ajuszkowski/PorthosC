@@ -1,5 +1,4 @@
 package mousquetaires.languages.syntax.zformula;
 
-
-public interface ZBoolFormula extends ZEntity {
+public interface ZOperator {
 }

@@ -2,15 +2,15 @@ package mousquetaires.languages.converters.tozformula;
 
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.process.XUnrolledProcess;
-import mousquetaires.languages.syntax.zformula.ZBoolConjunctionBuilder;
-import mousquetaires.languages.syntax.zformula.ZBoolFormula;
-import mousquetaires.languages.syntax.zformula.ZVariable;
+import mousquetaires.languages.syntax.zformula.ZLogicalConjunctionBuilder;
+import mousquetaires.languages.syntax.zformula.ZLogicalFormula;
+import mousquetaires.languages.syntax.zformula.ZGlobalVariable;
 
 import java.util.*;
 
-import static mousquetaires.languages.syntax.zformula.ZBoolFormulaFactory.implication;
-import static mousquetaires.languages.syntax.zformula.ZBoolFormulaFactory.not;
-import static mousquetaires.languages.syntax.zformula.ZBoolFormulaFactory.or;
+import static mousquetaires.languages.syntax.zformula.ZLogicalFormulaHelper.implication;
+import static mousquetaires.languages.syntax.zformula.ZLogicalFormulaHelper.not;
+import static mousquetaires.languages.syntax.zformula.ZLogicalFormulaHelper.or;
 import static mousquetaires.languages.syntax.zformula.ZVariableFactory.createEventVariable;
 
 
@@ -27,8 +27,8 @@ public class XFlowGraphToZformulaConverter {
         //this.operatorEncoder = new XOperatorEncoder(ctx);
     }
 
-    public ZBoolFormula encode(XUnrolledProcess process) {
-        ZBoolConjunctionBuilder resultFormula = new ZBoolConjunctionBuilder();
+    public ZLogicalFormula encode(XUnrolledProcess process) {
+        ZLogicalConjunctionBuilder resultFormula = new ZLogicalConjunctionBuilder();
 
         Set<XEvent> visited = new HashSet<>(process.size());
         //Deque<XEvent> queue = new ArrayDeque<>(process.edges().size());
@@ -46,7 +46,7 @@ public class XFlowGraphToZformulaConverter {
                 continue;
             }
 
-            ZVariable currentId = createEventVariable(current);
+            ZGlobalVariable currentId = createEventVariable(current);
 
             // encode control-flow, 'current -> (parent1 \/ parent2 \/ ...)'
             for (boolean edgeKind : new boolean[] { true, false }) {
@@ -56,7 +56,7 @@ public class XFlowGraphToZformulaConverter {
 
                 Set<XEvent> parents = process.parents(edgeKind, current);
                 assert parents.size() > 0;
-                Set<ZVariable> parentsVariables = new HashSet<>(parents.size());
+                Set<ZGlobalVariable> parentsVariables = new HashSet<>(parents.size());
                 for (XEvent parent : parents) {
                     assert visited.contains(parent) : parent + " violates topological sorting";
                     // update references from all parents:
@@ -64,15 +64,15 @@ public class XFlowGraphToZformulaConverter {
                     parentsVariables.add(createEventVariable(parent));
                 }
 
-                ZBoolFormula parentsSubFormula = edgeKind
+                ZLogicalFormula parentsSubFormula = edgeKind
                         ? or(parentsVariables)
                         : not(or(parentsVariables));
-                ZBoolFormula currentImpliesParents = implication(currentId, parentsSubFormula);
+                ZLogicalFormula currentImpliesParents = implication(currentId, parentsSubFormula);
                 resultFormula.addSubFormula(currentImpliesParents);
             }
 
             // encode dataflow if needed AND set up ssa map
-            ZBoolFormula dataFlowAssertion = dataFlowEncoder.encodeOrNull(current); //TODO: do not implicitly update references while visit
+            ZLogicalFormula dataFlowAssertion = dataFlowEncoder.encodeOrNull(current); //TODO: do not implicitly update references while visit
             if (dataFlowAssertion != null) {
                 resultFormula.addSubFormula(implication(currentId, dataFlowAssertion));
             }

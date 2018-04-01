@@ -1,16 +1,17 @@
 package mousquetaires.languages.syntax.zformula;
 
 
+import mousquetaires.languages.common.Bitness;
 import mousquetaires.languages.syntax.zformula.visitors.ZformulaVisitor;
 
 import java.util.Objects;
 
 
-public class ZVariableReference extends ZNamedAtom implements ZFormula {
+public final class ZIndexedVariable extends ZNamedAtomBase implements ZFormula {
     private final int index;
 
-    ZVariableReference(String name, int index) {
-        super(name);
+    ZIndexedVariable(String name, Bitness bitness, int index) {
+        super(name, bitness);
         this.index = index;
     }
 
@@ -25,15 +26,15 @@ public class ZVariableReference extends ZNamedAtom implements ZFormula {
 
     @Override
     public String toString() {
-        return "(" + getName() + ":" + getIndex() + ")";
+        return getName() + "_" + getIndex();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ZVariableReference)) return false;
+        if (!(o instanceof ZIndexedVariable)) return false;
         if (!super.equals(o)) return false;
-        ZVariableReference that = (ZVariableReference) o;
+        ZIndexedVariable that = (ZIndexedVariable) o;
         return getIndex() == that.getIndex();
     }
 

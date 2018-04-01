@@ -1,12 +1,13 @@
 package mousquetaires.languages.syntax.zformula;
 
+import mousquetaires.languages.common.Bitness;
 import mousquetaires.languages.syntax.zformula.visitors.ZformulaVisitor;
 
 
-public class ZVariable extends ZNamedAtom implements ZBoolFormula {
+public final class ZGlobalVariable extends ZNamedAtomBase implements ZLogicalFormula {
 
-    ZVariable(String name) {
-        super(name);
+    ZGlobalVariable(String name, Bitness bitness) {
+        super(name, bitness);
     }
 
     @Override

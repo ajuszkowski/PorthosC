@@ -39,6 +39,11 @@ public class XEventInfo extends FlowGraphNodeInfo {
         this.stamp = stamp;
     }
 
+    public String getText() {
+        return processId + "_" + getStamp();
+    }
+
+
     public String getProcessId() {
         return processId;
     }
@@ -54,7 +59,7 @@ public class XEventInfo extends FlowGraphNodeInfo {
 
     @Override
     public String toString() {
-        return "p" + processId + "_id" + getStamp();
+        return getText();
     }
 
     @Override

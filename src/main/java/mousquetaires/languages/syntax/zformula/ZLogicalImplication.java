@@ -5,25 +5,24 @@ import mousquetaires.languages.syntax.zformula.visitors.ZformulaVisitor;
 
 
 // todo: make multi-argument, 'a -> b -> c = a->b /\ b->c'
-public class ZBoolImplication extends ZBoolMultiFormula<ZBoolFormula> implements ZBoolFormula {
+public final class ZLogicalImplication extends ZLogicalMultiFormula<ZLogicalFormula> implements ZLogicalFormula {
 
-    ZBoolImplication(ZBoolFormula leftExpression, ZBoolFormula rightExpression) {
+    ZLogicalImplication(ZLogicalFormula leftExpression, ZLogicalFormula rightExpression) {
         super(ImmutableList.of(leftExpression, rightExpression));
     }
 
-    public ZBoolFormula getLeftExpression() {
+    public ZLogicalFormula getLeftExpression() {
         return getExpressions().get(0);
     }
 
-    public ZBoolFormula getRightExpression() {
+    public ZLogicalFormula getRightExpression() {
         return getExpressions().get(1);
     }
 
     @Override
-    protected String getOperatorText() {
+    protected String operatorToString() {
         return "->";
     }
-
 
     @Override
     public <T> T accept(ZformulaVisitor<T> visitor) {

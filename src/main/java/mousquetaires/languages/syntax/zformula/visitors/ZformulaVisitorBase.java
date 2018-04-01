@@ -6,12 +6,12 @@ import mousquetaires.languages.syntax.zformula.*;
 public abstract class ZformulaVisitorBase<T> implements ZformulaVisitor<T> {
 
     @Override
-    public T visit(ZVariable formula) {
+    public T visit(ZGlobalVariable formula) {
         throw new ZformulaVisitorIllegalStateException();
     }
 
     @Override
-    public T visit(ZVariableReference formula) {
+    public T visit(ZIndexedVariable formula) {
         throw new ZformulaVisitorIllegalStateException();
     }
 
@@ -21,32 +21,27 @@ public abstract class ZformulaVisitorBase<T> implements ZformulaVisitor<T> {
     }
 
     @Override
-    public T visit(ZBoolConstant formula) {
+    public T visit(ZLogicalNegation formula) {
         throw new ZformulaVisitorIllegalStateException();
     }
 
     @Override
-    public T visit(ZBoolNegation formula) {
+    public T visit(ZBinaryOperation formula) {
         throw new ZformulaVisitorIllegalStateException();
     }
 
     @Override
-    public T visit(ZBoolOperation formula) {
+    public T visit(ZLogicalImplication formula) {
         throw new ZformulaVisitorIllegalStateException();
     }
 
     @Override
-    public T visit(ZBoolImplication formula) {
+    public T visit(ZLogicalDisjunction formula) {
         throw new ZformulaVisitorIllegalStateException();
     }
 
     @Override
-    public T visit(ZBoolDisjunction formula) {
-        throw new ZformulaVisitorIllegalStateException();
-    }
-
-    @Override
-    public T visit(ZBoolConjunction formula) {
+    public T visit(ZLogicalConjunction formula) {
         throw new ZformulaVisitorIllegalStateException();
     }
 }

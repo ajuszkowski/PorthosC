@@ -6,13 +6,10 @@ import mousquetaires.languages.syntax.xgraph.XProgramInterpretationBuilder;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.types.XMockType;
-import mousquetaires.languages.syntax.xgraph.types.XType;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
 import mousquetaires.languages.syntax.ytree.types.YType;
-import mousquetaires.languages.syntax.zformula.XZOperator;
-import mousquetaires.languages.syntax.xgraph.events.computation.XZOperatorHelper;
+import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperator;
 import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.ytree.YEntity;
@@ -118,15 +115,16 @@ public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
 
     @Override
     public XEvent visit(YConstant node) {
-        XLocalMemoryUnit local = memoryUnitConverter.tryConvertToLocalOrNull(node);
-        return evaluate(local);
+        //XLocalMemoryUnit local = memoryUnitConverter.tryConvertToLocalOrNull(node);
+        //return evaluate(local);
+        throw new NotImplementedException();
     }
 
     @Override
     public XEvent visit(YVariableRef node) {
-        XLocalMemoryUnit local = memoryUnitConverter.tryConvertToLocalOrNull(node);
-        return evaluate(local);
-
+        //XLocalMemoryUnit local = memoryUnitConverter.tryConvertToLocalOrNull(node);
+        //return evaluate(local);
+        throw new NotImplementedException();
     }
 
     @Override
@@ -162,16 +160,16 @@ public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
         YIntegerUnaryExpression.Kind yOperator = node.getKind();
         YExpression yBaseExpression = node.getExpression();
 
-        if (XOperatorHelper.isPrefixOperator(yOperator)) {
+        if (YToXOperatorConverter.isPrefixOperator(yOperator)) {
             XLocalMemoryUnit baseLocal = memoryUnitConverter.tryConvertToLocalOrNull(yBaseExpression);
-            XZOperator xOperator = XOperatorHelper.isPrefixIncrement(yOperator)
-                    ? XZOperator.IntegerPlus
-                    : XZOperator.IntegerMinus;
+            XBinaryOperator xOperator = YToXOperatorConverter.isPrefixIncrement(yOperator)
+                    ? XBinaryOperator.Addition
+                    : XBinaryOperator.Subtraction;
             XConstant one = program.currentProcess.getConstant(1);
             XComputationEvent incremented = program.currentProcess.emitComputationEvent(xOperator, baseLocal, one);
             return program.currentProcess.emitMemoryEvent(baseLocal, incremented);
         }
-        else if (XOperatorHelper.isPostfixOperator(yOperator)) {
+        else if (YToXOperatorConverter.isPostfixOperator(yOperator)) {
             throw new NotImplementedException("Postfix operators are not supported for now");
         }
 
@@ -193,7 +191,7 @@ public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
     public XComputationEvent visit(YRelativeBinaryExpression node) {
         XLocalMemoryUnit left  = memoryUnitConverter.tryConvertToLocalOrThrow(node.getLeftExpression());
         XLocalMemoryUnit right = memoryUnitConverter.tryConvertToLocalOrThrow(node.getRightExpression());
-        XZOperator operator = XZOperatorHelper.convert(node.getKind());
+        XBinaryOperator operator = YToXOperatorConverter.convert(node.getKind());
         return program.currentProcess.emitComputationEvent(operator, left, right);
     }
 
@@ -340,9 +338,5 @@ public class YtreeToXgraphConverterVisitor extends YtreeVisitorBase<XEvent> {
 
     private static String getUnexpectedOperandTypeErrorMessage(XMemoryUnit operand) {
         return "Unexpected type of operand: " + operand + ", type of " + operand.getClass().getSimpleName();
-    }
-
-    private XComputationEvent evaluate(XLocalMemoryUnit local) {
-        return program.currentProcess.emitComputationEvent(local);
     }
 }

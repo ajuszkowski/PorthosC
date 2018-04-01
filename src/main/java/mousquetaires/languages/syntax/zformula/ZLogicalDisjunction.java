@@ -4,24 +4,23 @@ import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.zformula.visitors.ZformulaVisitor;
 
 
-public class ZBoolConjunction extends ZBoolMultiFormula<ZBoolFormula> implements ZBoolFormula {
+public final class ZLogicalDisjunction extends ZLogicalMultiFormula<ZLogicalFormula> implements ZLogicalFormula {
 
-    ZBoolConjunction(ZBoolFormula... expressions) {
+    ZLogicalDisjunction(ZLogicalFormula... expressions) {
         this(ImmutableList.copyOf(expressions));
     }
 
-    ZBoolConjunction(ImmutableList<ZBoolFormula> expressions) {
+    ZLogicalDisjunction(ImmutableList<ZLogicalFormula> expressions) {
         super(expressions);
     }
 
-
-    public ImmutableList<ZBoolFormula> getExpressions() {
+    public ImmutableList<ZLogicalFormula> getExpressions() {
         return super.getExpressions();
     }
 
     @Override
-    protected String getOperatorText() {
-        return "/\\";
+    protected String operatorToString() {
+        return "\\/";
     }
 
     @Override

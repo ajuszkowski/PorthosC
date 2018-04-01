@@ -10,6 +10,7 @@ import java.util.Objects;
 
 
 public abstract class YUnaryExpression extends YMultiExpression {
+
     public interface Kind {
         YUnaryExpression createExpression(YExpression baseExpression);
     }

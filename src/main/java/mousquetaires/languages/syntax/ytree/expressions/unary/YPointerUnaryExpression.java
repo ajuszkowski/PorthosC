@@ -10,7 +10,7 @@ import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 public class YPointerUnaryExpression extends YUnaryExpression implements YAssignee, YMemoryLocation {
     public enum Kind implements YUnaryExpression.Kind {
         Reference,   // &
-        Dereference, // *
+        Dereference, // * //called 'indirection' in C11 standard, p. 109
         ;
 
         @Override

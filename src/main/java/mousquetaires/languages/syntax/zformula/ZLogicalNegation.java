@@ -5,18 +5,18 @@ import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.zformula.visitors.ZformulaVisitor;
 
 
-public class ZBoolNegation extends ZBoolMultiFormula<ZBoolFormula> implements ZBoolFormula {
+public final class ZLogicalNegation extends ZLogicalMultiFormula<ZLogicalFormula> implements ZLogicalFormula {
 
-    ZBoolNegation(ZBoolFormula expression) {
+    ZLogicalNegation(ZLogicalFormula expression) {
         super(ImmutableList.of(expression));
     }
 
-    public ZBoolFormula getExpression() {
+    public ZLogicalFormula getExpression() {
         return getExpressions().get(0);
     }
 
     @Override
-    protected String getOperatorText() {
+    protected String operatorToString() {
         return "~";
     }
 

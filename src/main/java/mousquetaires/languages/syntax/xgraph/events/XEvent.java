@@ -1,6 +1,5 @@
 package mousquetaires.languages.syntax.xgraph.events;
 
-
 import mousquetaires.languages.common.graph.FlowGraphNode;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 

@@ -1,6 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.memories;
 
 import mousquetaires.languages.ProgramLanguage;
+import mousquetaires.languages.common.Bitness;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 
 import java.util.HashMap;
@@ -31,12 +32,12 @@ public final class XMemoryManager {
             name = newTempLocalName();
         }
         //return declareLocalMemoryUnit(name, null);
-        return new XRegister(name, XMemoryUnitBase.Bitness.bit16);// TODO: process bitness!!
+        return new XRegister(name, Bitness.bit32);// TODO: process bitness!!
     }
 
     // TODO: process bitness
     public XConstant getConstant(Object value) {//, XMemoryUnit.Bitness bitness) {
-        return new XConstant(value, XMemoryUnitBase.Bitness.bit16); //bitness);
+        return new XConstant(value, Bitness.bit32); //bitness);
     }
 
     public XRegister getLocalMemoryUnit(String name) {
@@ -89,17 +90,17 @@ public final class XMemoryManager {
     //}
     //
     //private boolean isSharedMemoryDeclared(String name) {
-    //    return sharedLocations.containsKey(name);
+    //return sharedLocations.containsKey(name);
     //}
 
     public XRegister newLocalMemoryUnit(String name) {// type) {
-        XRegister location = new XRegister(name, XMemoryUnitBase.Bitness.bit16); //todo:bitness
+        XRegister location = new XRegister(name, Bitness.bit32); //todo:bitness
         localLocations.put(name, location);
         return location;
     }
 
     public XLocation newSharedMemoryUnit(String name) {
-        XLocation location = new XLocation(name, XMemoryUnitBase.Bitness.bit16); //todo:bitness
+        XLocation location = new XLocation(name, Bitness.bit32); //todo:bitness
         sharedLocations.put(name, location);
         return location;
     }
