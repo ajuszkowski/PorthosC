@@ -3,6 +3,7 @@ package mousquetaires.languages.syntax.zformula;
 import com.google.common.collect.ImmutableList;
 import mousquetaires.utils.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
 public class ZLogicalFormulaHelper {
 
     public static ZLogicalFormula and(ZLogicalFormula... expressions) {
-        return and(List.of(expressions));
+        return and(Arrays.asList(expressions));
     }
 
     public static ZLogicalFormula and(Collection<ZLogicalFormula> expressions) {
@@ -25,7 +26,7 @@ public class ZLogicalFormulaHelper {
     }
 
     public static ZLogicalFormula or(ZLogicalFormula... expressions) {
-        return or(List.of(expressions));
+        return or(Arrays.asList(expressions));
     }
 
     public static ZLogicalFormula or(Collection<? extends ZLogicalFormula> expressions) {

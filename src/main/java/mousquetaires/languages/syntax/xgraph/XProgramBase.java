@@ -28,11 +28,4 @@ public abstract class XProgramBase<G extends FlowGraph<XEvent>> {
         }
         return result;
     }
-
-    public G getProcess(int index) {
-        if (index < 0 || index >= processes.size()) {
-            throw new IndexOutOfBoundsException(index);
-        }
-        return processes.get(index);
-    }
 }

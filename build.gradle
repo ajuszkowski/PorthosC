@@ -3,6 +3,9 @@ apply plugin: 'application'
 apply plugin: 'antlr'
 apply plugin: 'idea'
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 repositories {
     flatDir {
         dirs 'lib'
@@ -26,7 +29,6 @@ dependencies {
 
     // https://mvnrepository.com/artifact/guru.nidi/graphviz-java
     compile group: 'guru.nidi', name: 'graphviz-java', version: '0.2.3'
-
 
     // local dependencies:
     compile name: "com.microsoft.z3"
@@ -63,24 +65,51 @@ idea {
 //}
 
 
-ext.antlr4 = [
-    generatedSourceDir: "src/generated/java/",
-    grammarsDir: "src/main/antlr4/",
-    resultPackage: "mousquetaires.languages.parsers",
+ext.antlr = [
+        generatedSourceDir: "src/generated/java/",
+        grammarsDir: "src/main/antlr/",
+        resultPackage: "mousquetaires.languages.parsers",
 ]
 
+mainClassName = "dartagnan.Dartagnan"
+
 generateGrammarSource {
-    arguments = (["-visitor", "-package", antlr4.resultPackage] + arguments)
-    outputDirectory = file("${antlr4.generatedSourceDir}/${antlr4.resultPackage.replaceAll("\\.", "/")}")
+    arguments = (["-visitor", "-listener", "-package", antlr.resultPackage] + arguments)
+    outputDirectory = file("${project.projectDir}/${antlr.generatedSourceDir}/${antlr.resultPackage.replaceAll("\\.", "/")}")
 }
 
 compileJava {
     dependsOn generateGrammarSource
-    source antlr4.generatedSourceDir
+    source "${project.projectDir}/${antlr.generatedSourceDir}"
+    project.buildDir = 'out'
 }
 
 clean {
-    delete += fileTree(antlr4.generatedSourceDir).include('**/*')
+    delete += fileTree(antlr.generatedSourceDir).include('**/*')
 }
 
-mainClassName = 'mousquetaires.App'
+task getHomeDir {
+    println gradle.gradleHomeDir
+}
+
+task listJars() {
+    project.configurations.compile.each { println it.path }
+}
+
+// For now, gradle allows running application in dummy
+
+task runDartagnan(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'dartagnan.Dartagnan'
+    if(project.hasProperty('args')){
+        args project.args.split('\\s+')
+    }
+}
+
+task runPorthos(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'porthos.Porthos'
+    if(project.hasProperty('args')){
+        args project.args.split('\\s+')
+    }
+}

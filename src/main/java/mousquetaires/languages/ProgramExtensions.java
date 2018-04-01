@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class ProgramExtensions {
     private static final HashMap<String, ProgramLanguage> inputProgramExtensionsMap =
-            new HashMap<>() {{
+            new HashMap<String, ProgramLanguage>() {{
                 put("c11", ProgramLanguage.C11);
                 put("c", ProgramLanguage.C11);
                 //put("pts", ProgramLanguage.Porthos);

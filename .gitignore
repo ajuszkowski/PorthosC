@@ -18,3 +18,18 @@
 /*.iws
 /*.ipr
 /.idea_modules/
+
+# Vim --
+*.sw[op]
+
+# Eclipse --
+/.project
+/.metadata
+*.tmp
+*.bak
+/*~.nib
+/local.properties
+/.settings/
+/.classpath
+/.loadpath
+/.recommenders

@@ -14,19 +14,20 @@ import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
-import java.util.Set;
+import java.util.Arrays;
+import java.util.Collections;
 
 
 class XMemoryUnitCollector implements XEventVisitor<Iterable<XMemoryUnit>> {
 
     @Override
     public Iterable<XMemoryUnit> visit(XUnaryComputationEvent event) {
-        return Set.of(event.getOperand());
+        return Collections.singletonList(event.getOperand());
     }
 
     @Override
     public Iterable<XMemoryUnit> visit(XBinaryComputationEvent event) {
-        return Set.of(event.getFirstOperand(), event.getSecondOperand());
+        return Arrays.asList(event.getFirstOperand(), event.getSecondOperand());
     }
 
     @Override
@@ -36,37 +37,37 @@ class XMemoryUnitCollector implements XEventVisitor<Iterable<XMemoryUnit>> {
 
     @Override
     public Iterable<XMemoryUnit> visit(XRegisterMemoryEvent event) {
-        return Set.of(event.getSource(), event.getDestination());
+        return Arrays.asList(event.getSource(), event.getDestination());
     }
 
     @Override
     public Iterable<XMemoryUnit> visit(XStoreMemoryEvent event) {
-        return Set.of(event.getSource(), event.getDestination());
+        return Arrays.asList(event.getSource(), event.getDestination());
     }
 
     @Override
     public Iterable<XMemoryUnit> visit(XLoadMemoryEvent event) {
-        return Set.of(event.getSource(), event.getDestination());
+        return Arrays.asList(event.getSource(), event.getDestination());
     }
 
     @Override
     public Iterable<XMemoryUnit> visit(XEntryEvent event) {
-        return Set.of();
+        return Arrays.asList();
     }
 
     @Override
     public Iterable<XMemoryUnit> visit(XExitEvent event) {
-        return Set.of();
+        return Arrays.asList();
     }
 
     @Override
     public Iterable<XMemoryUnit> visit(XJumpEvent event) {
-        return Set.of();
+        return Arrays.asList();
     }
 
     @Override
     public Iterable<XMemoryUnit> visit(XNopEvent event) {
-        return Set.of();
+        return Arrays.asList();
     }
 
 }

@@ -24,7 +24,8 @@ public class CollectionUtils {
             case 4:
                 return createIteratorFrom(firstElement, otherElements[0], otherElements[1], otherElements[2], otherElements[3]);
             default:
-                List<T> children = List.of(firstElement);
+                List<T> children = new LinkedList<>();
+                children.add(firstElement);
                 children.addAll(Arrays.asList(otherElements));
                 return createIteratorFrom(children);
         }
