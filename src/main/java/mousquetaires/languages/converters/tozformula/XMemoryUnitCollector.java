@@ -6,11 +6,13 @@ import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XNopEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XInitialWriteEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
+import mousquetaires.utils.exceptions.NotImplementedException;
 
 import java.util.Set;
 
@@ -25,6 +27,11 @@ class XMemoryUnitCollector implements XEventVisitor<Iterable<XMemoryUnit>> {
     @Override
     public Iterable<XMemoryUnit> visit(XBinaryComputationEvent event) {
         return Set.of(event.getFirstOperand(), event.getSecondOperand());
+    }
+
+    @Override
+    public Iterable<XMemoryUnit> visit(XInitialWriteEvent event) {
+        throw new NotImplementedException();
     }
 
     @Override

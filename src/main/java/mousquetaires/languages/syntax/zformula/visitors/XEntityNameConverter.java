@@ -6,6 +6,7 @@ import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XNopEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XInitialWriteEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
@@ -31,6 +32,11 @@ public class XEntityNameConverter implements XEventVisitor<String>, XMemoryUnitV
 
     @Override
     public String visit(XUnaryComputationEvent event) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public String visit(XInitialWriteEvent event) {
         throw new NotImplementedException();
     }
 

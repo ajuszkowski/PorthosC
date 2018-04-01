@@ -6,6 +6,7 @@ import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XNopEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XInitialWriteEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
@@ -19,6 +20,7 @@ public interface XEventVisitor<T> {
     T visit(XUnaryComputationEvent event);
     T visit(XBinaryComputationEvent event);
 
+    T visit(XInitialWriteEvent event);
     T visit(XRegisterMemoryEvent event);
     T visit(XStoreMemoryEvent event);
     T visit(XLoadMemoryEvent event);

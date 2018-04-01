@@ -6,6 +6,7 @@ import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XNopEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XInitialWriteEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
@@ -30,6 +31,11 @@ public abstract class XEventVisitorBase<T> implements XEventVisitor<T> {
 
     @Override
     public T visit(XBinaryComputationEvent event) {
+        throw new XVisitorIllegalStateException();
+    }
+
+    @Override
+    public T visit(XInitialWriteEvent event) {
         throw new XVisitorIllegalStateException();
     }
 

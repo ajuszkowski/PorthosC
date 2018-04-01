@@ -4,31 +4,31 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import mousquetaires.execution.events.old.Event;
+import mousquetaires.execution.events.old.XEvent;
 
 public class LastModMap {
 
-    private ConcurrentHashMap<Object, Set<Event>> map;
+    private ConcurrentHashMap<Object, Set<XEvent>> map;
 
     public LastModMap() {
-        this.map = new ConcurrentHashMap<Object, Set<Event>>();
+        this.map = new ConcurrentHashMap<Object, Set<XEvent>>();
     }
 
     public int size() {
         return this.map.size();
     }
 
-    public void put(Object o, Set<Event> set) {
+    public void put(Object o, Set<XEvent> set) {
         this.map.put(o, set);
     }
 
-    public Set<Event> get(Object o) {
+    public Set<XEvent> get(Object o) {
         if(keySet().contains(o)) {
             return map.get(o);
         }
         else {
             System.out.println(String.format("Check get() for %s and %s", this, o));
-            return new HashSet<Event>();
+            return new HashSet<XEvent>();
         }
     }
 

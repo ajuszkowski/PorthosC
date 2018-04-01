@@ -11,25 +11,6 @@ public enum MemoryModelName {
     ARM,
     ;
 
-    // implementation as flags:
-    //NONE  (0),
-    //SC    (1 << 0),
-    //TSO   (1 << 1),
-    //PSO   (1 << 2),
-    //RMO   (1 << 3),
-    //Alpha (1 << 4),
-    //Power (1 << 5),
-    //ARM   (1 << 6);
-    //
-    //public final int flags;
-    //MemoryModelName(Integer weight) {
-    //    this.flags = weight;
-    //}
-    //public final int flags;
-    //MemoryModelName(Integer weight) {
-    //    this.flags = weight;
-    //}
-
     public static MemoryModelName parse(String value) {
         switch (value.toLowerCase()) {
             case "sc":
