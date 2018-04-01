@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'antlr'
+apply plugin: 'eclipse'
 apply plugin: 'idea'
 
 sourceCompatibility = 1.8
@@ -15,60 +16,19 @@ repositories {
 }
 
 dependencies {
-    // JUnit:
     testCompile 'junit:junit:4.12'
-//    testCompile "org.junit.jupiter:junit-jupiter-api:5.0.0" //'junit:junit:5.0'
-    testCompile group: 'com.googlecode.zohhak', name: 'zohhak', version: '1.1.1'
-    //classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
-
     antlr "org.antlr:antlr4:4.7"
-    compile "com.beust:jcommander:1.71"
-    compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
+    compile "commons-cli:commons-cli:1.4"
     compile "commons-io:commons-io:2.5"
-    compile "com.google.guava:guava:23.6-jre"
-
-    // https://mvnrepository.com/artifact/guru.nidi/graphviz-java
-    compile group: 'guru.nidi', name: 'graphviz-java', version: '0.2.3'
 
     // local dependencies:
     compile name: "com.microsoft.z3"
-
 }
-
-idea {
-    module {
-        name = "mousquetaires"
-        contentRoot         =  file(".")
-        outputDir           =  file("build")
-        sourceDirs          = [file("src/main/java")] // + src/main/resources ?
-        sourceDirs          += file("src/generated/java")  // after 'generatedSourceDirs' will become not incubaging, set it here
-        testSourceDirs      = [file("src/test/java")]
-        excludeDirs         += file(".idea")
-        excludeDirs         += file(".gradle")
-        testOutputDir       = file("${outputDir}/test")
-    }
-}
-
-
-//https://stackoverflow.com/questions/37018567/why-my-gradle-projects-creates-separated-modules-for-main-and-test-in-intellij-i
-//sourceSets {
-//    main {
-//        compileClasspath += configurations.provided
-//    }
-//    test {
-//        resources {
-//            srcDir 'src/test/data'
-//        }
-//
-//        compileClasspath += configurations.provided
-//    }
-//}
-
 
 ext.antlr = [
-        generatedSourceDir: "src/generated/java/",
-        grammarsDir: "src/main/antlr/",
-        resultPackage: "mousquetaires.languages.parsers",
+    generatedSourceDir: "src/generated/java/",
+    grammarsDir: "src/main/antlr/",
+    resultPackage: "mousquetaires.languages.parsers",
 ]
 
 mainClassName = "dartagnan.Dartagnan"
@@ -113,3 +73,5 @@ task runPorthos(type: JavaExec) {
         args project.args.split('\\s+')
     }
 }
+
+

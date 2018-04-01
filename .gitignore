@@ -1,24 +1,32 @@
 # Gradle:
 /.gradle
-
-# Generated files:
-/src/generated/*
-
-# output:
 /build/
 /out/
+/bin/
 
-# Vim:
+# Generated files --
+/src/generated/*
+
+# Intellij IDEA --
+/.idea/
+/*.iml
+/*.ips
+/*.ipr
+/*.iml
+/*.ipw
+/*.iws
+
+# Vim --
 *.sw[op]
 
 # Eclipse --
-/.project
-/.metadata
+.project
+.metadata
 *.tmp
 *.bak
-/*~.nib
-/local.properties
-/.settings/
-/.classpath
-/.loadpath
-/.recommenders
+*~.nib
+local.properties
+.settings/
+.classpath
+.loadpath
+.recommenders
