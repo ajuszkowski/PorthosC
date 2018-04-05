@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.xgraph.events.memory;
 
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XSharedLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
@@ -12,13 +12,13 @@ import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
  */
 public final class XStoreMemoryEvent extends XMemoryEventBase implements XSharedMemoryEvent {
 
-    public XStoreMemoryEvent(XEventInfo info, XSharedMemoryUnit destination, XLocalMemoryUnit source) {
+    public XStoreMemoryEvent(XEventInfo info, XSharedLvalueMemoryUnit destination, XLocalMemoryUnit source) {
         super(info, destination, source);
     }
 
     @Override
-    public XSharedMemoryUnit getDestination() {
-        return (XSharedMemoryUnit) super.getDestination();
+    public XSharedLvalueMemoryUnit getDestination() {
+        return (XSharedLvalueMemoryUnit) super.getDestination();
     }
 
     @Override

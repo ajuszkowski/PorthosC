@@ -9,8 +9,11 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLocalMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.memories.XLocalLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XSharedLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
 import mousquetaires.languages.syntax.xgraph.process.XProcessBuilder;
 import mousquetaires.utils.patterns.BuilderBase;
@@ -21,7 +24,7 @@ public class XFlowGraphTestBuilder extends BuilderBase<XProcess> {
 
     private final XProcessBuilder builder;
 
-    public XFlowGraphTestBuilder(String processId) {
+    public XFlowGraphTestBuilder(XProcessId processId) {
         builder = new XProcessBuilder(processId);
         builder.setSource(new XEntryEvent(createEventInfo()));
         builder.setSink(new XExitEvent(createEventInfo()));
@@ -40,15 +43,15 @@ public class XFlowGraphTestBuilder extends BuilderBase<XProcess> {
         return new XBinaryComputationEvent(createEventInfo(), operator, first, second);
     }
 
-    public XLocalMemoryEvent createAssignmentEvent(XLocalMemoryUnit left, XLocalMemoryUnit right) {
+    public XLocalMemoryEvent createAssignmentEvent(XLocalLvalueMemoryUnit left, XLocalMemoryUnit right) {
         return new XRegisterMemoryEvent(createEventInfo(), left, right);
     }
 
-    public XLoadMemoryEvent createAssignmentEvent(XLocalMemoryUnit left, XSharedMemoryUnit right) {
+    public XLoadMemoryEvent createAssignmentEvent(XLocalLvalueMemoryUnit left, XSharedMemoryUnit right) {
         return new XLoadMemoryEvent(createEventInfo(), left, right);
     }
 
-    public XStoreMemoryEvent createAssignmentEvent(XSharedMemoryUnit left, XLocalMemoryUnit right) {
+    public XStoreMemoryEvent createAssignmentEvent(XSharedLvalueMemoryUnit left, XLocalMemoryUnit right) {
         return new XStoreMemoryEvent(createEventInfo(), left, right);
     }
 

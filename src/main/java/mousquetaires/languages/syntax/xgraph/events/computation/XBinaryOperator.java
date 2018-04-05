@@ -5,8 +5,8 @@ public enum XBinaryOperator implements XOperator {
     Addition,
     Subtraction,
     Multiplication,
-    Division,        // todo //?
-    Modulo,  // todo //?
+    Division,
+    Modulo,
     LeftShift,
     RightShift,
     BitAnd,

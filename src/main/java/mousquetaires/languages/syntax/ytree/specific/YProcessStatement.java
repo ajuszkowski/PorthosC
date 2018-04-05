@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.ytree.specific;
 
+import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YUnlabeledStatement;
@@ -15,15 +16,15 @@ import java.util.Objects;
  */
 public class YProcessStatement extends YUnlabeledStatement {
 
-    private final String processId;
+    private final XProcessId processId;
     private final YCompoundStatement body;
 
-    public YProcessStatement(String processId, YCompoundStatement body) {
+    public YProcessStatement(XProcessId processId, YCompoundStatement body) {
         this.processId = processId;
         this.body = body;
     }
 
-    public String getProcessId() {
+    public XProcessId getProcessId() {
         return processId;
     }
 

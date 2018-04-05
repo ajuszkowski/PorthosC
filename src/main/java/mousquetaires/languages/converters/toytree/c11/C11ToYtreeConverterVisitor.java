@@ -3,6 +3,7 @@ package mousquetaires.languages.converters.toytree.c11;
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.parsers.C11Parser;
 import mousquetaires.languages.parsers.C11Visitor;
+import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.YSyntaxTreeBuilder;
@@ -21,6 +22,7 @@ import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryEx
 import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
+import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
 import mousquetaires.languages.syntax.ytree.statements.*;
 import mousquetaires.languages.syntax.ytree.statements.jumps.*;
 import mousquetaires.languages.syntax.ytree.temporaries.YCompoundStatementBuilder;
@@ -969,10 +971,23 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YEntity visitDeclarator(C11Parser.DeclaratorContext ctx) {
-        // TODO: process pointer
+        C11Parser.PointerContext pointerContext = ctx.pointer();
+        boolean isPointer = false;
+        if (pointerContext != null) {
+            //YEntity yEntity = visitPointer(pointerContext);
+            isPointer = true;
+        }
         C11Parser.DirectDeclaratorContext directDeclaratorContext = ctx.directDeclarator();
         if (directDeclaratorContext != null) {
-            return visitDirectDeclarator(directDeclaratorContext);
+            YEntity declarator = visitDirectDeclarator(directDeclaratorContext);
+            if (!(declarator instanceof YVariableRef)) {
+                throw new NotImplementedException("Only variables declaration is supported so far");
+            }
+            YVariableRef variable = (YVariableRef) declarator;
+            return isPointer
+                    ? variable.withKind(YVariableRef.Kind.Global)
+                    : variable;
+
         }
         throw new YParserNotImplementedException(ctx);
     }
@@ -1568,7 +1583,7 @@ class C11ToYtreeConverterVisitor
      * ;
      */
     @Override
-    public YFunctionDefinition visitFunctionDefinition(C11Parser.FunctionDefinitionContext ctx) {
+    public YProcessStatement visitFunctionDefinition(C11Parser.FunctionDefinitionContext ctx) {
         // TODO: process declaration specifiers
         // TODO: process declarator
         // TODO: process declarationList
@@ -1577,8 +1592,9 @@ class C11ToYtreeConverterVisitor
             throw new YParserException(ctx, "Missing function body");
         }
         YCompoundStatement body = visitCompoundStatement(compoundStatementContext);
-        // TODO: parse and set signature
-        return new YFunctionDefinition(body);
+        // TODO: parse NAME! and set signature
+        // TODO: for now, we interpret every defined method as a separate process. It is incorrect for kernel!
+        return new YProcessStatement(new XProcessId("P0"), body);
     }
 
     /**

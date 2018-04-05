@@ -1,6 +1,9 @@
 package mousquetaires.languages.syntax.xgraph;
 
 import com.google.common.collect.ImmutableList;
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Context;
+import dartagnan.program.Thread;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
 
@@ -15,13 +18,4 @@ public final class XProgram extends XProgramBase<XProcess> {
         super(processes);
     }
 
-
-    //TODO: old-code method, to be replaced
-    public Set<XEvent> getEvents() {
-        Set<XEvent> ret = new HashSet<>();
-        for (XProcess process : getAllProcesses()) {
-            ret.addAll(process.getAllEvents());
-        }
-        return ret;
-    }
 }

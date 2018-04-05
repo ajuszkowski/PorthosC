@@ -38,7 +38,7 @@
 //            return;
 //        }
 //        if (!node.equals(graph.sink())) {
-//            visit(graph.successor(node));
+//            visit(graph.child(node));
 //            if (graph.hasAlternativeChild(node)) {
 //                visit(graph.alternativeChild(node));
 //            }

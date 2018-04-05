@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.xgraph.memories;
 
-
-public interface XSharedMemoryUnit extends XMemoryUnit, XLvalueMemoryUnit {
+// all shared memories are lvalues
+public interface XSharedMemoryUnit extends XMemoryUnit {
 
 }

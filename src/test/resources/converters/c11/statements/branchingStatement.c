@@ -1,4 +1,5 @@
 void method() {
+    int *x, &y;
     if (*x == 1) {
         *y = 2;
 //       //if (x == 2)
@@ -8,5 +9,5 @@ void method() {
 //        &y = 3;
 //    }
     else {}
-    *x = 4;
+    *x = y + 4;
 }

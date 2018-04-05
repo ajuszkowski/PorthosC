@@ -1,19 +1,19 @@
 package mousquetaires.languages.syntax.xgraph.memories;
 
 
-import mousquetaires.languages.common.Bitness;
+import mousquetaires.languages.common.Type;
 
 
 abstract class XMemoryUnitBase implements XMemoryUnit {
 
-    private final Bitness bitness;
+    private final Type type;
 
-    XMemoryUnitBase(Bitness bitness) {
-        this.bitness = bitness;
+    XMemoryUnitBase(Type type) {
+        this.type = type;
     }
 
     @Override
-    public Bitness getBitness() {
-        return bitness;
+    public Type getType() {
+        return type;
     }
 }

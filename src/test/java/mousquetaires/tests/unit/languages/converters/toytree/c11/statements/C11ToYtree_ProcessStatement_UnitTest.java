@@ -1,5 +1,6 @@
 package mousquetaires.tests.unit.languages.converters.toytree.c11.statements;
 
+import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
@@ -21,9 +22,9 @@ public class C11ToYtree_ProcessStatement_UnitTest extends C11ToYtree_Statement_U
     @Ignore("process statements syntax is temporarily not supported")
     public void test() {
         Iterator<? extends YEntity> expected = getIterator(
-                new YProcessStatement("1", new YCompoundStatement(true,
-                        new YVariableDeclarationStatement(typeInt, variableA),
-                        new YLinearStatement(new YAssignmentExpression(variableA, constant1)))),
+                new YProcessStatement(new XProcessId("1"), new YCompoundStatement(true,
+                                                                                  new YVariableDeclarationStatement(typeInt, variableA),
+                                                                                  new YLinearStatement(new YAssignmentExpression(variableA, constant1)))),
                 new YAssertionStatement(
                         YRelativeBinaryExpression.Kind.Equals.createExpression(variableA, constant2)));
         run(UnitTestPaths.c11StatementsDirectory + "processStatement.c", expected);

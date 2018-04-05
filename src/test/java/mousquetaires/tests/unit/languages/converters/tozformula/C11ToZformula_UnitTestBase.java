@@ -1,15 +1,16 @@
 package mousquetaires.tests.unit.languages.converters.tozformula;
 
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Context;
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.converters.toxgraph.YtreeToXgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
-import mousquetaires.languages.converters.tozformula.XProgramToZformulaConverter;
+import mousquetaires.languages.converters.tozformula.XToZformulaEncoder;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
-import mousquetaires.languages.syntax.zformula.ZLogicalFormula;
 import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
 import mousquetaires.tests.TestFailedException;
 import mousquetaires.tests.unit.Assertion;
@@ -22,10 +23,10 @@ import java.io.IOException;
 import java.util.Iterator;
 
 
-public abstract class C11ToZformula_UnitTestBase extends AbstractConverterUnitTest<ZLogicalFormula> {
+public abstract class C11ToZformula_UnitTestBase extends AbstractConverterUnitTest<BoolExpr> {
 
     @Override
-    protected Iterator<? extends ZLogicalFormula> parseTestFile(String testFile) {
+    protected Iterator<? extends BoolExpr> parseTestFile(String testFile) {
         try {
             DataModel dataModel = null; // TODO: consider data model also
             int unrollBound = 6; // TODO: PASS IT AS TEST PARAMETER (object testSettings)
@@ -35,8 +36,9 @@ public abstract class C11ToZformula_UnitTestBase extends AbstractConverterUnitTe
             YtreeToXgraphConverter converter = new YtreeToXgraphConverter(language, dataModel);
             XProgram program = converter.convert(internalRepr);
             XUnrolledProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
-            XProgramToZformulaConverter encoder = new XProgramToZformulaConverter();
-            ZLogicalFormula smtFormula = encoder.encode(unrolledProgram);
+            Context ctx = new Context();
+            XToZformulaEncoder encoder = new XToZformulaEncoder(ctx, unrolledProgram);
+            BoolExpr smtFormula = encoder.encodeProgram(unrolledProgram);
             return CollectionUtils.createIteratorFrom(smtFormula);
         } catch (IOException e) {
             e.printStackTrace();
@@ -45,7 +47,7 @@ public abstract class C11ToZformula_UnitTestBase extends AbstractConverterUnitTe
     }
 
     @Override
-    protected Assertion getComparingAssertion(ZLogicalFormula expected, ZLogicalFormula actual) {
+    protected Assertion getComparingAssertion(BoolExpr expected, BoolExpr actual) {
         throw new NotImplementedException();
     }
 }

@@ -1,5 +1,8 @@
 package mousquetaires.languages.syntax.xgraph.events;
 
+import mousquetaires.languages.syntax.xgraph.XProcessLocalElement;
+import mousquetaires.languages.syntax.xgraph.process.XProcessId;
+
 import java.util.Objects;
 
 
@@ -19,6 +22,11 @@ public abstract class XEventBase implements XEvent {
     @Override
     public String getName() {
         return "e_" + getInfo().getText();
+    }
+
+    @Override
+    public XProcessId getProcessId() {
+        return getInfo().getProcessId();
     }
 
     //TODO: remove this debug method

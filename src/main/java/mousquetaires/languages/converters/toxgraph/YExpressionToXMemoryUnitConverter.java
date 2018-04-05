@@ -1,92 +1,67 @@
 package mousquetaires.languages.converters.toxgraph;
 
-import mousquetaires.languages.syntax.xgraph.XProgramInterpretationBuilder;
-import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
+import mousquetaires.languages.common.Type;
+import mousquetaires.languages.converters.toxgraph.interpretation.XMemoryManager;
+import mousquetaires.languages.syntax.xgraph.memories.XConstant;
+import mousquetaires.languages.syntax.xgraph.memories.XLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
-import mousquetaires.languages.syntax.ytree.expressions.YExpression;
+import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.statements.YVariableDeclarationStatement;
 import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitorStrictBase;
+import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeNullVisitorBase;
 import mousquetaires.utils.exceptions.NotImplementedException;
-import mousquetaires.utils.exceptions.ytree.YtreeVisitorIllegalStateException;
+import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
+
+import static mousquetaires.utils.StringUtils.wrap;
 
 
-class YExpressionToXMemoryUnitConverter extends YtreeVisitorStrictBase<XMemoryUnit> {
+public class YExpressionToXMemoryUnitConverter extends YtreeNullVisitorBase<XMemoryUnit> {
 
     private final XMemoryManager memoryManager;
-    private final XProgramInterpretationBuilder program;
 
-    public YExpressionToXMemoryUnitConverter(XMemoryManager memoryManager,
-                                             XProgramInterpretationBuilder program) {
+    // todo: must be per-process or stateful (processNextProcess() )
+
+    public YExpressionToXMemoryUnitConverter(XMemoryManager memoryManager) {
         this.memoryManager = memoryManager;
-        this.program = program;
-    }
-
-    public XMemoryUnit tryConvertOrThrow(YExpression expression) {
-        return expression.accept(this);
-    }
-
-    public XMemoryUnit tryConvertOrNull(YExpression expression) {
-        try {
-            return tryConvertOrThrow(expression);
-        }
-        catch (YtreeVisitorIllegalStateException e) {
-            return null;
-        }
-    }
-
-    public XLocalMemoryUnit tryConvertToLocalOrThrow(YExpression expression) {
-        XMemoryUnit memoryUnit = tryConvertOrThrow(expression);
-        return program.currentProcess.copyToLocalMemoryIfNecessary(memoryUnit);
-    }
-
-    public XLocalMemoryUnit tryConvertToLocalOrNull(YExpression expression) {
-        try {
-            return tryConvertToLocalOrThrow(expression);
-        }
-        catch (YtreeVisitorIllegalStateException e) {
-            return null;
-        }
     }
 
     @Override
-    public XMemoryUnit visit(YVariableDeclarationStatement node) {
-        // TODO: test this
+    public XLvalueMemoryUnit visit(YVariableDeclarationStatement node) {
         YVariableRef variable = node.getVariable();
+        String name = variable.getName();
+        Type type = YTypeToBitnessConverter.convert(node.getType());
         return variable.isGlobal()
-                ? memoryManager.newSharedMemoryUnit(variable.getName())
-                : memoryManager.newLocalMemoryUnit(variable.getName());
+                ? memoryManager.declareLocation(name, type)
+                : memoryManager.declareRegister(name, type);
     }
 
     @Override
-    public XMemoryUnit visit(YVariableRef variable) {
-        return variable.isGlobal()
-                ? memoryManager.getSharedMemoryUnit(variable.getName())
-                : memoryManager.getLocalMemoryUnit(variable.getName());
+    public XSharedMemoryUnit visit(YPointerUnaryExpression node) {
+        XMemoryUnit visited = node.getExpression().accept(this);
+        if (!(visited instanceof XLvalueMemoryUnit)) {
+            throw new XInterpretationError("Pointer argument is not an l-value: " + wrap(visited));
+        }
+        XLvalueMemoryUnit lvalue = (XLvalueMemoryUnit) visited;
+        String name = lvalue.getName();
+        return memoryManager.redeclareAsSharedIfNeeded(name);
     }
 
     @Override
-    public XMemoryUnit visit(YConstant node) {
-        return memoryManager.getConstant(node.getValue()); //todo: type
+    public XLvalueMemoryUnit visit(YVariableRef variable) {
+        return memoryManager.getUnit(variable.getName());
+    }
+
+    @Override
+    public XConstant visit(YConstant node) {
+        Type type = YTypeToBitnessConverter.convert(node.getType());
+        return XConstant.create(node.getValue(), type);
     }
 
     @Override
     public XMemoryUnit visit(YParameter node) {
         throw new NotImplementedException();
-    }
-
-    @Override
-    public XMemoryUnit visit(YPointerUnaryExpression node) {
-        YExpression expression = node.getExpression();
-        // TODO: do not cast, visit!
-        if (!(expression instanceof YVariableRef)) {
-            throw new NotImplementedException("yet only one-level pointers supported");
-        }
-        String name = ((YVariableRef) expression).getName();
-        return memoryManager.getSharedMemoryUnit(name);
     }
 }

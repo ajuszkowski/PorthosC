@@ -17,7 +17,7 @@ public class XBinaryComputationEvent extends XComputationEventBase {
                                    XBinaryOperator operator,
                                    XLocalMemoryUnit firstOperand,
                                    XLocalMemoryUnit secondOperand) {
-        super(info, XBitnessDeterminer.determineBitness(operator, firstOperand, secondOperand), operator);
+        super(info, XTypeDeterminer.determineType(operator, firstOperand, secondOperand), operator);
         this.firstOperand = firstOperand;
         this.secondOperand = secondOperand;
     }

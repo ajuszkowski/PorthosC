@@ -30,6 +30,10 @@ public class YVariableRef implements YAssignee {
         this.kind = kind;
     }
 
+    public YVariableRef withKind(Kind kind) {
+        return kind.createVariable(getName());
+    }
+
     public Kind getKind() {
         return kind;
     }

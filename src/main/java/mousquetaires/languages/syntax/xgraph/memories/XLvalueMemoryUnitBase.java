@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.memories;
 
 
-import mousquetaires.languages.common.Bitness;
+import mousquetaires.languages.common.Type;
 
 import java.util.Objects;
 
@@ -13,8 +13,8 @@ abstract class XLvalueMemoryUnitBase extends XMemoryUnitBase implements XLvalueM
     private final int uniqueId;
     private final String name;
 
-    XLvalueMemoryUnitBase(String name, Bitness bitness) {
-        super(bitness);
+    XLvalueMemoryUnitBase(String name, Type type) {
+        super(type);
         this.name = name;
         this.uniqueId = createId();
     }

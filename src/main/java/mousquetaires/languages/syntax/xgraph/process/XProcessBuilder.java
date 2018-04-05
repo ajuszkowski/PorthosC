@@ -8,9 +8,9 @@ import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 
 
 public class XProcessBuilder extends FlowGraphBuilder<XEvent, XProcess> {
-    private final String processId;
+    private final XProcessId processId;
 
-    public XProcessBuilder(String processId) {
+    public XProcessBuilder(XProcessId processId) {
         this.processId = processId;
     }
 
@@ -24,11 +24,9 @@ public class XProcessBuilder extends FlowGraphBuilder<XEvent, XProcess> {
                 ImmutableMap.copyOf(getEdges(false)));
     }
 
-    public String getProcessId() {
+    public XProcessId getProcessId() {
         return processId;
     }
-
-
 
 
     @Override

@@ -18,6 +18,11 @@ import dartagnan.program.MemEvent;
 import dartagnan.program.Program;
 import dartagnan.program.Register;
 import dartagnan.program.Store;
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.memories.XLocation;
+import mousquetaires.languages.syntax.xgraph.memories.XRegister;
+import mousquetaires.languages.syntax.xgraph.process.XProcessId;
+
 
 public class Utils {
 
@@ -296,6 +301,8 @@ public class Utils {
 
     public static BoolExpr edge(String relName, Event e1, Event e2, Context ctx) throws Z3Exception {
         return (BoolExpr) ctx.mkConst(String.format("%s(%s,%s)", relName, e1.repr(), e2.repr()), ctx.mkBoolSort());
+    }public static BoolExpr edge(String relName, XEvent e1, XEvent e2, Context ctx) throws Z3Exception {
+        return (BoolExpr) ctx.mkConst(String.format("%s(%s,%s)", relName, e1.repr(), e2.repr()), ctx.mkBoolSort());
     }
 
     public static BoolExpr edge(String relName, String program, Event e1, Event e2, Context ctx) throws Z3Exception {
@@ -304,22 +311,32 @@ public class Utils {
 
     public static IntExpr intVar(String relName, Event e, Context ctx) throws Z3Exception {
         return ctx.mkIntConst(String.format("%s(%s)", relName, e.repr()));
+    }public static IntExpr intVar(String relName, XEvent e, Context ctx) throws Z3Exception {
+        return ctx.mkIntConst(String.format("%s(%s)", relName, e.repr()));
     }
 
     public static IntExpr lastValueLoc(Location loc, Context ctx) throws Z3Exception {
+        return ctx.mkIntConst(loc.getName() + "_final");
+    }public static IntExpr lastValueLoc(XLocation loc, Context ctx) throws Z3Exception {
         return ctx.mkIntConst(loc.getName() + "_final");
     }
 
     public static IntExpr lastValueReg(Register reg, Context ctx) throws Z3Exception {
         return ctx.mkIntConst(reg.getName() + "_" + reg.getMainThread() + "_final");
+    }public static IntExpr lastValueReg(XRegister reg, Context ctx) throws Z3Exception {
+        return ctx.mkIntConst(reg.getName() + "_" + reg.getProcessId().getValue() + "_final");
     }
 
     public static IntExpr ssaLoc(Location loc, Integer mainThread, Integer ssaIndex, Context ctx) throws Z3Exception {
         return ctx.mkIntConst(String.format("T%s_%s_%s", mainThread, loc.getName(), ssaIndex));
+    }public static IntExpr ssaLoc(XLocation loc, XProcessId processId, Integer ssaIndex, Context ctx) throws Z3Exception {
+        return ctx.mkIntConst(String.format("T%s_%s_%s", processId.getValue(), loc.getName(), ssaIndex));
     }
 
     public static IntExpr ssaReg(Register reg, Integer ssaIndex, Context ctx) throws Z3Exception {
         return ctx.mkIntConst(String.format("T%s_%s_%s", reg.getMainThread(), reg.getName(), ssaIndex));
+    }public static IntExpr ssaReg(XRegister reg, Integer ssaIndex, Context ctx) throws Z3Exception {
+        return ctx.mkIntConst(String.format("T%s_%s_%s", reg.getProcessId().getValue(), reg.getName(), ssaIndex));
     }
 
     public static BoolExpr lastCoOrder(Event e, Context ctx) throws Z3Exception {
@@ -328,13 +345,19 @@ public class Utils {
 
     public static IntExpr intCount(String relName, Event e1, Event e2, Context ctx) throws Z3Exception {
         return ctx.mkIntConst(String.format("%s(%s,%s)", relName, e1.repr(), e2.repr()));
+    }public static IntExpr intCount(String relName, XEvent e1, XEvent e2, Context ctx) throws Z3Exception {
+        return ctx.mkIntConst(String.format("%s(%s,%s)", relName, e1.repr(), e2.repr()));
     }
 
     public static BoolExpr cycleVar(String relName, Event e, Context ctx) throws Z3Exception {
         return ctx.mkBoolConst(String.format("Cycle(%s)(%s)", e.repr(), relName));
+    }public static BoolExpr cycleVar(String relName, XEvent e, Context ctx) throws Z3Exception {
+        return ctx.mkBoolConst(String.format("Cycle(%s)(%s)", e.repr(), relName));
     }
 
     public static BoolExpr cycleEdge(String relName, Event e1, Event e2, Context ctx) throws Z3Exception {
+        return ctx.mkBoolConst(String.format("Cycle:%s(%s,%s)", relName, e1.repr(), e2.repr()));
+    }public static BoolExpr cycleEdge(String relName, XEvent e1, XEvent e2, Context ctx) throws Z3Exception {
         return ctx.mkBoolConst(String.format("Cycle:%s(%s,%s)", relName, e1.repr(), e2.repr()));
     }
 }

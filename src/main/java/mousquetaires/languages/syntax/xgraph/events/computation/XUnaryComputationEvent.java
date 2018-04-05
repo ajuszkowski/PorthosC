@@ -13,7 +13,7 @@ public class XUnaryComputationEvent extends XComputationEventBase {
     private final XLocalMemoryUnit operand;
 
     public XUnaryComputationEvent(XEventInfo info, XUnaryOperator operator, XLocalMemoryUnit operand) {
-        super(info, XBitnessDeterminer.determineBitness(operator, operand), operator);
+        super(info, XTypeDeterminer.determineType(operator, operand), operator);
         this.operand = operand;
     }
 

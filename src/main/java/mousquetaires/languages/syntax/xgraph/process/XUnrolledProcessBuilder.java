@@ -8,10 +8,10 @@ import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 
 
 public class XUnrolledProcessBuilder extends UnrolledFlowGraphBuilder<XEvent, XUnrolledProcess> {
-    private final String processId;
+    private final XProcessId processId;
 
 
-    public XUnrolledProcessBuilder(String processId) {
+    public XUnrolledProcessBuilder(XProcessId processId) {
         this.processId = processId;
     }
 
@@ -28,7 +28,7 @@ public class XUnrolledProcessBuilder extends UnrolledFlowGraphBuilder<XEvent, XU
                                     buildNodesLinearised());
     }
 
-    public String getProcessId() {
+    public XProcessId getProcessId() {
         return processId;
     }
 

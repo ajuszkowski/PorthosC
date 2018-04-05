@@ -2,36 +2,23 @@ package mousquetaires.languages.syntax.xgraph.process;
 
 import com.google.common.collect.ImmutableMap;
 import mousquetaires.languages.common.graph.FlowGraph;
-import mousquetaires.languages.syntax.xgraph.XProcessEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
-
-import java.util.HashSet;
-import java.util.Set;
 
 
-public class XProcess extends FlowGraph<XEvent> implements XProcessEntity {
+public class XProcess extends FlowGraph<XEvent> {
 
-    private final String processId;
+    private final XProcessId id;
 
-    XProcess(String processId,
+    XProcess(XProcessId id,
              XEvent source,
              XEvent sink,
              ImmutableMap<XEvent, XEvent> trueEdges,
              ImmutableMap<XEvent, XEvent> falseEdges) {
         super(source, sink, trueEdges, falseEdges);
-        this.processId = processId;
+        this.id = id;
     }
 
-    public String processId() {
-        return processId;
-    }
-
-    //TODO: old-code method, to be replaced
-    public Set<XEvent> getAllEvents() {
-        //false-edges must be already in the set
-        HashSet<XEvent> result = new HashSet<>(getEdges(true).keySet());
-        result.add(sink());
-        return result;
+    public XProcessId getId() {
+        return id;
     }
 }

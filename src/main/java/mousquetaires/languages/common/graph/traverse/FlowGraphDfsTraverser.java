@@ -3,7 +3,6 @@ package mousquetaires.languages.common.graph.traverse;
 import mousquetaires.languages.common.graph.*;
 
 import java.util.*;
-import java.util.function.BiFunction;
 
 
 public abstract class FlowGraphDfsTraverser<N extends FlowGraphNode, G extends UnrolledFlowGraph<N>> {
@@ -60,7 +59,7 @@ public abstract class FlowGraphDfsTraverser<N extends FlowGraphNode, G extends U
     private void unrollChildRecursively(boolean edgeSign, N parent, N parentRef, int childDepth) {
         if (!graph.hasChild(edgeSign, parent)) { return; }
 
-        N child = graph.successor(edgeSign, parent);
+        N child = graph.child(edgeSign, parent);
 
         boolean isBackEdge = isMemoisedBackEdge(parent, child);
         if (!isBackEdge && depthStack.contains(child)) {

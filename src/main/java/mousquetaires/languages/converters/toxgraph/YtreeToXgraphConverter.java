@@ -1,13 +1,11 @@
 package mousquetaires.languages.converters.toxgraph;
 
 import mousquetaires.languages.ProgramLanguage;
+import mousquetaires.languages.converters.toxgraph.interpretation.XMemoryManager;
 import mousquetaires.languages.syntax.xgraph.XProgram;
-import mousquetaires.languages.syntax.xgraph.XProgramInterpretationBuilder;
+import mousquetaires.languages.converters.toxgraph.interpretation.XProgramInterpreter;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
-import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.languages.syntax.xgraph.memories.XMemoryManager;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitorBase;
 
 
 // Stateless
@@ -22,7 +20,9 @@ public class YtreeToXgraphConverter {
     }
 
     public XProgram convert(YSyntaxTree internalSyntaxTree) {
-        YtreeToXgraphConverterVisitor visitor = new YtreeToXgraphConverterVisitor(language, dataModel);
+        XMemoryManager sharedMemoryManager = new XMemoryManager();//dataModel
+        XProgramInterpreter programInterpreter = new XProgramInterpreter(sharedMemoryManager);
+        YtreeToXgraphConverterVisitor visitor = new YtreeToXgraphConverterVisitor(programInterpreter);
         internalSyntaxTree.accept(visitor);
         return visitor.getProgram();
     }

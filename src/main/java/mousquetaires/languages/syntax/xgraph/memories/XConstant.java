@@ -1,26 +1,36 @@
 package mousquetaires.languages.syntax.xgraph.memories;
 
 
-import mousquetaires.languages.common.Bitness;
+import mousquetaires.languages.common.Type;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
+import mousquetaires.utils.exceptions.NotImplementedException;
 
 
-/** Shortcut for working with constant values as with values stored in local memoryevents (registers).
+/**
+ * Shortcut for working with constant values as with values stored in local memoryevents (registers).
  * For example, the code 'r1 <- 1' is syntactic sugar for 'r1 <- m1' where the memoryevents location 'm1'
  * contains value '1', though it does not need to be considered in weak memoryevents model, as there are
- * no writes to that location, therefore we model it as a local storage. */
-public class XConstant extends XMemoryUnitBase implements XLocalMemoryUnit, XRvalueMemoryUnit {
+ * no writes to that location, therefore we model it as a local storage.
+ */
+public final class XConstant extends XMemoryUnitBase implements XLocalMemoryUnit, XRvalueMemoryUnit {
 
-    private final Object value;
+    private final int value;
 
-    XConstant(Object value, Bitness bitness) {
+    private XConstant(Object value, Type type) {
         // TODO: make name unique (add bitness to it)
-        super(bitness);
-        this.value = value;
+        super(type);
+        if (!(value instanceof Integer)) {
+            throw new NotImplementedException("Only integer constants are supported for now. Found: " + value);
+        }
+        this.value = (Integer) value;
     }
 
-    public Object getValue() {
+    public int getValue() {
         return value;
+    }
+
+    public static XConstant create(Object value, Type type) {
+        return new XConstant(value, type);
     }
 
     @Override

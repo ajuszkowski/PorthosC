@@ -27,10 +27,9 @@ public abstract class UnrolledFlowGraph<N extends FlowGraphNode> extends FlowGra
         this.nodesLinearised = nodesLinearised;
     }
 
-    public Iterator<N> layersIterator() {
+    public Iterator<N> linearisedNodesIterator() {
         return nodesLinearised.iterator();
     }
-
 
     public boolean hasParent(boolean edgeSign, N node) {
         return getReversedEdges(edgeSign).containsKey(node);

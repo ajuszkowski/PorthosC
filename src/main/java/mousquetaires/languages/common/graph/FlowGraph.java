@@ -27,6 +27,10 @@ public abstract class FlowGraph<N extends FlowGraphNode> {
         //this.edgesReversed = edgesReversed; // TODO: also, compute reversed edges while single-pass via info collector
     }
 
+    public static boolean[] edgeKinds() {
+        return new boolean[]{ true, false };
+    }
+
     public N source() {
         return source;
     }
@@ -43,7 +47,7 @@ public abstract class FlowGraph<N extends FlowGraphNode> {
         return node == sink;
     }
 
-    public N successor(boolean edgeSign, N node) {
+    public N child(boolean edgeSign, N node) {
         return getEdges(edgeSign).get(node);
     }
 

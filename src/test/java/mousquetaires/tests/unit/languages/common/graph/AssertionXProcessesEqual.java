@@ -14,7 +14,7 @@ public class AssertionXProcessesEqual extends AssertionGraphsEqual<XEvent, XProc
 
     @Override
     public boolean checkSuccess() {
-        Assertion idAssert = new AssertionObjectsEqual("process ID mismatch", getExpected().processId(), getActual().processId());
+        Assertion idAssert = new AssertionObjectsEqual("process ID mismatch", getExpected().getId(), getActual().getId());
         if (!idAssert.checkSuccess()) {
             addErrorMessage(idAssert.getErrorMessage());
             return false;

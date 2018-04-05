@@ -1,22 +1,21 @@
 package mousquetaires.app.modules.dartagnan;
 
-import com.microsoft.z3.Expr;
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Context;
 import mousquetaires.app.errors.AppError;
 import mousquetaires.app.errors.IOError;
 import mousquetaires.app.errors.UnrecognisedError;
 import mousquetaires.app.modules.AppModule;
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
-import mousquetaires.languages.converters.tosmt.toz3.ZFormulaToZ3Converter;
 import mousquetaires.languages.converters.toxgraph.YtreeToXgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
-import mousquetaires.languages.converters.tozformula.XProgramToZformulaConverter;
+import mousquetaires.languages.converters.tozformula.XToZformulaEncoder;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModelLP64;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
-import mousquetaires.languages.syntax.zformula.ZLogicalFormula;
 import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
 
 import java.io.File;
@@ -55,11 +54,12 @@ public class DartagnanModule extends AppModule {
 
             XUnrolledProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
 
-            XProgramToZformulaConverter zConverter = new XProgramToZformulaConverter(); //todo: pass timeout
-            ZLogicalFormula zFormula = zConverter.encode(unrolledProgram);
+            Context ctx = new Context();
 
-            ZFormulaToZ3Converter smtConverter = new ZFormulaToZ3Converter();
-            Expr programFormula = smtConverter.convert(zFormula);
+            //todo: pass timeouts
+
+            XToZformulaEncoder encoder = new XToZformulaEncoder(ctx, unrolledProgram);
+            BoolExpr zFormula = encoder.encodeProgram(unrolledProgram);
 
 
 

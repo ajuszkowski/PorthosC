@@ -11,7 +11,7 @@ public interface YEntity extends Cloneable {
 
     Iterator<? extends YEntity> getChildrenIterator();
 
-    YEntity copy();
+    YEntity copy(); //TODO: remove this
 
     <T> T accept(YtreeVisitor<T> visitor);
 }

@@ -1,13 +1,14 @@
 package mousquetaires.languages.syntax.xgraph.events;
 
 import mousquetaires.languages.common.graph.FlowGraphNodeInfo;
+import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 
 import java.util.Objects;
 
 
 public class XEventInfo extends FlowGraphNodeInfo {
 
-    private static int stampGlobalCounter = 0;
+    private static int eventGlobalCounter = 0;
 
     // TODO: code origin
     //public final String controlLabel;
@@ -18,43 +19,43 @@ public class XEventInfo extends FlowGraphNodeInfo {
     /**
      * identifier of the process that event comes from
      */
-    private final String processId;
+    private final XProcessId processId;
 
     // todo: perhaps add nullable labels to the event info - for jumps // <- ??
     /**
      * ensures that events are unique
      */
-    private final int stamp;
+    private final int eventId;
 
 
     //todo: package-private (after removing the folder 'tests' from tests project root)
-    public XEventInfo(String processId) {
-        this(processId, newStamp(), NON_UNROLLED_DEPTH);
+    public XEventInfo(XProcessId processId) {
+        this(processId, newEventId(), NON_UNROLLED_DEPTH);
     }
 
-    private XEventInfo(String processId, int stamp, int unrollingDepth) {
+    private XEventInfo(XProcessId processId, int eventId, int unrollingDepth) {
         super(unrollingDepth);
         // TODO: verify process id string for bad symbols
         this.processId = processId;
-        this.stamp = stamp;
+        this.eventId = eventId;
     }
 
     public String getText() {
-        return processId + "_" + getStamp();
+        return processId + "_" + getEventId();
     }
 
 
-    public String getProcessId() {
+    public XProcessId getProcessId() {
         return processId;
     }
 
-    public int getStamp() {
-        return stamp;
+    public int getEventId() {
+        return eventId;
     }
 
     @Override
     public XEventInfo withUnrollingDepth(int newDepth) {
-        return new XEventInfo(getProcessId(), getStamp(), newDepth);
+        return new XEventInfo(getProcessId(), getEventId(), newDepth);
     }
 
     @Override
@@ -68,20 +69,20 @@ public class XEventInfo extends FlowGraphNodeInfo {
         if (!(o instanceof XEventInfo)) { return false; }
         if (!super.equals(o)) { return false; }
         XEventInfo that = (XEventInfo) o;
-        return getStamp() == that.getStamp() &&
+        return getEventId() == that.getEventId() &&
                 Objects.equals(getProcessId(), that.getProcessId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getProcessId(), getStamp());
+        return Objects.hash(super.hashCode(), getProcessId(), getEventId());
     }
 
     public int stamplessHashCode() {
         return Objects.hash(super.hashCode(), getProcessId());
     }
 
-    private static int newStamp() {
-        return stampGlobalCounter++;
+    private static int newEventId() {
+        return eventGlobalCounter++;
     }
 }

@@ -52,17 +52,17 @@ class XMemoryUnitCollector implements XEventVisitor<Iterable<XMemoryUnit>> {
 
     @Override
     public Iterable<XMemoryUnit> visit(XEntryEvent event) {
-        return Arrays.asList();
+        return Collections.emptyList();
     }
 
     @Override
     public Iterable<XMemoryUnit> visit(XExitEvent event) {
-        return Arrays.asList();
+        return Collections.emptyList();
     }
 
     @Override
     public Iterable<XMemoryUnit> visit(XJumpEvent event) {
-        return Arrays.asList();
+        return Collections.emptyList();
     }
 
     @Override

@@ -16,10 +16,8 @@ public class YPointerUnaryExpression extends YUnaryExpression implements YAssign
         @Override
         public String toString() {
             switch (this) {
-                case Reference:
-                    return "&";
-                case Dereference:
-                    return "*";
+                case Reference:   return "&";
+                case Dereference: return "*";
                 default:
                     throw new IllegalArgumentException(this.name());
             }
