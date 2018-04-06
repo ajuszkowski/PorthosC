@@ -20,21 +20,22 @@ import mousquetaires.languages.syntax.xgraph.memories.XLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
+import java.util.Map;
+
 
 class XDataflowEncoder implements XEventVisitor<BoolExpr> {
 
     private final Context ctx;
-    private final StaticSingleAssignmentMap ssaMap;
+    private final XMemoryUnitEncoder memoryUnitEncoder;
 
     public XDataflowEncoder(Context ctx, StaticSingleAssignmentMap ssaMap) {
         this.ctx = ctx;
-        this.ssaMap = ssaMap;
+        this.memoryUnitEncoder = new XMemoryUnitEncoder(ctx, ssaMap);
     }
 
     public BoolExpr encodeGuard(XComputationEvent guard) {
-        // ???
-        // should encode
-        Expr encoded = ssaMap.getEventMap(guard).encodeVar(guard);
+        XComputationEvent guardUnit = guard;
+        Expr encoded = memoryUnitEncoder.encodeVar(guardUnit, guard);
         if (encoded != null) {
             if (encoded instanceof BoolExpr) {
                 return (BoolExpr) encoded;
@@ -51,22 +52,22 @@ class XDataflowEncoder implements XEventVisitor<BoolExpr> {
 
     @Override
     public BoolExpr visit(XStoreMemoryEvent event) {
-        Expr srcLocal = encodeVar(event.getSource(), event);
-        Expr dstShared = updateVarRef(event.getDestination(), event);
+        Expr srcLocal  = memoryUnitEncoder.encodeVar(event.getSource(), event);
+        Expr dstShared = memoryUnitEncoder.updateVarRef(event.getDestination(), event);
         return ctx.mkEq(srcLocal, dstShared);
     }
 
     @Override
     public BoolExpr visit(XLoadMemoryEvent event) {
-        Expr srcShared = updateVarRef(event.getSource(), event);
-        Expr dstLocal = updateVarRef(event.getDestination(), event);
+        Expr srcShared = memoryUnitEncoder.updateVarRef(event.getSource(), event);
+        Expr dstLocal  = memoryUnitEncoder.updateVarRef(event.getDestination(), event);
         return ctx.mkEq(srcShared, dstLocal);
     }
 
     @Override
     public BoolExpr visit(XRegisterMemoryEvent event) {
-        Expr srcLocal = encodeVar(event.getSource(), event);
-        Expr dstLocal = updateVarRef(event.getDestination(), event);
+        Expr srcLocal = memoryUnitEncoder.encodeVar(event.getSource(), event);
+        Expr dstLocal = memoryUnitEncoder.updateVarRef(event.getDestination(), event);
         return ctx.mkEq(srcLocal, dstLocal);
     }
 
@@ -102,13 +103,4 @@ class XDataflowEncoder implements XEventVisitor<BoolExpr> {
         return null;
     }
 
-    private Expr encodeVar(XLocalMemoryUnit unit, XEvent event) {
-        VarRefCollection refsCollection = ssaMap.getEventMap(event);
-        return refsCollection.encodeVar(unit);
-    }
-
-    private Expr updateVarRef(XLvalueMemoryUnit unit, XEvent event) {
-        VarRefCollection refsCollection = ssaMap.getEventMap(event);
-        return refsCollection.updateRef(unit);
-    }
 }

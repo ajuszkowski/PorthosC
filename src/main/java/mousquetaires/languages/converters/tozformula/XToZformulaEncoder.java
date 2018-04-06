@@ -98,7 +98,7 @@ public class XToZformulaEncoder {
                     //ssaMap.updateRefs(alternativeChild, currentEvent);
 
                     // encode guard:
-                    assert currentEvent instanceof XComputationEvent : "only XComputationEvent can be a branching point"; // XConstant / XComputationEvent
+                    assert currentEvent instanceof XComputationEvent : "only XComputationEvent can be a branching point";
                     BoolExpr guard = dataFlowEncoder.encodeGuard((XComputationEvent) currentEvent);
                     BoolExpr thenBranchGuardAssert = ctx.mkImplies(childVar, guard);
                     BoolExpr elseBranchGuardAssert = ctx.mkImplies(alternativeChildVar, guard);

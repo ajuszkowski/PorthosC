@@ -2,10 +2,8 @@ package mousquetaires.languages.converters.tozformula;
 
 import com.microsoft.z3.Context;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
-import mousquetaires.utils.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +20,7 @@ class StaticSingleAssignmentMap {
         this.ctx = ctx;
         this.eventVarMap = new HashMap<>(initialCapacity);
         for (XEvent entryEvent : entryEvents) {
-            this.eventVarMap.put(entryEvent, new VarRefCollection(entryEvent.getProcessId(), ctx));
+            this.eventVarMap.put(entryEvent, new VarRefCollection());
         }
         this.memoryUnitCollector = new XMemoryUnitCollector();
     }

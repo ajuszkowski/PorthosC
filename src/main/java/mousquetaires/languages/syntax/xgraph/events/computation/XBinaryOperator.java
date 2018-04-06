@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.xgraph.events.computation;
 
-
+// TODO: better: single enum + kind that signifies the type of arguments (int/bool/bitvec/...) + king of return value
 public enum XBinaryOperator implements XOperator {
     // Int / Float operators:
     Addition,
@@ -26,7 +26,7 @@ public enum XBinaryOperator implements XOperator {
     Disjunction,
     ;
 
-    //TODO: toZ3() //add correct method
+    //TODO: toZ3() //add correct method!
 
     @Override
     public String toString() {
