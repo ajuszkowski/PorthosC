@@ -2,6 +2,7 @@ package mousquetaires.languages.syntax.xgraph.events.computation;
 
 
 public enum XBinaryOperator implements XOperator {
+    // Int / Float operators:
     Addition,
     Subtraction,
     Multiplication,
@@ -9,15 +10,20 @@ public enum XBinaryOperator implements XOperator {
     Modulo,
     LeftShift,
     RightShift,
+    // BitVec operators:
     BitAnd,
     BitOr,
     BitXor,
+    // Relative operators:
     CompareEquals,
     CompareNotEquals,
     CompareLess,
     CompareLessOrEquals,
     CompareGreater,
     CompareGreaterOrEquals,
+    // Logical operators:
+    Conjunction,
+    Disjunction,
     ;
 
     //TODO: toZ3() //add correct method
@@ -41,6 +47,8 @@ public enum XBinaryOperator implements XOperator {
             case CompareLessOrEquals:    return "<=";
             case CompareGreater:         return ">";
             case CompareGreaterOrEquals: return ">=";
+            case Conjunction:            return "&&";
+            case Disjunction:            return "||";
             default:
                 throw new IllegalArgumentException(this.name());
         }

@@ -36,7 +36,6 @@ public class YIntegerBinaryExpression extends YBinaryExpression {
         BitAnd,
         BitOr,
         BitXor,
-        BitNot,
         ;
 
         @Override
@@ -52,7 +51,6 @@ public class YIntegerBinaryExpression extends YBinaryExpression {
                 case BitAnd:       return "&";
                 case BitOr:        return "|";
                 case BitXor:       return "^";
-                case BitNot:       return "!";
                 default:
                     throw new IllegalArgumentException(this.name());
             }

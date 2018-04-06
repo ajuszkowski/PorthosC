@@ -32,6 +32,8 @@ class XDataflowEncoder implements XEventVisitor<BoolExpr> {
     }
 
     public BoolExpr encodeGuard(XComputationEvent guard) {
+        // ???
+        // should encode
         Expr encoded = ssaMap.getEventMap(guard).encodeVar(guard);
         if (encoded != null) {
             if (encoded instanceof BoolExpr) {
@@ -70,13 +72,13 @@ class XDataflowEncoder implements XEventVisitor<BoolExpr> {
 
     @Override
     public BoolExpr visit(XUnaryComputationEvent event) {
-        // no data-flow
+        // no data-flow // ????? TODO: where do we encode the computation 'x + y', 'true && false' ???
         return null;
     }
 
     @Override
     public BoolExpr visit(XBinaryComputationEvent event) {
-        // no data-flow
+        // no data-flow // ????? TODO: where do we encode the computation 'x + y', 'true && false' ???
         return null;
     }
 

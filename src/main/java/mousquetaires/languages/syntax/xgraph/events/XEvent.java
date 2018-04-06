@@ -3,11 +3,12 @@ package mousquetaires.languages.syntax.xgraph.events;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import mousquetaires.languages.common.graph.FlowGraphNode;
+import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.XProcessLocalElement;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
-public interface XEvent extends FlowGraphNode<XEventInfo>, XProcessLocalElement {
+public interface XEvent extends FlowGraphNode<XEventInfo>, XProcessLocalElement, XEntity {
 
     <T> T accept(XEventVisitor<T> visitor);
 
