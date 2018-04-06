@@ -48,6 +48,7 @@ public class XProcessInterpreter {
 
     // todo: add add/put methods with non-null checks
     private final Stack<XBlockContext> contextStack;
+    private final Queue<XBlockContext> almostReadyContexts;
     private final Queue<XBlockContext> readyContexts;
 
     private final XMemoryManager memoryManager;
@@ -61,6 +62,7 @@ public class XProcessInterpreter {
         this.graphBuilder = new XProcessBuilder(processId);
         contextStack = new Stack<>();
         readyContexts = new LinkedList<>();
+        almostReadyContexts = new LinkedList<>();
 
         XBlockContext linearContext = new XBlockContext(XBlockContextKind.Sequential);
         linearContext.state = XProcessInterpreter.ContextState.WaitingNextLinearEvent;
@@ -73,6 +75,7 @@ public class XProcessInterpreter {
         //todo: verify
         assert contextStack.size() == 1; //linear entry context only
         assert readyContexts.isEmpty();
+        assert almostReadyContexts.isEmpty();
         result = graphBuilder.build();
     }
 
@@ -387,6 +390,11 @@ public class XProcessInterpreter {
         assert context.state == ContextState.WaitingAdditionalCommand : context.state.name();
         context.setState(ContextState.WaitingFirstSubBlockEvent);
         context.currentBranchKind = BranchKind.Else;
+
+        if (!readyContexts.isEmpty()) {
+            almostReadyContexts.addAll(readyContexts);
+            readyContexts.clear();
+        }
     }
 
     public void finishBranchDefinition() {
@@ -420,8 +428,13 @@ public class XProcessInterpreter {
         XBlockContext context = contextStack.pop();
         context.currentBranchKind = null;
         context.setState(ContextState.JustFinished);
-        readyContexts.add(context);
+        almostReadyContexts.add(context);
         previousEvent = null; //not to set too many linear jumps: e.g. `if (a) { while(b) do1(); } do2();`
+
+        if (!almostReadyContexts.isEmpty()) {
+            readyContexts.addAll(almostReadyContexts);
+            almostReadyContexts.clear();
+        }
     }
 
     public void processLoopBreakStatement() {
