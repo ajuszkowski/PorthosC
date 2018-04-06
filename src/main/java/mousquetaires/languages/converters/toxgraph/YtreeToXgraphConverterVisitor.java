@@ -6,6 +6,7 @@ import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperator;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.ytree.YEntity;
@@ -35,6 +36,7 @@ import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
 import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeRecursiveVisitorBase;
+import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import mousquetaires.utils.exceptions.xgraph.XInterpreterUsageError;
@@ -42,7 +44,7 @@ import mousquetaires.utils.exceptions.xgraph.XInterpreterUsageError;
 import static mousquetaires.utils.StringUtils.wrap;
 
 
-public class YtreeToXgraphConverterVisitor extends YtreeRecursiveVisitorBase<XEvent> {
+public class YtreeToXgraphConverterVisitor implements YtreeVisitor<XEvent> {
 
     private final XProgramInterpreter program;
     public YExpressionToXMemoryUnitConverter currentProcessMemoryUnitConverter;
@@ -122,7 +124,9 @@ public class YtreeToXgraphConverterVisitor extends YtreeRecursiveVisitorBase<XEv
 
     @Override
     public XEvent visit(YVariableRef node) {
-        throw new NotImplementedException();
+        throw new IllegalStateException();
+        //XMemoryUnit variable = tryConvertOrThrow(node);
+        //return new XEventWrapperTemp(variable);
     }
 
     @Override
@@ -211,8 +215,10 @@ public class YtreeToXgraphConverterVisitor extends YtreeRecursiveVisitorBase<XEv
         YExpression assignee = node.getAssignee();
         YExpression expression = node.getExpression();
 
-        XMemoryUnit left = tryConvertOrThrow(assignee);
-        XMemoryUnit right = tryConvertOrThrow(expression);
+        XMemoryUnit left = tryConvertOrThrow(assignee); //assignee must be memory-unit
+
+        XEvent rightExpr = expression.accept(this);
+        XMemoryUnit right = tryConvertOrNull(expression);
 
         if (!(left instanceof XLvalueMemoryUnit)) {
             throw new XInterpretationError("Assignee is not an l-value: " + wrap(assignee));
@@ -340,8 +346,12 @@ public class YtreeToXgraphConverterVisitor extends YtreeRecursiveVisitorBase<XEv
     }
 
 
+    private XMemoryUnit tryConvertOrNull(YExpression expression) {
+        return expression.accept(currentProcessMemoryUnitConverter);
+    }
+
     private XMemoryUnit tryConvertOrThrow(YExpression expression) {
-        XMemoryUnit converted = expression.accept(currentProcessMemoryUnitConverter);
+        XMemoryUnit converted = tryConvertOrNull(expression);
         if (converted == null) {
             throw new XInterpretationError("Could not convert expression into memory unit: " + expression);
         }

@@ -2,11 +2,13 @@ package mousquetaires.languages.converters.tozformula;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
+import dartagnan.expression.BExpr;
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.process.XUnrolledProcess;
+import org.apache.xpath.axes.ChildIterator;
 
 import javax.naming.PartialResultException;
 import java.util.*;
@@ -37,7 +39,7 @@ public class XToZformulaEncoder {
 
 
     private List<BoolExpr> encodeProcess(XUnrolledProcess process) {
-        List<BoolExpr> asserts = new LinkedList<>();
+        List<BoolExpr> asserts = new ArrayList<>();
 
         Iterator<XEvent> nodesIterator = process.linearisedNodesIterator();
 
@@ -49,52 +51,51 @@ public class XToZformulaEncoder {
 
             BoolExpr currentVar = currentEvent.executes(ctx);
 
-            //// update SSA map
-            //for (boolean edgeKind : FlowGraph.edgeKinds()) {
-            //    if (!process.hasParent(edgeKind, currentEvent)) {
-            //        continue;
-            //    }
-            //    Set<XEvent> parents = process.parents(edgeKind, currentEvent);
-            //    Set<BoolExpr> parentsVarsSet = new HashSet<>(parents.size());
-            //    assert parents.size() > 0 : "disconnected graph";
-            //    for (XEvent parent : parents) {
-            //        //assert visited.contains(parent) : parent + " violates topological sorting";
-            //        parentsVarsSet.add(parent.executes(ctx));
-            //    }
-            //    BoolExpr[] parentsVars = parentsVarsSet.toArray(new BoolExpr[0]);
-            //    BoolExpr eitherParentAssert = (parentsVars.length == 1)
-            //            ? parentsVars[0]
-            //            : ctx.mkOr(parentsVars);
-            //    asserts.add(ctx.mkImplies(currentVar, eitherParentAssert));
-            //
-            //    ssaMap.copyValues(parents, currentEvent);
-            //}
+            // update SSA map
+            for (boolean edgeKind : FlowGraph.edgeKinds()) {
+                if (!process.hasParent(edgeKind, currentEvent)) {
+                    continue;
+                }
+                Set<XEvent> parents = process.parents(edgeKind, currentEvent);
+                Set<BoolExpr> parentsVarsSet = new HashSet<>(parents.size());
+                assert parents.size() > 0 : "disconnected graph";
+                for (XEvent parent : parents) {
+                    //assert visited.contains(parent) : parent + " violates topological sorting";
+                    parentsVarsSet.add(parent.executes(ctx));
+                    ssaMap.updateRefs(currentEvent, parent);
+                }
+                BoolExpr[] parentsVars = parentsVarsSet.toArray(new BoolExpr[0]);
+                BoolExpr eitherParentAssert = (parentsVars.length == 1)
+                        ? parentsVars[0]
+                        : ctx.mkOr(parentsVars);
+                asserts.add(ctx.mkImplies(currentVar, eitherParentAssert));
+            }
 
             if (process.hasChild(true, currentEvent)) {
                 // sequential: "X ; Y"
                 // X=currentEvent, Y=child
                 XEvent child = process.child(true, currentEvent);
                 BoolExpr childVar = child.executes(ctx);
-                BoolExpr childAssert = ctx.mkImplies(childVar, currentVar);
-                asserts.add(childAssert);
+                // assertion 'child -> or(parent1, parent2, ...)' is already added while processing parents
+                //BoolExpr childAssert = ctx.mkImplies(childVar, currentVar);
+                //asserts.add(childAssert);
 
-                // update ssa map for the child:
-                ssaMap.updateRefs(child, currentEvent);
+                //ssaMap.updateRefs(child, currentEvent);
 
                 if (process.hasChild(false, currentEvent)) {
                     // branching: "if (b) { X } else { Y }"
                     // b=currentEvent, X=child, Y=alternativeChild
                     XEvent alternativeChild = process.child(false, currentEvent);
                     BoolExpr alternativeChildVar = alternativeChild.executes(ctx);
-                    BoolExpr alternativeChildAssert = ctx.mkImplies(alternativeChildVar, currentVar);
-                    asserts.add(alternativeChildAssert);
+                    // assertion 'child -> or(parent1, parent2, ...)' is already added while processing parents
+                    //BoolExpr alternativeChildAssert = ctx.mkImplies(alternativeChildVar, currentVar);
+                    //asserts.add(alternativeChildAssert);
 
                     // not together children:
                     BoolExpr notBothChildrenAssert = ctx.mkNot(ctx.mkAnd(childVar, alternativeChildVar));
                     asserts.add(notBothChildrenAssert);
 
-                    // update ssa map for the alternative child:
-                    ssaMap.updateRefs(alternativeChild, currentEvent);
+                    //ssaMap.updateRefs(alternativeChild, currentEvent);
 
                     // encode guard:
                     assert currentEvent instanceof XComputationEvent : "only XComputationEvent can be a branching point"; // XConstant / XComputationEvent

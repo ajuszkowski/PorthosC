@@ -18,6 +18,7 @@ import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YVariableAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
@@ -329,11 +330,27 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YExpression visitAdditiveExpression(C11Parser.AdditiveExpressionContext ctx) {
-        C11Parser.MultiplicativeExpressionContext multiplicativeExpressionContext = ctx.multiplicativeExpression();
         C11Parser.AdditiveExpressionContext additiveExpressionContext = ctx.additiveExpression();
+        C11Parser.MultiplicativeExpressionContext multiplicativeExpressionContext = ctx.multiplicativeExpression();
+
         if (multiplicativeExpressionContext != null) {
-            // todo: others
-            return visitMultiplicativeExpression(multiplicativeExpressionContext);
+            YExpression multiplicativeExpression = visitMultiplicativeExpression(multiplicativeExpressionContext);
+            if (additiveExpressionContext == null) {
+                return multiplicativeExpression;
+            }
+            YExpression additiveExpression = visitAdditiveExpression(additiveExpressionContext);
+            YIntegerBinaryExpression.Kind operator;
+            if (C11ParserHelper.hasToken(ctx, C11Parser.Plus)) {
+                operator = YIntegerBinaryExpression.Kind.Plus;
+            }
+            else if (C11ParserHelper.hasToken(ctx, C11Parser.Minus)) {
+                operator = YIntegerBinaryExpression.Kind.Minus;
+            }
+            else {
+                throw new YParserException(ctx, "Could not parse binary additive operator");
+            }
+
+            return operator.createExpression(additiveExpression, multiplicativeExpression);
         }
         throw new YParserUnintendedStateException(ctx);
     }
