@@ -37,6 +37,7 @@ public class YConstant implements YMemoryLocation {
     public static YConstant fromValue(boolean value) {
         return new YConstant(value, new YMockType()); //YTypeFactory.getPrimitiveType(YTypeName.Bool));
     }
+
     public static YConstant fromValue(float value) {
         return new YConstant(value, new YMockType()); //YTypeFactory.getPrimitiveType(YTypeName.Float));
     }
@@ -50,18 +51,23 @@ public class YConstant implements YMemoryLocation {
 
         // Integer:
         try {
-            return fromValue(Integer.parseInt(text));
-        } catch (NumberFormatException e) {
-        }
+            int value = Integer.parseInt(text);
+            return fromValue(value);
+        } catch (NumberFormatException e) { }
         // Float:
         try {
-            return fromValue(Float.parseFloat(text));
-        } catch (NumberFormatException e) {
-        }
+            float value = Float.parseFloat(text);
+            return fromValue(value);
+        } catch (NumberFormatException e) { }
         // Bool:
-        try {
-            return fromValue(Boolean.parseBoolean(text));
-        } catch (NumberFormatException e) {
+        {
+            // TODO: set up good parsing of the keywords of C language as a separate module with 'C' in name
+            if (text.equals("true")) {
+                return fromValue(true);
+            }
+            else if (text.equals("false")) {
+                return fromValue(false);
+            }
         }
 
         // String (as char array) :

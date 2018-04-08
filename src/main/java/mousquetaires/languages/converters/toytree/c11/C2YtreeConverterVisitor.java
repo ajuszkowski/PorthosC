@@ -77,9 +77,15 @@ class C2YtreeConverterVisitor
      */
     @Override
     public YExpression visitPrimaryExpression(C11Parser.PrimaryExpressionContext ctx) {
-        TerminalNode identifier = ctx.Identifier();
-        if (identifier != null) {
-            return YVariableRef.Kind.Local.createVariable(identifier.getText());  //TODO: process also global case
+        TerminalNode identifierNode = ctx.Identifier();
+        if (identifierNode != null) {
+            String identifier = identifierNode.getText();
+            // firstly, try parse as a keyword (e.g., true, false, ...)
+            YConstant constant = YConstant.tryParse(identifier);
+            if (constant != null) {
+                return constant;
+            }
+            return YVariableRef.Kind.Local.createVariable(identifier);  //TODO: process also global case
         }
         TerminalNode constantNode = ctx.Constant();
         if (constantNode != null) {
