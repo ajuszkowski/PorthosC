@@ -133,10 +133,12 @@ public class X2ZformulaEncoder {
 
     private List<BoolExpr> encodeProcessRFRelation(XUnrolledProcess process) {
         List<BoolExpr> asserts = new ArrayList<>();
-        for (XLoadMemoryEvent load : process.getLoadEvents()) {
+        for (XEvent loadEvent : process.getEvents(e -> e instanceof XLoadMemoryEvent)) {
+            XLoadMemoryEvent load = (XLoadMemoryEvent) loadEvent;
             XSharedLvalueMemoryUnit loadLoc = load.getSource();
             Expr loadLocVar = dataFlowEncoder.encodeMemoryUnit(loadLoc, load);
-            for (XStoreMemoryEvent store : process.getStoreEvents()) {
+            for (XEvent storeEvent : process.getEvents(e -> e instanceof XStoreMemoryEvent)) {
+                XStoreMemoryEvent store = (XStoreMemoryEvent) storeEvent;
                 XSharedLvalueMemoryUnit storeLoc = store.getDestination();
                 Expr storeLocVar = dataFlowEncoder.encodeMemoryUnit(storeLoc, store);
                 if (loadLoc.equals(storeLoc)) {
