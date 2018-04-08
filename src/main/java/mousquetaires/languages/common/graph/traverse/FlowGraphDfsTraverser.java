@@ -38,21 +38,23 @@ public abstract class FlowGraphDfsTraverser<N extends FlowGraphNode, G extends U
     }
 
     private void unrollRecursively(N node, N nodeRef, int depth, boolean needToUnrollChildren) {
-        if (alreadyVisited(nodeRef)) { return; }
-
-        depthStack.push(node);
         compositeActor.onNodePreVisit(nodeRef);
 
-        if (needToUnrollChildren) {
-            unrollChildRecursively(true, node, nodeRef, depth + 1);
-            unrollChildRecursively(false, node, nodeRef, depth + 1);
-        }
-        else {
-            compositeActor.onLastNodeVisit(node);
+        if (!alreadyVisited(nodeRef)) {
+            depthStack.push(node);
+
+            if (needToUnrollChildren) {
+                unrollChildRecursively(true, node, nodeRef, depth + 1);
+                unrollChildRecursively(false, node, nodeRef, depth + 1);
+            }
+            else {
+                compositeActor.onLastNodeVisit(node);
+            }
+
+            N popped = depthStack.pop();
+            assert popped == node : popped + " must be " + node;
         }
 
-        N popped = depthStack.pop();
-        assert popped == node : popped + " must be " + node;
         compositeActor.onNodePostVisit(nodeRef);
     }
 

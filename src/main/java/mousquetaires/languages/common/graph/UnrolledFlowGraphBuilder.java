@@ -30,7 +30,9 @@ public abstract class UnrolledFlowGraphBuilder<N extends FlowGraphNode, G extend
     }
 
     public void processTopologicallyNextNode(N node) {
-        linearisationQueue.addFirst(node); // todo: addLast ?
+        if (!linearisationQueue.contains(node)) {
+            linearisationQueue.addFirst(node); // todo: addLast ?
+        }
     }
 
     public ImmutableList<N> buildNodesLinearised() {
