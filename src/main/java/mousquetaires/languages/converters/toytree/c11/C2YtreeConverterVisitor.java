@@ -7,7 +7,6 @@ import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.YSyntaxTreeBuilder;
-import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
@@ -44,7 +43,7 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 
-class C11ToYtreeConverterVisitor
+class C2YtreeConverterVisitor
         extends AbstractParseTreeVisitor<YEntity>
         implements C11Visitor<YEntity> {
 
@@ -228,15 +227,15 @@ class C11ToYtreeConverterVisitor
         if (unaryExpressionContext != null) {
             YExpression baseExpression = visitUnaryExpression(unaryExpressionContext);
             // '++' unaryExpression:
-            if (C11ParserHelper.hasToken(ctx, C11Parser.PlusPlus)) {
+            if (CParserHelper.hasToken(ctx, C11Parser.PlusPlus)) {
                 return YIntegerUnaryExpression.Kind.PrefixIncrement.createExpression(baseExpression);
             }
             // '--' unaryExpression:
-            if (C11ParserHelper.hasToken(ctx, C11Parser.MinusMinus)) {
+            if (CParserHelper.hasToken(ctx, C11Parser.MinusMinus)) {
                 return YIntegerUnaryExpression.Kind.PrefixDecrement.createExpression(baseExpression);
             }
             // 'sizeof' unaryExpression:
-            if (C11ParserHelper.hasToken(ctx, C11Parser.Sizeof)) {
+            if (CParserHelper.hasToken(ctx, C11Parser.Sizeof)) {
                 throw new YParserNotImplementedException(ctx);
             }
         }
@@ -340,10 +339,10 @@ class C11ToYtreeConverterVisitor
             }
             YExpression additiveExpression = visitAdditiveExpression(additiveExpressionContext);
             YIntegerBinaryExpression.Kind operator;
-            if (C11ParserHelper.hasToken(ctx, C11Parser.Plus)) {
+            if (CParserHelper.hasToken(ctx, C11Parser.Plus)) {
                 operator = YIntegerBinaryExpression.Kind.Plus;
             }
-            else if (C11ParserHelper.hasToken(ctx, C11Parser.Minus)) {
+            else if (CParserHelper.hasToken(ctx, C11Parser.Minus)) {
                 operator = YIntegerBinaryExpression.Kind.Minus;
             }
             else {
@@ -386,10 +385,10 @@ class C11ToYtreeConverterVisitor
     public YExpression visitRelationalExpression(C11Parser.RelationalExpressionContext ctx) {
         C11Parser.RelationalExpressionContext relationalExpressionContext = ctx.relationalExpression();
         C11Parser.ShiftExpressionContext shiftExpressionContext = ctx.shiftExpression();
-        boolean isLess = C11ParserHelper.hasToken(ctx, C11Parser.Less);
-        boolean isGreater = C11ParserHelper.hasToken(ctx, C11Parser.Greater);
-        boolean isLessEqual = C11ParserHelper.hasToken(ctx, C11Parser.LessEqual);
-        boolean isGreaterEqual = C11ParserHelper.hasToken(ctx, C11Parser.GreaterEqual);
+        boolean isLess = CParserHelper.hasToken(ctx, C11Parser.Less);
+        boolean isGreater = CParserHelper.hasToken(ctx, C11Parser.Greater);
+        boolean isLessEqual = CParserHelper.hasToken(ctx, C11Parser.LessEqual);
+        boolean isGreaterEqual = CParserHelper.hasToken(ctx, C11Parser.GreaterEqual);
         if (isLess || isLessEqual || isGreater || isGreaterEqual) {
             if (relationalExpressionContext == null) {
                 throw new YParserException(ctx, "Missing left part of inequality");
@@ -423,8 +422,8 @@ class C11ToYtreeConverterVisitor
     public YExpression visitEqualityExpression(C11Parser.EqualityExpressionContext ctx) {
         C11Parser.RelationalExpressionContext relationalExpressionContext = ctx.relationalExpression();
         C11Parser.EqualityExpressionContext equalityExpressionContext = ctx.equalityExpression();
-        boolean isEquality = C11ParserHelper.hasToken(ctx, C11Parser.Equal);
-        boolean isInequality = C11ParserHelper.hasToken(ctx, C11Parser.NotEqual);
+        boolean isEquality = CParserHelper.hasToken(ctx, C11Parser.Equal);
+        boolean isInequality = CParserHelper.hasToken(ctx, C11Parser.NotEqual);
         if (isEquality || isInequality) {
             if (equalityExpressionContext == null) {
                 throw new YParserException(ctx, "Missing left part of equality");
@@ -1034,7 +1033,7 @@ class C11ToYtreeConverterVisitor
         if ((identifier = ctx.Identifier()) != null) {
             return YVariableRef.Kind.Local.createVariable(identifier.getText()); //TODO: process also global case
         }
-        boolean hasParentheses = C11ParserHelper.hasParentheses(ctx);
+        boolean hasParentheses = CParserHelper.hasParentheses(ctx);
         if (hasParentheses) {
             if ((declaratorContext = ctx.declarator()) != null) {
                 return visitDeclarator(declaratorContext);
@@ -1412,9 +1411,9 @@ class C11ToYtreeConverterVisitor
             YExpression expression = visitExpression(expressionContext);
             if (statement1Context != null) {
                 YStatement statement1 = visitStatement(statement1Context);
-                if (C11ParserHelper.hasToken(ctx, C11Parser.If)) {
+                if (CParserHelper.hasToken(ctx, C11Parser.If)) {
                     YStatement statement2 = null;
-                    if (C11ParserHelper.hasToken(ctx, C11Parser.Else)) {
+                    if (CParserHelper.hasToken(ctx, C11Parser.Else)) {
                         if (statement2Context == null) {
                             throw new YParserException(ctx, "Empty 'else' statement");
                         }
@@ -1422,7 +1421,7 @@ class C11ToYtreeConverterVisitor
                     }
                     return new YBranchingStatement(expression, statement1, statement2);
                 }
-                if (C11ParserHelper.hasToken(ctx, C11Parser.Switch)) {
+                if (CParserHelper.hasToken(ctx, C11Parser.Switch)) {
                     throw new YParserNotImplementedException(ctx, "Switch is not implemented yet");
                 }
             }
@@ -1447,9 +1446,9 @@ class C11ToYtreeConverterVisitor
                 ? visitStatement(statementContext)
                 : YLinearStatement.createEmptyStatement();
 
-        boolean isDoWhile = C11ParserHelper.hasToken(ctx, C11Parser.Do);
-        boolean isWhile = !isDoWhile && C11ParserHelper.hasToken(ctx, C11Parser.While);
-        boolean isFor = C11ParserHelper.hasToken(ctx, C11Parser.For);
+        boolean isDoWhile = CParserHelper.hasToken(ctx, C11Parser.Do);
+        boolean isWhile = !isDoWhile && CParserHelper.hasToken(ctx, C11Parser.While);
+        boolean isFor = CParserHelper.hasToken(ctx, C11Parser.For);
 
         if (isDoWhile || isWhile) {
             if (expressionContext == null) {
@@ -1515,7 +1514,7 @@ class C11ToYtreeConverterVisitor
      */
     @Override
     public YJumpStatement visitJumpStatement(C11Parser.JumpStatementContext ctx) {
-        if (C11ParserHelper.hasToken(ctx, C11Parser.Goto)) {
+        if (CParserHelper.hasToken(ctx, C11Parser.Goto)) {
             TerminalNode identifier = ctx.Identifier();
             if (identifier == null) {
                 throw new YParserException(ctx, "Missing goto label in jump statement");
@@ -1523,13 +1522,13 @@ class C11ToYtreeConverterVisitor
             YJumpLabel gotoLabel = new YJumpLabel(identifier.getText());
             return YJumpStatement.Kind.Goto.createJumpStatement(gotoLabel);
         }
-        if (C11ParserHelper.hasToken(ctx, C11Parser.Continue)) {
+        if (CParserHelper.hasToken(ctx, C11Parser.Continue)) {
             return YJumpStatement.Kind.Continue.createJumpStatement();
         }
-        if (C11ParserHelper.hasToken(ctx, C11Parser.Break)) {
+        if (CParserHelper.hasToken(ctx, C11Parser.Break)) {
             return YJumpStatement.Kind.Break.createJumpStatement();
         }
-        if (C11ParserHelper.hasToken(ctx, C11Parser.Return)) {
+        if (CParserHelper.hasToken(ctx, C11Parser.Return)) {
             C11Parser.ExpressionContext expressionContext = ctx.expression();
             if (expressionContext != null) {
                 // TODO: process return value

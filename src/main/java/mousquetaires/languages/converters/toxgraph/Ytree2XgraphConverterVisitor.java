@@ -44,11 +44,11 @@ import mousquetaires.utils.exceptions.xgraph.XInterpreterUsageError;
 import static mousquetaires.utils.StringUtils.wrap;
 
 
-public class YtreeToXgraphConverterVisitor implements YtreeVisitor<XEntity> {
+public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
 
     private final XProgramInterpreter program;
 
-    public YtreeToXgraphConverterVisitor(XProgramInterpreter program) {
+    public Ytree2XgraphConverterVisitor(XProgramInterpreter program) {
         this.program = program;
     }
 
@@ -88,22 +88,15 @@ public class YtreeToXgraphConverterVisitor implements YtreeVisitor<XEntity> {
         node.getBody().accept(this);
 
         program.finishProcessDefinition();
-        return null;
+        return null; //statements return null
     }
 
     @Override
     public XEvent visit(YCompoundStatement node) {
-        XEvent lastEvent = null;
         for (YStatement statement : node.getStatements()) {
-            XEntity visited = statement.accept(this);
-            if (visited instanceof XEvent) {
-                lastEvent = (XEvent) visited;
-            }
+            statement.accept(this);
         }
-        if (lastEvent == null) {
-            lastEvent = program.currentProcess.emitNopEvent();
-        }
-        return lastEvent;
+        return null; //statements return null
     }
 
     // end of Litmus-specific visits.
@@ -146,16 +139,16 @@ public class YtreeToXgraphConverterVisitor implements YtreeVisitor<XEntity> {
         YIntegerUnaryExpression.Kind yOperator = node.getKind();
         YExpression yBaseExpression = node.getExpression();
 
-        if (YToXOperatorConverter.isPrefixOperator(yOperator)) {
+        if (Y2XOperatorConverter.isPrefixOperator(yOperator)) {
             XLocalLvalueMemoryUnit baseLocal = tryVisitToLocalLvalueOrThrow(yBaseExpression);
-            XBinaryOperator xOperator = YToXOperatorConverter.isPrefixIncrement(yOperator)
+            XBinaryOperator xOperator = Y2XOperatorConverter.isPrefixIncrement(yOperator)
                     ? XBinaryOperator.Addition
                     : XBinaryOperator.Subtraction;
             XConstant one = program.currentProcess.getConstant(1, Type.int32);
             XComputationEvent incremented = program.currentProcess.emitComputationEvent(xOperator, baseLocal, one);
             return program.currentProcess.emitMemoryEvent(baseLocal, incremented);
         }
-        else if (YToXOperatorConverter.isPostfixOperator(yOperator)) {
+        else if (Y2XOperatorConverter.isPostfixOperator(yOperator)) {
             throw new NotImplementedException("Postfix operators are not supported for now");
         }
         else {
@@ -242,9 +235,10 @@ public class YtreeToXgraphConverterVisitor implements YtreeVisitor<XEntity> {
             if (!(visited instanceof XEvent)) {
                 throw new XInterpretationError("Could not interpret linear statement: " + wrap(node.getExpression()));
             }
-            return (XEvent) visited;
+            return null; //statements return null
         }
-        return program.currentProcess.emitNopEvent();
+        program.currentProcess.emitNopEvent();
+        return null; //statements return null
     }
 
     @Override
@@ -265,14 +259,14 @@ public class YtreeToXgraphConverterVisitor implements YtreeVisitor<XEntity> {
             elseBranch.accept(this);
         }
         else {
-            program.currentProcess.emitNopEvent();
+            program.currentProcess.emitNopEvent(); // needed for encoding, TODO: add reference to the doc here
         }
         program.currentProcess.finishBranchDefinition();
 
 
         program.currentProcess.finishNonlinearBlockDefinition();
 
-        return null;
+        return null; //statements return null
     }
 
     @Override
@@ -288,7 +282,7 @@ public class YtreeToXgraphConverterVisitor implements YtreeVisitor<XEntity> {
         program.currentProcess.finishBranchDefinition();
 
         program.currentProcess.finishNonlinearBlockDefinition();
-        return null;
+        return null; //statements return null
     }
 
     @Override
@@ -309,7 +303,7 @@ public class YtreeToXgraphConverterVisitor implements YtreeVisitor<XEntity> {
             default:
                 throw new XInterpretationError("Unknown jump statement kind: " + node.getKind());
         }
-        return null; //program.currentProcess.emitFakeEvent();
+        return null; //statements return null
     }
 
 
@@ -319,10 +313,14 @@ public class YtreeToXgraphConverterVisitor implements YtreeVisitor<XEntity> {
     public XLvalueMemoryUnit visit(YVariableDeclarationStatement node) {
         YVariableRef variable = node.getVariable();
         String name = variable.getName();
-        Type type = YTypeToBitnessConverter.convert(node.getType());
-        return variable.isGlobal()
-                ? program.memoryManager.declareLocation(name, type)
-                : program.memoryManager.declareRegister(name, type);
+        Type type = YType2TypeConverter.convert(node.getType());
+        if (variable.isGlobal()) {
+            program.memoryManager.declareLocation(name, type);
+        }
+        else {
+            program.memoryManager.declareRegister(name, type);
+        }
+        return null; //statements return null
     }
 
     @Override
@@ -343,7 +341,7 @@ public class YtreeToXgraphConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XConstant visit(YConstant node) {
-        Type type = YTypeToBitnessConverter.convert(node.getType());
+        Type type = YType2TypeConverter.convert(node.getType());
         return XConstant.create(node.getValue(), type);
     }
 
@@ -354,7 +352,7 @@ public class YtreeToXgraphConverterVisitor implements YtreeVisitor<XEntity> {
 
 
     private XComputationEvent visitBinaryExpression(YBinaryExpression node) {
-        XBinaryOperator operator = YToXOperatorConverter.convert(node.getKind());
+        XBinaryOperator operator = Y2XOperatorConverter.convert(node.getKind());
         XLocalMemoryUnit leftLocal = tryVisitAsLocalOrThrow(node.getLeftExpression());
         XLocalMemoryUnit rightLocal = tryVisitAsLocalOrThrow(node.getRightExpression());
         return program.currentProcess.emitComputationEvent(operator, leftLocal, rightLocal);

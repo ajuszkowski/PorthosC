@@ -15,13 +15,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class XToZformulaEncoder {
+public class X2ZformulaEncoder {
 
     private final Context ctx;
     private final StaticSingleAssignmentMap ssaMap;
     private final XDataflowEncoder dataFlowEncoder;
 
-    public XToZformulaEncoder(Context ctx, XUnrolledProgram program) {
+    public X2ZformulaEncoder(Context ctx, XUnrolledProgram program) {
         this.ctx = ctx;
         Set<XEvent> entryEvents = program.getAllProcesses().stream().map(FlowGraph::source).collect(Collectors.toSet());
         this.ssaMap = new StaticSingleAssignmentMap(ctx, program.size(), entryEvents);

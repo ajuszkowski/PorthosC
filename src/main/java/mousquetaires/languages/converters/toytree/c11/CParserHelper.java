@@ -4,7 +4,7 @@ import mousquetaires.languages.parsers.C11Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 
-public class C11ParserHelper {
+public class CParserHelper {
     // TODO: check this manually-restored method
     public static boolean hasToken(ParserRuleContext ctx, int tokenType) {
         return ctx.getTokens(tokenType).size() > 0;

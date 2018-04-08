@@ -4,10 +4,10 @@ import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
 import mousquetaires.languages.syntax.ytree.types.YMockType;
 import mousquetaires.languages.syntax.ytree.types.YType;
-import mousquetaires.tests.unit.languages.converters.toytree.C11ToYtree_UnitTestBase;
+import mousquetaires.tests.unit.languages.converters.toytree.C2Ytree_UnitTestBase;
 
 
-public abstract class C11ToYtree_Statement_UnitTest extends C11ToYtree_UnitTestBase {
+public abstract class C2Ytree_Statement_UnitTest extends C2Ytree_UnitTestBase {
 
     // shortcuts necessary for tests
     protected YVariableRef variableX = YVariableRef.Kind.Local.createVariable("x");

@@ -9,12 +9,12 @@ import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 
 
 // Stateless
-public class YtreeToXgraphConverter {
+public class Ytree2XgraphConverter {
 
     private final ProgramLanguage language;
     private final DataModel dataModel;
 
-    public YtreeToXgraphConverter(ProgramLanguage language, DataModel dataModel) {
+    public Ytree2XgraphConverter(ProgramLanguage language, DataModel dataModel) {
         this.language = language;
         this.dataModel = dataModel;
     }
@@ -22,7 +22,7 @@ public class YtreeToXgraphConverter {
     public XProgram convert(YSyntaxTree internalSyntaxTree) {
         XMemoryManager sharedMemoryManager = new XMemoryManager();//dataModel
         XProgramInterpreter programInterpreter = new XProgramInterpreter(sharedMemoryManager);
-        YtreeToXgraphConverterVisitor visitor = new YtreeToXgraphConverterVisitor(programInterpreter);
+        Ytree2XgraphConverterVisitor visitor = new Ytree2XgraphConverterVisitor(programInterpreter);
         internalSyntaxTree.accept(visitor);
         return visitor.getProgram();
     }

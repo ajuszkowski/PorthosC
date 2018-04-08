@@ -10,7 +10,7 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperator;
 import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
 
 
-class YToXOperatorConverter {
+class Y2XOperatorConverter {
 
     static boolean isPrefixOperator(YIntegerUnaryExpression.Kind operator) {
         return isPrefixIncrement(operator) || isPrefixDecrement(operator);

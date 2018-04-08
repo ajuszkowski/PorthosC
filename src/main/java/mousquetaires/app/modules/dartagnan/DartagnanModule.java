@@ -8,9 +8,9 @@ import mousquetaires.app.errors.UnrecognisedError;
 import mousquetaires.app.modules.AppModule;
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
-import mousquetaires.languages.converters.toxgraph.YtreeToXgraphConverter;
+import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
-import mousquetaires.languages.converters.tozformula.XToZformulaEncoder;
+import mousquetaires.languages.converters.tozformula.X2ZformulaEncoder;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
@@ -49,7 +49,7 @@ public class DartagnanModule extends AppModule {
             YSyntaxTree internalRepr = YtreeParser.parse(inputProgramFile, language);
             DataModel dataModel = new DataModelLP64(); // TODO: pass as cli-option
 
-            YtreeToXgraphConverter yConverter = new YtreeToXgraphConverter(language, dataModel);
+            Ytree2XgraphConverter yConverter = new Ytree2XgraphConverter(language, dataModel);
             XProgram program = yConverter.convert(internalRepr);
 
             XUnrolledProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
@@ -58,7 +58,7 @@ public class DartagnanModule extends AppModule {
 
             //todo: pass timeouts
 
-            XToZformulaEncoder encoder = new XToZformulaEncoder(ctx, unrolledProgram);
+            X2ZformulaEncoder encoder = new X2ZformulaEncoder(ctx, unrolledProgram);
             BoolExpr zFormula = encoder.encodeProgram(unrolledProgram);
 
 

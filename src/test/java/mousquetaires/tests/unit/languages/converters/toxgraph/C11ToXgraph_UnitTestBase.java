@@ -2,7 +2,7 @@ package mousquetaires.tests.unit.languages.converters.toxgraph;
 
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
-import mousquetaires.languages.converters.toxgraph.YtreeToXgraphConverter;
+import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.syntax.xgraph.XProgramBase;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
@@ -27,7 +27,7 @@ public abstract class C11ToXgraph_UnitTestBase extends AbstractConverterUnitTest
             File file = new File(testFile);
             ProgramLanguage language = ProgramExtensions.parseProgramLanguage(file.getName());
             YSyntaxTree internalRepr = YtreeParser.parse(file, language);
-            YtreeToXgraphConverter converter = new YtreeToXgraphConverter(language, dataModel);
+            Ytree2XgraphConverter converter = new Ytree2XgraphConverter(language, dataModel);
             XProgramBase program = converter.convert(internalRepr);
             return program.getAllProcesses().iterator();
         } catch (IOException e) {

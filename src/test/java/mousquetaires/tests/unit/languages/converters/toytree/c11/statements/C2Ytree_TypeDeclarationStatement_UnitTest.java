@@ -13,7 +13,7 @@ import org.junit.Test;
 import java.util.Iterator;
 
 
-public class C11ToYtree_TypeDeclarationStatement_UnitTest extends C11ToYtree_Statement_UnitTest {
+public class C2Ytree_TypeDeclarationStatement_UnitTest extends C2Ytree_Statement_UnitTest {
 
 
     @Test

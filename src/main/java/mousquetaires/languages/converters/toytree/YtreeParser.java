@@ -12,7 +12,7 @@ public class YtreeParser {
 
     public static YSyntaxTree parse(File inputProgramFile, ProgramLanguage language) throws IOException {
 
-        InputProgramToYtreeConverter transformer = InputProgramConvertersFactory.getYtreeConverter(language);
+        InputProgram2YtreeConverter transformer = InputProgramConvertersFactory.getYtreeConverter(language);
         ParserRuleContext parserEntryPoint = InputProgramParserFactory.getParser(inputProgramFile, language);
         return transformer.convert(parserEntryPoint);
     }

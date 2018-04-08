@@ -16,7 +16,7 @@ import org.junit.Test;
 import java.util.Iterator;
 
 
-public class C11ToYtree_ProcessStatement_UnitTest extends C11ToYtree_Statement_UnitTest {
+public class C2Ytree_ProcessStatement_UnitTest extends C2Ytree_Statement_UnitTest {
 
     @Test
     @Ignore("process statements syntax is temporarily not supported")

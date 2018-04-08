@@ -4,9 +4,9 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
-import mousquetaires.languages.converters.toxgraph.YtreeToXgraphConverter;
+import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
-import mousquetaires.languages.converters.tozformula.XToZformulaEncoder;
+import mousquetaires.languages.converters.tozformula.X2ZformulaEncoder;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 
-public abstract class C11ToZformula_UnitTestBase extends AbstractConverterUnitTest<BoolExpr> {
+public abstract class C2Zformula_UnitTestBase extends AbstractConverterUnitTest<BoolExpr> {
 
     @Override
     protected Iterator<? extends BoolExpr> parseTestFile(String testFile) {
@@ -33,11 +33,11 @@ public abstract class C11ToZformula_UnitTestBase extends AbstractConverterUnitTe
             File file = new File(testFile);
             ProgramLanguage language = ProgramExtensions.parseProgramLanguage(file.getName());
             YSyntaxTree internalRepr = YtreeParser.parse(file, language);
-            YtreeToXgraphConverter converter = new YtreeToXgraphConverter(language, dataModel);
+            Ytree2XgraphConverter converter = new Ytree2XgraphConverter(language, dataModel);
             XProgram program = converter.convert(internalRepr);
             XUnrolledProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
             Context ctx = new Context();
-            XToZformulaEncoder encoder = new XToZformulaEncoder(ctx, unrolledProgram);
+            X2ZformulaEncoder encoder = new X2ZformulaEncoder(ctx, unrolledProgram);
             BoolExpr smtFormula = encoder.encodeProgram(unrolledProgram);
             return CollectionUtils.createIteratorFrom(smtFormula);
         } catch (IOException e) {
