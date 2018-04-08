@@ -73,13 +73,13 @@ class XDataflowEncoder implements XEventVisitor<BoolExpr> {
 
     @Override
     public BoolExpr visit(XUnaryComputationEvent event) {
-        // no data-flow // ????? TODO: where do we encode the computation 'x + y', 'true && false' ???
+        // no data-flow
         return null;
     }
 
     @Override
     public BoolExpr visit(XBinaryComputationEvent event) {
-        // no data-flow // ????? TODO: where do we encode the computation 'x + y', 'true && false' ???
+        // no data-flow
         return null;
     }
 

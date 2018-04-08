@@ -60,7 +60,7 @@ public class XEventInfo extends FlowGraphNodeInfo {
 
     @Override
     public String toString() {
-        return getText();
+        return "[" + getText() + "," + getUnrollingDepth() + "]";
     }
 
     @Override

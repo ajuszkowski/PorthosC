@@ -11,19 +11,19 @@ public abstract class UnrolledFlowGraph<N extends FlowGraphNode> extends FlowGra
 
     private final ImmutableList<N> nodesLinearised; // TODO: need new builder for test unrolled graph
 
-    private ImmutableMap<N, ImmutableSet<N>> reversedEdges;
-    private ImmutableMap<N, ImmutableSet<N>> altReversedEdges;
+    private ImmutableMap<N, ImmutableSet<N>> edgesReversed;
+    private ImmutableMap<N, ImmutableSet<N>> altEdgesReversed;
 
     public UnrolledFlowGraph(N source,
                              N sink,
                              ImmutableMap<N, N> edges,
                              ImmutableMap<N, N> altEdges,
-                             ImmutableMap<N, ImmutableSet<N>> reversedEdges,
-                             ImmutableMap<N, ImmutableSet<N>> altReversedEdges,
+                             ImmutableMap<N, ImmutableSet<N>> edgesReversed,
+                             ImmutableMap<N, ImmutableSet<N>> altEdgesReversed,
                              ImmutableList<N> nodesLinearised) {
         super(source, sink, edges, altEdges);
-        this.reversedEdges = reversedEdges;
-        this.altReversedEdges = altReversedEdges;
+        this.edgesReversed = edgesReversed;
+        this.altEdgesReversed = altEdgesReversed;
         this.nodesLinearised = nodesLinearised;
     }
 
@@ -32,16 +32,16 @@ public abstract class UnrolledFlowGraph<N extends FlowGraphNode> extends FlowGra
     }
 
     public boolean hasParent(boolean edgeSign, N node) {
-        return getReversedEdges(edgeSign).containsKey(node);
+        return getEdgesReversed(edgeSign).containsKey(node);
     }
 
     public ImmutableSet<N> parents(boolean edgeKind, N node) {
-        ImmutableMap<N, ImmutableSet<N>> reversedMap = getReversedEdges(edgeKind);
+        ImmutableMap<N, ImmutableSet<N>> reversedMap = getEdgesReversed(edgeKind);
         assert reversedMap.containsKey(node) : node;
         return reversedMap.get(node);
     }
 
-    public ImmutableMap<N, ImmutableSet<N>> getReversedEdges(boolean edgesSign) {
-        return edgesSign ? reversedEdges : altReversedEdges;
+    public ImmutableMap<N, ImmutableSet<N>> getEdgesReversed(boolean edgesSign) {
+        return edgesSign ? edgesReversed : altEdgesReversed;
     }
 }

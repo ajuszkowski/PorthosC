@@ -5,6 +5,7 @@ import mousquetaires.languages.syntax.xgraph.memories.XLocation;
 import mousquetaires.languages.syntax.xgraph.memories.XLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XRegister;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
+import mousquetaires.utils.exceptions.xgraph.XUndeclaredMemoryUnitError;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class XMemoryManager {
         if (sharedUnits.containsKey(name)) {
             return sharedUnits.get(name);
         }
-        throw new IllegalArgumentException("attempt to access an unregistered memory unit: " + name);
+        throw new XUndeclaredMemoryUnitError(name);
     }
 
     public XLocation redeclareAsSharedIfNeeded(String name) {

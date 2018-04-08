@@ -40,7 +40,7 @@ public class DartagnanModule extends AppModule {
         verdict.onStartExecution();
 
         try {
-            int unrollBound = 6; // TODO: get from options
+            int unrollBound = 10; // TODO: get from options
 
             //MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
 
