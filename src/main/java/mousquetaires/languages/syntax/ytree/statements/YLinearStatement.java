@@ -48,11 +48,6 @@ public class YLinearStatement extends YStatement {
     }
 
     @Override
-    public YLinearStatement copy() {
-        return new YLinearStatement(getLabel(), getExpression());
-    }
-
-    @Override
     public String toString() {
         return getExpression() + ";";
     }

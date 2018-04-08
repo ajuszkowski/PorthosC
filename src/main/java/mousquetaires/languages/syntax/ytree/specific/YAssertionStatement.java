@@ -25,11 +25,6 @@ public class YAssertionStatement extends YPostludeStatement {
     }
 
     @Override
-    public YEntity copy() {
-        return new YAssertionStatement(getExpression());
-    }
-
-    @Override
     public String toString() {
         return "exists( " + expression + " )";
     }

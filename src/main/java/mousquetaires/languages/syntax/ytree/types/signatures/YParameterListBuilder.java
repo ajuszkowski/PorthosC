@@ -40,9 +40,4 @@ public class YParameterListBuilder extends BuilderBase<YParameter[]> implements 
     public <T> T accept(YtreeVisitor<T> visitor) {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public YEntity copy() {
-        throw new UnsupportedOperationException();
-    }
 }

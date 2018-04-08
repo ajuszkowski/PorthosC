@@ -21,11 +21,6 @@ public class YRelativeBinaryExpression extends YBinaryExpression {
     }
 
     @Override
-    public YRelativeBinaryExpression copy() {
-        return new YRelativeBinaryExpression(getKind(), getLeftExpression(), getRightExpression());
-    }
-
-    @Override
     public String toString() {
         return getLeftExpression() + " " + getKind() + " " + getRightExpression();
     }

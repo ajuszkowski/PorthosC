@@ -50,11 +50,6 @@ public class YWhileLoopStatement extends YStatement {
     }
 
     @Override
-    public YWhileLoopStatement copy() {
-        return new YWhileLoopStatement(getLabel(), getCondition(), getBody());
-    }
-
-    @Override
     public String toString() {
         return String.format("while (%s) { %s }", getCondition(), getBody());
     }

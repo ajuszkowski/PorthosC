@@ -35,9 +35,4 @@ public class YParameter implements YEntity {
     public <T> T accept(YtreeVisitor<T> visitor) {
         return visitor.visit(this);
     }
-
-    @Override
-    public YEntity copy() {
-        return new YParameter(getType(), getName());
-    }
 }

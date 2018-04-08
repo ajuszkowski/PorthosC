@@ -30,9 +30,4 @@ public final class YPreludeStatement extends YUnlabeledStatement {
     public <T> T accept(YtreeVisitor<T> visitor) {
         return visitor.visit(this);
     }
-
-    @Override
-    public YEntity copy() {
-        return new YPreludeStatement(body);
-    }
 }

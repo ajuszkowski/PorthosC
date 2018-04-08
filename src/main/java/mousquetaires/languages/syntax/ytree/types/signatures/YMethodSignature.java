@@ -40,9 +40,4 @@ public class YMethodSignature implements YEntity {
     public <T> T accept(YtreeVisitor<T> visitor) {
         return visitor.visit(this);
     }
-
-    @Override
-    public YMethodSignature copy() {
-        return new YMethodSignature(getName(), getReturnType(), getParameters());
-    }
 }

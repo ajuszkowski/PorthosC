@@ -42,10 +42,4 @@ public class YPointerUnaryExpression extends YUnaryExpression implements YAssign
     public <T> T accept(YtreeVisitor<T> visitor) {
         return visitor.visit(this);
     }
-
-    @Override
-    public YEntity copy() {
-        return new YPointerUnaryExpression(getKind(), getExpression());
-    }
-
 }

@@ -41,12 +41,6 @@ public class YMockType implements YType {
     }
 
     @Override
-    public YEntity copy() {
-        throw new NotImplementedException();
-    }
-
-
-    @Override
     public String toString() {
         return "mock_type";
     }

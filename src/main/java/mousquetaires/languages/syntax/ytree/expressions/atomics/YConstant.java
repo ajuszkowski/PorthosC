@@ -77,11 +77,6 @@ public class YConstant implements YMemoryLocation {
     }
 
     @Override
-    public YConstant copy() {
-        return new YConstant(value, type);
-    }
-
-    @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom();
     }

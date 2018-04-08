@@ -57,19 +57,6 @@ public class YVariableRef implements YAssignee {
     }
 
     @Override
-    public YVariableRef copy() {
-        return new YVariableRef(kind, name);
-    }
-
-    //public YVariableRef asGlobal() {
-    //    return new YVariableRef(Kind.Global, name);
-    //}
-    //
-    //public YVariableRef asLocal() {
-    //    return new YVariableRef(Kind.Local, name);
-    //}
-
-    @Override
     public String toString() {
         String prefix = kind == Kind.Local ? "%" : "@";
         return prefix + name;

@@ -43,11 +43,6 @@ public class YTernaryExpression implements YExpression {
     }
 
     @Override
-    public YTernaryExpression copy() {
-        return new YTernaryExpression(condition, trueExpression, falseExpression);
-    }
-
-    @Override
     public String toString() {
         final StringBuffer builder = new StringBuffer();
         builder.append(condition)     .append(" ? ");

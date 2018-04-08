@@ -29,11 +29,6 @@ public class YInvocationExpression extends YMultiExpression {
         return visitor.visit(this);
     }
 
-    @Override
-    public YEntity copy() {
-        return new YInvocationExpression(getBaseExpression(), getArguments());
-    }
-
     public YExpression getBaseExpression() {
         return getElements().get(0);
     }

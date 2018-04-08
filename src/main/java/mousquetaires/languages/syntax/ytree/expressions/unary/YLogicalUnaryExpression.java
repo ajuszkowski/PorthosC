@@ -39,9 +39,4 @@ public class YLogicalUnaryExpression extends YUnaryExpression {
     public <T> T accept(YtreeVisitor<T> visitor) {
         return visitor.visit(this);
     }
-
-    @Override
-    public YEntity copy() {
-        return new YLogicalUnaryExpression(getKind(), getExpression());
-    }
 }

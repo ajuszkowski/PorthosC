@@ -31,19 +31,6 @@ public class YCompoundStatementBuilder extends BuilderBase<YCompoundStatement> i
         hasBraces = true;
     }
 
-    // transforms single or zero statementsBuilder into linear statement
-    public YStatement buildOptimised() {
-        ImmutableList<YStatement> statements = statementsBuilder.build();
-        int length = statements.size();
-        if (length == 0) {
-            return YLinearStatement.createEmptyStatement();
-        }
-        if (length == 1) {
-            return statements.get(0);
-        }
-        return new YCompoundStatement(hasBraces, statements);
-    }
-
     public void addLinearStatement(YExpression expression) {
         statementsBuilder.add(new YLinearStatement(expression));
     }
@@ -73,11 +60,6 @@ public class YCompoundStatementBuilder extends BuilderBase<YCompoundStatement> i
 
     @Override
     public <S> S accept(YtreeVisitor<S> visitor) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public YEntity copy() {
         throw new UnsupportedOperationException();
     }
 }

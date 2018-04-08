@@ -21,11 +21,6 @@ public class YLogicalBinaryExpression extends YBinaryExpression {
     }
 
     @Override
-    public YLogicalBinaryExpression copy() {
-        return new YLogicalBinaryExpression(getKind(), getLeftExpression(), getRightExpression());
-    }
-
-    @Override
     public String toString() {
         return getLeftExpression() + " " + getKind() + " " + getRightExpression();
     }

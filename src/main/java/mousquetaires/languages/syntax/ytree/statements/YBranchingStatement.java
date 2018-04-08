@@ -61,11 +61,6 @@ public class YBranchingStatement extends YStatement {  // TODO: inherit from YJu
     }
 
     @Override
-    public YBranchingStatement copy() {
-        return new YBranchingStatement(getLabel(), getCondition(), getThenBranch(), getElseBranch());
-    }
-
-    @Override
     public String toString() {
         return String.format("if (%s) %s else %s", getCondition(), getThenBranch(), getElseBranch());
     }

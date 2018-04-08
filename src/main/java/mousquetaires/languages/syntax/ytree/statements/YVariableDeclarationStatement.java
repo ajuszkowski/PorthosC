@@ -49,11 +49,6 @@ public class YVariableDeclarationStatement extends YStatement {
     }
 
     @Override
-    public YVariableDeclarationStatement copy() {
-        return new YVariableDeclarationStatement(getLabel(), getType(), getVariable());
-    }
-
-    @Override
     public String toString() {
         return String.format("declare(%s: %s);", getVariable(), getType());
     }

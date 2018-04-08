@@ -20,11 +20,6 @@ public class YIntegerBinaryExpression extends YBinaryExpression {
         return visitor.visit(this);
     }
 
-    @Override
-    public YIntegerBinaryExpression copy() {
-        return new YIntegerBinaryExpression(getKind(), getLeftExpression(), getRightExpression());
-    }
-
     public enum Kind implements YBinaryExpression.Kind {
         Plus,
         Minus,

@@ -31,11 +31,6 @@ public enum YUnaryOperatorKindTemp implements YTempEntity {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public YEntity copy() {
-        throw new UnsupportedOperationException();
-    }
-
     public static YUnaryOperatorKindTemp tryParse(String value) {
         switch (value) {
             case "&": return Ampersand;

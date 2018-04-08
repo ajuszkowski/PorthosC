@@ -74,11 +74,6 @@ public class YJumpStatement extends YStatement {
     }
 
     @Override
-    public YJumpStatement copy() {
-        return new YJumpStatement(getKind(), getJumpLabel());
-    }
-
-    @Override
     public String toString() {
         return kind.toString();
     }

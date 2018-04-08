@@ -21,9 +21,4 @@ public class YVariableAssertion extends YRelativeBinaryExpression {
         return (YMemoryLocation) super.getRightExpression();
     }
 
-    @Override
-    public YVariableAssertion copy() {
-        return new YVariableAssertion(getLeftExpression(), getRightExpression());
-    }
-
 }

@@ -43,11 +43,6 @@ public class YProcessStatement extends YUnlabeledStatement {
     }
 
     @Override
-    public YProcessStatement copy() {
-        return new YProcessStatement(processId, body);
-    }
-
-    @Override
     public String toString() {
         return getProcessId() + " " + getBody();
     }

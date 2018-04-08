@@ -56,11 +56,6 @@ public class YCompoundStatement extends YStatement {
     }
 
     @Override
-    public YCompoundStatement copy() {
-        return new YCompoundStatement(hasBraces(), getStatements());
-    }
-
-    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         if (hasBraces) {

@@ -17,9 +17,4 @@ public abstract class YTempEntityBase implements YTempEntity {
     public <S> S accept(YtreeVisitor<S> visitor) {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public YEntity copy() {
-        throw new UnsupportedOperationException();
-    }
 }

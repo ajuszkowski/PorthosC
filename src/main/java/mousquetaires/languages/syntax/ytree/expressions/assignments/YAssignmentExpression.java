@@ -67,11 +67,6 @@ public class YAssignmentExpression extends YMultiExpression {
     }
 
     @Override
-    public YAssignmentExpression copy() {
-        return new YAssignmentExpression(getAssignee(), getExpression());
-    }
-
-    @Override
     public String toString() {
         return getAssignee() + " := " + getExpression();
     }

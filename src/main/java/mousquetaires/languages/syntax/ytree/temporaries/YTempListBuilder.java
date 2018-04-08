@@ -45,9 +45,4 @@ public class YTempListBuilder<T extends YEntity>
     public <S> S accept(YtreeVisitor<S> visitor) {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public YEntity copy() {
-        throw new UnsupportedOperationException();
-    }
 }

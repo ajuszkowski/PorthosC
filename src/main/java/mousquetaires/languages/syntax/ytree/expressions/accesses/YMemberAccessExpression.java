@@ -1,6 +1,5 @@
 package mousquetaires.languages.syntax.ytree.expressions.accesses;
 
-import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
@@ -19,11 +18,6 @@ public class YMemberAccessExpression extends YMultiExpression implements YAssign
     @Override
     public <T> T accept(YtreeVisitor<T> visitor) {
         return visitor.visit(this);
-    }
-
-    @Override
-    public YEntity copy() {
-        return new YMemberAccessExpression(getBaseExpression(), getMemberName());
     }
 
     public YExpression getBaseExpression() {

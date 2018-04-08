@@ -40,11 +40,6 @@ public class YFunctionDefinition implements YDefinition {
     }
 
     @Override
-    public YFunctionDefinition copy() {
-        return new YFunctionDefinition(body);
-    }
-
-    @Override
     public String toString() {
         return "<method_"+hashCode()+"_signature>"  + body;
     }
