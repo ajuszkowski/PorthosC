@@ -17,7 +17,7 @@ public interface XEvent extends FlowGraphNode<XEventInfo>, XProcessLocalElement,
 
     //TODO: old-code method, to be replaced
     default BoolExpr executes(Context ctx) {
-        return ctx.mkBoolConst(toString());//TODO: for debug only //String.format("ex(%s)", getName()));
+        return ctx.mkBoolConst(repr());
     }
 
     default String repr() {

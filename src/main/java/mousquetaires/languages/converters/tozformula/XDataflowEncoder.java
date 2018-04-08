@@ -17,6 +17,7 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XLvalueMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
@@ -33,9 +34,13 @@ class XDataflowEncoder implements XEventVisitor<BoolExpr> {
         this.memoryUnitEncoder = new XMemoryUnitEncoder(ctx, ssaMap);
     }
 
+    public Expr encodeMemoryUnit(XMemoryUnit memoryUnit, XEvent event) {
+        return memoryUnitEncoder.encodeVar(memoryUnit, event);
+    }
+
     public BoolExpr encodeGuard(XComputationEvent guard) {
-        XComputationEvent guardUnit = guard;
-        Expr encoded = memoryUnitEncoder.encodeVar(guardUnit, guard);
+        XComputationEvent guardMemoryUnit = guard;
+        Expr encoded = memoryUnitEncoder.encodeVar(guardMemoryUnit, guard);
         if (encoded != null) {
             if (encoded instanceof BoolExpr) {
                 return (BoolExpr) encoded;

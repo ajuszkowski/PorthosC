@@ -2,11 +2,18 @@ package mousquetaires.languages.converters.tozformula;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
+import com.microsoft.z3.Expr;
 import dartagnan.expression.BExpr;
+import dartagnan.program.Load;
+import dartagnan.program.MemEvent;
+import dartagnan.utils.Utils;
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.memories.XSharedLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.process.XUnrolledProcess;
 import org.apache.xpath.axes.ChildIterator;
 
@@ -32,11 +39,14 @@ public class X2ZformulaEncoder {
         List<BoolExpr> asserts = new LinkedList<>();
         for (XUnrolledProcess process : program.getAllProcesses()) {
             asserts.addAll(encodeProcess(process));
+            asserts.addAll(encodeProcessRFRelation(process));
         }
         BoolExpr[] assertsArray = asserts.toArray(new BoolExpr[0]);
         return ctx.mkAnd(assertsArray);
     }
 
+
+    // encodeCF + encodeDF
 
     private List<BoolExpr> encodeProcess(XUnrolledProcess process) {
         List<BoolExpr> asserts = new ArrayList<>();
@@ -118,6 +128,24 @@ public class X2ZformulaEncoder {
             }
         }
 
+        return asserts;
+    }
+
+    private List<BoolExpr> encodeProcessRFRelation(XUnrolledProcess process) {
+        List<BoolExpr> asserts = new ArrayList<>();
+        for (XLoadMemoryEvent load : process.getLoadEvents()) {
+            XSharedLvalueMemoryUnit loadLoc = load.getSource();
+            Expr loadLocVar = dataFlowEncoder.encodeMemoryUnit(loadLoc, load);
+            for (XStoreMemoryEvent store : process.getStoreEvents()) {
+                XSharedLvalueMemoryUnit storeLoc = store.getDestination();
+                Expr storeLocVar = dataFlowEncoder.encodeMemoryUnit(storeLoc, store);
+                if (loadLoc.equals(storeLoc)) {
+                    BoolExpr rfRelationVar = Utils.edge("rf", store, load, ctx);
+                    asserts.add(ctx.mkImplies(rfRelationVar, ctx.mkEq(storeLocVar, loadLocVar)));
+                }
+            }
+            // TODO: same for process.getInitEvents() ...
+        }
         return asserts;
     }
 

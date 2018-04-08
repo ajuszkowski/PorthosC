@@ -24,7 +24,7 @@ class XMemoryUnitEncoder {
         this.ssaMap = ssaMap;
     }
 
-    public Expr encodeVar(XLocalMemoryUnit unit, XEvent accessingEvent) {
+    public Expr encodeVar(XMemoryUnit unit, XEvent accessingEvent) {
         XMemoryUnitEncoderVisitor visitor = getVisitor(accessingEvent);
         return unit.accept(visitor);
     }
@@ -44,15 +44,6 @@ class XMemoryUnitEncoder {
     private XMemoryUnitEncoderVisitor createVisitor(XProcessId processId, VarRefCollection varRefCollection) {
         return new XMemoryUnitEncoderVisitor(processId, varRefCollection);
     }
-
-    private final Expr encodeRegister(XRegister register, int index) {
-        return Utils.ssaReg(register, index, ctx);
-    }
-
-    private final Expr encodeLocation(XLocation location, XProcessId processId, int index) {
-        return Utils.ssaLoc(location, processId, index, ctx);
-    }
-
 
     private final class XMemoryUnitEncoderVisitor implements XMemoryUnitVisitor<Expr> {
 
@@ -142,12 +133,12 @@ class XMemoryUnitEncoder {
 
         @Override
         public Expr visit(XRegister register) {
-            return encodeRegister(register, varRefCollection.getRefIndex(register));
+            return Utils.ssaReg(register, varRefCollection.getRefIndex(register), ctx);
         }
 
         @Override
         public Expr visit(XLocation location) {
-            return encodeLocation(location, processId, varRefCollection.getRefIndex(location));
+            return Utils.ssaLoc(location, processId, varRefCollection.getRefIndex(location), ctx);
         }
 
         private ArithExpr asArithExpr(Expr expr) {
