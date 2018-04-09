@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 import com.microsoft.z3.*;
 
 import dartagnan.expression.Assert;
-import dartagnan.utils.*;
 import dartagnan.wmm.*;
+import mousquetaires.utils.*;
 
 public class Program {
 

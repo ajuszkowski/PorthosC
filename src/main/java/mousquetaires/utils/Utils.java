@@ -1,4 +1,4 @@
-package dartagnan.utils;
+package mousquetaires.utils;
 
 import java.io.File;
 import java.io.FileWriter;

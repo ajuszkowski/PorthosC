@@ -7,10 +7,10 @@ import java.util.Set;
 import com.microsoft.z3.*;
 
 import dartagnan.expression.AExpr;
-import dartagnan.utils.LastModMap;
-import dartagnan.utils.MapSSA;
-import dartagnan.utils.Pair;
-import static dartagnan.utils.Utils.ssaReg;
+import mousquetaires.utils.LastModMap;
+import mousquetaires.utils.MapSSA;
+import mousquetaires.utils.Pair;
+import static mousquetaires.utils.Utils.ssaReg;
 
 public class Local extends Event {
 

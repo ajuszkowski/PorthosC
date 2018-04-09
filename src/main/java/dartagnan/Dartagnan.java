@@ -21,7 +21,6 @@ import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 import dartagnan.program.Event;
 
 import dartagnan.program.Program;
-import dartagnan.utils.Utils;
 import dartagnan.wmm.Domain;
 import dartagnan.wmm.Relation;
 import dartagnan.wmm.Wmm;

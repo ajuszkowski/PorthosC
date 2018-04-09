@@ -5,17 +5,17 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import mousquetaires.execution.memory.MemoryLocation;
-import mousquetaires.execution.events.old.Register;
+import dartagnan.program.Location;
+import dartagnan.program.Register;
 
 public class MapSSA {
 
     private ConcurrentHashMap<Register, Integer> regMap;
-    private ConcurrentHashMap<AbstractMemoryLocation, Integer> locMap;
+    private ConcurrentHashMap<Location, Integer> locMap;
 
     public MapSSA() {
         this.regMap = new ConcurrentHashMap<Register, Integer>();
-        this.locMap = new ConcurrentHashMap<AbstractMemoryLocation, Integer>();
+        this.locMap = new ConcurrentHashMap<Location, Integer>();
     }
 
     public Set<Object> keySet() {
@@ -25,7 +25,7 @@ public class MapSSA {
         return ret;
     }
 
-    public Integer getFresh(AbstractMemoryLocation loc){
+    public Integer getFresh(Location loc){
         if(!locMap.containsKey(loc)) {
             locMap.put(loc, 0);
         }
@@ -52,9 +52,9 @@ public class MapSSA {
             }
             return regMap.get(o);
         }
-        if(o instanceof AbstractMemoryLocation) {
+        if(o instanceof Location) {
             if(!locMap.containsKey(o)) {
-                locMap.put((AbstractMemoryLocation) o, 0);
+                locMap.put((Location) o, 0);
             }
             return locMap.get(o);
         }
@@ -67,8 +67,8 @@ public class MapSSA {
             regMap.put((Register) o, i);
             return;
         }
-        if(o instanceof AbstractMemoryLocation) {
-            locMap.put((AbstractMemoryLocation) o, i);
+        if(o instanceof Location) {
+            locMap.put((Location) o, i);
             return;
         }
         System.out.println(String.format("Check get for %s and %s", this, o));
@@ -78,14 +78,14 @@ public class MapSSA {
 
     public MapSSA clone() {
         MapSSA map = new MapSSA();
-        map.locMap = new ConcurrentHashMap<AbstractMemoryLocation, Integer>();
+        map.locMap = new ConcurrentHashMap<Location, Integer>();
         map.regMap = new ConcurrentHashMap<Register, Integer>();
 
         for(Register reg : regMap.keySet()) {
             map.put(reg, this.get(reg));
         }
 
-        for(AbstractMemoryLocation loc: locMap.keySet()) {
+        for(Location loc: locMap.keySet()) {
             map.put(loc, this.get(loc));
         }
 

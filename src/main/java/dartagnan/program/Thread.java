@@ -5,9 +5,9 @@ import java.util.stream.IntStream;
 
 import com.microsoft.z3.*;
 
-import dartagnan.utils.LastModMap;
-import dartagnan.utils.MapSSA;
-import dartagnan.utils.Pair;
+import mousquetaires.utils.LastModMap;
+import mousquetaires.utils.MapSSA;
+import mousquetaires.utils.Pair;
 
 public class Thread {
 

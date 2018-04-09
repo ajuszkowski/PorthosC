@@ -1,7 +1,7 @@
 package mousquetaires.languages.converters.tozformula;
 
 import com.microsoft.z3.*;
-import dartagnan.utils.Utils;
+import mousquetaires.utils.Utils;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;

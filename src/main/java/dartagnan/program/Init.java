@@ -2,15 +2,15 @@ package dartagnan.program;
 
 import com.microsoft.z3.*;
 
-import dartagnan.utils.LastModMap;
-import dartagnan.utils.MapSSA;
-import dartagnan.utils.Pair;
+import mousquetaires.utils.LastModMap;
+import mousquetaires.utils.MapSSA;
+import mousquetaires.utils.Pair;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static dartagnan.utils.Utils.ssaLoc;
+import static mousquetaires.utils.Utils.ssaLoc;
 
 public class Init extends MemEvent {
 
