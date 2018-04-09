@@ -1,4 +1,4 @@
-package dartagnan.wmm;
+package mousquetaires.memorymodels;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,11 +23,11 @@ import dartagnan.program.Program;
 import dartagnan.program.Register;
 import dartagnan.program.Store;
 import dartagnan.program.Sync;
-import dartagnan.utils.Utils;
-import dartagnan.wmm.Encodings;
-import static dartagnan.utils.Utils.lastValueLoc;
-import static dartagnan.utils.Utils.lastValueReg;
-import static dartagnan.utils.Utils.ssaReg;
+import mousquetaires.utils.Utils;
+
+import static mousquetaires.utils.Utils.lastValueLoc;
+import static mousquetaires.utils.Utils.lastValueReg;
+import static mousquetaires.utils.Utils.ssaReg;
 
 public class Domain {
 

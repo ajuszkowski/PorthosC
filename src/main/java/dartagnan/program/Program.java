@@ -10,8 +10,9 @@ import java.util.stream.Collectors;
 import com.microsoft.z3.*;
 
 import dartagnan.expression.Assert;
-import dartagnan.wmm.*;
+import mousquetaires.memorymodels.*;
 import mousquetaires.utils.*;
+
 
 public class Program {
 

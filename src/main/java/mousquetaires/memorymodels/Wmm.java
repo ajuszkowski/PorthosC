@@ -3,18 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dartagnan.wmm;
+package mousquetaires.memorymodels;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Event;
-import dartagnan.program.MemEvent;
 import dartagnan.program.Program;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
-import java.util.stream.Collectors;
+
 
 /**
  *

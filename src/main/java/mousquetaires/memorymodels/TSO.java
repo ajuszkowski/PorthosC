@@ -1,7 +1,6 @@
-package dartagnan.wmm;
+package mousquetaires.memorymodels;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.microsoft.z3.*;
 

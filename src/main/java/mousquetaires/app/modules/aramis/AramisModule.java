@@ -26,17 +26,17 @@
 //
 //import mousquetaires.languages.parsers.*;
 //import mousquetaires.program.XProgram;
-//import mousquetaires.wmm.Domain;
+//import mousquetaires.memorymodels.Domain;
 //import mousquetaires.wmm.MemoryModel;
-//import mousquetaires.wmm.BasicRelation;
-//import mousquetaires.wmm.CandidateAxiom;
-//import mousquetaires.wmm.RelComposition;
-//import mousquetaires.wmm.RelInterSect;
-//import mousquetaires.wmm.RelMinus;
-//import mousquetaires.wmm.RelTrans;
-//import mousquetaires.wmm.RelTransRef;
-//import mousquetaires.wmm.RelUnion;
-//import mousquetaires.wmm.Relation;
+//import mousquetaires.memorymodels.BasicRelation;
+//import mousquetaires.memorymodels.CandidateAxiom;
+//import mousquetaires.memorymodels.RelComposition;
+//import mousquetaires.memorymodels.RelInterSect;
+//import mousquetaires.memorymodels.RelMinus;
+//import mousquetaires.memorymodels.RelTrans;
+//import mousquetaires.memorymodels.RelTransRef;
+//import mousquetaires.memorymodels.RelUnion;
+//import mousquetaires.memorymodels.Relation;
 //import java.util.ArrayList;
 //import java.util.HashMap;
 //import java.util.Map;

@@ -1,7 +1,7 @@
 // Generated from Model.g4 by ANTLR 4.7.1
 
 package dartagnan;
-import dartagnan.wmm.*;
+import mousquetaires.wmm.*;
 
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;

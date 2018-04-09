@@ -1,8 +1,5 @@
 package dartagnan;
 
-import aramis.Aramis;
-import static aramis.ListOfRels.baserels;
-import com.microsoft.z3.BoolExpr;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -13,18 +10,16 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.commons.io.FileUtils;
 
 import com.microsoft.z3.Context;
-import com.microsoft.z3.Model;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 import com.microsoft.z3.Z3Exception;
 import com.microsoft.z3.enumerations.Z3_ast_print_mode;
-import dartagnan.program.Event;
 
 import dartagnan.program.Program;
-import dartagnan.wmm.Domain;
-import dartagnan.wmm.Relation;
-import dartagnan.wmm.Wmm;
-import java.util.Set;
+import mousquetaires.memorymodels.Domain;
+import mousquetaires.memorymodels.Relation;
+import mousquetaires.memorymodels.Wmm;
+
 import java.util.logging.Logger;
 
 import org.apache.commons.cli.*;

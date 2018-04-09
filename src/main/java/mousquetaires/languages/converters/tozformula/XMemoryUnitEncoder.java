@@ -4,14 +4,11 @@ import com.microsoft.z3.*;
 import mousquetaires.utils.Utils;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
-
-import java.util.Map;
 
 
 class XMemoryUnitEncoder {

@@ -1,7 +1,7 @@
 // Define a grammar called model
 grammar Model;
 @header{
-import dartagnan.wmm.*;
+import mousquetaires.wmm.*;
 }
 @parser::members
 {

@@ -1,4 +1,4 @@
-package dartagnan.wmm;
+package mousquetaires.memorymodels;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,9 +16,9 @@ import dartagnan.program.MemEvent;
 import dartagnan.program.Program;
 import dartagnan.program.Register;
 import dartagnan.program.Store;
-import dartagnan.utils.Utils;
-import static dartagnan.utils.Utils.lastValueLoc;
-import static dartagnan.utils.Utils.lastValueReg;
+import mousquetaires.utils.Utils;
+import static mousquetaires.utils.Utils.lastValueLoc;
+import static mousquetaires.utils.Utils.lastValueReg;
 
 public class Encodings {
 

@@ -5,37 +5,27 @@
  */
 package aramis;
 
-import static aramis.Aramis.computeNegs;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Model;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 import dartagnan.program.Event;
-import dartagnan.program.MemEvent;
 import dartagnan.program.Program;
-import dartagnan.wmm.BasicRelation;
-import dartagnan.wmm.CandidateAxiom;
-import dartagnan.wmm.RelComposition;
-import dartagnan.wmm.RelInterSect;
-import dartagnan.wmm.RelMinus;
-import dartagnan.wmm.RelTrans;
-import dartagnan.wmm.RelTransRef;
-import dartagnan.wmm.RelUnion;
-import dartagnan.wmm.Relation;
-import dartagnan.wmm.TemplateRelation;
-import dartagnan.wmm.Wmm;
 import mousquetaires.utils.Utils;
+import mousquetaires.memorymodels.BasicRelation;
+import mousquetaires.memorymodels.CandidateAxiom;
+import mousquetaires.memorymodels.RelInterSect;
+import mousquetaires.memorymodels.RelUnion;
+import mousquetaires.memorymodels.Relation;
+import mousquetaires.memorymodels.TemplateRelation;
+import mousquetaires.memorymodels.Wmm;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
+
 
 /**
  *

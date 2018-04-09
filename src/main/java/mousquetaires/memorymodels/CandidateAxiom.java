@@ -3,11 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dartagnan.wmm;
-
-import dartagnan.program.Program;
-import java.util.ArrayList;
-import java.util.HashMap;
+package mousquetaires.memorymodels;
 
 /**
  *
