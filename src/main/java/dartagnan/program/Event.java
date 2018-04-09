@@ -20,6 +20,8 @@ public class Event extends Thread {
 
     public Event() {}
 
+    // topologically (?) ordered id = po relation
+    // make sure eid is unqiue cross multiple programs
     public Integer getEId() {
         return eid;
     }
@@ -28,7 +30,13 @@ public class Event extends Thread {
         this.hlId = id;
     }
 
-    public Integer getHLId() {
+    // *a = *b;
+
+    // reg_a = load(a) //hlid same
+    // store(reg_a, b) //hlid same
+
+    // high-level id
+    public Integer  getHLId() {
         return hlId;
     }
 
@@ -120,6 +128,8 @@ public class Event extends Thread {
         return null;
     }
 
+
+    // the ssa-index for current event
     public Integer getSsaRegIndex() {
         if(this instanceof Local) {
             return ((Local)this).ssaRegIndex;

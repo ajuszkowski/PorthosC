@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableSet;
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.common.graph.FlowTree;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
 
 
@@ -29,7 +28,7 @@ public abstract class XProgramBase<P extends FlowGraph<XEvent>>
 
     // TODO: rename in future
     public ImmutableSet<XEvent> getMemEvents() {
-        return getOverallNodes(e -> e instanceof XSharedMemoryEvent);
+        return getNodes(e -> e instanceof XSharedMemoryEvent);
     }
 
     public int size() {

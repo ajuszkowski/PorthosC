@@ -85,6 +85,7 @@ public class FlowGraph<N extends FlowGraphNode> {
         return getEdges(true).values();
     }
 
+    // TODO: this should be only per program (?)
     public ImmutableSet<N> getNodes(Predicate<N> filter) {
         if (nodeQueriesCache.containsKey(filter)) {
             return nodeQueriesCache.get(filter);

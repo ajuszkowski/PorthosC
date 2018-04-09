@@ -25,13 +25,17 @@ public abstract class FlowTree<
         this.memoisedEvents = new HashMap<>();
     }
 
-    public ImmutableSet<N> getOverallNodes(Predicate<N> filter) {
+    public ImmutableSet<N> getNodes(Predicate<N> filter) {
         if (nodeQueriesCache.containsKey(filter)) {
             return nodeQueriesCache.get(filter);
         }
         ImmutableSet.Builder<N> builder = new ImmutableSet.Builder<>();
         for (G process : getGraphs()) {
-            builder.addAll(process.getNodes(filter));
+            for (N node : process.getAllNodes()) {
+                if (filter.test(node)) {
+                    builder.add(node);
+                }
+            }
         }
         ImmutableSet<N> result = builder.build();
         nodeQueriesCache.put(filter, result);

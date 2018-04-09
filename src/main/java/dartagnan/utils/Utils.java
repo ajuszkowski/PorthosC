@@ -19,8 +19,7 @@ import dartagnan.program.Program;
 import dartagnan.program.Register;
 import dartagnan.program.Store;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.languages.syntax.xgraph.memories.XLocation;
-import mousquetaires.languages.syntax.xgraph.memories.XRegister;
+import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 
 
@@ -211,6 +210,7 @@ public class Utils {
         return edge.split("\\(")[1].split(",")[1].split("\\)")[0];
     }
 
+    // adding intermidiate missing dumb
     public static BoolExpr encodeMissingIndexes(If t, MapSSA map1, MapSSA map2, Context ctx) throws Z3Exception {
 
         BoolExpr ret = ctx.mkTrue();
@@ -317,13 +317,13 @@ public class Utils {
 
     public static IntExpr lastValueLoc(Location loc, Context ctx) throws Z3Exception {
         return ctx.mkIntConst(loc.getName() + "_final");
-    }public static IntExpr lastValueLoc(XLocation loc, Context ctx) throws Z3Exception {
+    }public static IntExpr lastValueLoc(XSharedLvalueMemoryUnit loc, Context ctx) throws Z3Exception {
         return ctx.mkIntConst(loc.getName() + "_final");
     }
 
     public static IntExpr lastValueReg(Register reg, Context ctx) throws Z3Exception {
         return ctx.mkIntConst(reg.getName() + "_" + reg.getMainThread() + "_final");
-    }public static IntExpr lastValueReg(XRegister reg, Context ctx) throws Z3Exception {
+    }public static IntExpr lastValueReg(XLocalLvalueMemoryUnit reg, Context ctx) throws Z3Exception {
         return ctx.mkIntConst(reg.getName() + "_" + reg.getProcessId().getValue() + "_final");
     }
 
@@ -335,7 +335,7 @@ public class Utils {
 
     public static IntExpr ssaReg(Register reg, Integer ssaIndex, Context ctx) throws Z3Exception {
         return ctx.mkIntConst(String.format("T%s_%s_%s", reg.getMainThread(), reg.getName(), ssaIndex));
-    }public static IntExpr ssaReg(XRegister reg, Integer ssaIndex, Context ctx) throws Z3Exception {
+    }public static IntExpr ssaReg(XLocalLvalueMemoryUnit reg, Integer ssaIndex, Context ctx) throws Z3Exception {
         return ctx.mkIntConst(String.format("T%s_%s_%s", reg.getProcessId().getValue(), reg.getName(), ssaIndex));
     }
 
