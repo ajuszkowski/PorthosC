@@ -3,13 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mousquetaires.memorymodels;
+package mousquetaires.memorymodels.wmm;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Event;
 import dartagnan.program.Program;
+import mousquetaires.memorymodels.axioms.Acyclic;
+import mousquetaires.memorymodels.axioms.Axiom;
+import mousquetaires.memorymodels.axioms.Irreflexive;
+import mousquetaires.memorymodels.relations.*;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
@@ -82,7 +87,7 @@ public class Wmm {
             //ci:=ci0 ∪(ci;ii)∪(cc;ci)
             Relation ci=new RelUnion(ci0, new RelUnion(new RelComposition(cidummy, ii), new RelComposition(ccdummy, cidummy)),"ci");
             //ic := ic0 ∪ii ∪cc ∪(ic;cc)∪(ii;ic) 
-            Relation ic=new RelUnion(ii, new RelUnion(ccdummy, new RelUnion(new RelComposition(icdummy, ccdummy), new RelComposition(ii, icdummy))),"ic");
+            Relation ic=new RelUnion(ii, new RelUnion(ccdummy, new RelUnion(new RelComposition(icdummy, ccdummy), new RelComposition(ii, icdummy))), "ic");
             //cc := cc0 ∪ci ∪(ci;ic)∪(cc;cc)
             Relation cc= new RelUnion(cc0, new RelUnion(ci, new RelUnion(new RelComposition(ci, ic), new RelComposition(ccdummy, ccdummy))),"cc");
             //ppo := ((R × R) ∩ ii) ∪ ((R × W) ∩ ic)
@@ -95,7 +100,7 @@ public class Wmm {
             //hb := ppo ∪fence ∪rfe
             Relation hb=new RelUnion(ppo, new RelUnion(fence, rfe),"hb");
             //prop-base := (fence ∪ (rfe; fence)); hb∗
-            Relation propbase=new RelComposition(new RelUnion(fence, new RelComposition(rfe, fence)), new RelTransRef(hb),"propbase");
+            Relation propbase=new RelComposition(new RelUnion(fence, new RelComposition(rfe, fence)), new RelTransRef(hb), "propbase");
             //prop := ((W × W) ∩ prop-base) ∪ (com∗; prop-base∗; sync; hb∗)
             Relation WW=new BasicRelation("WW");
             Relation prop=new RelUnion(new RelInterSect(WW, propbase),new RelComposition(new RelTransRef(propbase), new RelComposition(sync, new RelTransRef(hb))),"prop");

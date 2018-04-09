@@ -1,4 +1,4 @@
-package mousquetaires.memorymodels;
+package mousquetaires.memorymodels.wmm;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,6 +11,7 @@ import dartagnan.program.Event;
 import dartagnan.program.Local;
 import dartagnan.program.MemEvent;
 import dartagnan.program.Program;
+import mousquetaires.memorymodels.Encodings;
 import mousquetaires.utils.Utils;
 
 public class ARM {

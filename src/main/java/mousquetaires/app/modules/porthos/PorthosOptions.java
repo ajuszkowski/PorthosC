@@ -9,7 +9,7 @@ import mousquetaires.app.options.validators.FileValidator;
 import mousquetaires.app.options.validators.InputProgramExtensionValidator;
 import mousquetaires.app.options.validators.MemoryModelNameValidator;
 import mousquetaires.app.options.validators.PorthosModeValidator;
-import mousquetaires.memorymodels.MemoryModelName;
+import mousquetaires.memorymodels.wmm.MemoryModelName;
 
 import java.io.File;
 

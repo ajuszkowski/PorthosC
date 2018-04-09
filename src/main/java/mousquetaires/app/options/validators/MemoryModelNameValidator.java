@@ -2,7 +2,7 @@ package mousquetaires.app.options.validators;
 
 import com.beust.jcommander.IValueValidator;
 import com.beust.jcommander.ParameterException;
-import mousquetaires.memorymodels.MemoryModelName;
+import mousquetaires.memorymodels.wmm.MemoryModelName;
 
 import java.util.Arrays;
 

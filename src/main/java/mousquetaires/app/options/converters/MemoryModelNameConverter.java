@@ -1,7 +1,7 @@
 package mousquetaires.app.options.converters;
 
 import com.beust.jcommander.IStringConverter;
-import mousquetaires.memorymodels.MemoryModelName;
+import mousquetaires.memorymodels.wmm.MemoryModelName;
 
 
 public class MemoryModelNameConverter implements IStringConverter<MemoryModelName> {

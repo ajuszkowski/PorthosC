@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mousquetaires.memorymodels;
+package mousquetaires.memorymodels.relations;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Program;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,10 +26,10 @@ public abstract class Relation {
     public static boolean Approx=false;
     
     protected String name;
-    protected boolean containsRec;
+    public boolean containsRec;
     protected boolean isnamed=false;
     protected String term;
-    protected Set<Relation> namedRelations;
+    public Set<Relation> namedRelations;
     public String write(){
         if(isnamed) return String.format("%s := %s", name, term);
         else return String.format("%s", name);

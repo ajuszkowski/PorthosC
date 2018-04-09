@@ -3,7 +3,7 @@ package mousquetaires.tests.func.dartagnan;
 import mousquetaires.app.modules.dartagnan.DartagnanModule;
 import mousquetaires.app.modules.dartagnan.DartagnanOptions;
 import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
-import mousquetaires.memorymodels.MemoryModelName;
+import mousquetaires.memorymodels.wmm.MemoryModelName;
 import mousquetaires.tests.func.AbstractFuncTest;
 
 import java.io.File;

@@ -1,4 +1,4 @@
-package mousquetaires.memorymodels;
+package mousquetaires.memorymodels.wmm;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import com.microsoft.z3.*;
 
 import dartagnan.program.*;
+import mousquetaires.memorymodels.Encodings;
+
 
 public class Alpha {
 

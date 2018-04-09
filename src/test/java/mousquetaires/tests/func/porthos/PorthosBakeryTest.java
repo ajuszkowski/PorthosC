@@ -3,7 +3,7 @@ package mousquetaires.tests.func.porthos;
 import com.googlecode.zohhak.api.TestWith;
 import mousquetaires.app.modules.porthos.PorthosMode;
 import mousquetaires.app.modules.porthos.PorthosVerdict;
-import mousquetaires.memorymodels.MemoryModelName;
+import mousquetaires.memorymodels.wmm.MemoryModelName;
 import mousquetaires.tests.unit.FuncTestPaths;
 
 import static org.junit.Assert.assertEquals;

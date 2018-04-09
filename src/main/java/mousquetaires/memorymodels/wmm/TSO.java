@@ -1,10 +1,12 @@
-package mousquetaires.memorymodels;
+package mousquetaires.memorymodels.wmm;
 
 import java.util.Set;
 
 import com.microsoft.z3.*;
 
 import dartagnan.program.*;
+import mousquetaires.memorymodels.Encodings;
+
 
 public class TSO {
 

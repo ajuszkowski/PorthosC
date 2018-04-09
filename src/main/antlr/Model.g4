@@ -1,7 +1,7 @@
 // Define a grammar called model
 grammar Model;
 @header{
-import mousquetaires.wmm.*;
+import mousquetaires.memorymodels.*;
 }
 @parser::members
 {

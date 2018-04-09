@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mousquetaires.memorymodels;
+package mousquetaires.memorymodels.relations;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
@@ -12,6 +12,7 @@ import com.microsoft.z3.Solver;
 import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Event;
 import dartagnan.program.Program;
+import mousquetaires.memorymodels.Encodings;
 import mousquetaires.utils.Utils;
 import static mousquetaires.memorymodels.Encodings.encodeEO;
 import java.util.HashSet;
@@ -22,7 +23,7 @@ import java.util.Set;
  *
  * @author Florian Furbach
  */
-public class TemplateRelation extends BinaryRelation{
+public class TemplateRelation extends BinaryRelation {
 
 protected static int ID;
 private BoolExpr unionexp;
@@ -30,7 +31,7 @@ private BoolExpr interexp;
 private BoolExpr compexp;
 private BoolExpr transrefexp;
 private BoolExpr idexp;
-protected static String PREFIX="";
+public static String PREFIX="";
 
     public TemplateRelation(Relation r1, Relation r2) {
         super(r1,r2, "TR"+String.valueOf(ID));

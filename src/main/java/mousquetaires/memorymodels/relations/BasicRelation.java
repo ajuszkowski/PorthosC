@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mousquetaires.memorymodels;
+package mousquetaires.memorymodels.relations;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
@@ -16,7 +16,7 @@ import java.util.Set;
  *
  * @author Florian Furbach
  */
-public class BasicRelation extends Relation{
+public class BasicRelation extends Relation {
         public static final String BASERELS[] = {"po", "co", "fr", "rf", "poloc", "rfe", "WR", "mfence"};
 
     public BasicRelation(String rel) {

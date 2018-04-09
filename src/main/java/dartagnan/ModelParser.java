@@ -1,8 +1,12 @@
 // Generated from Model.g4 by ANTLR 4.7.1
 
 package dartagnan;
-import mousquetaires.memorymodels.*;
 
+import mousquetaires.memorymodels.axioms.Acyclic;
+import mousquetaires.memorymodels.axioms.Axiom;
+import mousquetaires.memorymodels.axioms.Irreflexive;
+import mousquetaires.memorymodels.relations.*;
+import mousquetaires.memorymodels.wmm.Wmm;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;

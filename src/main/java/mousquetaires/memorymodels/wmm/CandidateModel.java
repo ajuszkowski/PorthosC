@@ -3,13 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mousquetaires.memorymodels;
+package mousquetaires.memorymodels.wmm;
+
+import mousquetaires.memorymodels.axioms.Consistent;
+import mousquetaires.memorymodels.axioms.Axiom;
+import mousquetaires.memorymodels.axioms.CandidateAxiom;
+
 
 /**
  *
  * @author Florian Furbach
  */
-public class CandidateModel extends Wmm{
+public class CandidateModel extends Wmm {
     
     public int size(){
         return axioms.size();

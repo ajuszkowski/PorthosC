@@ -3,33 +3,35 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mousquetaires.memorymodels;
+package mousquetaires.memorymodels.relations;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Event;
+import dartagnan.program.Local;
+import dartagnan.program.MemEvent;
 import dartagnan.program.Program;
 import mousquetaires.utils.Utils;
 
 import static mousquetaires.memorymodels.Encodings.satUnion;
 import java.util.Set;
-
+import java.util.stream.Collectors;
 
 /**
  *
  * @author Florian Furbach
  */
-public class RelTrans extends UnaryRelation {
+public class RelLocTrans extends UnaryRelation {
 
-    public RelTrans(Relation r1) {
+    public RelLocTrans(Relation r1) {
         super(r1,String.format("%s^+", r1.getName()));
     }
 
     @Override
     public BoolExpr encodeBasic(Program program, Context ctx) throws Z3Exception {
         BoolExpr enc = ctx.mkTrue();
-        Set<Event> events = program.getMemEvents();
+        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent || e instanceof Local).collect(Collectors.toSet());
         //copied from satTansIDL
         for (Event e1 : events) {
             for (Event e2 : events) {
@@ -53,18 +55,18 @@ public class RelTrans extends UnaryRelation {
             @Override
     public BoolExpr encodeApprox(Program program, Context ctx) throws Z3Exception {
         BoolExpr enc = ctx.mkTrue();
-        Set<Event> events = program.getMemEvents();
+        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent || e instanceof Local).collect(Collectors.toSet());
         for (Event e1 : events) {
             for (Event e2 : events) {
                     //transitive
                     BoolExpr orClause = ctx.mkFalse();
                     for (Event e3 : events) {
-                        orClause = ctx.mkOr(orClause, ctx.mkAnd(Utils.edge(this.getName(), e1, e3, ctx), Utils.edge(this.getName(), e3, e2, ctx)));
+                        orClause = ctx.mkOr(orClause, ctx.mkAnd(Utils.edge(getName(), e1, e3, ctx), Utils.edge(getName(), e3, e2, ctx)));
                     }
                     //original relation
                     orClause=ctx.mkOr(orClause, Utils.edge(r1.getName(), e1, e2, ctx));
                     //putting it together:
-                    enc=ctx.mkAnd(enc,ctx.mkEq(Utils.edge(this.getName(), e1, e2, ctx),orClause));
+                    enc=ctx.mkAnd(enc,ctx.mkEq(Utils.edge(getName(), e1, e2, ctx),orClause));
 
             }
         }

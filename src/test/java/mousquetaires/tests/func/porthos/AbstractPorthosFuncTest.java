@@ -4,7 +4,7 @@ import mousquetaires.app.modules.porthos.PorthosMode;
 import mousquetaires.app.modules.porthos.PorthosModule;
 import mousquetaires.app.modules.porthos.PorthosOptions;
 import mousquetaires.app.modules.porthos.PorthosVerdict;
-import mousquetaires.memorymodels.MemoryModelName;
+import mousquetaires.memorymodels.wmm.MemoryModelName;
 import mousquetaires.tests.func.AbstractFuncTest;
 
 import java.io.File;
