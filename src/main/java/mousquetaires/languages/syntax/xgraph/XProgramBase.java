@@ -1,42 +1,40 @@
 package mousquetaires.languages.syntax.xgraph;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import mousquetaires.languages.common.graph.FlowGraph;
+import mousquetaires.languages.common.graph.FlowTree;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
 
-import java.util.HashSet;
-import java.util.Set;
 
-
-public abstract class XProgramBase<P extends FlowGraph<XEvent>> {
+public abstract class XProgramBase<P extends FlowGraph<XEvent>>
+        extends FlowTree<XEvent, P>{
 
     //private final XPreProcess prelude;
-    private final ImmutableList<P> processes;
     //private final XPostProcess postlude;
+
 
     XProgramBase(ImmutableList<P> processes) {
         //this.prelude = prelude;
-        this.processes = processes;
         //this.postlude = postlude;
+        super(processes);
     }
 
-    public ImmutableList<P> getAllProcesses() {
-        return processes;
+    public ImmutableList<P> getProcesses() {
+        return getGraphs();
     }
 
 
-    ////TODO: old-code method, to be replaced
-    //public Set<XEvent> getEvents() {
-    //    Set<XEvent> ret = new HashSet<>();
-    //    for (P process : getAllProcesses()) {
-    //        ret.addAll(process.getAllEvents());
-    //    }
-    //    return ret;
-    //}
+    // TODO: rename in future
+    public ImmutableSet<XEvent> getMemEvents() {
+        return getOverallNodes(e -> e instanceof XSharedMemoryEvent);
+    }
 
     public int size() {
         int result = 0;
-        for (P process : processes) {
+        for (P process : getProcesses()) {
             result += process.size();
         }
         return result;

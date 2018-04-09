@@ -29,7 +29,7 @@ public abstract class C11ToXgraph_UnitTestBase extends AbstractConverterUnitTest
             YSyntaxTree internalRepr = YtreeParser.parse(file, language);
             Ytree2XgraphConverter converter = new Ytree2XgraphConverter(language, dataModel);
             XProgramBase program = converter.convert(internalRepr);
-            return program.getAllProcesses().iterator();
+            return program.getProcesses().iterator();
         } catch (IOException e) {
             e.printStackTrace();
             throw new TestFailedException(e);

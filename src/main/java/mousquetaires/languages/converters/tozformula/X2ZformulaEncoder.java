@@ -3,9 +3,6 @@ package mousquetaires.languages.converters.tozformula;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
-import dartagnan.expression.BExpr;
-import dartagnan.program.Load;
-import dartagnan.program.MemEvent;
 import dartagnan.utils.Utils;
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
@@ -15,9 +12,7 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.process.XUnrolledProcess;
-import org.apache.xpath.axes.ChildIterator;
 
-import javax.naming.PartialResultException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,14 +25,14 @@ public class X2ZformulaEncoder {
 
     public X2ZformulaEncoder(Context ctx, XUnrolledProgram program) {
         this.ctx = ctx;
-        Set<XEvent> entryEvents = program.getAllProcesses().stream().map(FlowGraph::source).collect(Collectors.toSet());
+        Set<XEvent> entryEvents = program.getProcesses().stream().map(FlowGraph::source).collect(Collectors.toSet());
         this.ssaMap = new StaticSingleAssignmentMap(ctx, program.size(), entryEvents);
         this.dataFlowEncoder = new XDataflowEncoder(ctx, ssaMap);
     }
 
     public BoolExpr encodeProgram(XUnrolledProgram program) {
         List<BoolExpr> asserts = new LinkedList<>();
-        for (XUnrolledProcess process : program.getAllProcesses()) {
+        for (XUnrolledProcess process : program.getProcesses()) {
             asserts.addAll(encodeProcess(process));
             asserts.addAll(encodeProcessRFRelation(process));
         }
@@ -133,11 +128,11 @@ public class X2ZformulaEncoder {
 
     private List<BoolExpr> encodeProcessRFRelation(XUnrolledProcess process) {
         List<BoolExpr> asserts = new ArrayList<>();
-        for (XEvent loadEvent : process.getEvents(e -> e instanceof XLoadMemoryEvent)) {
+        for (XEvent loadEvent : process.getNodes(e -> e instanceof XLoadMemoryEvent)) {
             XLoadMemoryEvent load = (XLoadMemoryEvent) loadEvent;
             XSharedLvalueMemoryUnit loadLoc = load.getSource();
             Expr loadLocVar = dataFlowEncoder.encodeMemoryUnit(loadLoc, load);
-            for (XEvent storeEvent : process.getEvents(e -> e instanceof XStoreMemoryEvent)) {
+            for (XEvent storeEvent : process.getNodes(e -> e instanceof XStoreMemoryEvent)) {
                 XStoreMemoryEvent store = (XStoreMemoryEvent) storeEvent;
                 XSharedLvalueMemoryUnit storeLoc = store.getDestination();
                 Expr storeLocVar = dataFlowEncoder.encodeMemoryUnit(storeLoc, store);

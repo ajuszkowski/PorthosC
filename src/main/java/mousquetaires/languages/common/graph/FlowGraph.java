@@ -1,30 +1,32 @@
 package mousquetaires.languages.common.graph;
 
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Predicate;
 
 
-// TODO: generalise these interfaces into abstract classes (+ builders) !
-public abstract class FlowGraph<N extends FlowGraphNode> {
+public class FlowGraph<N extends FlowGraphNode> {
 
     private final N source;
     private final N sink;
     private final ImmutableMap<N, N> edges;
     private final ImmutableMap<N, N> altEdges;
 
-    //public FlowGraph(FlowGraph<N> mother) {
-    //    this(mother.source, mother.sink, mother.edges, mother.altEdges);
-    //}
+    private final Map<Predicate<N>, ImmutableSet<N>> nodeQueriesCache;
 
     public FlowGraph(N source,
                      N sink,
                      ImmutableMap<N, N> edges,
-                     ImmutableMap<N, N> altEdges
-                     ) {
+                     ImmutableMap<N, N> altEdges) {
         this.source = source;
         this.sink = sink;
         this.edges = edges;
         this.altEdges = altEdges;
-        //this.edgesReversed = edgesReversed; // TODO: also, compute reversed edges while single-pass via info collector
+        this.nodeQueriesCache = new HashMap<>();
     }
 
     public static boolean[] edgeKinds() {
@@ -79,12 +81,23 @@ public abstract class FlowGraph<N extends FlowGraphNode> {
         return edges.keySet().size();
     }
 
-    //private final ImmutableMap<T, ImmutableSet<T>> edgesReversed;
-    //
-    //public ImmutableSet<T> parents(T node) {
-    //    if (node.equals(source())) {
-    //        return ImmutableSet.of();
-    //    }
-    //    return edgesReversed.get(node);
-    //}
+    public ImmutableCollection<N> getAllNodes() {
+        return getEdges(true).values();
+    }
+
+    public ImmutableSet<N> getNodes(Predicate<N> filter) {
+        if (nodeQueriesCache.containsKey(filter)) {
+            return nodeQueriesCache.get(filter);
+        }
+        ImmutableSet.Builder<N> builder = new ImmutableSet.Builder<>();
+        for (N node : getAllNodes()) {
+            if (filter.test(node)) {
+                builder.add(node);
+            }
+        }
+        ImmutableSet<N> result = builder.build();
+        nodeQueriesCache.put(filter, result);
+        return result;
+    }
+
 }

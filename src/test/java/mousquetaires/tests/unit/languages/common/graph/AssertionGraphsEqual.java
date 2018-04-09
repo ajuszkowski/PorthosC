@@ -2,7 +2,6 @@ package mousquetaires.tests.unit.languages.common.graph;
 
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.common.graph.FlowGraphNode;
-import mousquetaires.languages.common.graph.FlowGraphNodeInfo;
 import mousquetaires.tests.unit.Assertion;
 import mousquetaires.tests.unit.AssertionMapContains;
 import mousquetaires.tests.unit.AssertionObjectsEqual;

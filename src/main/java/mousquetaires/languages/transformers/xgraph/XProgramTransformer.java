@@ -10,7 +10,7 @@ public class XProgramTransformer {
 
     public static XUnrolledProgram unroll(XProgram program, int bound) {
         XUnrolledProgramBuilder builder = new XUnrolledProgramBuilder();
-        for (XProcess process : program.getAllProcesses()) {
+        for (XProcess process : program.getProcesses()) {
             XFlowGraphUnroller unroller = new XFlowGraphUnroller(process, bound);
             unroller.doUnroll();
             builder.addProcess(unroller.getProcessedGraph());

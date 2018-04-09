@@ -9,7 +9,6 @@ import guru.nidi.graphviz.model.Link;
 import guru.nidi.graphviz.model.Node;
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.common.graph.FlowGraphNode;
-import mousquetaires.languages.common.graph.FlowGraphNodeInfo;
 import mousquetaires.utils.StringUtils;
 
 import java.io.File;

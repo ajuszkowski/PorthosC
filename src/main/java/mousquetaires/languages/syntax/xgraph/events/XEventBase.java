@@ -1,6 +1,5 @@
 package mousquetaires.languages.syntax.xgraph.events;
 
-import mousquetaires.languages.syntax.xgraph.XProcessLocalElement;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 
 import java.util.Objects;
@@ -27,11 +26,6 @@ public abstract class XEventBase implements XEvent {
     @Override
     public XProcessId getProcessId() {
         return getInfo().getProcessId();
-    }
-
-    //TODO: remove this debug method
-    protected String wrapWithBracketsAndDepth(String message) {
-        return "[" + message + ", " + getInfo().getUnrollingDepth() + "]";
     }
 
     @Override
