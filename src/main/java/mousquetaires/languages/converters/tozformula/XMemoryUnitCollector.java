@@ -1,5 +1,6 @@
 package mousquetaires.languages.converters.tozformula;
 
+import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
@@ -10,6 +11,7 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XInitialWriteEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
@@ -72,4 +74,8 @@ class XMemoryUnitCollector implements XEventVisitor<Iterable<XMemoryUnit>> {
         return Collections.emptyList();
     }
 
+    @Override
+    public Iterable<XMemoryUnit> visit(XBarrierEvent event) {
+        return Collections.emptyList();
+    }
 }

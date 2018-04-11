@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.xgraph.visitors;
 
+import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
@@ -29,6 +30,5 @@ public interface XEventVisitor<T> {
     T visit(XJumpEvent event);
     T visit(XNopEvent event);
 
-    //todo: barriers impl
-
+    T visit(XBarrierEvent event);
 }

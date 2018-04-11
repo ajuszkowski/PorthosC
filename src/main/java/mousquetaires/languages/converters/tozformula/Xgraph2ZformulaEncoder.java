@@ -26,13 +26,13 @@ import java.util.stream.Collectors;
 import static mousquetaires.utils.Utils.*;
 
 
-public class X2ZformulaEncoder {
+public class Xgraph2ZformulaEncoder {
 
     private final Context ctx;
     private final StaticSingleAssignmentMap ssaMap;
     private final XDataflowEncoder dataFlowEncoder;
 
-    public X2ZformulaEncoder(Context ctx, XUnrolledProgram program) {
+    public Xgraph2ZformulaEncoder(Context ctx, XUnrolledProgram program) {
         this.ctx = ctx;
         this.ssaMap = new StaticSingleAssignmentMap(ctx, program.size(), program.getEntryEvents());
         this.dataFlowEncoder = new XDataflowEncoder(ctx, ssaMap);
@@ -281,23 +281,29 @@ public class X2ZformulaEncoder {
                             && program.compareTopologically(e1, e) < 0 //e1.getEId() < e.getEId()
                             && program.compareTopologically(e, e2) < 0 //e.getEId() < e2.getEId()
                     ).collect(Collectors.toSet())) {
-                        if(b instanceof Mfence) {
-                            noMfence = false;
-                        }
-                        if(b instanceof Sync) {
-                            noSync = false;
-                        }
-                        if(b instanceof Lwsync) {
-                            noLwsync = false;
-                        }
-                        if(b instanceof Isync) {
-                            noIsync = false;
-                        }
-                        if(b instanceof Ish) {
-                            noIsh = false;
-                        }
-                        if(b instanceof Isb) {
-                            noIsb = false;
+                        switch (b.getKind()) {
+                            case Mfence:
+                                noMfence = false;
+                                break;
+                            case Sync:
+                                noSync = false;
+                                break;
+                            case OptSync:
+                                noLwsync = false;
+                                break;
+                            case Lwsync:
+                                break;
+                            case OptLwsync:
+                                break;
+                            case Ish:
+                                noIsh = false;
+                                break;
+                            case Isb:
+                                noIsb = false;
+                                break;
+                            case Isync:
+                                noIsync = false;
+                                break;
                         }
                     }
                     if(noMfence) {
@@ -386,35 +392,47 @@ public class X2ZformulaEncoder {
                             && program.compareTopologically(e1, b) < 0
                             && program.compareTopologically(b, e2) < 0) {
 
-                        if(b instanceof Mfence) {
-                            mfences = ctx.mkOr(mfences, b.executes(ctx));
-                            enc = ctx.mkAnd(enc, ctx.mkImplies(ctx.mkAnd(e1.executes(ctx), ctx.mkAnd(b.executes(ctx), e2.executes(ctx))),
-                                                               Utils.edge("mfence", e1, e2, ctx)));
-                        }
-                        if(b instanceof Sync) {
-                            syncs = ctx.mkOr(syncs, b.executes(ctx));
-                            enc = ctx.mkAnd(enc, ctx.mkImplies(ctx.mkAnd(e1.executes(ctx), ctx.mkAnd(b.executes(ctx), e2.executes(ctx))),
-                                                               Utils.edge("sync", e1, e2, ctx)));
-                        }
-                        if(b instanceof Lwsync) {
-                            lwsyncs = ctx.mkOr(lwsyncs, b.executes(ctx));
-                            enc = ctx.mkAnd(enc, ctx.mkImplies(ctx.mkAnd(e1.executes(ctx), ctx.mkAnd(b.executes(ctx), e2.executes(ctx))),
-                                                               Utils.edge("lwsync", e1, e2, ctx)));
-                        }
-                        if(b instanceof Isync) {
-                            isyncs = ctx.mkOr(isyncs, b.executes(ctx));
-                            enc = ctx.mkAnd(enc, ctx.mkImplies(ctx.mkAnd(e1.executes(ctx), ctx.mkAnd(b.executes(ctx), e2.executes(ctx))),
-                                                               Utils.edge("isync", e1, e2, ctx)));
-                        }
-                        if(b instanceof Ish) {
-                            ishs = ctx.mkOr(ishs, b.executes(ctx));
-                            enc = ctx.mkAnd(enc, ctx.mkImplies(ctx.mkAnd(e1.executes(ctx), ctx.mkAnd(b.executes(ctx), e2.executes(ctx))),
-                                                               Utils.edge("ish", e1, e2, ctx)));
-                        }
-                        if(b instanceof Isb) {
-                            isbs = ctx.mkOr(isbs, b.executes(ctx));
-                            enc = ctx.mkAnd(enc, ctx.mkImplies(ctx.mkAnd(e1.executes(ctx), ctx.mkAnd(b.executes(ctx), e2.executes(ctx))),
-                                                               Utils.edge("isb", e1, e2, ctx)));
+                        switch (b.getKind()) {
+                            case Mfence:
+                                mfences = ctx.mkOr(mfences, b.executes(ctx));
+                                enc = ctx.mkAnd(enc, ctx.mkImplies(
+                                        ctx.mkAnd(e1.executes(ctx), ctx.mkAnd(b.executes(ctx), e2.executes(ctx))),
+                                        Utils.edge("mfence", e1, e2, ctx)));
+                                break;
+                            case Sync:
+                                syncs = ctx.mkOr(syncs, b.executes(ctx));
+                                enc = ctx.mkAnd(enc, ctx.mkImplies(
+                                        ctx.mkAnd(e1.executes(ctx), ctx.mkAnd(b.executes(ctx), e2.executes(ctx))),
+                                        Utils.edge("sync", e1, e2, ctx)));
+                                break;
+                            case OptSync:
+                                break;
+                            case Lwsync:
+                                lwsyncs = ctx.mkOr(lwsyncs, b.executes(ctx));
+                                enc = ctx.mkAnd(enc, ctx.mkImplies(
+                                        ctx.mkAnd(e1.executes(ctx), ctx.mkAnd(b.executes(ctx), e2.executes(ctx))),
+                                        Utils.edge("lwsync", e1, e2, ctx)));
+                                break;
+                            case OptLwsync:
+                                break;
+                            case Ish:
+                                ishs = ctx.mkOr(ishs, b.executes(ctx));
+                                enc = ctx.mkAnd(enc, ctx.mkImplies(
+                                        ctx.mkAnd(e1.executes(ctx), ctx.mkAnd(b.executes(ctx), e2.executes(ctx))),
+                                        Utils.edge("ish", e1, e2, ctx)));
+                                break;
+                            case Isb:
+                                isbs = ctx.mkOr(isbs, b.executes(ctx));
+                                enc = ctx.mkAnd(enc, ctx.mkImplies(
+                                        ctx.mkAnd(e1.executes(ctx), ctx.mkAnd(b.executes(ctx), e2.executes(ctx))),
+                                        Utils.edge("isb", e1, e2, ctx)));
+                                break;
+                            case Isync:
+                                isyncs = ctx.mkOr(isyncs, b.executes(ctx));
+                                enc = ctx.mkAnd(enc, ctx.mkImplies(
+                                        ctx.mkAnd(e1.executes(ctx), ctx.mkAnd(b.executes(ctx), e2.executes(ctx))),
+                                        Utils.edge("isync", e1, e2, ctx)));
+                                break;
                         }
                     }
                 }

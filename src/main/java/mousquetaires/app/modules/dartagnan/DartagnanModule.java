@@ -10,7 +10,7 @@ import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
-import mousquetaires.languages.converters.tozformula.X2ZformulaEncoder;
+import mousquetaires.languages.converters.tozformula.Xgraph2ZformulaEncoder;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
@@ -58,7 +58,7 @@ public class DartagnanModule extends AppModule {
 
             //todo: pass timeouts
 
-            X2ZformulaEncoder encoder = new X2ZformulaEncoder(ctx, unrolledProgram);
+            Xgraph2ZformulaEncoder encoder = new Xgraph2ZformulaEncoder(ctx, unrolledProgram);
             BoolExpr zFormula = encoder.encodeProgram(unrolledProgram);
 
 

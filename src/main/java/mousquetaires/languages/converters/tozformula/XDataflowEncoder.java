@@ -4,6 +4,7 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
@@ -105,6 +106,11 @@ class XDataflowEncoder implements XEventVisitor<BoolExpr> {
 
     @Override
     public BoolExpr visit(XNopEvent event) {
+        return null;
+    }
+
+    @Override
+    public BoolExpr visit(XBarrierEvent event) {
         return null;
     }
 
