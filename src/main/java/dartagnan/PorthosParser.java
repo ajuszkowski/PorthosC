@@ -10,11 +10,9 @@ import java.util.Map;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
 import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
+
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class PorthosParser extends Parser {
@@ -658,7 +656,7 @@ public class PorthosParser extends Parser {
                         mapThreadRegs.put(((LocalContext)_localctx).r.reg.getName(), ((LocalContext)_localctx).r.reg);
                     }
                     Register pointerReg = mapThreadRegs.get(((LocalContext)_localctx).r.reg.getName());
-                    ((LocalContext)_localctx).t =  new Local(pointerReg, ((LocalContext)_localctx).e.expr);
+                    ((LocalContext)_localctx).t =  new LocalEvent(pointerReg, ((LocalContext)_localctx).e.expr);
 
             }
         }
@@ -722,7 +720,7 @@ public class PorthosParser extends Parser {
                     }
                     Register pointerReg = mapThreadRegs.get(((LoadContext)_localctx).r.reg.getName());
                     Location pointerLoc = mapLocs.get(((LoadContext)_localctx).l.loc.getName());
-                    ((LoadContext)_localctx).t =  new Load(pointerReg, pointerLoc);
+                    ((LoadContext)_localctx).t =  new LoadEvent(pointerReg, pointerLoc);
 
             }
         }
@@ -786,7 +784,7 @@ public class PorthosParser extends Parser {
                     }
                     Register pointerReg = mapThreadRegs.get(((StoreContext)_localctx).r.reg.getName());
                     Location pointerLoc = mapLocs.get(((StoreContext)_localctx).l.loc.getName());
-                    ((StoreContext)_localctx).t =  new Store(pointerLoc, pointerReg);
+                    ((StoreContext)_localctx).t =  new StoreEvent(pointerLoc, pointerReg);
 
             }
         }

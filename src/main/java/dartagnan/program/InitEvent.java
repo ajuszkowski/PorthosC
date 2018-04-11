@@ -12,9 +12,9 @@ import java.util.Set;
 
 import static mousquetaires.utils.Utils.ssaLoc;
 
-public class Init extends MemEvent {
+public class InitEvent extends SharedMemEvent {
 
-    public Init(Location loc) {
+    public InitEvent(Location loc) {
         setHLId(hashCode());
         this.loc = loc;
         this.condLevel = 0;
@@ -24,9 +24,9 @@ public class Init extends MemEvent {
         return String.format("%s%s := 0", String.join("", Collections.nCopies(condLevel, "  ")), loc);
     }
 
-    public Init clone() {
+    public InitEvent clone() {
         Location newLoc = loc.clone();
-        Init newInit = new Init(newLoc);
+        InitEvent newInit = new InitEvent(newLoc);
         newInit.condLevel = condLevel;
         newInit.setHLId(getHLId());
         return newInit;

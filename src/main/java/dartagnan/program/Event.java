@@ -131,11 +131,11 @@ public class Event extends Thread {
 
     // the ssa-index for current event
     public Integer getSsaRegIndex() {
-        if(this instanceof Local) {
-            return ((Local)this).ssaRegIndex;
+        if(this instanceof LocalEvent) {
+            return ((LocalEvent)this).ssaRegIndex;
         }
-        if(this instanceof Load) {
-            return ((Load)this).ssaRegIndex;
+        if(this instanceof LoadEvent) {
+            return ((LoadEvent)this).ssaRegIndex;
         }
         System.out.println(String.format("Check getSSAReg for %s", this));
         return null;

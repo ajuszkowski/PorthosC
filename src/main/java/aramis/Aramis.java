@@ -30,7 +30,7 @@ import dartagnan.LitmusParser;
 import dartagnan.PorthosLexer;
 import dartagnan.PorthosParser;
 import dartagnan.program.Program;
-import mousquetaires.memorymodels.Domain;
+import mousquetaires.memorymodels.DomainOld;
 import mousquetaires.memorymodels.wmm.Wmm;
 import mousquetaires.memorymodels.axioms.CandidateAxiom;
 import mousquetaires.memorymodels.wmm.CandidateModel;
@@ -455,7 +455,7 @@ public class Aramis {
                 temp=ctx.mkAnd(temp,p.ass.encode(ctx));
                 temp=ctx.mkAnd(p.encodeCF(ctx));
                 temp=ctx.mkAnd(p.encodeDF_RF(ctx));
-                temp=ctx.mkAnd(Domain.encode(p, ctx));
+                temp=ctx.mkAnd(DomainOld.encode(p, ctx));
                 s.add(temp);                
                 solCEGIS.add(temp);
             }
@@ -479,7 +479,7 @@ public class Aramis {
                 temp=ctx.mkAnd(temp,p.ass.encode(ctx));
                 temp=ctx.mkAnd(p.encodeCF(ctx));
                 temp=ctx.mkAnd(p.encodeDF_RF(ctx));
-                temp=ctx.mkAnd(Domain.encode(p, ctx));
+                temp=ctx.mkAnd(DomainOld.encode(p, ctx));
                 s.add(temp); 
                 //negExprs.add(temp);
             }

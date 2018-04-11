@@ -38,7 +38,7 @@ public class Program {
         String output = name + "\n";
         while (iter.hasNext()) {
             Thread next = iter.next();
-            if(next instanceof Init) {
+            if(next instanceof InitEvent) {
                 continue;
             }
             output = output.concat(String.format("\nthread %d\n%s\n", iter.nextIndex(), next));
@@ -74,9 +74,9 @@ public class Program {
         }
         threads = unrolledThreads;
 
-        Set<Location> locs = getEvents().stream().filter(e -> e instanceof MemEvent).map(e -> ((MemEvent) e).getLoc()).collect(Collectors.toSet());
+        Set<Location> locs = getEvents().stream().filter(e -> e instanceof SharedMemEvent).map(e -> ((SharedMemEvent) e).getLoc()).collect(Collectors.toSet());
         for(Location loc : locs) {
-            threads.add(new Init(loc));
+            threads.add(new InitEvent(loc));
         }
     }
 
@@ -101,9 +101,9 @@ public class Program {
             Thread t = iter.next();
             t.setCondRegs(new HashSet<Register>());
             t.setLastModMap(new LastModMap());
-            Set<Register> regs = t.getEvents().stream().filter(e -> e instanceof Load).map(e -> ((Load) e).getReg()).collect(Collectors.toSet());
-            regs.addAll(t.getEvents().stream().filter(e -> e instanceof Store).map(e -> ((Store) e).getReg()).collect(Collectors.toSet()));
-            regs.addAll(t.getEvents().stream().filter(e -> e instanceof Local).map(e -> ((Local) e).getReg()).collect(Collectors.toSet()));
+            Set<Register> regs = t.getEvents().stream().filter(e -> e instanceof LoadEvent).map(e -> ((LoadEvent) e).getReg()).collect(Collectors.toSet());
+            regs.addAll(t.getEvents().stream().filter(e -> e instanceof StoreEvent).map(e -> ((StoreEvent) e).getReg()).collect(Collectors.toSet()));
+            regs.addAll(t.getEvents().stream().filter(e -> e instanceof LocalEvent).map(e -> ((LocalEvent) e).getReg()).collect(Collectors.toSet()));
             for(Register reg : regs) {
                 reg.setMainThread(t.tid);
             }
@@ -131,9 +131,9 @@ public class Program {
             Thread t = iter.next();
             t.setCondRegs(new HashSet<Register>());
             t.setLastModMap(new LastModMap());
-            Set<Register> regs = t.getEvents().stream().filter(e -> e instanceof Load).map(e -> ((Load) e).getReg()).collect(Collectors.toSet());
-            regs.addAll(t.getEvents().stream().filter(e -> e instanceof Store).map(e -> ((Store) e).getReg()).collect(Collectors.toSet()));
-            regs.addAll(t.getEvents().stream().filter(e -> e instanceof Local).map(e -> ((Local) e).getReg()).collect(Collectors.toSet()));
+            Set<Register> regs = t.getEvents().stream().filter(e -> e instanceof LoadEvent).map(e -> ((LoadEvent) e).getReg()).collect(Collectors.toSet());
+            regs.addAll(t.getEvents().stream().filter(e -> e instanceof StoreEvent).map(e -> ((StoreEvent) e).getReg()).collect(Collectors.toSet()));
+            regs.addAll(t.getEvents().stream().filter(e -> e instanceof LocalEvent).map(e -> ((LocalEvent) e).getReg()).collect(Collectors.toSet()));
             for(Register reg : regs) {
                 reg.setMainThread(t.tid);
             }
@@ -161,9 +161,9 @@ public class Program {
             Thread t = iter.next();
             t.setCondRegs(new HashSet<Register>());
             t.setLastModMap(new LastModMap());
-            Set<Register> regs = t.getEvents().stream().filter(e -> e instanceof Load).map(e -> ((Load) e).getReg()).collect(Collectors.toSet());
-            regs.addAll(t.getEvents().stream().filter(e -> e instanceof Store).map(e -> ((Store) e).getReg()).collect(Collectors.toSet()));
-            regs.addAll(t.getEvents().stream().filter(e -> e instanceof Local).map(e -> ((Local) e).getReg()).collect(Collectors.toSet()));
+            Set<Register> regs = t.getEvents().stream().filter(e -> e instanceof LoadEvent).map(e -> ((LoadEvent) e).getReg()).collect(Collectors.toSet());
+            regs.addAll(t.getEvents().stream().filter(e -> e instanceof StoreEvent).map(e -> ((StoreEvent) e).getReg()).collect(Collectors.toSet()));
+            regs.addAll(t.getEvents().stream().filter(e -> e instanceof LocalEvent).map(e -> ((LocalEvent) e).getReg()).collect(Collectors.toSet()));
             for(Register reg : regs) {
                 reg.setMainThread(t.tid);
             }
@@ -191,9 +191,9 @@ public class Program {
             Thread t = iter.next();
             t.setCondRegs(new HashSet<Register>());
             t.setLastModMap(new LastModMap());
-            Set<Register> regs = t.getEvents().stream().filter(e -> e instanceof Load).map(e -> ((Load) e).getReg()).collect(Collectors.toSet());
-            regs.addAll(t.getEvents().stream().filter(e -> e instanceof Store).map(e -> ((Store) e).getReg()).collect(Collectors.toSet()));
-            regs.addAll(t.getEvents().stream().filter(e -> e instanceof Local).map(e -> ((Local) e).getReg()).collect(Collectors.toSet()));
+            Set<Register> regs = t.getEvents().stream().filter(e -> e instanceof LoadEvent).map(e -> ((LoadEvent) e).getReg()).collect(Collectors.toSet());
+            regs.addAll(t.getEvents().stream().filter(e -> e instanceof StoreEvent).map(e -> ((StoreEvent) e).getReg()).collect(Collectors.toSet()));
+            regs.addAll(t.getEvents().stream().filter(e -> e instanceof LocalEvent).map(e -> ((LocalEvent) e).getReg()).collect(Collectors.toSet()));
             for(Register reg : regs) {
                 reg.setMainThread(t.tid);
             }
@@ -304,7 +304,7 @@ public class Program {
 
     public Set<Event> getMemEvents() {
         if(memevents==null){
-            memevents=this.getEvents().stream().filter(e -> e instanceof MemEvent).collect(Collectors.toSet());
+            memevents=this.getEvents().stream().filter(e -> e instanceof SharedMemEvent).collect(Collectors.toSet());
             return memevents;
         }else return memevents;
     }
@@ -385,12 +385,12 @@ public class Program {
 
     public BoolExpr encodeDF_RF(Context ctx) throws Z3Exception {
         BoolExpr enc = ctx.mkTrue();
-        Set<Event> loadEvents = getEvents().stream().filter(e -> e instanceof Load).collect(Collectors.toSet());
+        Set<Event> loadEvents = getEvents().stream().filter(e -> e instanceof LoadEvent).collect(Collectors.toSet());
         for (Event r : loadEvents) {
-            Set<Event> storeSameLoc = getEvents().stream().filter(w -> (w instanceof Store || w instanceof Init) && ((MemEvent) w).loc == ((Load) r).loc).collect(Collectors.toSet());
+            Set<Event> storeSameLoc = getEvents().stream().filter(w -> (w instanceof StoreEvent || w instanceof InitEvent) && ((SharedMemEvent) w).loc == ((LoadEvent) r).loc).collect(Collectors.toSet());
             BoolExpr sameValue = ctx.mkTrue();
             for (Event w : storeSameLoc) {
-                sameValue = ctx.mkAnd(sameValue, ctx.mkImplies(Utils.edge("rf", w, r, ctx), ctx.mkEq(((MemEvent) w).ssaLoc, ((Load) r).ssaLoc)));
+                sameValue = ctx.mkAnd(sameValue, ctx.mkImplies(Utils.edge("rf", w, r, ctx), ctx.mkEq(((SharedMemEvent) w).ssaLoc, ((LoadEvent) r).ssaLoc)));
             }
             enc = ctx.mkAnd(enc, sameValue);
         }

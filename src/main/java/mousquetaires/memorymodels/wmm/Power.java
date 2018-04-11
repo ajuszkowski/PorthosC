@@ -8,10 +8,10 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
 
 import dartagnan.program.Event;
-import dartagnan.program.Local;
-import dartagnan.program.MemEvent;
+import dartagnan.program.LocalEvent;
+import dartagnan.program.SharedMemEvent;
 import dartagnan.program.Program;
-import mousquetaires.memorymodels.Encodings;
+import mousquetaires.memorymodels.EncodingsOld;
 import mousquetaires.memorymodels.relations.Relation;
 import mousquetaires.utils.Utils;
 
@@ -19,79 +19,79 @@ public class Power {
 
     public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
         Set<Event> events = program.getMemEvents();
-        Set<Event> eventsL = program.getEvents().stream().filter(e -> e instanceof MemEvent || e instanceof Local).collect(Collectors.toSet());
+        Set<Event> eventsL = program.getEvents().stream().filter(e -> e instanceof SharedMemEvent || e instanceof LocalEvent).collect(Collectors.toSet());
 
-        BoolExpr enc = Encodings.satUnion("co", "fr", events, ctx);
-        enc = ctx.mkAnd(enc, Encodings.satUnion("com", "(co+fr)", "rf", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("poloc", "com", events, ctx));
+        BoolExpr enc = EncodingsOld.satUnion("co", "fr", events, ctx);
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("com", "(co+fr)", "rf", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("poloc", "com", events, ctx));
 
-        enc = ctx.mkAnd(enc, Encodings.satTransFixPoint("idd", eventsL, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satTransFixPoint("idd", eventsL, ctx));
 
-        enc = ctx.mkAnd(enc, Encodings.satIntersection("data", "idd^+", "RW", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satEmpty("addr", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("dp", "addr", "data", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("fre", "rfe", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("coe", "rfe", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satIntersection("data", "idd^+", "RW", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satEmpty("addr", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("dp", "addr", "data", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("fre", "rfe", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("coe", "rfe", events, ctx));
 
-        enc = ctx.mkAnd(enc, Encodings.satIntersection("rdw", "poloc", "(fre;rfe)", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satIntersection("detour", "poloc", "(coe;rfe)", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satIntersection("rdw", "poloc", "(fre;rfe)", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satIntersection("detour", "poloc", "(coe;rfe)", events, ctx));
         // Base case for program order
-        enc = ctx.mkAnd(enc, Encodings.satUnion("dp", "rdw", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("ii0", "(dp+rdw)", "rfi", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satEmpty("ic0", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("ci0", "ctrlisync", "detour", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("dp", "poloc", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("(dp+poloc)", "ctrl", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("addr", "po", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("dp", "rdw", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("ii0", "(dp+rdw)", "rfi", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satEmpty("ic0", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("ci0", "ctrlisync", "detour", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("dp", "poloc", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("(dp+poloc)", "ctrl", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("addr", "po", events, ctx));
         enc = ctx.mkAnd(enc, satPowerPPO(events, ctx));
 
-        enc = ctx.mkAnd(enc, Encodings.satUnion("cc0", "((dp+poloc)+ctrl)", "(addr;po)", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satIntersection("RR", "ii", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satIntersection("RW", "ic", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("po-power", "(RR&ii)", "(RW&ic)", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("cc0", "((dp+poloc)+ctrl)", "(addr;po)", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satIntersection("RR", "ii", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satIntersection("RW", "ic", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("po-power", "(RR&ii)", "(RW&ic)", events, ctx));
         // Fences in Power
-        enc = ctx.mkAnd(enc, Encodings.satMinus("lwsync", "WR", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("fence-power", "sync", "(lwsync\\WR)", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satMinus("lwsync", "WR", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("fence-power", "sync", "(lwsync\\WR)", events, ctx));
         // Happens before
-        enc = ctx.mkAnd(enc, Encodings.satUnion("po-power", "rfe", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("hb-power", "(po-power+rfe)", "fence-power", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("po-power", "rfe", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("hb-power", "(po-power+rfe)", "fence-power", events, ctx));
         // Prop-base
-        enc = ctx.mkAnd(enc, Encodings.satComp("rfe", "fence-power", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("fence-power", "(rfe;fence-power)", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satTransRef("hb-power", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("prop-base", "(fence-power+(rfe;fence-power))", "(hb-power)*", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("rfe", "fence-power", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("fence-power", "(rfe;fence-power)", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satTransRef("hb-power", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("prop-base", "(fence-power+(rfe;fence-power))", "(hb-power)*", events, ctx));
         // Propagation for Power
-        enc = ctx.mkAnd(enc, Encodings.satTransRef("com", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satTransRef("com", events, ctx));
 
-        enc = ctx.mkAnd(enc, Encodings.satTransRef("prop-base", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("(com)*", "(prop-base)*", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("((com)*;(prop-base)*)", "sync", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("(((com)*;(prop-base)*);sync)", "(hb-power)*", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satIntersection("WW", "prop-base", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("prop", "(WW&prop-base)", "((((com)*;(prop-base)*);sync);(hb-power)*)", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("fre", "prop", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("(fre;prop)", "(hb-power)*", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("co", "prop", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satTransRef("prop-base", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("(com)*", "(prop-base)*", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("((com)*;(prop-base)*)", "sync", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("(((com)*;(prop-base)*);sync)", "(hb-power)*", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satIntersection("WW", "prop-base", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("prop", "(WW&prop-base)", "((((com)*;(prop-base)*);sync);(hb-power)*)", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("fre", "prop", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("(fre;prop)", "(hb-power)*", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("co", "prop", events, ctx));
         return enc;
     }
 
     public static BoolExpr Consistent(Program program, Context ctx) throws Z3Exception {
         Set<Event> events = program.getMemEvents();
-        return ctx.mkAnd(Encodings.satAcyclic("hb-power", events, ctx),
-                Encodings.satIrref("((fre;prop);(hb-power)*)", events, ctx),
-                Encodings.satAcyclic("(co+prop)", events, ctx),
-                Encodings.satAcyclic("(poloc+com)", events, ctx));
+        return ctx.mkAnd(EncodingsOld.satAcyclic("hb-power", events, ctx),
+                         EncodingsOld.satIrref("((fre;prop);(hb-power)*)", events, ctx),
+                         EncodingsOld.satAcyclic("(co+prop)", events, ctx),
+                         EncodingsOld.satAcyclic("(poloc+com)", events, ctx));
     }
 
     public static BoolExpr Inconsistent(Program program, Context ctx) throws Z3Exception {
         Set<Event> events = program.getMemEvents();
-        BoolExpr enc = ctx.mkAnd(Encodings.satCycleDef("hb-power", events, ctx),
-                Encodings.satCycleDef("(co+prop)", events, ctx),
-                Encodings.satCycleDef("(poloc+com)", events, ctx));
-        enc = ctx.mkAnd(enc, ctx.mkOr(Encodings.satCycle("hb-power", events, ctx),
-                ctx.mkNot(Encodings.satIrref("((fre;prop);(hb-power)*)", events, ctx)),
-                Encodings.satCycle("(co+prop)", events, ctx),
-                Encodings.satCycle("(poloc+com)", events, ctx)));
+        BoolExpr enc = ctx.mkAnd(EncodingsOld.satCycleDef("hb-power", events, ctx),
+                                 EncodingsOld.satCycleDef("(co+prop)", events, ctx),
+                                 EncodingsOld.satCycleDef("(poloc+com)", events, ctx));
+        enc = ctx.mkAnd(enc, ctx.mkOr(EncodingsOld.satCycle("hb-power", events, ctx),
+                                      ctx.mkNot(EncodingsOld.satIrref("((fre;prop);(hb-power)*)", events, ctx)),
+                                      EncodingsOld.satCycle("(co+prop)", events, ctx),
+                                      EncodingsOld.satCycle("(poloc+com)", events, ctx)));
         return enc;
     }
 

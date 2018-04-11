@@ -12,13 +12,13 @@ import mousquetaires.utils.MapSSA;
 import mousquetaires.utils.Pair;
 import static mousquetaires.utils.Utils.ssaReg;
 
-public class Local extends Event {
+public class LocalEvent extends Event {
 
     private Register reg;
     private AExpr expr;
     public Integer ssaRegIndex;
 
-    public Local(Register reg, AExpr expr) {
+    public LocalEvent(Register reg, AExpr expr) {
         this.reg = reg;
         this.expr = expr;
         this.condLevel = 0;
@@ -45,10 +45,10 @@ public class Local extends Event {
         return String.format("%s%s <- %s", String.join("", Collections.nCopies(condLevel, "  ")), reg, expr);
     }
 
-    public Local clone() {
+    public LocalEvent clone() {
         Register newReg = reg.clone();
         AExpr newExpr = expr.clone();
-        Local newLocal = new Local(newReg, newExpr);
+        LocalEvent newLocal = new LocalEvent(newReg, newExpr);
         newLocal.condLevel = condLevel;
         newLocal.setHLId(hashCode());
         return newLocal;

@@ -16,7 +16,7 @@ import com.microsoft.z3.Z3Exception;
 import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 
 import dartagnan.program.Program;
-import mousquetaires.memorymodels.Domain;
+import mousquetaires.memorymodels.DomainOld;
 import mousquetaires.memorymodels.relations.Relation;
 import mousquetaires.memorymodels.wmm.Wmm;
 
@@ -132,7 +132,7 @@ Wmm mcm;
         s.add(p.ass.encode(ctx));
         s.add(p.encodeCF(ctx));
         s.add(p.encodeDF_RF(ctx));
-        s.add(Domain.encode(p, ctx));
+        s.add(DomainOld.encode(p, ctx));
         if(mcm!=null){
                         log.warning(mcm.write());
 

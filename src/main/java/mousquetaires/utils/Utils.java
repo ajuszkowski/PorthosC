@@ -10,14 +10,14 @@ import com.microsoft.z3.*;
 
 import dartagnan.program.Event;
 import dartagnan.program.If;
-import dartagnan.program.Init;
-import dartagnan.program.Load;
-import dartagnan.program.Local;
+import dartagnan.program.InitEvent;
+import dartagnan.program.LoadEvent;
+import dartagnan.program.LocalEvent;
 import dartagnan.program.Location;
-import dartagnan.program.MemEvent;
+import dartagnan.program.SharedMemEvent;
 import dartagnan.program.Program;
 import dartagnan.program.Register;
-import dartagnan.program.Store;
+import dartagnan.program.StoreEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
@@ -35,7 +35,7 @@ public class Utils {
         int tid = 0;
         for(dartagnan.program.Thread t : pSource.getThreads()) {
             tid++;
-            if(!(t instanceof Init)) {
+            if(!(t instanceof InitEvent)) {
                 gv.addln("  subgraph cluster_Thread_Source" + t.getTId() + " { rank=sink; fontsize=15; label = \"Thread " + tid + "\"; color=magenta; shape=box;");
             }
 
@@ -43,51 +43,51 @@ public class Utils {
 
             for(Event e : pSource.getEvents()) {
                 String label = "";
-                if (!(e instanceof MemEvent || e instanceof Local)) {continue;}
-                for(Event eHL : p.getEvents().stream().filter(x -> x instanceof MemEvent).collect(Collectors.toSet())) {
-                    if(e instanceof Store) {
-                        label = "W_" + e.getLoc() + "_" + model.getConstInterp(((MemEvent) e).ssaLoc).toString() + "\n";
+                if (!(e instanceof SharedMemEvent || e instanceof LocalEvent)) {continue;}
+                for(Event eHL : p.getEvents().stream().filter(x -> x instanceof SharedMemEvent).collect(Collectors.toSet())) {
+                    if(e instanceof StoreEvent) {
+                        label = "W_" + e.getLoc() + "_" + model.getConstInterp(((SharedMemEvent) e).ssaLoc).toString() + "\n";
                     }
-                    if(e instanceof Load) {
-                        label = "R_" + e.getLoc() + "_" + model.getConstInterp(((MemEvent) e).ssaLoc).toString() + "\n";
+                    if(e instanceof LoadEvent) {
+                        label = "R_" + e.getLoc() + "_" + model.getConstInterp(((SharedMemEvent) e).ssaLoc).toString() + "\n";
                     }
                     if(e.getHLId() != null && e.getHLId() == eHL.hashCode()) {
                         label = label + eHL.toString().replaceAll("\\s","");
                     }
                 }
-                if(e instanceof Store && e.getMainThread() == t.getTId() && model.getConstInterp(e.executes(ctx)).isTrue()) {
+                if(e instanceof StoreEvent && e.getMainThread() == t.getTId() && model.getConstInterp(e.executes(ctx)).isTrue()) {
                     gv.addln("    " + e.repr() + " [label=\"" + label + "\", shape=\"box\", color=\"blue\", group=s" + e.getMainThread() + "];");
                 }
-                if(e instanceof Load && e.getMainThread() == t.getTId() && model.getConstInterp(e.executes(ctx)).isTrue()) {
+                if(e instanceof LoadEvent && e.getMainThread() == t.getTId() && model.getConstInterp(e.executes(ctx)).isTrue()) {
                     gv.addln("    " + e.repr() + " [label=\"" + label + "\", shape=\"box\", color=\"blue\", group=s" + e.getMainThread() + "];");
                 }
-                if(e instanceof Init && e.getMainThread() == t.getTId() && model.getConstInterp(e.executes(ctx)).isTrue()) {
+                if(e instanceof InitEvent && e.getMainThread() == t.getTId() && model.getConstInterp(e.executes(ctx)).isTrue()) {
                     gv.addln("    " + e.repr() + " [label=\"W_" + e.getLoc() + "_0\", shape=\"box\", color=\"blue\", root=true];");
                 }
-                if(e instanceof Local && e.getMainThread() == t.getTId() && model.getConstInterp(e.executes(ctx)).isTrue()) {
+                if(e instanceof LocalEvent && e.getMainThread() == t.getTId() && model.getConstInterp(e.executes(ctx)).isTrue()) {
                     gv.addln("    " + e.repr() + " [style=invis];");
                 }
             }
-            if(!(t instanceof Init)) {
+            if(!(t instanceof InitEvent)) {
                 gv.addln("  }");
             }
         }
 
         for(Event e1 : pSource.getEvents()) {
             for(Event e2 : pSource.getEvents()) {
-                if (!(e1 instanceof MemEvent || e1 instanceof Local)) {continue;}
-                if (!(e2 instanceof MemEvent || e2 instanceof Local)) {continue;}
+                if (!(e1 instanceof SharedMemEvent || e1 instanceof LocalEvent)) {continue;}
+                if (!(e2 instanceof SharedMemEvent || e2 instanceof LocalEvent)) {continue;}
                 if(e1.getMainThread() == e2.getMainThread() && e1.getEId() < e2.getEId() - 1 && model.getConstInterp(e1.executes(ctx)).isTrue()  && model.getConstInterp(e2.executes(ctx)).isTrue()) {
                     gv.addln("    " + e1.repr() + " -> " + e2.repr() + " [style=invis, weight=10];");
                 }
-                if (!(e1 instanceof MemEvent && e2 instanceof MemEvent)) {continue;}
+                if (!(e1 instanceof SharedMemEvent && e2 instanceof SharedMemEvent)) {continue;}
                 if(model.getConstInterp(Utils.edge("rf", e1, e2, ctx)).isTrue() && model.getConstInterp(e1.executes(ctx)).isTrue()  && model.getConstInterp(e2.executes(ctx)).isTrue()) {
                     gv.addln("    " + e1.repr() + " -> " + e2.repr() + " [label=\"rf\", color=\"black\", fontcolor=\"black\", weight=1];");
                 }
                 if(model.getConstInterp(Utils.edge("fr", e1, e2, ctx)).isTrue() && model.getConstInterp(e1.executes(ctx)).isTrue()  && model.getConstInterp(e2.executes(ctx)).isTrue()) {
                     gv.addln("    " + e1.repr() + " -> " + e2.repr() + " [label=\"fr\", color=\"black\", fontcolor=\"black\", weight=1];");
                 }
-                if(e1.getLoc() == e2.getLoc() && (e1 instanceof Store || e1 instanceof Init) && (e2 instanceof Store || e2 instanceof Init) && Integer.parseInt(model.getConstInterp(Utils.intVar("co", e1, ctx)).toString()) == Integer.parseInt(model.getConstInterp(Utils.intVar("co", e2, ctx)).toString()) - 1 && model.getConstInterp(e1.executes(ctx)).isTrue()  && model.getConstInterp(e2.executes(ctx)).isTrue()    ) {
+                if(e1.getLoc() == e2.getLoc() && (e1 instanceof StoreEvent || e1 instanceof InitEvent) && (e2 instanceof StoreEvent || e2 instanceof InitEvent) && Integer.parseInt(model.getConstInterp(Utils.intVar("co", e1, ctx)).toString()) == Integer.parseInt(model.getConstInterp(Utils.intVar("co", e2, ctx)).toString()) - 1 && model.getConstInterp(e1.executes(ctx)).isTrue()  && model.getConstInterp(e2.executes(ctx)).isTrue()    ) {
                     gv.addln("    " + e1.repr() + " -> " + e2.repr() + " [label=\"co\", color=\"black\", fontcolor=\"black\", weight=1];");
                 }
 
@@ -118,7 +118,7 @@ public class Utils {
         tid = 0;
         for(dartagnan.program.Thread t : pTarget.getThreads()) {
             tid++;
-            if(!(t instanceof Init)) {
+            if(!(t instanceof InitEvent)) {
                 gv.addln("  subgraph cluster_Thread_Target" + t.getTId() + " { rank=sink; fontsize=15; label = \"Thread " + tid + "\"; color=magenta; shape=box;");
             }
 
@@ -126,51 +126,51 @@ public class Utils {
 
             for(Event e : pTarget.getEvents()) {
                 String label = "";
-                if (!(e instanceof MemEvent || e instanceof Local)) {continue;}
-                for(Event eHL : p.getEvents().stream().filter(x -> x instanceof MemEvent).collect(Collectors.toSet())) {
-                    if(e instanceof Store) {
-                        label = "W_" + e.getLoc() + "_" + model.getConstInterp(((MemEvent) e).ssaLoc).toString() + "\n";
+                if (!(e instanceof SharedMemEvent || e instanceof LocalEvent)) {continue;}
+                for(Event eHL : p.getEvents().stream().filter(x -> x instanceof SharedMemEvent).collect(Collectors.toSet())) {
+                    if(e instanceof StoreEvent) {
+                        label = "W_" + e.getLoc() + "_" + model.getConstInterp(((SharedMemEvent) e).ssaLoc).toString() + "\n";
                     }
-                    if(e instanceof Load) {
-                        label = "R_" + e.getLoc() + "_" + model.getConstInterp(((MemEvent) e).ssaLoc).toString() + "\n";
+                    if(e instanceof LoadEvent) {
+                        label = "R_" + e.getLoc() + "_" + model.getConstInterp(((SharedMemEvent) e).ssaLoc).toString() + "\n";
                     }
                     if(e.getHLId() != null && e.getHLId() == eHL.hashCode()) {
                         label = label + eHL.toString().replaceAll("\\s","");
                     }
                 }
-                if(e instanceof Store && e.getMainThread() == t.getTId() && model.getConstInterp(e.executes(ctx)).isTrue()) {
+                if(e instanceof StoreEvent && e.getMainThread() == t.getTId() && model.getConstInterp(e.executes(ctx)).isTrue()) {
                     gv.addln("    " + e.repr() + " [label=\"" + label + "\", shape=\"box\", color=\"blue\", group=t" + e.getMainThread() + "];");
                 }
-                if(e instanceof Load && e.getMainThread() == t.getTId() && model.getConstInterp(e.executes(ctx)).isTrue()) {
+                if(e instanceof LoadEvent && e.getMainThread() == t.getTId() && model.getConstInterp(e.executes(ctx)).isTrue()) {
                     gv.addln("    " + e.repr() + " [label=\"" + label + "\", shape=\"box\", color=\"blue\", group=t" + e.getMainThread() + "];");
                 }
-                if(e instanceof Init && e.getMainThread() == t.getTId() && model.getConstInterp(e.executes(ctx)).isTrue()) {
+                if(e instanceof InitEvent && e.getMainThread() == t.getTId() && model.getConstInterp(e.executes(ctx)).isTrue()) {
                     gv.addln("    " + e.repr() + " [label=\"W_" + e.getLoc() + "_0\", shape=\"box\", color=\"blue\", root=true];");
                 }
-                if(e instanceof Local && e.getMainThread() == t.getTId() && model.getConstInterp(e.executes(ctx)).isTrue()) {
+                if(e instanceof LocalEvent && e.getMainThread() == t.getTId() && model.getConstInterp(e.executes(ctx)).isTrue()) {
                     gv.addln("    " + e.repr() + " [style=invis];");
                 }
             }
-            if(!(t instanceof Init)) {
+            if(!(t instanceof InitEvent)) {
                 gv.addln("  }");
             }
         }
 
         for(Event e1 : pTarget.getEvents()) {
             for(Event e2 : pTarget.getEvents()) {
-                if (!(e1 instanceof MemEvent || e1 instanceof Local)) {continue;}
-                if (!(e2 instanceof MemEvent || e2 instanceof Local)) {continue;}
+                if (!(e1 instanceof SharedMemEvent || e1 instanceof LocalEvent)) {continue;}
+                if (!(e2 instanceof SharedMemEvent || e2 instanceof LocalEvent)) {continue;}
                 if(e1.getMainThread() == e2.getMainThread() && e1.getEId() == e2.getEId() - 1 && model.getConstInterp(e1.executes(ctx)).isTrue()  && model.getConstInterp(e2.executes(ctx)).isTrue()) {
                     gv.addln("    " + e1.repr() + " -> " + e2.repr() + " [style=invis, weight=10];");
                 }
-                if (!(e1 instanceof MemEvent && e2 instanceof MemEvent)) {continue;}
+                if (!(e1 instanceof SharedMemEvent && e2 instanceof SharedMemEvent)) {continue;}
                 if(model.getConstInterp(Utils.edge("rf", e1, e2, ctx)).isTrue() && model.getConstInterp(e1.executes(ctx)).isTrue() && model.getConstInterp(e2.executes(ctx)).isTrue()) {
                     gv.addln("    " + e1.repr() + " -> " + e2.repr() + " [label=\"rf\", color=\"black\", fontcolor=\"black\", weight=1];");
                 }
                 if(model.getConstInterp(Utils.edge("fr", e1, e2, ctx)).isTrue() && model.getConstInterp(e1.executes(ctx)).isTrue() && model.getConstInterp(e2.executes(ctx)).isTrue()) {
                     gv.addln("    " + e1.repr() + " -> " + e2.repr() + " [label=\"fr\", color=\"black\", fontcolor=\"black\", weight=1];");
                 }
-                if(e1.getLoc() == e2.getLoc() && (e1 instanceof Store || e1 instanceof Init) && (e2 instanceof Store || e2 instanceof Init) && Integer.parseInt(model.getConstInterp(Utils.intVar("co", e1, ctx)).toString()) == Integer.parseInt(model.getConstInterp(Utils.intVar("co", e2, ctx)).toString()) - 1 && model.getConstInterp(e1.executes(ctx)).isTrue() && model.getConstInterp(e2.executes(ctx)).isTrue()) {
+                if(e1.getLoc() == e2.getLoc() && (e1 instanceof StoreEvent || e1 instanceof InitEvent) && (e2 instanceof StoreEvent || e2 instanceof InitEvent) && Integer.parseInt(model.getConstInterp(Utils.intVar("co", e1, ctx)).toString()) == Integer.parseInt(model.getConstInterp(Utils.intVar("co", e2, ctx)).toString()) - 1 && model.getConstInterp(e1.executes(ctx)).isTrue() && model.getConstInterp(e2.executes(ctx)).isTrue()) {
                     gv.addln("    " + e1.repr() + " -> " + e2.repr() + " [label=\"co\", color=\"black\", fontcolor=\"black\", weight=1];");
                 }
                 if(model.getConstInterp(Utils.edge("mfence", e1, e2, ctx)).isTrue() && model.getConstInterp(e1.executes(ctx)).isTrue() && model.getConstInterp(e2.executes(ctx)).isTrue()) {
@@ -225,7 +225,7 @@ public class Utils {
                     // I need to maintain the value when the event is not executed
                     // for testing reachability
                     for(Event e : t.getEvents()) {
-                        if(!(e instanceof Load || e instanceof Local)) {continue;}
+                        if(!(e instanceof LoadEvent || e instanceof LocalEvent)) {continue;}
                         if(e.getSsaRegIndex() == i1) {
                             //ret = ctx.mkAnd(ret, ctx.mkImplies(ctx.mkNot(e.executes(ctx)), ctx.mkEq(ctx.mkIntConst(String.format("%s_t%s_%s", o, t.getMainThread(), i1)), ctx.mkIntConst(String.format("%s_t%s_%s", o, t.getMainThread(), i1-1)))));
                             ret = ctx.mkAnd(ret, ctx.mkImplies(ctx.mkNot(e.executes(ctx)), ctx.mkEq(ssaReg((Register)o, i1, ctx), ssaReg((Register)o, i1-1, ctx))));
@@ -247,7 +247,7 @@ public class Utils {
             if(i2 > i1) {
                 if(o instanceof Register) {
                     for(Event e : t.getEvents()) {
-                        if(!(e instanceof Load || e instanceof Local)) {continue;}
+                        if(!(e instanceof LoadEvent || e instanceof LocalEvent)) {continue;}
                         if(e.getSsaRegIndex() == i2) {
                             //ret = ctx.mkAnd(ret, ctx.mkImplies(ctx.mkNot(e.executes(ctx)), ctx.mkEq(ctx.mkIntConst(String.format("%s_t%s_%s", o, t.getMainThread(), i2)), ctx.mkIntConst(String.format("%s_t%s_%s", o, t.getMainThread(), i2-1)))));
                             ret = ctx.mkAnd(ret, ctx.mkImplies(ctx.mkNot(e.executes(ctx)), ctx.mkEq(ssaReg((Register)o, i2, ctx), ssaReg((Register)o, i2-1, ctx))));
@@ -340,7 +340,7 @@ public class Utils {
     }
 
     public static BoolExpr lastCoOrder(Event e, Context ctx) throws Z3Exception {
-        return ctx.mkBoolConst(String.format("last_%s(%s)", ((MemEvent) e).getLoc(), e.repr()));
+        return ctx.mkBoolConst(String.format("last_%s(%s)", ((SharedMemEvent) e).getLoc(), e.repr()));
     }
 
     public static IntExpr intCount(String relName, Event e1, Event e2, Context ctx) throws Z3Exception {

@@ -8,85 +8,85 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
 
 import dartagnan.program.Event;
-import dartagnan.program.Local;
-import dartagnan.program.MemEvent;
+import dartagnan.program.LocalEvent;
+import dartagnan.program.SharedMemEvent;
 import dartagnan.program.Program;
-import mousquetaires.memorymodels.Encodings;
+import mousquetaires.memorymodels.EncodingsOld;
 import mousquetaires.utils.Utils;
 
 public class ARM {
 
     public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
         Set<Event> events = program.getMemEvents();
-        Set<Event> eventsL = program.getEvents().stream().filter(e -> e instanceof MemEvent || e instanceof Local).collect(Collectors.toSet());
+        Set<Event> eventsL = program.getEvents().stream().filter(e -> e instanceof SharedMemEvent || e instanceof LocalEvent).collect(Collectors.toSet());
 
-        BoolExpr enc = Encodings.satUnion("co", "fr", events, ctx);
-        enc = ctx.mkAnd(enc, Encodings.satUnion("com", "(co+fr)", "rf", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("poloc", "com", events, ctx));
+        BoolExpr enc = EncodingsOld.satUnion("co", "fr", events, ctx);
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("com", "(co+fr)", "rf", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("poloc", "com", events, ctx));
 
-        enc = ctx.mkAnd(enc, Encodings.satTransFixPoint("idd", eventsL, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satTransFixPoint("idd", eventsL, ctx));
 
-        enc = ctx.mkAnd(enc, Encodings.satIntersection("data", "idd^+", "RW", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satEmpty("addr", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("dp", "addr", "data", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("fre", "rfe", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("coe", "rfe", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satIntersection("data", "idd^+", "RW", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satEmpty("addr", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("dp", "addr", "data", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("fre", "rfe", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("coe", "rfe", events, ctx));
 
-        enc = ctx.mkAnd(enc, Encodings.satIntersection("rdw", "poloc", "(fre;rfe)", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satIntersection("detour", "poloc", "(coe;rfe)", events,ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satIntersection("rdw", "poloc", "(fre;rfe)", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satIntersection("detour", "poloc", "(coe;rfe)", events, ctx));
         // Base case for program order
-        enc = ctx.mkAnd(enc, Encodings.satUnion("dp", "rdw", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("ii0", "(dp+rdw)", "rfi", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satEmpty("ic0", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("ci0", "ctrlisb", "detour", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("dp", "ctrl", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("addr", "po", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("dp", "rdw", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("ii0", "(dp+rdw)", "rfi", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satEmpty("ic0", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("ci0", "ctrlisb", "detour", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("dp", "ctrl", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("addr", "po", events, ctx));
         enc = ctx.mkAnd(enc, satARMPPO(events, ctx));
 
-        enc = ctx.mkAnd(enc, Encodings.satUnion("cc0", "(dp+ctrl)", "(addr;po)", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satIntersection("RR", "ii", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satIntersection("RW", "ic", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("po-arm", "(RR&ii)", "(RW&ic)", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("cc0", "(dp+ctrl)", "(addr;po)", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satIntersection("RR", "ii", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satIntersection("RW", "ic", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("po-arm", "(RR&ii)", "(RW&ic)", events, ctx));
         // Happens before
-        enc = ctx.mkAnd(enc, Encodings.satUnion("po-arm", "rfe", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("hb-arm", "(po-arm+rfe)", "ish", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("po-arm", "rfe", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("hb-arm", "(po-arm+rfe)", "ish", events, ctx));
         // Prop-base
-        enc = ctx.mkAnd(enc, Encodings.satComp("rfe", "ish", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("ish", "(rfe;ish)", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satTransRef("hb-arm", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("prop-base", "(ish+(rfe;ish))", "(hb-arm)*", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("rfe", "ish", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("ish", "(rfe;ish)", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satTransRef("hb-arm", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("prop-base", "(ish+(rfe;ish))", "(hb-arm)*", events, ctx));
         // Propagation for ARM
-        enc = ctx.mkAnd(enc, Encodings.satTransRef("com", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satTransRef("com", events, ctx));
         
-        enc = ctx.mkAnd(enc, Encodings.satTransRef("prop-base", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("(com)*", "(prop-base)*", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("((com)*;(prop-base)*)", "ish", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("(((com)*;(prop-base)*);ish)", "(hb-arm)*", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satIntersection("WW", "prop-base", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("prop", "(WW&prop-base)", "((((com)*;(prop-base)*);ish);(hb-arm)*)", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("fre", "prop", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satComp("(fre;prop)", "(hb-arm)*", events, ctx));
-        enc = ctx.mkAnd(enc, Encodings.satUnion("co", "prop", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satTransRef("prop-base", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("(com)*", "(prop-base)*", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("((com)*;(prop-base)*)", "ish", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("(((com)*;(prop-base)*);ish)", "(hb-arm)*", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satIntersection("WW", "prop-base", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("prop", "(WW&prop-base)", "((((com)*;(prop-base)*);ish);(hb-arm)*)", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("fre", "prop", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satComp("(fre;prop)", "(hb-arm)*", events, ctx));
+        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("co", "prop", events, ctx));
         return enc;
     }
 
     public static BoolExpr Consistent(Program program, Context ctx) throws Z3Exception {
         Set<Event> events = program.getMemEvents();
-        return ctx.mkAnd(Encodings.satAcyclic("hb-arm", events, ctx),
-                        Encodings.satIrref("((fre;prop);(hb-arm)*)", events, ctx),
-                        Encodings.satAcyclic("(co+prop)", events, ctx),
-                        Encodings.satAcyclic("(poloc+com)", events, ctx));
+        return ctx.mkAnd(EncodingsOld.satAcyclic("hb-arm", events, ctx),
+                         EncodingsOld.satIrref("((fre;prop);(hb-arm)*)", events, ctx),
+                         EncodingsOld.satAcyclic("(co+prop)", events, ctx),
+                         EncodingsOld.satAcyclic("(poloc+com)", events, ctx));
     }
 
     public static BoolExpr Inconsistent(Program program, Context ctx) throws Z3Exception {
         Set<Event> events = program.getMemEvents();
-        BoolExpr enc = ctx.mkAnd(Encodings.satCycleDef("hb-arm", events, ctx),
-                                Encodings.satCycleDef("(co+prop)", events, ctx),
-                                Encodings.satCycleDef("(poloc+com)", events, ctx));
-        enc = ctx.mkAnd(enc, ctx.mkOr(Encodings.satCycle("hb-arm", events, ctx),
-                                    ctx.mkNot(Encodings.satIrref("((fre;prop);(hb-arm)*)", events, ctx)),
-                                    Encodings.satCycle("(co+prop)", events, ctx),
-                                    Encodings.satCycle("(poloc+com)", events, ctx)));
+        BoolExpr enc = ctx.mkAnd(EncodingsOld.satCycleDef("hb-arm", events, ctx),
+                                 EncodingsOld.satCycleDef("(co+prop)", events, ctx),
+                                 EncodingsOld.satCycleDef("(poloc+com)", events, ctx));
+        enc = ctx.mkAnd(enc, ctx.mkOr(EncodingsOld.satCycle("hb-arm", events, ctx),
+                                      ctx.mkNot(EncodingsOld.satIrref("((fre;prop);(hb-arm)*)", events, ctx)),
+                                      EncodingsOld.satCycle("(co+prop)", events, ctx),
+                                      EncodingsOld.satCycle("(poloc+com)", events, ctx)));
         return enc;
     }
 

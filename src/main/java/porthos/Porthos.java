@@ -26,11 +26,11 @@ import dartagnan.LitmusLexer;
 import dartagnan.LitmusParser;
 import dartagnan.PorthosLexer;
 import dartagnan.PorthosParser;
-import dartagnan.program.Init;
+import dartagnan.program.InitEvent;
 import dartagnan.program.Program;
 import mousquetaires.utils.Utils;
-import mousquetaires.memorymodels.Domain;
-import mousquetaires.memorymodels.Encodings;
+import mousquetaires.memorymodels.DomainOld;
+import mousquetaires.memorymodels.EncodingsOld;
 
 import org.apache.commons.cli.*;
 
@@ -133,7 +133,7 @@ public class Porthos {
         Program pTarget = p.clone();
 
         pSource.compile(source, false, true);
-        Integer startEId = Collections.max(pSource.getEvents().stream().filter(e -> e instanceof Init).map(e -> e.getEId()).collect(Collectors.toSet())) + 1;
+        Integer startEId = Collections.max(pSource.getEvents().stream().filter(e -> e instanceof InitEvent).map(e -> e.getEId()).collect(Collectors.toSet())) + 1;
         pTarget.compile(target, false, true, startEId);
 
         Context ctx = new Context();
@@ -144,13 +144,13 @@ public class Porthos {
         BoolExpr sourceDF = pSource.encodeDF(ctx);
         BoolExpr sourceCF = pSource.encodeCF(ctx);
         BoolExpr sourceDF_RF = pSource.encodeDF_RF(ctx);
-        BoolExpr sourceDomain = Domain.encode(pSource, ctx);
+        BoolExpr sourceDomain = DomainOld.encode(pSource, ctx);
         BoolExpr sourceMM = pSource.encodeMM(ctx, source);
 
         s.add(pTarget.encodeDF(ctx));
         s.add(pTarget.encodeCF(ctx));
         s.add(pTarget.encodeDF_RF(ctx));
-        s.add(Domain.encode(pTarget, ctx));
+        s.add(DomainOld.encode(pTarget, ctx));
         s.add(pTarget.encodeMM(ctx, target));
         s.add(pTarget.encodeConsistent(ctx, target));
         s.add(sourceDF);
@@ -159,7 +159,7 @@ public class Porthos {
         s.add(sourceDomain);
         s.add(sourceMM);
         s.add(pSource.encodeInconsistent(ctx, source));
-        s.add(Encodings.encodeCommonExecutions(pTarget, pSource, ctx));
+        s.add(EncodingsOld.encodeCommonExecutions(pTarget, pSource, ctx));
 
         s2.add(sourceDF);
         s2.add(sourceCF);
@@ -196,7 +196,7 @@ public class Porthos {
                 iterations = iterations + 1;
                 Model model = s.getModel();
                 s2.push();
-                BoolExpr reachedState = Encodings.encodeReachedState(pTarget, model, ctx);
+                BoolExpr reachedState = EncodingsOld.encodeReachedState(pTarget, model, ctx);
                 visited.add(reachedState);
                 assert(iterations == visited.size());
                 s2.add(reachedState);

@@ -10,7 +10,7 @@ import mousquetaires.utils.LastModMap;
 import mousquetaires.utils.MapSSA;
 import mousquetaires.utils.Pair;
 
-public class Read extends MemEvent {
+public class Read extends SharedMemEvent {
 
     private Register reg;
     private String atomic;
@@ -49,7 +49,7 @@ public class Read extends MemEvent {
     }
 
     public Thread compile(String target, boolean ctrl, boolean leading) {
-        Load ld = new Load(reg, loc);
+        LoadEvent ld = new LoadEvent(reg, loc);
         ld.setHLId(hashCode());
         ld.condLevel = this.condLevel;
 
@@ -90,7 +90,7 @@ public class Read extends MemEvent {
     }
 
     public Thread optCompile(boolean ctrl, boolean leading) {
-        Load ld = new Load(reg, loc);
+        LoadEvent ld = new LoadEvent(reg, loc);
         ld.setHLId(hashCode());
         ld.condLevel = this.condLevel;
 
@@ -118,7 +118,7 @@ public class Read extends MemEvent {
     }
 
     public Thread allCompile() {
-        Load ld = new Load(reg, loc);
+        LoadEvent ld = new LoadEvent(reg, loc);
         ld.setHLId(hashCode());
         ld.condLevel = this.condLevel;
         OptSync os = new OptSync();

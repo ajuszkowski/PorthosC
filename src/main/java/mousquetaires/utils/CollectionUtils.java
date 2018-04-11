@@ -52,9 +52,9 @@ public class CollectionUtils {
     }
 
 
-    public static <T> ImmutableMap<T, ImmutableSet<T>> buildMapOfSets(Map<T, Set<T>> map) {
-        ImmutableMap.Builder<T, ImmutableSet<T>> builder = new ImmutableMap.Builder<>();
-        for (Map.Entry<T, Set<T>> pair : map.entrySet()) {
+    public static <T, S> ImmutableMap<T, ImmutableSet<S>> buildMapOfSets(Map<T, Set<S>> map) {
+        ImmutableMap.Builder<T, ImmutableSet<S>> builder = new ImmutableMap.Builder<>();
+        for (Map.Entry<T, Set<S>> pair : map.entrySet()) {
             builder.put(pair.getKey(), ImmutableSet.copyOf(pair.getValue()));
         }
         return builder.build();

@@ -12,11 +12,8 @@ import java.util.List;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
+
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class LitmusParser extends Parser {
@@ -307,7 +304,7 @@ public class LitmusParser extends Parser {
                                     if(!mapThreads.keySet().contains(((ProgramContext)_localctx).thrd.getText())) {
                                         mapThreads.put(((ProgramContext)_localctx).thrd.getText(), new ArrayList<Thread>());
                                     }
-                                    mapThreads.get(((ProgramContext)_localctx).thrd.getText()).add(new Local(regPointer, new AConst(Integer.parseInt(((ProgramContext)_localctx).d.getText()))));
+                                    mapThreads.get(((ProgramContext)_localctx).thrd.getText()).add(new LocalEvent(regPointer, new AConst(Integer.parseInt(((ProgramContext)_localctx).d.getText()))));
 
                         }
                         break;
@@ -1429,7 +1426,7 @@ public class LitmusParser extends Parser {
                         mapThreadRegs.put(((LocalX86Context)_localctx).r.reg.getName(), ((LocalX86Context)_localctx).r.reg);
                     }
                     Register pointerReg = mapThreadRegs.get(((LocalX86Context)_localctx).r.reg.getName());
-                    ((LocalX86Context)_localctx).t =  new Local(pointerReg, new AConst(Integer.parseInt(((LocalX86Context)_localctx).d.getText())));
+                    ((LocalX86Context)_localctx).t =  new LocalEvent(pointerReg, new AConst(Integer.parseInt(((LocalX86Context)_localctx).d.getText())));
 
             }
         }
@@ -1489,7 +1486,7 @@ public class LitmusParser extends Parser {
                         mapThreadRegs.put(((LocalPowerContext)_localctx).r.reg.getName(), ((LocalPowerContext)_localctx).r.reg);
                     }
                     Register pointerReg = mapThreadRegs.get(((LocalPowerContext)_localctx).r.reg.getName());
-                    ((LocalPowerContext)_localctx).t =  new Local(pointerReg, new AConst(Integer.parseInt(((LocalPowerContext)_localctx).d.getText())));
+                    ((LocalPowerContext)_localctx).t =  new LocalEvent(pointerReg, new AConst(Integer.parseInt(((LocalPowerContext)_localctx).d.getText())));
 
             }
         }
@@ -1564,7 +1561,7 @@ public class LitmusParser extends Parser {
                     Register pointerReg1 = mapThreadRegs.get(((XorContext)_localctx).r1.reg.getName());
                     Register pointerReg2 = mapThreadRegs.get(((XorContext)_localctx).r2.reg.getName());
                     Register pointerReg3 = mapThreadRegs.get(((XorContext)_localctx).r3.reg.getName());
-                    ((XorContext)_localctx).t =  new Local(pointerReg1, new AExpr(pointerReg2, "xor", pointerReg3));
+                    ((XorContext)_localctx).t =  new LocalEvent(pointerReg1, new AExpr(pointerReg2, "xor", pointerReg3));
 
             }
         }
@@ -1636,7 +1633,7 @@ public class LitmusParser extends Parser {
                     }
                     Register pointerReg1 = mapThreadRegs.get(((AddiContext)_localctx).r1.reg.getName());
                     Register pointerReg2 = mapThreadRegs.get(((AddiContext)_localctx).r2.reg.getName());
-                    ((AddiContext)_localctx).t =  new Local(pointerReg1, new AExpr(pointerReg2, "+", new AConst(Integer.parseInt(((AddiContext)_localctx).d.getText()))));
+                    ((AddiContext)_localctx).t =  new LocalEvent(pointerReg1, new AExpr(pointerReg2, "+", new AConst(Integer.parseInt(((AddiContext)_localctx).d.getText()))));
 
             }
         }
@@ -1702,7 +1699,7 @@ public class LitmusParser extends Parser {
                     }
                     Register pointerReg1 = mapThreadRegs.get(((MrContext)_localctx).r1.reg.getName());
                     Register pointerReg2 = mapThreadRegs.get(((MrContext)_localctx).r2.reg.getName());
-                    ((MrContext)_localctx).t =  new Local(pointerReg1, pointerReg2);
+                    ((MrContext)_localctx).t =  new LocalEvent(pointerReg1, pointerReg2);
 
             }
         }
@@ -1768,7 +1765,7 @@ public class LitmusParser extends Parser {
                     }
                     Register pointerReg = mapThreadRegs.get(((LoadX86Context)_localctx).r.reg.getName());
                     Location pointerLoc = mapLocs.get(((LoadX86Context)_localctx).l.loc.getName());
-                    ((LoadX86Context)_localctx).t =  new Load(pointerReg, pointerLoc);
+                    ((LoadX86Context)_localctx).t =  new LoadEvent(pointerReg, pointerLoc);
 
             }
         }
@@ -1859,7 +1856,7 @@ public class LitmusParser extends Parser {
                     }
                     Register pointerReg = mapThreadRegs.get(((LoadPowerContext)_localctx).r.reg.getName());
                     Location pointerLoc = mapRegLoc.get(mainThread).get(((LoadPowerContext)_localctx).rl.reg.getName());
-                    ((LoadPowerContext)_localctx).t =  new Load(pointerReg, pointerLoc);
+                    ((LoadPowerContext)_localctx).t =  new LoadEvent(pointerReg, pointerLoc);
 
             }
         }
@@ -1925,7 +1922,7 @@ public class LitmusParser extends Parser {
                     }
                     Register pointerReg = mapThreadRegs.get(((StoreX86Context)_localctx).r.reg.getName());
                     Location pointerLoc = mapLocs.get(((StoreX86Context)_localctx).l.loc.getName());
-                    ((StoreX86Context)_localctx).t =  new Store(pointerLoc, pointerReg);
+                    ((StoreX86Context)_localctx).t =  new StoreEvent(pointerLoc, pointerReg);
 
             }
         }
@@ -2016,7 +2013,7 @@ public class LitmusParser extends Parser {
                     }
                     Register pointerReg = mapThreadRegs.get(((StorePowerContext)_localctx).r.reg.getName());
                     Location pointerLoc = mapRegLoc.get(mainThread).get(((StorePowerContext)_localctx).rl.reg.getName());
-                    ((StorePowerContext)_localctx).t =  new Store(pointerLoc, pointerReg);
+                    ((StorePowerContext)_localctx).t =  new StoreEvent(pointerLoc, pointerReg);
 
             }
         }

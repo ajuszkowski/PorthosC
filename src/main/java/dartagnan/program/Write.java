@@ -10,7 +10,7 @@ import mousquetaires.utils.LastModMap;
 import mousquetaires.utils.MapSSA;
 import mousquetaires.utils.Pair;
 
-public class Write extends MemEvent {
+public class Write extends SharedMemEvent {
 
     private Register reg;
     private String atomic;
@@ -49,7 +49,7 @@ public class Write extends MemEvent {
     }
 
     public Thread compile(String target, boolean ctrl, boolean leading) {
-        Store st = new Store(loc, reg);
+        StoreEvent st = new StoreEvent(loc, reg);
         st.setHLId(hashCode());
         st.condLevel = this.condLevel;
 
@@ -106,7 +106,7 @@ public class Write extends MemEvent {
     }
 
     public Thread optCompile(String target, boolean ctrl, boolean leading) {
-        Store st = new Store(loc, reg);
+        StoreEvent st = new StoreEvent(loc, reg);
         st.setHLId(hashCode());
         st.condLevel = this.condLevel;
 
@@ -134,7 +134,7 @@ public class Write extends MemEvent {
     }
 
     public Thread allCompile() {
-        Store st = new Store(loc, reg);
+        StoreEvent st = new StoreEvent(loc, reg);
         st.setHLId(hashCode());
         st.condLevel = this.condLevel;
         OptSync os = new OptSync();

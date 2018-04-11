@@ -12,9 +12,9 @@ import com.microsoft.z3.Solver;
 import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Event;
 import dartagnan.program.Program;
-import mousquetaires.memorymodels.Encodings;
+import mousquetaires.memorymodels.EncodingsOld;
 import mousquetaires.utils.Utils;
-import static mousquetaires.memorymodels.Encodings.encodeEO;
+import static mousquetaires.memorymodels.EncodingsOld.encodeEO;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,7 +46,7 @@ public static String PREFIX="";
         boolean approxtemp=Relation.Approx;
         Relation.Approx=false;
         Set<Event> events = p.getMemEvents();
-        BoolExpr enc=Encodings.satCycle(prefix+name, events, ctx);
+        BoolExpr enc=EncodingsOld.satCycle(prefix+name, events, ctx);
         enc=ctx.mkAnd(enc,encode(p, ctx, new HashSet<String>()));
         
         for(Event e1 : events) {

@@ -11,7 +11,7 @@ import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Event;
 import dartagnan.program.Program;
 import mousquetaires.utils.Utils;
-import static mousquetaires.memorymodels.Encodings.satUnion;
+import static mousquetaires.memorymodels.EncodingsOld.satUnion;
 import java.util.Set;
 
 

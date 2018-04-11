@@ -9,12 +9,12 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Event;
-import dartagnan.program.Local;
-import dartagnan.program.MemEvent;
+import dartagnan.program.LocalEvent;
+import dartagnan.program.SharedMemEvent;
 import dartagnan.program.Program;
 import mousquetaires.utils.Utils;
 
-import static mousquetaires.memorymodels.Encodings.satUnion;
+import static mousquetaires.memorymodels.EncodingsOld.satUnion;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,7 +31,7 @@ public class RelLocTrans extends UnaryRelation {
     @Override
     public BoolExpr encodeBasic(Program program, Context ctx) throws Z3Exception {
         BoolExpr enc = ctx.mkTrue();
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent || e instanceof Local).collect(Collectors.toSet());
+        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof SharedMemEvent || e instanceof LocalEvent).collect(Collectors.toSet());
         //copied from satTansIDL
         for (Event e1 : events) {
             for (Event e2 : events) {
@@ -55,7 +55,7 @@ public class RelLocTrans extends UnaryRelation {
             @Override
     public BoolExpr encodeApprox(Program program, Context ctx) throws Z3Exception {
         BoolExpr enc = ctx.mkTrue();
-        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof MemEvent || e instanceof Local).collect(Collectors.toSet());
+        Set<Event> events = program.getEvents().stream().filter(e -> e instanceof SharedMemEvent || e instanceof LocalEvent).collect(Collectors.toSet());
         for (Event e1 : events) {
             for (Event e2 : events) {
                     //transitive

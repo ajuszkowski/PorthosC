@@ -9,15 +9,15 @@ import com.microsoft.z3.*;
 import mousquetaires.utils.LastModMap;
 import mousquetaires.utils.MapSSA;
 import mousquetaires.utils.Pair;
-import static mousquetaires.utils.Utils.ssaLoc;
-import static mousquetaires.utils.Utils.ssaReg;
 
-public class Load extends MemEvent {
+import static mousquetaires.utils.Utils.ssaReg;
+import static mousquetaires.utils.Utils.ssaLoc;
+
+public class StoreEvent extends SharedMemEvent {
 
     private Register reg;
-    public Integer ssaRegIndex;
 
-    public Load(Register reg, Location loc) {
+    public StoreEvent(Location loc, Register reg) {
         this.reg = reg;
         this.loc = loc;
         this.condLevel = 0;
@@ -28,7 +28,7 @@ public class Load extends MemEvent {
     }
 
     public String toString() {
-        return String.format("%s%s <- %s", String.join("", Collections.nCopies(condLevel, "  ")), reg, loc);
+        return String.format("%s%s := %s", String.join("", Collections.nCopies(condLevel, "  ")), loc, reg);
     }
 
     public LastModMap setLastModMap(LastModMap map) {
@@ -36,17 +36,17 @@ public class Load extends MemEvent {
         LastModMap retMap = map.clone();
         Set<Event> set = new HashSet<Event>();
         set.add(this);
-        retMap.put(reg, set);
+        retMap.put(loc, set);
         return retMap;
     }
 
-    public Load clone() {
+    public StoreEvent clone() {
         Register newReg = reg.clone();
         Location newLoc = loc.clone();
-        Load newLoad = new Load(newReg, newLoc);
-        newLoad.condLevel = condLevel;
-        newLoad.setHLId(getHLId());
-        return newLoad;
+        StoreEvent newStore = new StoreEvent(newLoc, newReg);
+        newStore.condLevel = condLevel;
+        newStore.setHLId(getHLId());
+        return newStore;
     }
 
     public Pair<BoolExpr, MapSSA> encodeDF(MapSSA map, Context ctx) throws Z3Exception {
@@ -55,11 +55,10 @@ public class Load extends MemEvent {
             return null;
         }
         else {
-            Expr z3Reg = ssaReg(reg, map.getFresh(reg), ctx);
             Expr z3Loc = ssaLoc(loc, mainThread, map.getFresh(loc), ctx);
             this.ssaLoc = z3Loc;
-            this.ssaRegIndex = map.get(reg);
-            return new Pair<BoolExpr, MapSSA>(ctx.mkImplies(executes(ctx), ctx.mkEq(z3Reg, z3Loc)), map);
+            Expr z3Reg = ssaReg(reg, map.get(reg), ctx);
+            return new Pair<BoolExpr, MapSSA>(ctx.mkImplies(executes(ctx), ctx.mkEq(z3Loc, z3Reg)), map);
         }
     }
 }
