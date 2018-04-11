@@ -8,12 +8,13 @@ import mousquetaires.languages.syntax.xgraph.XProcessLocalElement;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
-public interface XEvent extends FlowGraphNode<XEventInfo>, XProcessLocalElement, XEntity {
+public interface XEvent extends FlowGraphNode, XProcessLocalElement, XEntity {
 
     <T> T accept(XEventVisitor<T> visitor);
 
-    @Override
-    XEvent withInfo(XEventInfo newInfo);
+    XEventInfo getInfo();
+
+    XEvent asNodeRef(int refId);
 
     //TODO: old-code method, to be replaced
     default BoolExpr executes(Context ctx) {

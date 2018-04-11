@@ -1,46 +1,85 @@
 package mousquetaires.languages.syntax.xgraph.events.memory;
 
-import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
-import mousquetaires.languages.syntax.xgraph.memories.XConstant;
-import mousquetaires.languages.syntax.xgraph.memories.XLocation;
-import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
+import org.omg.PortableServer.THREAD_POLICY_ID;
 
 
 /**
  * Initial write event to any kind of memory location ({@link XMemoryUnit})
  */
-public class XInitialWriteEvent extends XMemoryEventBase implements XLocalMemoryEvent {
+public final class XInitialWriteEvent extends XMemoryEventBase implements XSharedMemoryEvent {
     // implements XLocalMemoryEvent because it is not a subject for relaxations
     // TODO: rename XLocalMemoryEvent -> XNonRelaxableMemoryEvent/XStrongMemoryEvent, XSharedMemoryEvent -> XRelaxableMemoryEvent/XWeakMemoryEvent.
 
-    public XInitialWriteEvent(XEventInfo info, XLocation destination, XConstant value) {
-        super(info, destination, value);
+    // TODO: destination: XLvalue ; source: XRvalue
+    public XInitialWriteEvent(XEventInfo info, XLvalueMemoryUnit destination, XRvalueMemoryUnit source) {
+        this(NOT_UNROLLED_REF_ID, info, destination, source);
+    }
+
+    private XInitialWriteEvent(int refId, XEventInfo info, XLvalueMemoryUnit destination, XRvalueMemoryUnit source) {
+        super(refId, info, destination, source);
     }
 
     @Override
-    public XLocation getDestination() {
-        return (XLocation) super.getDestination();
+    public XLvalueMemoryUnit getDestination() {
+        return (XLvalueMemoryUnit) super.getDestination();
     }
 
     @Override
-    public XConstant getSource() {
-        return (XConstant) super.getSource();
+    public XRvalueMemoryUnit getSource() {
+        return (XRvalueMemoryUnit) super.getSource();
+    }
+
+    @Override
+    public XSharedLvalueMemoryUnit getLoc() {
+        XRvalueMemoryUnit source = getSource();
+        XLvalueMemoryUnit destination = getDestination();
+        if (source instanceof XSharedLvalueMemoryUnit) {
+            if (destination instanceof XSharedLvalueMemoryUnit) {
+                throw new IllegalStateException("BOTH MEMORY UNITS ARE SHARED. WHAT TO DO?"); //TODO: find out this
+            }
+            return (XSharedLvalueMemoryUnit) source;
+        }
+        else if (destination instanceof XSharedLvalueMemoryUnit) {
+            return (XSharedLvalueMemoryUnit) destination;
+        }
+        else {
+            throw new IllegalStateException("NONE OF MEMORY UNITS ARE SHARED. WHAT TO DO?"); //TODO: find out this
+        }
+    }
+
+    @Override
+    public XLocalLvalueMemoryUnit getReg() {
+        XRvalueMemoryUnit source = getSource();
+        XLvalueMemoryUnit destination = getDestination();
+        if (source instanceof XLocalLvalueMemoryUnit) {
+            if (destination instanceof XLocalLvalueMemoryUnit) {
+                throw new IllegalStateException("BOTH MEMORY UNITS ARE LOCAL. WHAT TO DO?"); //TODO: find out this
+            }
+            return (XLocalLvalueMemoryUnit) source;
+        }
+        else if (destination instanceof XLocalLvalueMemoryUnit) {
+            return (XLocalLvalueMemoryUnit) destination;
+        }
+        else {
+            throw new IllegalStateException("NONE OF MEMORY UNITS ARE LOCAL. WHAT TO DO?"); //TODO: find out this
+        }
+    }
+
+    @Override
+    public XInitialWriteEvent asNodeRef(int refId) {
+        return new XInitialWriteEvent(refId, getInfo(), getDestination(), getSource());
     }
 
     @Override
     public String toString() {
-        return "initial_write(" + getDestination() + "<- " + getSource() + ")";
+        return wrapWithBracketsAndDepth("initial_write(" + getDestination() + "<- " + getSource() + ")");
     }
 
     @Override
     public <T> T accept(XEventVisitor<T> visitor) {
         return visitor.visit(this);
-    }
-
-    @Override
-    public XEvent withInfo(XEventInfo newInfo) {
-        return null;
     }
 }

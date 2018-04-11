@@ -6,16 +6,16 @@ import mousquetaires.languages.common.graph.UnrolledFlowGraph;
 import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
 
 
-class CompositeTraverseActor<N extends FlowGraphNode, G extends UnrolledFlowGraph<N>>
-        extends FlowGraphTraverseActor<N, G> {
+class CompositeDfsTraverseActor<N extends FlowGraphNode, G extends UnrolledFlowGraph<N>>
+        extends DfsTraverseActor<N, G> {
 
-    private final ImmutableSet<FlowGraphTraverseActor<N, G>> actors;
+    private final ImmutableSet<DfsTraverseActor<N, G>> actors;
 
-    CompositeTraverseActor(UnrolledFlowGraphBuilder<N, G> builder) {
+    CompositeDfsTraverseActor(UnrolledFlowGraphBuilder<N, G> builder) {
         super(builder);
         // Add here new actors that gather information about graph during graph traverse
-        ImmutableSet.Builder<FlowGraphTraverseActor<N, G>> actorsBuilder = new ImmutableSet.Builder<>();
-        actorsBuilder.add(new UnrollingActor<>(builder));
+        ImmutableSet.Builder<DfsTraverseActor<N, G>> actorsBuilder = new ImmutableSet.Builder<>();
+        actorsBuilder.add(new DfsUnrollingActor<>(builder));
         actorsBuilder.add(new DfsLinearisationActor<>(builder));
         this.actors = actorsBuilder.build();
     }
@@ -26,42 +26,42 @@ class CompositeTraverseActor<N extends FlowGraphNode, G extends UnrolledFlowGrap
 
     @Override
     public void onStart() {
-        for (FlowGraphTraverseActor<N, G> actor : actors) {
+        for (DfsTraverseActor<N, G> actor : actors) {
             actor.onStart();
         }
     }
 
     @Override
     public void onNodePreVisit(N node) {
-        for (FlowGraphTraverseActor<N, G> actor : actors) {
+        for (DfsTraverseActor<N, G> actor : actors) {
             actor.onNodePreVisit(node);
         }
     }
 
     @Override
     public void onEdgeVisit(boolean edgeKind, N from, N to) {
-        for (FlowGraphTraverseActor<N, G> actor : actors) {
+        for (DfsTraverseActor<N, G> actor : actors) {
             actor.onEdgeVisit(edgeKind, from, to);
         }
     }
 
     @Override
     public void onNodePostVisit(N node) {
-        for (FlowGraphTraverseActor<N, G> actor : actors) {
+        for (DfsTraverseActor<N, G> actor : actors) {
             actor.onNodePostVisit(node);
         }
     }
 
     @Override
     public void onLastNodeVisit(N lastNode) {
-        for (FlowGraphTraverseActor<N, G> actor : actors) {
+        for (DfsTraverseActor<N, G> actor : actors) {
             actor.onLastNodeVisit(lastNode);
         }
     }
 
     @Override
     public void onFinish() {
-        for (FlowGraphTraverseActor<N, G> actor : actors) {
+        for (DfsTraverseActor<N, G> actor : actors) {
             actor.onFinish();
         }
     }

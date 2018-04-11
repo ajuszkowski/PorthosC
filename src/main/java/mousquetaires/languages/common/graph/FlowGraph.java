@@ -57,15 +57,8 @@ public class FlowGraph<N extends FlowGraphNode> {
         return getEdges(edgeSign).containsKey(node);
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("FlowGraph{");
-        sb.append("source=").append(source);
-        sb.append(", sink=").append(sink);
-        sb.append(", edges=").append(edges);
-        sb.append(", altEdges=").append(altEdges);
-        sb.append('}');
-        return sb.toString();
+    public boolean isBranchingNode(N node) {
+        return hasChild(false, node);
     }
 
     // TODO: after debugging, probably remove these methods?
@@ -78,20 +71,20 @@ public class FlowGraph<N extends FlowGraphNode> {
 
     public int size() {
         // todo: count nodes while single-pass via information collector!
-        return edges.keySet().size();
+        return edges.values().size();
     }
 
-    public ImmutableCollection<N> getAllNodes() {
+    public ImmutableCollection<N> getAllNodesExceptSource() {
         return getEdges(true).values();
     }
 
     // TODO: this should be only per program (?)
-    public ImmutableSet<N> getNodes(Predicate<N> filter) {
+    public ImmutableSet<N> getNodesExceptSource(Predicate<N> filter) {
         if (nodeQueriesCache.containsKey(filter)) {
             return nodeQueriesCache.get(filter);
         }
         ImmutableSet.Builder<N> builder = new ImmutableSet.Builder<>();
-        for (N node : getAllNodes()) {
+        for (N node : getAllNodesExceptSource()) {
             if (filter.test(node)) {
                 builder.add(node);
             }
@@ -101,4 +94,17 @@ public class FlowGraph<N extends FlowGraphNode> {
         return result;
     }
 
+    // =====================
+
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("FlowGraph{");
+        sb.append("source=").append(source);
+        sb.append(", sink=").append(sink);
+        sb.append(", edges=").append(edges);
+        sb.append(", altEdges=").append(altEdges);
+        sb.append('}');
+        return sb.toString();
+    }
 }

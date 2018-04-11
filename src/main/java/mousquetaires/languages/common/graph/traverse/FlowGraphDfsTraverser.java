@@ -10,7 +10,7 @@ public abstract class FlowGraphDfsTraverser<N extends FlowGraphNode, G extends U
     private final int unrollingBound;
     private final FlowGraph<N> graph;
 
-    private final CompositeTraverseActor<N, G> compositeActor;
+    private final CompositeDfsTraverseActor<N, G> compositeActor;
 
     private Set<N> visitedRefs;
     private Stack<N> depthStack;
@@ -21,26 +21,28 @@ public abstract class FlowGraphDfsTraverser<N extends FlowGraphNode, G extends U
                                     int unrollingBound) {
         this.graph = graph;
         this.unrollingBound = unrollingBound;
-        this.compositeActor = new CompositeTraverseActor<>(builder);
+        this.compositeActor = new CompositeDfsTraverseActor<>(builder);
         this.visitedRefs = new HashSet<>();
         this.depthStack = new Stack<>();
         this.backEdges = new HashMap<>();
     }
 
-    public G getProcessedGraph() {
+    public G getUnrolledGraph() {
         return compositeActor.buildGraph();
     }
 
     public void doUnroll() {
         compositeActor.onStart();
-        unrollRecursively(graph.source(), graph.source(), 0, true);
+        N source = graph.source();
+        N sourceRef = graph.source();
+        unrollRecursively(source, sourceRef, 0, true);
         compositeActor.onFinish();
     }
 
     private void unrollRecursively(N node, N nodeRef, int depth, boolean needToUnrollChildren) {
         compositeActor.onNodePreVisit(nodeRef);
 
-        if (!alreadyVisited(nodeRef)) {
+        if (visitedRefs.add(nodeRef)) {
             depthStack.push(node);
 
             if (needToUnrollChildren) {
@@ -74,7 +76,7 @@ public abstract class FlowGraphDfsTraverser<N extends FlowGraphNode, G extends U
         boolean needToUnrollGrandChildren = !(isSink || boundAchieved);
 
         N childRef = needToUnrollGrandChildren
-                ? compositeActor.builder.createNodeReference(child, childDepth)
+                ? compositeActor.builder.createNodeRef(child, childDepth)
                 : getSinkNode(isSink || isBackEdge);
 
         compositeActor.onEdgeVisit(edgeSign, parentRef, childRef);
@@ -96,9 +98,5 @@ public abstract class FlowGraphDfsTraverser<N extends FlowGraphNode, G extends U
             backEdges.put(from, new HashSet<>());
         }
         backEdges.get(from).add(to);
-    }
-
-    private boolean alreadyVisited(N nodeRef) {
-        return !visitedRefs.add(nodeRef);
     }
 }

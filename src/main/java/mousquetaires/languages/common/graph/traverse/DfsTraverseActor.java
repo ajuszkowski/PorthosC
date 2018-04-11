@@ -5,10 +5,10 @@ import mousquetaires.languages.common.graph.FlowGraphNode;
 import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
 
 
-abstract class FlowGraphTraverseActor<N extends FlowGraphNode, G extends FlowGraph<N>> {
+abstract class DfsTraverseActor<N extends FlowGraphNode, G extends FlowGraph<N>> {
     protected final UnrolledFlowGraphBuilder<N, G> builder;
 
-    FlowGraphTraverseActor(UnrolledFlowGraphBuilder<N, G> builder) {
+    DfsTraverseActor(UnrolledFlowGraphBuilder<N, G> builder) {
         this.builder = builder;
     }
 

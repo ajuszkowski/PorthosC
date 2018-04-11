@@ -1,7 +1,10 @@
 package mousquetaires.languages.syntax.xgraph.events.memory;
 
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
-import mousquetaires.languages.syntax.xgraph.memories.*;
+import mousquetaires.languages.syntax.xgraph.memories.XLocalLvalueMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XSharedLvalueMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
@@ -10,7 +13,11 @@ import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 public final class XLoadMemoryEvent extends XMemoryEventBase implements XSharedMemoryEvent {
 
     public XLoadMemoryEvent(XEventInfo info, XLocalLvalueMemoryUnit destination, XSharedMemoryUnit source/*, XMemoryOrder memoryOrder*/) {
-        super(info, destination, source);
+        this(NOT_UNROLLED_REF_ID, info, destination, source);
+    }
+
+    private XLoadMemoryEvent(int refId, XEventInfo info, XLocalLvalueMemoryUnit destination, XSharedMemoryUnit source/*, XMemoryOrder memoryOrder*/) {
+        super(refId, info, destination, source);
     }
 
     @Override
@@ -24,8 +31,17 @@ public final class XLoadMemoryEvent extends XMemoryEventBase implements XSharedM
     }
 
     @Override
-    public XLoadMemoryEvent withInfo(XEventInfo newInfo) {
-        return new XLoadMemoryEvent(newInfo, getDestination(), getSource());
+    public XLoadMemoryEvent asNodeRef(int refId) {
+        return new XLoadMemoryEvent(refId, getInfo(), getDestination(), getSource());
+    }
+
+    public XSharedLvalueMemoryUnit getLoc() {
+        return getSource();
+    }
+
+    @Override
+    public XLocalLvalueMemoryUnit getReg() {
+        return getDestination();
     }
 
     @Override
@@ -35,7 +51,6 @@ public final class XLoadMemoryEvent extends XMemoryEventBase implements XSharedM
 
     @Override
     public String toString() {
-        //return wrapWithBracketsAndDepth("load(" + getDestination() + " := " + getSource() /*+ ", " + memoryOrder*/ + ")");
-        return "LOAD_" + getDestination() + "_" + getSource();
+        return wrapWithBracketsAndDepth("load(" + getDestination() + "<-" + getSource() + ")");
     }
 }

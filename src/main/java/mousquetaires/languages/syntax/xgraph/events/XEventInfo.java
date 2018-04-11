@@ -1,12 +1,11 @@
 package mousquetaires.languages.syntax.xgraph.events;
 
-import mousquetaires.languages.common.graph.FlowGraphNodeInfo;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 
 import java.util.Objects;
 
 
-public class XEventInfo extends FlowGraphNodeInfo {
+public class XEventInfo {
 
     private static int eventGlobalCounter = 0;
 
@@ -30,20 +29,14 @@ public class XEventInfo extends FlowGraphNodeInfo {
 
     //todo: package-private (after removing the folder 'tests' from tests project root)
     public XEventInfo(XProcessId processId) {
-        this(processId, newEventId(), NON_UNROLLED_DEPTH);
-    }
-
-    private XEventInfo(XProcessId processId, int eventId, int unrollingDepth) {
-        super(unrollingDepth);
         // TODO: verify process id string for bad symbols
         this.processId = processId;
-        this.eventId = eventId;
+        this.eventId = newEventId();
     }
 
     public String getText() {
         return processId + "_" + getEventId();
     }
-
 
     public XProcessId getProcessId() {
         return processId;
@@ -54,20 +47,14 @@ public class XEventInfo extends FlowGraphNodeInfo {
     }
 
     @Override
-    public XEventInfo withUnrollingDepth(int newDepth) {
-        return new XEventInfo(getProcessId(), getEventId(), newDepth);
-    }
-
-    @Override
     public String toString() {
-        return "[" + getText() + "," + getUnrollingDepth() + "]";
+        return getText();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) { return true; }
         if (!(o instanceof XEventInfo)) { return false; }
-        if (!super.equals(o)) { return false; }
         XEventInfo that = (XEventInfo) o;
         return getEventId() == that.getEventId() &&
                 Objects.equals(getProcessId(), that.getProcessId());
@@ -75,12 +62,13 @@ public class XEventInfo extends FlowGraphNodeInfo {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getProcessId(), getEventId());
+        return Objects.hash(getProcessId(), getEventId());
     }
 
     public int stamplessHashCode() {
         return Objects.hash(super.hashCode(), getProcessId());
     }
+
 
     private static int newEventId() {
         return eventGlobalCounter++;

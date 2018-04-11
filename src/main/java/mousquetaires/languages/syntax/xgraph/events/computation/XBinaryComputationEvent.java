@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.events.computation;
 
-import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
+import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 
@@ -17,7 +17,15 @@ public class XBinaryComputationEvent extends XComputationEventBase {
                                    XBinaryOperator operator,
                                    XLocalMemoryUnit firstOperand,
                                    XLocalMemoryUnit secondOperand) {
-        super(info, XTypeDeterminer.determineType(operator, firstOperand, secondOperand), operator);
+        this(NOT_UNROLLED_REF_ID, info, operator, firstOperand, secondOperand);
+    }
+
+    public XBinaryComputationEvent(int refId,
+                                   XEventInfo info,
+                                   XBinaryOperator operator,
+                                   XLocalMemoryUnit firstOperand,
+                                   XLocalMemoryUnit secondOperand) {
+        super(refId, info, XTypeDeterminer.determineType(operator, firstOperand, secondOperand), operator);
         this.firstOperand = firstOperand;
         this.secondOperand = secondOperand;
     }
@@ -35,8 +43,8 @@ public class XBinaryComputationEvent extends XComputationEventBase {
     }
 
     @Override
-    public XBinaryComputationEvent withInfo(XEventInfo newInfo) {
-        return new XBinaryComputationEvent(newInfo, getOperator(), getFirstOperand(), getSecondOperand());
+    public XBinaryComputationEvent asNodeRef(int refId) {
+        return new XBinaryComputationEvent(refId, getInfo(), getOperator(), getFirstOperand(), getSecondOperand());
     }
 
     @Override
@@ -51,8 +59,7 @@ public class XBinaryComputationEvent extends XComputationEventBase {
 
     @Override
     public String toString() {
-        //return wrapWithBracketsAndDepth("eval(" + getFirstOperand() + " " + getOperator() + " " + getSecondOperand() + ")");
-        return "COMPUT_" + getFirstOperand() + getOperator() + getSecondOperand();
+        return wrapWithBracketsAndDepth("eval(" + getFirstOperand() + getOperator() + getSecondOperand() + ")");
     }
 
     @Override

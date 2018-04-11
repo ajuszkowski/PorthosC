@@ -2,6 +2,7 @@ package mousquetaires.languages.syntax.xgraph.events.fake;
 
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
+import mousquetaires.utils.exceptions.NotSupportedException;
 
 import java.util.Objects;
 
@@ -11,12 +12,12 @@ public final class XExitEvent extends XFakeEvent {
     //private final boolean boundAchieved;
 
     public XExitEvent(XEventInfo info) {
-        super(info);
+        super(SINK_NODE_REF_ID, info);
     }
 
     @Override
-    public XExitEvent withInfo(XEventInfo newInfo) {
-        return new XExitEvent(newInfo);
+    public XExitEvent asNodeRef(int refId) {
+        throw new NotSupportedException("Exit event is a sink node and cannot be a reference");
     }
 
     @Override

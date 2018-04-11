@@ -30,14 +30,28 @@ public class XProcessBuilder extends FlowGraphBuilder<XEvent, XProcess> {
 
 
     @Override
+    public XEntryEvent getSource() {
+        return (XEntryEvent) super.getSource();
+    }
+
+    @Override
+    public XExitEvent getSink() {
+        return (XExitEvent) super.getSink();
+    }
+
+    @Override
     public void setSource(XEvent source) {
-        assert source instanceof XEntryEvent : source.getClass().getSimpleName();
+        if (!(source instanceof XEntryEvent)) {
+            throw new IllegalArgumentException();
+        }
         super.setSource(source);
     }
 
     @Override
     public void setSink(XEvent sink) {
-        assert sink instanceof XExitEvent : sink.getClass().getSimpleName();
+        if (!(sink instanceof XExitEvent)) {
+            throw new IllegalArgumentException();
+        }
         super.setSink(sink);
     }
 }

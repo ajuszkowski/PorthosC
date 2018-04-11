@@ -29,6 +29,8 @@ class XMemoryUnitEncoder {
     public Expr updateVarRef(XLvalueMemoryUnit unit, XEvent event) {
         VarRefCollection refsCollection = ssaMap.getEventMap(event);
         refsCollection.updateRef(unit);
+        ssaMap.addLastModEvent(unit, event);
+
         XMemoryUnitEncoderVisitor visitor = createVisitor(event.getProcessId(), refsCollection);
         return unit.accept(visitor);
     }

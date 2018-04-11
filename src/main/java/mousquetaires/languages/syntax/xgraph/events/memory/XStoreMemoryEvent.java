@@ -1,8 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.events.memory;
 
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
-import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.memories.XSharedLvalueMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
@@ -13,7 +12,11 @@ import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 public final class XStoreMemoryEvent extends XMemoryEventBase implements XSharedMemoryEvent {
 
     public XStoreMemoryEvent(XEventInfo info, XSharedLvalueMemoryUnit destination, XLocalMemoryUnit source) {
-        super(info, destination, source);
+        this(NOT_UNROLLED_REF_ID, info, destination, source);
+    }
+
+    private XStoreMemoryEvent(int nodeRef, XEventInfo info, XSharedLvalueMemoryUnit destination, XLocalMemoryUnit source) {
+        super(nodeRef, info, destination, source);
     }
 
     @Override
@@ -27,8 +30,20 @@ public final class XStoreMemoryEvent extends XMemoryEventBase implements XShared
     }
 
     @Override
-    public XStoreMemoryEvent withInfo(XEventInfo newInfo) {
-        return new XStoreMemoryEvent(newInfo, getDestination(), getSource());
+    public XStoreMemoryEvent asNodeRef(int refId) {
+        return new XStoreMemoryEvent(refId, getInfo(), getDestination(), getSource());
+    }
+
+    public XSharedLvalueMemoryUnit getLoc() {
+        return getDestination();
+    }
+
+    @Override
+    public XLocalLvalueMemoryUnit getReg() {
+        XLocalMemoryUnit source = getSource();
+        return source instanceof XLocalLvalueMemoryUnit
+                ? (XLocalLvalueMemoryUnit) source
+                : null;
     }
 
     @Override
@@ -38,7 +53,6 @@ public final class XStoreMemoryEvent extends XMemoryEventBase implements XShared
 
     @Override
     public String toString() {
-        //return wrapWithBracketsAndDepth("store(" + getDestination() + " := " + getSource() + /*", " + memoryOrder +*/ ")");
-        return "STORE_" + getDestination() + "_" + getSource();
+        return wrapWithBracketsAndDepth("store(" + getDestination() + "<-" + getSource() + /*", " + memoryOrder +*/ ")");
     }
 }

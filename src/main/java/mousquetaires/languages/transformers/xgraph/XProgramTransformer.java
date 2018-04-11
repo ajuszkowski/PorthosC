@@ -13,7 +13,7 @@ public class XProgramTransformer {
         for (XProcess process : program.getProcesses()) {
             XFlowGraphUnroller unroller = new XFlowGraphUnroller(process, bound);
             unroller.doUnroll();
-            builder.addProcess(unroller.getProcessedGraph());
+            builder.addProcess(unroller.getUnrolledGraph());
         }
         return builder.build();
     }

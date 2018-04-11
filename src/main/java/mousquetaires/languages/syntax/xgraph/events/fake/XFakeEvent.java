@@ -6,7 +6,7 @@ import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 
 public abstract class XFakeEvent extends XEventBase {
 
-    XFakeEvent(XEventInfo info) {
-        super(info);
+    XFakeEvent(int refId, XEventInfo info) {
+        super(refId, info);
     }
 }

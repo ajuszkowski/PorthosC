@@ -1,59 +1,39 @@
 package mousquetaires.tests.unit.languages.common.graph;
 
 import mousquetaires.languages.common.graph.FlowGraphNode;
-import mousquetaires.languages.common.graph.FlowGraphNodeInfo;
-
-import java.util.Objects;
 
 
-public final class IntNode implements FlowGraphNode<IntNodeInfo> {
-    private final IntNodeInfo info;
+public final class IntNode implements FlowGraphNode {
+
     private final int value;
+    private int refId;
 
     IntNode(int value) {
-        this(value, new IntNodeInfo());
-    }
-
-    IntNode(int value, IntNodeInfo info) {
-        this.info = info;
         this.value = value;
     }
 
-    public int getValue() {
+    IntNode(int value, int refId) {
+        this.value = value;
+        this.refId = refId;
+    }
+
+    @Override
+    public int getId() {
         return value;
     }
 
     @Override
-    public IntNodeInfo getInfo() {
-        return info;
-    }
-
-    @Override
-    public IntNode withInfo(IntNodeInfo newInfo) {
-        return new IntNode(getValue(), newInfo);
+    public int getRefId() {
+        return refId;
     }
 
     @Override
     public String getName() {
-        return "[" + "n=" + value + "," + getInfo() + "]";
+        return "[" + "n=" + getId() + ",d=" + getRefId() + "]";
     }
 
     @Override
     public String toString() {
         return getName();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (!(o instanceof IntNode)) { return false; }
-        IntNode intNode = (IntNode) o;
-        return getValue() == intNode.getValue() &&
-                Objects.equals(getInfo(), intNode.getInfo());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getInfo(), getValue());
     }
 }

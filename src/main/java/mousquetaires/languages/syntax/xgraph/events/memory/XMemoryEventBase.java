@@ -11,11 +11,12 @@ abstract class XMemoryEventBase extends XEventBase implements XMemoryEvent {
     private final XMemoryUnit destination;
     private final XMemoryUnit source;
 
-    XMemoryEventBase(XEventInfo info, XMemoryUnit destination, XMemoryUnit source) {
-        super(info);
+    XMemoryEventBase(int refId, XEventInfo info, XMemoryUnit destination, XMemoryUnit source) {
+        super(refId, info);
         this.destination = destination;
         this.source = source;
     }
+
 
     public XMemoryUnit getDestination() {
         return destination;

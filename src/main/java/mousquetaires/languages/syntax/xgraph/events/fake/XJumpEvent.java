@@ -7,12 +7,16 @@ import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 public final class XJumpEvent extends XFakeEvent {
 
     public XJumpEvent(XEventInfo info) {
-        super(info);
+        this(NOT_UNROLLED_REF_ID, info);
+    }
+
+    private XJumpEvent(int refId, XEventInfo info) {
+        super(refId, info);
     }
 
     @Override
-    public XJumpEvent withInfo(XEventInfo newInfo) {
-        return new XJumpEvent(newInfo);
+    public XJumpEvent asNodeRef(int refId) {
+        return new XJumpEvent(refId, getInfo());
     }
 
     @Override

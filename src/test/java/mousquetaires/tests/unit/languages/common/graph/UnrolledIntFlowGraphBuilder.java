@@ -13,17 +13,18 @@ public class UnrolledIntFlowGraphBuilder extends UnrolledFlowGraphBuilder<IntNod
     @Override
     public UnrolledIntFlowGraph build() {
         finishBuilding();
-        return new UnrolledIntFlowGraph(getSource(), getSink(),
+        return new UnrolledIntFlowGraph(getSource(),
+                                        getSink(),
                                         buildEdges(true),
                                         buildEdges(false),
                                         buildReversedEdges(true),
                                         buildReversedEdges(false),
-                                        buildNodesLinearised());
+                                        buildNodesLinearised(),
+                                        buildCondLevelMap());
     }
 
     @Override
-    public IntNode createNodeReference(IntNode node, int depth) {
-        IntNodeInfo newInfo = node.getInfo().withUnrollingDepth(depth);
-        return node.withInfo(newInfo);
+    public IntNode createNodeRef(IntNode node, int newRefId) {
+        return new IntNode(node.getId(), newRefId);
     }
 }

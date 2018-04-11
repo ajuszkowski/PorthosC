@@ -10,18 +10,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-class UnrollingActor<N extends FlowGraphNode, G extends UnrolledFlowGraph<N>>
-        extends FlowGraphTraverseActor<N, G> {
+class DfsUnrollingActor<N extends FlowGraphNode, G extends UnrolledFlowGraph<N>>
+        extends DfsTraverseActor<N, G> {
 
     private Set<N> leaves;
 
     private boolean waitingForStartEvent = true;
 
-    UnrollingActor(UnrolledFlowGraphBuilder<N, G> builder) {
+    DfsUnrollingActor(UnrolledFlowGraphBuilder<N, G> builder) {
         super(builder);
         this.leaves = new HashSet<>();
     }
-
 
     @Override
     public final void onEdgeVisit(boolean edgeKind, N from, N to) {
@@ -32,6 +31,7 @@ class UnrollingActor<N extends FlowGraphNode, G extends UnrolledFlowGraph<N>>
     @Override
     public void onFinish() {
         setSink();
+        builder.finishBuilding();
     }
 
     private void preProcessEdge(N from, N to) {

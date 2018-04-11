@@ -12,8 +12,8 @@ abstract class XComputationEventBase extends XEventBase implements XComputationE
     private final XOperator operator;
     private final Type type;
 
-    XComputationEventBase(XEventInfo info, Type type, XOperator operator) {
-        super(info);
+    XComputationEventBase(int refId, XEventInfo info, Type type, XOperator operator) {
+        super(refId, info);
         this.type = type;
         this.operator = operator;
     }

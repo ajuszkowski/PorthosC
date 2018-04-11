@@ -1,6 +1,5 @@
 package mousquetaires.languages.syntax.xgraph.events.fake;
 
-import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 import mousquetaires.utils.exceptions.NotSupportedException;
@@ -11,12 +10,12 @@ import java.util.Objects;
 public final class XEntryEvent extends XFakeEvent {
 
     public XEntryEvent(XEventInfo info) {
-        super(info);
+        super(SOURCE_NODE_REF_ID, info);
     }
 
     @Override
-    public XEntryEvent withInfo(XEventInfo newInfo) {
-        return new XEntryEvent(newInfo);
+    public XEntryEvent asNodeRef(int refId) {
+        throw new NotSupportedException("Entry event is a source node and cannot be a reference");
     }
 
     @Override

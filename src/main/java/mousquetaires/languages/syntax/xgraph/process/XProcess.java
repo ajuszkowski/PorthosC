@@ -3,6 +3,8 @@ package mousquetaires.languages.syntax.xgraph.process;
 import com.google.common.collect.ImmutableMap;
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 
 
 public class XProcess extends FlowGraph<XEvent> {
@@ -10,8 +12,8 @@ public class XProcess extends FlowGraph<XEvent> {
     private final XProcessId id;
 
     XProcess(XProcessId id,
-             XEvent source,
-             XEvent sink,
+             XEntryEvent source,
+             XExitEvent sink,
              ImmutableMap<XEvent, XEvent> trueEdges,
              ImmutableMap<XEvent, XEvent> falseEdges) {
         super(source, sink, trueEdges, falseEdges);
@@ -20,5 +22,15 @@ public class XProcess extends FlowGraph<XEvent> {
 
     public XProcessId getId() {
         return id;
+    }
+
+    @Override
+    public XEntryEvent source() {
+        return (XEntryEvent) super.source();
+    }
+
+    @Override
+    public XExitEvent sink() {
+        return (XExitEvent) super.sink();
     }
 }

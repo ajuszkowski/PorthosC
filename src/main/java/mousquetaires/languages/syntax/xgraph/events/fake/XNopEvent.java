@@ -1,18 +1,22 @@
 package mousquetaires.languages.syntax.xgraph.events.fake;
 
-import mousquetaires.languages.common.graph.FlowGraphNode;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
 public final class XNopEvent extends XFakeEvent {
+
     public XNopEvent(XEventInfo info) {
-        super(info);
+        this(NOT_UNROLLED_REF_ID, info);
+    }
+
+    private XNopEvent(int refId, XEventInfo info) {
+        super(refId, info);
     }
 
     @Override
-    public XNopEvent withInfo(XEventInfo newInfo) {
-        return new XNopEvent(newInfo);
+    public XNopEvent asNodeRef(int refId) {
+        return new XNopEvent(refId, getInfo());
     }
 
     @Override
@@ -22,6 +26,6 @@ public final class XNopEvent extends XFakeEvent {
 
     @Override
     public String toString() {
-        return "NOP_" + super.toString();
+        return wrapWithBracketsAndDepth("nop");
     }
 }

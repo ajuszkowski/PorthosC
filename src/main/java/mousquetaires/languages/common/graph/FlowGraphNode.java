@@ -3,9 +3,13 @@ package mousquetaires.languages.common.graph;
 import mousquetaires.languages.common.NamedAtom;
 
 
-public interface FlowGraphNode<T extends FlowGraphNodeInfo> extends NamedAtom {
+public interface FlowGraphNode extends NamedAtom {
 
-    T getInfo();
+    int NOT_UNROLLED_REF_ID = -1;
+    int SOURCE_NODE_REF_ID = 0;
+    int SINK_NODE_REF_ID = Integer.MAX_VALUE;
 
-    FlowGraphNode withInfo(T newInfo);
+    int getId();
+
+    int getRefId();
 }

@@ -6,7 +6,7 @@ import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
 
 
 class DfsLinearisationActor<N extends FlowGraphNode, G extends UnrolledFlowGraph<N>>
-        extends FlowGraphTraverseActor<N, G> {
+        extends DfsTraverseActor<N, G> {
 
     DfsLinearisationActor(UnrolledFlowGraphBuilder<N, G> builder) {
         super(builder);

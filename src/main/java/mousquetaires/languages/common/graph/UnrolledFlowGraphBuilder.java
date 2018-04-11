@@ -11,42 +11,82 @@ import java.util.*;
 public abstract class UnrolledFlowGraphBuilder<N extends FlowGraphNode, G extends FlowGraph<N>>
         extends FlowGraphBuilder<N, G> {
 
-    // TODO: need new builder to test unrolled graph
-    private Deque<N> linearisationQueue;
-
     private Map<N, Set<N>> reversedEdges;
     private Map<N, Set<N>> altReversedEdges;
+
+    // TODO: need new builder to test unrolled graph
+    private Deque<N> linearisationQueue;
+    private Map<N, Integer> condLevelMap;
+
+    public UnrolledFlowGraphBuilder(int graphSize) {
+        this.linearisationQueue = new LinkedList<>();
+        this.reversedEdges = new HashMap<>(graphSize);
+        this.altReversedEdges = new HashMap<>(graphSize);
+        this.condLevelMap = new HashMap<>(graphSize);
+    }
 
     public UnrolledFlowGraphBuilder() {
         this.linearisationQueue = new LinkedList<>();
         this.reversedEdges = new HashMap<>();
         this.altReversedEdges = new HashMap<>();
+        this.condLevelMap = new HashMap<>();
     }
 
-    public abstract N createNodeReference(N node, int depth);
+    public abstract N createNodeRef(N node, int newRefId);
 
     public ImmutableMap<N, ImmutableSet<N>> buildReversedEdges(boolean edgeSign) {
         return CollectionUtils.buildMapOfSets(getReversedEdges(edgeSign));
     }
 
     public void processTopologicallyNextNode(N node) {
-        if (!linearisationQueue.contains(node)) {
-            linearisationQueue.addFirst(node); // todo: addLast ?
+        if (!linearisationQueue.contains(node)) { //contains: for exit-events only. TODO: check this constraint <--
+            linearisationQueue.addFirst(node);
         }
+    }
+
+    @Override
+    public void finishBuilding() {
+        for (N node : linearisationQueue) {
+            int maxParentLevel = 0;
+            N maxParent = null;
+            for (boolean b : FlowGraph.edgeKinds()) {
+                Map<N, Set<N>> reversedEdges = getReversedEdges(b);
+                if (reversedEdges.containsKey(node)) {
+                    for (N parent : reversedEdges.get(node)) {
+                        assert condLevelMap.containsKey(parent) : parent;
+                        assert parent.getRefId() <= node.getRefId() : parent.getRefId() + "," + node.getRefId(); //just a check
+
+                        int parentLevel = condLevelMap.get(parent);
+                        if (parentLevel > maxParentLevel) {
+                            maxParentLevel = parentLevel;
+                            maxParent = parent;
+                        }
+                    }
+                }
+            }
+            int nodeCondLevel = maxParentLevel;
+            if (maxParent != null && isBranchingNode(maxParent)) {
+                nodeCondLevel++;
+            }
+            assert nodeCondLevel >= 0 : node;
+            condLevelMap.put(node, nodeCondLevel);
+        }
+
+        super.finishBuilding();
     }
 
     public ImmutableList<N> buildNodesLinearised() {
         return ImmutableList.copyOf(linearisationQueue);
     }
 
-    @Override
-    public void finishBuilding() {
-        super.finishBuilding();
+    public ImmutableMap<N, Integer> buildCondLevelMap() {
+        return ImmutableMap.copyOf(condLevelMap);
     }
 
     @Override
     public void setSource(N source) {
         super.setSource(source);
+        condLevelMap.put(source, 0);
     }
 
     @Override

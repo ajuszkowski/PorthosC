@@ -1,6 +1,7 @@
 package mousquetaires.languages.common.graph;
 
 import com.google.common.collect.ImmutableMap;
+import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.utils.patterns.BuilderBase;
 
 import javax.annotation.Nullable;
@@ -51,7 +52,6 @@ public abstract class FlowGraphBuilder<N extends FlowGraphNode, G extends FlowGr
     public void setSource(N source) {
         assert this.source == null : "source node has already been set";
         this.source = source;
-        addEdge(true, null, source);
     }
 
     @Override
@@ -77,6 +77,10 @@ public abstract class FlowGraphBuilder<N extends FlowGraphNode, G extends FlowGr
     public boolean hasEdge(boolean edgeSign, N from, N to) {
         Map<N, N> map = getEdges(edgeSign);
         return map.containsKey(from) && map.get(from).equals(to);
+    }
+
+    public boolean isBranchingNode(N node) {
+        return altEdges.containsKey(node);
     }
 
     protected Map<N, N> getEdges(boolean edgeSign) {

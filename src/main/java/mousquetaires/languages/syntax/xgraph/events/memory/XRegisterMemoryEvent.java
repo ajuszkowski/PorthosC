@@ -1,9 +1,8 @@
 package mousquetaires.languages.syntax.xgraph.events.memory;
 
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
-import mousquetaires.languages.syntax.xgraph.memories.XConstant;
-import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalLvalueMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
@@ -13,7 +12,11 @@ import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 public final class XRegisterMemoryEvent extends XMemoryEventBase implements XLocalMemoryEvent {
 
     public XRegisterMemoryEvent(XEventInfo info, XLocalLvalueMemoryUnit destination, XLocalMemoryUnit source) {
-        super(info, destination, source);
+        super(NOT_UNROLLED_REF_ID, info, destination, source);
+    }
+
+    private XRegisterMemoryEvent(int refId, XEventInfo info, XLocalLvalueMemoryUnit destination, XLocalMemoryUnit source) {
+        super(refId, info, destination, source);
     }
 
     @Override
@@ -26,9 +29,14 @@ public final class XRegisterMemoryEvent extends XMemoryEventBase implements XLoc
         return (XLocalMemoryUnit) super.getSource();
     }
 
+    //@Override
+    //public XLocalMemoryUnit getReg() {
+    //    return getDestination(); // TODO: OR source???
+    //}
+
     @Override
-    public XRegisterMemoryEvent withInfo(XEventInfo newInfo) {
-        return new XRegisterMemoryEvent(newInfo, getDestination(), getSource());
+    public XRegisterMemoryEvent asNodeRef(int refId) {
+        return new XRegisterMemoryEvent(refId, getInfo(), getDestination(), getSource());
     }
 
     @Override
@@ -38,7 +46,6 @@ public final class XRegisterMemoryEvent extends XMemoryEventBase implements XLoc
 
     @Override
     public String toString() {
-        //return wrapWithBracketsAndDepth(getDestination() + " := " + getSource());
-        return "LOCALMEM_" + getDestination() + "_" + getSource();
+        return wrapWithBracketsAndDepth(getDestination() + "<-" + getSource());
     }
 }

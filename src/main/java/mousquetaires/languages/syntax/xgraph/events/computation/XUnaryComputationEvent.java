@@ -13,10 +13,13 @@ public class XUnaryComputationEvent extends XComputationEventBase {
     private final XLocalMemoryUnit operand;
 
     public XUnaryComputationEvent(XEventInfo info, XUnaryOperator operator, XLocalMemoryUnit operand) {
-        super(info, XTypeDeterminer.determineType(operator, operand), operator);
-        this.operand = operand;
+        this(NOT_UNROLLED_REF_ID, info, operator, operand);
     }
 
+    private XUnaryComputationEvent(int refId, XEventInfo info, XUnaryOperator operator, XLocalMemoryUnit operand) {
+        super(refId, info, XTypeDeterminer.determineType(operator, operand), operator);
+        this.operand = operand;
+    }
 
     public XUnaryOperator getOperator() {
         return (XUnaryOperator) super.getOperator();
@@ -27,8 +30,8 @@ public class XUnaryComputationEvent extends XComputationEventBase {
     }
 
     @Override
-    public XUnaryComputationEvent withInfo(XEventInfo newInfo) {
-        return new XUnaryComputationEvent(newInfo, getOperator(), getOperand());
+    public XUnaryComputationEvent asNodeRef(int refId) {
+        return new XUnaryComputationEvent(refId, getInfo(), getOperator(), getOperand());
     }
 
     @Override
@@ -43,8 +46,7 @@ public class XUnaryComputationEvent extends XComputationEventBase {
 
     @Override
     public String toString() {
-        //return wrapWithBracketsAndDepth("eval(" + getOperator() + getOperand() + ")");
-        return "COMPUT_" + getOperator() + getOperand();
+        return wrapWithBracketsAndDepth("eval(" + getOperator() + getOperand() + ")");
     }
 
     @Override

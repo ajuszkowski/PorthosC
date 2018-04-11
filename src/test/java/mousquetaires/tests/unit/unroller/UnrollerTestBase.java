@@ -17,7 +17,7 @@ public abstract class UnrollerTestBase extends AbstractUnitTest<UnrolledIntFlowG
         IntFlowGraphUnroller unroller = new IntFlowGraphUnroller(actualNonUnrolled, bound,
                 expectedUnrolled.source(), expectedUnrolled.sink());
         unroller.doUnroll();
-        UnrolledIntFlowGraph actualUnrolled = unroller.getProcessedGraph();
+        UnrolledIntFlowGraph actualUnrolled = unroller.getUnrolledGraph();
         Assertion assertion = compareMultipleResults(CollectionUtils.createIteratorFrom(expectedUnrolled),
                                                      CollectionUtils.createIteratorFrom(actualUnrolled));
         if (!assertion.checkSuccess()) {

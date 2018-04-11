@@ -1,8 +1,6 @@
 package mousquetaires.languages.converters.tozformula;
 
-import com.microsoft.z3.*;
-import mousquetaires.languages.syntax.xgraph.memories.*;
-import mousquetaires.languages.syntax.xgraph.process.XProcessId;
+import mousquetaires.languages.syntax.xgraph.memories.XLvalueMemoryUnit;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +9,7 @@ import java.util.Set;
 import static mousquetaires.utils.StringUtils.wrap;
 
 
-class VarRefCollection implements Cloneable {
+public class VarRefCollection implements Cloneable {
 
     private final Map<XLvalueMemoryUnit, Integer> map;
 

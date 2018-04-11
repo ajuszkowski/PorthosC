@@ -2,24 +2,29 @@ package mousquetaires.languages.converters.tozformula;
 
 import com.microsoft.z3.Context;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 
-class StaticSingleAssignmentMap {
+public class StaticSingleAssignmentMap {
 
     private final Context ctx;
     private final XMemoryUnitCollector memoryUnitCollector;
     private final Map<XEvent, VarRefCollection> eventVarMap;
 
-    StaticSingleAssignmentMap(Context ctx, int initialCapacity, Set<XEvent> entryEvents) {
+    private final Map<XLvalueMemoryUnit, Set<XEvent>> lastModMap;
+
+    StaticSingleAssignmentMap(Context ctx, int initialCapacity, Set<XEntryEvent> entryEvents) {
         this.ctx = ctx;
         this.eventVarMap = new HashMap<>(initialCapacity);
-        for (XEvent entryEvent : entryEvents) {
+        this.lastModMap = new HashMap<>(initialCapacity);
+        for (XEntryEvent entryEvent : entryEvents) {
             this.eventVarMap.put(entryEvent, new VarRefCollection());
         }
         this.memoryUnitCollector = new XMemoryUnitCollector();
@@ -46,6 +51,20 @@ class StaticSingleAssignmentMap {
         eventVarMap.put(child, childVarRefs);
     }
 
+    public Set<XEvent> getLastModEvents(XLvalueMemoryUnit unit) {
+        return lastModMap.getOrDefault(unit, new HashSet<>());
+    }
+
+    void addLastModEvent(XLvalueMemoryUnit unit, XEvent event) {
+        if (lastModMap.containsKey(unit)) {
+            lastModMap.get(unit).add(event);
+        }
+        else {
+            HashSet<XEvent> set = new HashSet<>();
+            set.add(event);
+            lastModMap.put(unit, set);
+        }
+    }
     //void copyValues(Set<XEvent> parents, XEvent child) {
     //    if (parents.size() == 1) {
     //        XEvent singleParent = CollectionUtils.getSingleElement(parents);
@@ -104,7 +123,7 @@ class StaticSingleAssignmentMap {
     //    }
     //}
 
-    VarRefCollection getEventMap(XEvent event) {
+    public VarRefCollection getEventMap(XEvent event) {
         assert eventVarMap.containsKey(event) : "access not in registered event: " + event;
         return eventVarMap.get(event);
     }

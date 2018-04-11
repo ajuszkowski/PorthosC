@@ -7,10 +7,22 @@ import java.util.Objects;
 
 public abstract class XEventBase implements XEvent {
 
+    private final int refId;
     private final XEventInfo info;
 
-    public XEventBase(XEventInfo info) {
+    public XEventBase(int refId, XEventInfo info) {
+        this.refId = refId;
         this.info = info;
+    }
+
+    @Override
+    public int getId() {
+        return getInfo().getEventId();
+    }
+
+    @Override
+    public int getRefId() {
+        return refId;
     }
 
     @Override
@@ -29,20 +41,21 @@ public abstract class XEventBase implements XEvent {
     }
 
     @Override
-    public String toString() {
-        return getName();
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) { return true; }
         if (!(o instanceof XEventBase)) { return false; }
         XEventBase that = (XEventBase) o;
-        return Objects.equals(getInfo(), that.getInfo());
+        return getRefId() == that.getRefId() &&
+                Objects.equals(getInfo(), that.getInfo());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getInfo());
+        return Objects.hash(getRefId(), getInfo());
+    }
+
+    protected String wrapWithBracketsAndDepth(String message) {
+        String refIdSuffix = (refId == NOT_UNROLLED_REF_ID) ? "" : "," + refId;
+        return "[" + message + refIdSuffix + "]";
     }
 }

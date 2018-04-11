@@ -14,7 +14,8 @@ public class UnrolledIntFlowGraph extends UnrolledFlowGraph<IntNode> {
                          ImmutableMap<IntNode, IntNode> altEdges,
                          ImmutableMap<IntNode, ImmutableSet<IntNode>> edgesReversed,
                          ImmutableMap<IntNode, ImmutableSet<IntNode>> altEdgesReversed,
-                         ImmutableList<IntNode> layers) {
-        super(source, sink, edges, altEdges, edgesReversed, altEdgesReversed, layers);
+                         ImmutableList<IntNode> nodesLinearised,
+                         ImmutableMap<IntNode, Integer> condLevelMap) {
+        super(source, sink, edges, altEdges, edgesReversed, altEdgesReversed, nodesLinearised, condLevelMap);
     }
 }
