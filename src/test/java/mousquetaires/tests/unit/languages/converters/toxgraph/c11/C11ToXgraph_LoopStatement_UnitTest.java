@@ -8,6 +8,7 @@ import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XRegister;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
+import mousquetaires.memorymodels.wmm.MemoryModelKind;
 import mousquetaires.tests.unit.UnitTestPaths;
 import mousquetaires.tests.unit.languages.common.XTestMemoryManager;
 import mousquetaires.tests.unit.languages.converters.toxgraph.C11ToXgraph_UnitTestBase;
@@ -17,8 +18,15 @@ import org.junit.Test;
 
 public class C11ToXgraph_LoopStatement_UnitTest extends C11ToXgraph_UnitTestBase {
 
+    @Override
+    protected MemoryModelKind memoryModel() {
+        return MemoryModelKind.TSO;//temporary
+    }
+
     @Test
     public void test() {
+        MemoryModelKind memoryModel = MemoryModelKind.TSO;
+
         XProcessId processId = new XProcessId("P0");//TODO: process id
         XFlowGraphTestBuilder builder = new XFlowGraphTestBuilder(processId);
         XTestMemoryManager memoryManager = new XTestMemoryManager(processId);
@@ -62,7 +70,7 @@ public class C11ToXgraph_LoopStatement_UnitTest extends C11ToXgraph_UnitTestBase
 
         XProcess process = builder.build();
 
-        run( UnitTestPaths.c11StatementsDirectory + "loopStatement.c",
-                getIterator(process));
+        run(UnitTestPaths.c11StatementsDirectory + "loopStatement.c",
+            getIterator(process));
     }
 }

@@ -8,6 +8,7 @@ import mousquetaires.languages.syntax.xgraph.XProgramBase;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
+import mousquetaires.memorymodels.wmm.MemoryModelKind;
 import mousquetaires.tests.TestFailedException;
 import mousquetaires.tests.unit.Assertion;
 import mousquetaires.tests.unit.languages.common.graph.AssertionXProcessesEqual;
@@ -20,6 +21,8 @@ import java.util.Iterator;
 
 public abstract class C11ToXgraph_UnitTestBase extends AbstractConverterUnitTest<XProcess> {
 
+    protected abstract MemoryModelKind memoryModel();
+
     @Override
     protected Iterator<? extends XProcess> parseTestFile(String testFile) {
         try {
@@ -27,9 +30,9 @@ public abstract class C11ToXgraph_UnitTestBase extends AbstractConverterUnitTest
             File file = new File(testFile);
             ProgramLanguage language = ProgramExtensions.parseProgramLanguage(file.getName());
             YSyntaxTree internalRepr = YtreeParser.parse(file, language);
-            Ytree2XgraphConverter converter = new Ytree2XgraphConverter(language, dataModel);
+            Ytree2XgraphConverter converter = new Ytree2XgraphConverter(language, memoryModel(), dataModel);
             XProgramBase program = converter.convert(internalRepr);
-            return program.getProcesses().iterator();
+            return program.getProcesses().iterator(); //TODO: check this warn 'Unchecked assignment'
         } catch (IOException e) {
             e.printStackTrace();
             throw new TestFailedException(e);

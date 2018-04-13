@@ -1,7 +1,7 @@
 package mousquetaires.memorymodels.wmm;
 
 // TODO: replace abbreviations with full aliases
-public enum MemoryModelName {
+public enum MemoryModelKind {
     SC,
     TSO,
     PSO,
@@ -11,28 +11,28 @@ public enum MemoryModelName {
     ARM,
     ;
 
-    public static MemoryModelName parse(String value) {
+    public static MemoryModelKind parse(String value) {
         switch (value.toLowerCase()) {
             case "sc":
-                return MemoryModelName.SC;
+                return MemoryModelKind.SC;
             case "tso":
-                return MemoryModelName.TSO;
+                return MemoryModelKind.TSO;
             case "pso":
-                return MemoryModelName.PSO;
+                return MemoryModelKind.PSO;
             case "rmo":
-                return MemoryModelName.RMO;
+                return MemoryModelKind.RMO;
             case "alpha":
-                return MemoryModelName.Alpha;
+                return MemoryModelKind.Alpha;
             case "power":
-                return MemoryModelName.Power;
+                return MemoryModelKind.Power;
             case "arm":
-                return MemoryModelName.ARM;
+                return MemoryModelKind.ARM;
             default:
                 return null;
         }
     }
 
-    public boolean is(MemoryModelName other) {
+    public boolean is(MemoryModelKind other) {
         return this == other;
     }
 }

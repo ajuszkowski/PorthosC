@@ -17,6 +17,7 @@ import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModelLP64;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
+import mousquetaires.memorymodels.wmm.MemoryModelKind;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,14 +43,14 @@ public class DartagnanModule extends AppModule {
         try {
             int unrollBound = 10; // TODO: get from options
 
-            //MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
+            MemoryModelKind memoryModel = options.sourceModel;
 
             File inputProgramFile = options.inputProgramFile;
             ProgramLanguage language = ProgramExtensions.parseProgramLanguage(inputProgramFile.getName());
             YSyntaxTree internalRepr = YtreeParser.parse(inputProgramFile, language);
             DataModel dataModel = new DataModelLP64(); // TODO: pass as cli-option
 
-            Ytree2XgraphConverter yConverter = new Ytree2XgraphConverter(language, dataModel);
+            Ytree2XgraphConverter yConverter = new Ytree2XgraphConverter(language, memoryModel, dataModel);
             XProgram program = yConverter.convert(internalRepr);
 
             XUnrolledProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);

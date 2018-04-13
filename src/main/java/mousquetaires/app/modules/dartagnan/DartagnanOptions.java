@@ -7,7 +7,7 @@ import mousquetaires.app.options.converters.MemoryModelNameConverter;
 import mousquetaires.app.options.validators.FileValidator;
 import mousquetaires.app.options.validators.InputProgramExtensionValidator;
 import mousquetaires.app.options.validators.MemoryModelNameValidator;
-import mousquetaires.memorymodels.wmm.MemoryModelName;
+import mousquetaires.memorymodels.wmm.MemoryModelKind;
 
 import java.io.File;
 
@@ -31,5 +31,5 @@ public class DartagnanOptions extends AppOptions {
             //validateValueWith = {FileValidator.class, InputModelExtensionValidator.class})
             converter = MemoryModelNameConverter.class,
             validateValueWith = MemoryModelNameValidator.class)
-    public MemoryModelName sourceModel;
+    public MemoryModelKind sourceModel;
 }

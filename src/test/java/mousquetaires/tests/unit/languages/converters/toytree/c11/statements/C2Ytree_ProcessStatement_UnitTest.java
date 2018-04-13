@@ -9,6 +9,9 @@ import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.statements.YVariableDeclarationStatement;
+import mousquetaires.languages.syntax.ytree.types.YMockType;
+import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
+import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
 import mousquetaires.tests.unit.UnitTestPaths;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -22,11 +25,11 @@ public class C2Ytree_ProcessStatement_UnitTest extends C2Ytree_Statement_UnitTes
     @Ignore("process statements syntax is temporarily not supported")
     public void test() {
         Iterator<? extends YEntity> expected = getIterator(
-                new YProcessStatement(new XProcessId("1"), new YCompoundStatement(true,
-                                                                                  new YVariableDeclarationStatement(typeInt, variableA),
-                                                                                  new YLinearStatement(new YAssignmentExpression(variableA, constant1)))),
-                new YAssertionStatement(
-                        YRelativeBinaryExpression.Kind.Equals.createExpression(variableA, constant2)));
+                new YProcessStatement(new YMethodSignature("?", new YMockType(), new YParameter[0]),// TODO: replace this mock signature with real
+                new YCompoundStatement(true,
+                                       new YVariableDeclarationStatement(typeInt, variableA),
+                                       new YLinearStatement(new YAssignmentExpression(variableA, constant1)))),
+                new YAssertionStatement(YRelativeBinaryExpression.Kind.Equals.createExpression(variableA, constant2)));
         run(UnitTestPaths.c11StatementsDirectory + "processStatement.c", expected);
     }
 }

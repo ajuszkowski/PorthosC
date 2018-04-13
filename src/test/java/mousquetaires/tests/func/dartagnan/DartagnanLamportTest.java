@@ -2,7 +2,7 @@ package mousquetaires.tests.func.dartagnan;
 
 import com.googlecode.zohhak.api.TestWith;
 import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
-import mousquetaires.memorymodels.wmm.MemoryModelName;
+import mousquetaires.memorymodels.wmm.MemoryModelKind;
 import mousquetaires.tests.unit.FuncTestPaths;
 import org.junit.Ignore;
 
@@ -26,7 +26,7 @@ public class DartagnanLamportTest extends AbstractDartagnanFuncTest {
             lamport_pts_rx + ", " + "Power, NonReachable",
             lamport_pts_rx + ", " + "ARM,   NonReachable",
     })
-    public void test_lamport_pts_rx(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
+    public void test_lamport_pts_rx(String inputProgramFile, MemoryModelKind sourceModel, DartagnanVerdict.Status expected) {
         DartagnanVerdict verdict = runTest(inputProgramFile, sourceModel);
         assertEquals(expected, verdict.result);
     }
@@ -41,7 +41,7 @@ public class DartagnanLamportTest extends AbstractDartagnanFuncTest {
             lamport_litmus_rx + ", " + "Power, NonReachable",
             lamport_litmus_rx + ", " + "ARM,   NonReachable",
     })
-    public void test_lamport_litmus_rx(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
+    public void test_lamport_litmus_rx(String inputProgramFile, MemoryModelKind sourceModel, DartagnanVerdict.Status expected) {
         DartagnanVerdict verdict = runTest(inputProgramFile, sourceModel);
         assertEquals(expected, verdict.result);
     }
@@ -57,7 +57,7 @@ public class DartagnanLamportTest extends AbstractDartagnanFuncTest {
             lamport_pts_sc + ", " + "Power, NonReachable",
             lamport_pts_sc + ", " + "ARM,   NonReachable",
     })
-    public void test_lamport_pts_sc(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
+    public void test_lamport_pts_sc(String inputProgramFile, MemoryModelKind sourceModel, DartagnanVerdict.Status expected) {
         DartagnanVerdict verdict = runTest(inputProgramFile, sourceModel);
         assertEquals(expected, verdict.result);
     }

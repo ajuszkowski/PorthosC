@@ -12,6 +12,7 @@ import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
+import mousquetaires.memorymodels.wmm.MemoryModelKind;
 import mousquetaires.tests.TestFailedException;
 import mousquetaires.tests.unit.Assertion;
 import mousquetaires.tests.unit.languages.converters.AbstractConverterUnitTest;
@@ -25,6 +26,8 @@ import java.util.Iterator;
 
 public abstract class C2Zformula_UnitTestBase extends AbstractConverterUnitTest<BoolExpr> {
 
+    protected abstract MemoryModelKind memoryModel();
+
     @Override
     protected Iterator<? extends BoolExpr> parseTestFile(String testFile) {
         try {
@@ -33,7 +36,7 @@ public abstract class C2Zformula_UnitTestBase extends AbstractConverterUnitTest<
             File file = new File(testFile);
             ProgramLanguage language = ProgramExtensions.parseProgramLanguage(file.getName());
             YSyntaxTree internalRepr = YtreeParser.parse(file, language);
-            Ytree2XgraphConverter converter = new Ytree2XgraphConverter(language, dataModel);
+            Ytree2XgraphConverter converter = new Ytree2XgraphConverter(language, memoryModel(), dataModel);
             XProgram program = converter.convert(internalRepr);
             XUnrolledProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
             Context ctx = new Context();
