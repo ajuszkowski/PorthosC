@@ -2,6 +2,7 @@ package mousquetaires.languages.syntax.xgraph.memories;
 
 
 import mousquetaires.languages.common.Type;
+import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 
 import java.util.Objects;
 
@@ -12,16 +13,28 @@ abstract class XLvalueMemoryUnitBase extends XMemoryUnitBase implements XLvalueM
 
     private final int uniqueId;
     private final String name;
+    private final boolean isResolved;
 
-    XLvalueMemoryUnitBase(String name, Type type) {
+    XLvalueMemoryUnitBase(String name, Type type, boolean isResolved) {
         super(type);
-        this.name = name;
         this.uniqueId = createId();
+        this.name = name;
+        this.isResolved = isResolved;
     }
 
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean isResolved() {
+        return isResolved;
+    }
+
+    @Override
+    public <T> T accept(XMemoryUnitVisitor<T> visitor) {
+        return null;
     }
 
     @Override

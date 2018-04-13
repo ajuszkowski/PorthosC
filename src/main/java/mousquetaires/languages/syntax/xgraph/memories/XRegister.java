@@ -9,8 +9,8 @@ public final class XRegister extends XLvalueMemoryUnitBase implements XLocalLval
 
     private final XProcessId processId;
 
-    public XRegister(String name, Type type, XProcessId processId) {
-        super(name, type);
+    public XRegister(String name, Type type, XProcessId processId, boolean isResolved) {
+        super(name, type, isResolved);
         this.processId = processId;
     }
 

@@ -14,18 +14,18 @@ import mousquetaires.utils.exceptions.NotImplementedException;
  */
 public final class XConstant extends XMemoryUnitBase implements XLocalMemoryUnit, XRvalueMemoryUnit {
 
-    private final int value;
+    private final Object value;
 
     private XConstant(Object value, Type type) {
         // TODO: make name unique (add bitness to it)
         super(type);
-        if (!(value instanceof Integer)) {
-            throw new NotImplementedException("Only integer constants are supported for now. Found: " + value);
+        if (!(value instanceof Integer || value instanceof Boolean)) {
+            throw new NotImplementedException("Only integer and boolean constants are supported for now. Found: " + value);
         }
-        this.value = (Integer) value;
+        this.value = value;
     }
 
-    public int getValue() {
+    public Object getValue() {
         return value;
     }
 

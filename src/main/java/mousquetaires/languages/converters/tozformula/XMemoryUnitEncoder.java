@@ -9,6 +9,8 @@ import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
+import org.apache.xpath.operations.Bool;
+import org.omg.CORBA.INTERNAL;
 
 
 class XMemoryUnitEncoder {
@@ -57,17 +59,15 @@ class XMemoryUnitEncoder {
         @Override
         public Expr visit(XUnaryComputationEvent event) {
             Expr operand = event.getOperand().accept(this);
-            // for now, unary operators are only boolean
-            if (!(operand instanceof BoolExpr)) {
-                throw new ToZ3ConversionException("Expected boolean operand of unary computation event "
-                                                          + event + ", found: " + operand.getClass().getSimpleName());
-            }
-            BoolExpr boolOperand = (BoolExpr) operand;
             switch (event.getOperator()) {
                 case BitNegation:
-                    return ctx.mkNot(boolOperand);
+                    if (!(operand instanceof BoolExpr)) {
+                        throw new ToZ3ConversionException("Expected boolean operand of unary computation event "
+                                                                  + event + ", found: " + operand.getClass().getSimpleName());
+                    }
+                    return ctx.mkNot((BoolExpr) operand);
                 case NoOperation:
-                    return boolOperand;
+                    return operand;
                 default:
                     throw new IllegalArgumentException(event.getOperator().name());
             }
@@ -127,7 +127,17 @@ class XMemoryUnitEncoder {
         @Override
         public Expr visit(XConstant constant) {
             // TODO: determine type of constant here
-            return ctx.mkInt(constant.getValue());
+            Object value = constant.getValue();
+            switch (constant.getType()) {
+                case bit1:
+                    assert value instanceof Boolean : value;
+                    return ctx.mkBool((Boolean) value);
+                case int32:
+                    assert value instanceof Integer : value;
+                    return ctx.mkInt((Integer) value);
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         @Override

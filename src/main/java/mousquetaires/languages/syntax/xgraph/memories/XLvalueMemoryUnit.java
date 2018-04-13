@@ -4,5 +4,5 @@ import mousquetaires.languages.common.NamedAtom;
 
 
 public interface XLvalueMemoryUnit extends XMemoryUnit, NamedAtom {
-
+    boolean isResolved();
 }

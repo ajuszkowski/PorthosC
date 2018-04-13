@@ -6,8 +6,8 @@ import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 
 public final class XLocation extends XLvalueMemoryUnitBase implements XSharedLvalueMemoryUnit {
 
-    public XLocation(String name, Type type) {
-        super(name, type);
+    public XLocation(String name, Type type, boolean isResolved) {
+        super(name, type, isResolved);
     }
 
     @Override
