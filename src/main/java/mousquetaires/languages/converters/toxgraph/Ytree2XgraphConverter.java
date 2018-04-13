@@ -6,22 +6,25 @@ import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.converters.toxgraph.interpretation.XProgramInterpreter;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
+import mousquetaires.memorymodels.wmm.MemoryModelKind;
 
 
 // Stateless
 public class Ytree2XgraphConverter {
 
     private final ProgramLanguage language;
+    private final MemoryModelKind memoryModel;
     private final DataModel dataModel;
 
-    public Ytree2XgraphConverter(ProgramLanguage language, DataModel dataModel) {
+    public Ytree2XgraphConverter(ProgramLanguage language, MemoryModelKind memoryModel, DataModel dataModel) {
         this.language = language;
+        this.memoryModel = memoryModel;
         this.dataModel = dataModel;
     }
 
     public XProgram convert(YSyntaxTree internalSyntaxTree) {
         XMemoryManager sharedMemoryManager = new XMemoryManager();//dataModel
-        XProgramInterpreter programInterpreter = new XProgramInterpreter(sharedMemoryManager);
+        XProgramInterpreter programInterpreter = new XProgramInterpreter(sharedMemoryManager, memoryModel);
         Ytree2XgraphConverterVisitor visitor = new Ytree2XgraphConverterVisitor(programInterpreter);
         internalSyntaxTree.accept(visitor);
         return visitor.getProgram();

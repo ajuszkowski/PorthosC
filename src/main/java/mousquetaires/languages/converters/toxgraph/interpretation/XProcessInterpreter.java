@@ -1,8 +1,12 @@
 package mousquetaires.languages.converters.toxgraph.interpretation;
 
 import mousquetaires.languages.common.Type;
+import mousquetaires.languages.converters.toxgraph.hooks.HookManager;
+import mousquetaires.languages.converters.toxgraph.hooks.InterceptionAction;
+import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
+import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.*;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
@@ -13,13 +17,14 @@ import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
 import mousquetaires.languages.syntax.xgraph.process.XProcessBuilder;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
-import mousquetaires.utils.StringUtils;
+import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import mousquetaires.utils.exceptions.xgraph.XInterpreterUsageError;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
+import javax.annotation.Nullable;
+import java.util.*;
+
+import static mousquetaires.utils.StringUtils.wrap;
 
 
 public class XProcessInterpreter {
@@ -44,6 +49,8 @@ public class XProcessInterpreter {
 
     private final XProcessId processId;
     private final XProcessBuilder graphBuilder;
+    public final XMemoryManager memoryManager;
+    private final HookManager hookManager;
     private XProcess result;
 
     // todo: add add/put methods with non-null checks
@@ -51,12 +58,10 @@ public class XProcessInterpreter {
     private final Queue<XBlockContext> almostReadyContexts;
     private final Queue<XBlockContext> readyContexts;
 
-    private final XMemoryManager memoryManager;
-
     private XEvent previousEvent;
 
 
-    public XProcessInterpreter(XProcessId processId, XMemoryManager memoryManager) {
+    XProcessInterpreter(XProcessId processId, XMemoryManager memoryManager, HookManager hookManager) {
         this.processId = processId; //todo: non-uniqueness case
         this.memoryManager = memoryManager;
         this.graphBuilder = new XProcessBuilder(processId);
@@ -66,7 +71,9 @@ public class XProcessInterpreter {
 
         XBlockContext linearContext = new XBlockContext(XBlockContextKind.Sequential);
         linearContext.state = XProcessInterpreter.ContextState.WaitingNextLinearEvent;
-        contextStack.push(linearContext);
+        this.contextStack.push(linearContext);
+
+        this.hookManager = hookManager;
     }
 
 
@@ -76,6 +83,7 @@ public class XProcessInterpreter {
         assert contextStack.size() == 1; //linear entry context only
         assert readyContexts.isEmpty();
         assert almostReadyContexts.isEmpty();
+        memoryManager.clearLocals();
         result = graphBuilder.build();
     }
 
@@ -94,19 +102,40 @@ public class XProcessInterpreter {
 
     // --
 
-    public XLocalMemoryUnit copyToLocalMemoryIfNecessary(XMemoryUnit memoryUnit) {
-        if (memoryUnit instanceof XLocation) {
-            return copyToLocalMemory((XLocation) memoryUnit);
+    public XLocalMemoryUnit tryConvertToLocalOrNull(XEntity expression) {
+        if (expression != null) {
+            if (expression instanceof XLocalMemoryUnit) {
+                // computation events, constants here
+                return (XLocalMemoryUnit) expression;
+            }
+            if (expression instanceof XSharedMemoryUnit) {
+                return copyToLocalMemory((XSharedMemoryUnit) expression);
+            }
         }
-        else if (memoryUnit instanceof XLocalMemoryUnit) { // also here: XComputationEvent
-            return (XLocalMemoryUnit) memoryUnit;
-        }
-        throw new XInterpretationError("Illegal attempt to write to the local memory a memory unit of type "
-                + memoryUnit.getClass().getSimpleName());
+        return null;
     }
 
+    public XLocalLvalueMemoryUnit tryConvertToLocalLvalueOrNull(XEntity expression) {
+        XLocalMemoryUnit local = tryConvertToLocalOrNull(expression);
+        if (local instanceof XLocalLvalueMemoryUnit) {
+            return (XLocalLvalueMemoryUnit) local;
+        }
+        return null;
+    }
+
+    //public XLocalMemoryUnit copyToLocalMemoryIfNecessary(XMemoryUnit memoryUnit) {
+    //    if (memoryUnit instanceof XLocation) {
+    //        return copyToLocalMemory((XLocation) memoryUnit);
+    //    }
+    //    else if (memoryUnit instanceof XLocalMemoryUnit) { // also here: XComputationEvent
+    //        return (XLocalMemoryUnit) memoryUnit;
+    //    }
+    //    throw new XInterpretationError("Illegal attempt to write to the local memory a memory unit of type "
+    //            + memoryUnit.getClass().getSimpleName());
+    //}
+
     public XRegister copyToLocalMemory(XSharedMemoryUnit shared) {
-        XRegister tempLocal = memoryManager.getTempRegister(shared.getType());
+        XRegister tempLocal = memoryManager.newTempRegister(shared.getType());
         emitMemoryEvent(tempLocal, shared);
         return tempLocal;
     }
@@ -117,14 +146,24 @@ public class XProcessInterpreter {
         return XConstant.create(value, type);
     }
 
-    public XComputationEvent evaluateMemoryUnit(XMemoryUnit memoryUnit) { //todo: type?
-        XLocalMemoryUnit localMemoryUnit = copyToLocalMemoryIfNecessary(memoryUnit);
-        return emitComputationEvent(XUnaryOperator.NoOperation, localMemoryUnit);
+    public XComputationEvent evaluateMemoryUnit(XMemoryUnit memoryUnit) {
+        XLocalMemoryUnit localUnit = null;
+        if (memoryUnit instanceof XLocalMemoryUnit) {
+            localUnit = (XLocalMemoryUnit) memoryUnit;
+        }
+        else if (memoryUnit instanceof XSharedMemoryUnit) {
+            localUnit = tryConvertToLocalOrNull(memoryUnit);
+        }
+        if (localUnit == null) {
+            throw new IllegalStateException("Memory unit may be either local or shared, found: "
+                                                    + memoryUnit.getClass().getSimpleName());
+        }
+        return emitComputationEvent(XUnaryOperator.NoOperation, localUnit);
     }
-
-    public XComputationEvent evaluateConstant(XConstant constant) {
-        return emitComputationEvent(XUnaryOperator.NoOperation, constant);
-    }
+    //
+    //public XComputationEvent evaluateConstant(XConstant constant) {
+    //    return emitComputationEvent(XUnaryOperator.NoOperation, constant);
+    //}
 
     // --
 
@@ -143,9 +182,15 @@ public class XProcessInterpreter {
         return exitEvent;
     }
 
-    ///**
-    // * For modelling empty statement
-    // */
+    public XBarrierEvent emitBarrierEvent(XBarrierEvent.Kind kind) {
+        XBarrierEvent event = kind.create(createEventInfo());
+        processNextEvent(event);
+        return event;
+    }
+
+    /**
+     * For modelling empty statement
+    */
     public XNopEvent emitNopEvent() {
         XNopEvent event = new XNopEvent(createEventInfo());
         processNextEvent(event);
@@ -157,7 +202,6 @@ public class XProcessInterpreter {
         processNextEvent(event);
         return event;
     }
-
 
     public XComputationEvent emitComputationEvent(XBinaryOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand) {
         XComputationEvent event = new XBinaryComputationEvent(createEventInfo(), operator, firstOperand, secondOperand);
@@ -349,7 +393,6 @@ public class XProcessInterpreter {
         return new XEventInfo(processId);
     }
 
-    // to do: methodCall
 
     // -- BRANCHING + LOOPS --------------------------------------------------------------------------------------------
 
@@ -369,7 +412,7 @@ public class XProcessInterpreter {
     public void finishConditionDefinition() {
         if (!(previousEvent instanceof XComputationEvent)) {
             throw new XInterpretationError("Attempt to make branching on non-computation event "
-                    + StringUtils.wrap(previousEvent.toString())
+                    + wrap(previousEvent.toString())
                     + " of type " + previousEvent.getClass().getSimpleName());
         }
         XBlockContext context = contextStack.peek();
@@ -453,6 +496,23 @@ public class XProcessInterpreter {
 
     private void startNonlinearBlockDefinition(XBlockContextKind kind) {
         contextStack.push(new XBlockContext(kind));
+    }
+
+    // -- METHOD CALLS -------------------------------------------------------------------------------------------------
+
+    // TODO: signature instead of just name
+    // TODO: arguments: write all shared to registers and set up control-flow binding
+    public XEntity processMethodCall(String methodName, @Nullable XMemoryUnit receiver, XMemoryUnit... arguments) {
+        InterceptionAction intercepted = hookManager.tryInterceptInvocation(methodName);
+        if (intercepted != null) {
+            XEntity res = intercepted.execute(receiver, arguments);
+            // TODO: After we set up finding type processors by signature, not by name, we should make a restriction that their lambdas cannot return null!
+            if (res != null) {
+                return res;
+            }
+        }
+        throw new NotImplementedException("Method call " + wrap(methodName) + " was not recognised" +
+                                                      ", however, the method call binding is not implemented yet");
     }
 
 

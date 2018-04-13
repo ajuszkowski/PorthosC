@@ -1,8 +1,10 @@
 package mousquetaires.languages.converters.toxgraph.interpretation;
 
+import mousquetaires.languages.converters.toxgraph.hooks.HookManager;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.XProgramBuilder;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
+import mousquetaires.memorymodels.wmm.MemoryModelKind;
 import mousquetaires.utils.patterns.BuilderBase;
 
 
@@ -10,12 +12,14 @@ public class XProgramInterpreter extends BuilderBase<XProgram> {
 
     // TODO: publish methods also!
     private XProgramBuilder programBuilder;
+    public final MemoryModelKind memoryModel;
     public final XMemoryManager memoryManager;
     public XProcessInterpreter currentProcess;
 
-    public XProgramInterpreter(XMemoryManager memoryManager) {
+    public XProgramInterpreter(XMemoryManager memoryManager, MemoryModelKind memoryModel) {
         this.memoryManager = memoryManager;
         this.programBuilder = new XProgramBuilder();
+        this.memoryModel = memoryModel;
         // TODO: add prelude and postlude processes!..
     }
 
@@ -34,7 +38,7 @@ public class XProgramInterpreter extends BuilderBase<XProgram> {
                                                     "' is being constructed");
         }
         memoryManager.reset(processId);
-        currentProcess = new XProcessInterpreter(processId, memoryManager);
+        currentProcess = new XProcessInterpreter(processId, memoryManager, new HookManager(this));
         currentProcess.emitEntryEvent();
     }
 
