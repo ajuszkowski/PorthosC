@@ -25,7 +25,7 @@ public class YVariableRef implements YAssignee {
     private final Kind kind;
     private final String name;
 
-    private YVariableRef(Kind kind, String name) {
+    protected YVariableRef(Kind kind, String name) {
         this.name = name;
         this.kind = kind;
     }

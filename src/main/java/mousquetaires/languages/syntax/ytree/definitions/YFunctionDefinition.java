@@ -2,6 +2,8 @@ package mousquetaires.languages.syntax.ytree.definitions;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
+import mousquetaires.languages.syntax.ytree.statements.YUnlabeledStatement;
+import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.CollectionUtils;
 
@@ -11,19 +13,17 @@ import java.util.Objects;
 
 public class YFunctionDefinition implements YDefinition {
 
-    //private final YMethodSignature signature;
+    private final YMethodSignature signature;
     private final YCompoundStatement body;
 
-    //public YFunctionDefinition(YMethodSignature signature, YCompoundStatement body) {
-    public YFunctionDefinition(YCompoundStatement body) {
-        //this.signature = signature;
-        // TODO: Signature: necessary for binding!
+    public YFunctionDefinition(YMethodSignature signature, YCompoundStatement body) {
+        this.signature = signature;
         this.body = body;
     }
 
-    //public YMethodSignature getSignature() {
-    //    return signature;
-    //}
+    public YMethodSignature getSignature() {
+        return signature;
+    }
 
     public YCompoundStatement getBody() {
         return body;

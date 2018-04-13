@@ -5,6 +5,7 @@ import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 
@@ -29,6 +30,20 @@ public class YMethodSignature implements YEntity {
 
     public YParameter[] getParameters() {
         return parameters;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[").append(returnType).append(" ").append(name).append("(");
+        for (int i = 0; i < parameters.length; i++) {
+            sb.append(parameters[i]);
+            if (i < parameters.length - 1) {
+                sb.append(",");
+            }
+        }
+        sb.append(")]");
+        return sb.toString();
     }
 
     @Override

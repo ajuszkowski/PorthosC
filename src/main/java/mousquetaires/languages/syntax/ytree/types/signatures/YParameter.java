@@ -1,29 +1,30 @@
 package mousquetaires.languages.syntax.ytree.types.signatures;
 
+import mousquetaires.languages.common.Type;
 import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.syntax.ytree.types.YType;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.CollectionUtils;
 
 import java.util.Iterator;
 
 
-public class YParameter implements YEntity {
+public class YParameter extends YVariableRef {
 
-    private final YType type;
-    private final String name;
+    private final Type type;
 
-    public YParameter(YType type, String name) {
+    public YParameter(Kind kind, String name, Type type) {
+        super(kind, name);
         this.type = type;
-        this.name = name;
     }
 
-    public YType getType() {
+    public Type getType() {
         return type;
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public YParameter withKind(Kind kind) {
+        return new YParameter(kind, getName(), getType());
     }
 
     @Override
@@ -35,4 +36,5 @@ public class YParameter implements YEntity {
     public <T> T accept(YtreeVisitor<T> visitor) {
         return visitor.visit(this);
     }
+
 }

@@ -10,7 +10,6 @@ import mousquetaires.utils.ImmutableUtils;
 
 public class YInvocationExpression extends YMultiExpression {
 
-    //private final YExpression baseExpression;
     private final int elementsCount;
     // TODO: process signatures! firstly only function name. -- not here, on YIndexerExpression level
 
@@ -20,7 +19,6 @@ public class YInvocationExpression extends YMultiExpression {
 
     public YInvocationExpression(YExpression baseExpression, ImmutableList<YExpression> arguments) {
         super(ImmutableUtils.append(baseExpression, arguments));
-        //this.baseExpression = baseExpression;
         this.elementsCount = arguments.size() + 1;
     }
 

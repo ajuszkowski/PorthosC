@@ -1,21 +1,21 @@
 package mousquetaires.languages.converters.toytree.c11;
 
 import com.google.common.collect.ImmutableList;
+import mousquetaires.languages.common.Type;
 import mousquetaires.languages.parsers.C11Parser;
 import mousquetaires.languages.parsers.C11Visitor;
-import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.YSyntaxTreeBuilder;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YVariableAssignmentExpression;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
@@ -24,7 +24,8 @@ import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpre
 import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
 import mousquetaires.languages.syntax.ytree.statements.*;
-import mousquetaires.languages.syntax.ytree.statements.jumps.*;
+import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpLabel;
+import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
 import mousquetaires.languages.syntax.ytree.temporaries.YCompoundStatementBuilder;
 import mousquetaires.languages.syntax.ytree.temporaries.YEntityListBuilder;
 import mousquetaires.languages.syntax.ytree.temporaries.YExpressionListBuilder;
@@ -34,13 +35,14 @@ import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
 import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
 import mousquetaires.languages.syntax.ytree.types.signatures.YParameterListBuilder;
-import mousquetaires.utils.StringUtils;
 import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.ytree.YParserException;
 import mousquetaires.utils.exceptions.ytree.YParserNotImplementedException;
 import mousquetaires.utils.exceptions.ytree.YParserUnintendedStateException;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.TerminalNode;
+
+import static mousquetaires.utils.StringUtils.wrap;
 
 
 class C2YtreeConverterVisitor
@@ -91,7 +93,7 @@ class C2YtreeConverterVisitor
         if (constantNode != null) {
             YConstant constant = YConstant.tryParse(constantNode.getText());
             if (constant == null) {
-                throw new YParserException(ctx, "Could not parse constant: " + StringUtils.wrap(constantNode.getText()));
+                throw new YParserException(ctx, "Could not parse constant: " + wrap(constantNode.getText()));
             }
             return constant;
         }
@@ -171,10 +173,15 @@ class C2YtreeConverterVisitor
                 return new YInvocationExpression(baseExpression, arguments);
             }
             // case (member access expression):
-            if (ctx.getTokens(C11Parser.Arrow).size() > 0 || ctx.getTokens(C11Parser.Dot).size() > 0) {
+            boolean isArrowAccess = ctx.getTokens(C11Parser.Arrow).size() > 0;
+            boolean isDotAccess = ctx.getTokens(C11Parser.Dot).size() > 0;
+            if (isArrowAccess || isDotAccess) {
                 TerminalNode identifierNode = ctx.Identifier();
                 if (identifierNode == null) {
                     throw new YParserException(ctx, "Missing member name while parsing member access expression");
+                }
+                if (isArrowAccess) {
+                    // TODO: if arrow access, then the baseExpression should be a pointer! => remember as a shared variable. Check whether C allows the baseExpression to be a non-variable pointer.
                 }
                 return new YMemberAccessExpression(baseExpression, identifierNode.getText());
             }
@@ -280,11 +287,11 @@ class C2YtreeConverterVisitor
      */
     @Override
     public YUnaryOperatorKindTemp visitUnaryOperator(C11Parser.UnaryOperatorContext ctx) {
-        assert ctx.getChildCount() == 1: ctx.getChildCount();
+        assert ctx.getChildCount() == 1 : ctx.getChildCount();
         String tokenText = ctx.getChild(0).getText();
         YUnaryOperatorKindTemp operator = YUnaryOperatorKindTemp.tryParse(tokenText);
         if (operator == null) {
-            throw new YParserException(ctx, "Could not parse unary operator " + StringUtils.wrap(tokenText));
+            throw new YParserException(ctx, "Could not parse unary operator " + wrap(tokenText));
         }
         return operator;
     }
@@ -576,7 +583,7 @@ class C2YtreeConverterVisitor
             }
             YExpression assigneeEntity = visitUnaryExpression(unaryExpressionContext);
             if (!(assigneeEntity instanceof YAssignee)) {
-                throw new YParserException(ctx, "Invalid assignee " + StringUtils.wrap(assigneeEntity.toString())
+                throw new YParserException(ctx, "Invalid assignee " + wrap(assigneeEntity.toString())
                         + " of type " + assigneeEntity.getClass().getSimpleName());
             }
             YAssignee assignee = (YAssignee) assigneeEntity;
@@ -663,7 +670,7 @@ class C2YtreeConverterVisitor
                 }
                 else { //if (declarationExpression instanceof )
                     throw new YParserNotImplementedException(ctx, "Not supported variable declaration " +
-                            StringUtils.wrap(declarationExpression.toString()) + " of type " +
+                            wrap(declarationExpression.toString()) + " of type " +
                             declarationExpression.getClass().getSimpleName());
                 }
             }
@@ -1002,13 +1009,18 @@ class C2YtreeConverterVisitor
         C11Parser.DirectDeclaratorContext directDeclaratorContext = ctx.directDeclarator();
         if (directDeclaratorContext != null) {
             YEntity declarator = visitDirectDeclarator(directDeclaratorContext);
-            if (!(declarator instanceof YVariableRef)) {
-                throw new NotImplementedException("Only variables declaration is supported so far");
+            if (declarator instanceof YVariableRef) {
+                YVariableRef variable = (YVariableRef) declarator;
+                return isPointer
+                        ? variable.withKind(YVariableRef.Kind.Global)
+                        : variable;
             }
-            YVariableRef variable = (YVariableRef) declarator;
-            return isPointer
-                    ? variable.withKind(YVariableRef.Kind.Global)
-                    : variable;
+            else if (declarator instanceof YMethodSignature) {
+                return declarator;
+            }
+            throw new NotImplementedException("Yet unsupported declarator" +
+                                                      ", found: " + wrap(declarator) +
+                                                      " of type: " + wrap(declarator.getClass().getSimpleName()));
 
         }
         throw new YParserNotImplementedException(ctx);
@@ -1139,12 +1151,14 @@ class C2YtreeConverterVisitor
         if ((declaratorContext = ctx.declarator()) != null) {
             if ((declarationSpecifiersContext = ctx.declarationSpecifiers()) != null) {
                 // todo: parse type in specifiers
+                Type type = Type.int32;
+
                 YEntity declarator = visitDeclarator(declaratorContext);
                 if (!(declarator instanceof YVariableRef)) {
                     throw new YParserException(ctx, "Only identifier is allowed as function parameter name");
                 }
-                YVariableRef parameterEntity = (YVariableRef) declarator;
-                return new YParameter(new YMockType(), parameterEntity.getName());
+                YVariableRef variable = (YVariableRef) declarator;
+                return new YParameter(variable.getKind(), variable.getName(), type);
             }
             throw new YParserException(ctx, "Could not find parameter type specifiers");
         }
@@ -1223,7 +1237,15 @@ class C2YtreeConverterVisitor
      */
     @Override
     public YExpression visitInitializer(C11Parser.InitializerContext ctx) {
-        throw new YParserNotImplementedException(ctx);
+        C11Parser.AssignmentExpressionContext assignmentExpressionCtx = ctx.assignmentExpression();
+        if (assignmentExpressionCtx != null) {
+            return visitAssignmentExpression(assignmentExpressionCtx);
+        }
+        C11Parser.InitializerListContext initializerListCtx = ctx.initializerList();
+        if (initializerListCtx != null) {
+            return visitInitializerList(initializerListCtx);
+        }
+        throw new YParserException(ctx, "Could not find an initialiser");
     }
 
     /**
@@ -1233,7 +1255,7 @@ class C2YtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntity visitInitializerList(C11Parser.InitializerListContext ctx) {
+    public YExpression visitInitializerList(C11Parser.InitializerListContext ctx) {
         throw new YParserNotImplementedException(ctx);
     }
 
@@ -1609,14 +1631,24 @@ class C2YtreeConverterVisitor
         // TODO: process declaration specifiers
         // TODO: process declarator
         // TODO: process declarationList
+        C11Parser.DeclarationSpecifiersContext declarationSpecifiersContext = ctx.declarationSpecifiers();
+        C11Parser.DeclaratorContext declaratorContext = ctx.declarator();
+        C11Parser.DeclarationListContext declarationListContext = ctx.declarationList();
         C11Parser.CompoundStatementContext compoundStatementContext = ctx.compoundStatement();
-        if (compoundStatementContext == null) {
-            throw new YParserException(ctx, "Missing function body");
+        if (declaratorContext != null && compoundStatementContext != null) {
+            // TODO: parse NAME! and set signature
+            // TODO: for now, we interpret every defined method as a separate process. It is incorrect for kernel!
+            YEntity declarator = visitDeclarator(declaratorContext);
+            if (!(declarator instanceof YMethodSignature)) {
+                throw new YParserException(ctx, "Could not parse function signature" +
+                        ", found: " + declarator +
+                        " of type: " + declarator.getClass().getSimpleName());
+            }
+            YMethodSignature signature = (YMethodSignature) declarator;
+            YCompoundStatement body = visitCompoundStatement(compoundStatementContext);
+            return new YProcessStatement(signature, body);
         }
-        YCompoundStatement body = visitCompoundStatement(compoundStatementContext);
-        // TODO: parse NAME! and set signature
-        // TODO: for now, we interpret every defined method as a separate process. It is incorrect for kernel!
-        return new YProcessStatement(new XProcessId("P0"), body);
+        throw new YParserException(ctx);
     }
 
     /**
