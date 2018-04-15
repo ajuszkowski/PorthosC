@@ -13,6 +13,7 @@ public class YParserException extends RuntimeException {
 
     public YParserException(ParserRuleContext context, String info) {
         //todo: retrieve location + original code from context
+        // TODO: after parser is almost ready, replace some Y..NotImplException with this exception
         super("Parser error while processing " + StringUtils.wrap(AntlrUtils.getText(context)) + "\n" + info);
     }
 }

@@ -8,29 +8,28 @@ import mousquetaires.utils.CollectionUtils;
 import java.util.Iterator;
 import java.util.Objects;
 
-// TODO: NOTE!!! IN FUNCTION INVOCATION FUNC. NAME IS YVariableRef!
-public class YVariableRef implements YAssignee {
 
-    // TODO: add kind
+// TODO: NOTE!!! IN FUNCTION INVOCATION FUNC. NAME IS YVariableRef!
+public class YVariable implements YAssignee {
+
     public enum Kind {
         Local,
-        Global,
-        ;
+        Global,;
 
-        public YVariableRef createVariable(String name) {
-            return new YVariableRef(this, name);
+        public YVariable createVariable(String name) {
+            return new YVariable(this, name);
         }
     }
 
     private final Kind kind;
     private final String name;
 
-    protected YVariableRef(Kind kind, String name) {
+    YVariable(Kind kind, String name) {
         this.name = name;
         this.kind = kind;
     }
 
-    public YVariableRef withKind(Kind kind) {
+    public YVariable withKind(Kind kind) {
         return kind.createVariable(getName());
     }
 
@@ -64,9 +63,9 @@ public class YVariableRef implements YAssignee {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof YVariableRef)) return false;
-        YVariableRef variable = (YVariableRef) o;
+        if (this == o) { return true; }
+        if (!(o instanceof YVariable)) { return false; }
+        YVariable variable = (YVariable) o;
         return kind == variable.kind &&
                 Objects.equals(name, variable.name);
     }

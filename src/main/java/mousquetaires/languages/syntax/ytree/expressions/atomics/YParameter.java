@@ -1,15 +1,14 @@
-package mousquetaires.languages.syntax.ytree.types.signatures;
+package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
 import mousquetaires.languages.common.Type;
 import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.CollectionUtils;
 
 import java.util.Iterator;
 
 
-public class YParameter extends YVariableRef {
+public class YParameter extends YVariable {
 
     private final Type type;
 

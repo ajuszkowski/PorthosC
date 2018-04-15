@@ -1,7 +1,6 @@
 package mousquetaires.languages.converters.toxgraph;
 
 import com.google.common.collect.ImmutableList;
-import dartagnan.program.Event;
 import mousquetaires.languages.common.Type;
 import mousquetaires.languages.converters.toxgraph.interpretation.XProgramInterpreter;
 import mousquetaires.languages.syntax.xgraph.XEntity;
@@ -20,7 +19,8 @@ import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpr
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YLabeledVariable;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariable;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExpression;
@@ -36,14 +36,13 @@ import mousquetaires.languages.syntax.ytree.specific.YVariableAssertion;
 import mousquetaires.languages.syntax.ytree.statements.*;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
 import mousquetaires.languages.syntax.ytree.types.YType;
-import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
-import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
+import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import mousquetaires.utils.exceptions.xgraph.XInterpreterUsageError;
 
-import java.lang.management.MemoryUsage;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -156,8 +155,8 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         XMemoryUnit receiver = null;
         // TODO: work with signature here!
         String methodName;
-        if (yBaseExpression instanceof YVariableRef) {
-            methodName = ((YVariableRef) yBaseExpression).getName();
+        if (yBaseExpression instanceof YVariable) {
+            methodName = ((YVariable) yBaseExpression).getName();
         }
         else if (yBaseExpression instanceof YMemberAccessExpression) {
             YMemberAccessExpression asMemberAccess = (YMemberAccessExpression) yBaseExpression;
@@ -366,7 +365,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XLvalueMemoryUnit visit(YVariableDeclarationStatement node) {
-        YVariableRef variable = node.getVariable();
+        YVariable variable = node.getVariable();
         String name = variable.getName();
         Type type = YType2TypeConverter.convert(node.getType());
         if (variable.isGlobal()) {
@@ -390,12 +389,16 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     }
 
     @Override
-    public XLvalueMemoryUnit visit(YVariableRef variable) {
+    public XLvalueMemoryUnit visit(YVariable variable) {
         String name = variable.getName();
         XLvalueMemoryUnit result = program.memoryManager.getDeclaredUnitOrNull(name);
         return (result == null)
                 ? program.memoryManager.declareUnresolvedUnit(name, variable.isGlobal())
                 : result;
+    }
+
+    public XLvalueMemoryUnit visit(YLabeledVariable variable) {
+        throw new NotImplementedException();
     }
 
     @Override

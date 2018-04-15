@@ -1,7 +1,7 @@
 package mousquetaires.tests.unit.languages.converters.toytree.c11.statements;
 
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariable;
 import mousquetaires.languages.syntax.ytree.types.YMockType;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.tests.unit.languages.converters.toytree.C2Ytree_UnitTestBase;
@@ -10,12 +10,12 @@ import mousquetaires.tests.unit.languages.converters.toytree.C2Ytree_UnitTestBas
 public abstract class C2Ytree_Statement_UnitTest extends C2Ytree_UnitTestBase {
 
     // shortcuts necessary for tests
-    protected YVariableRef variableX = YVariableRef.Kind.Local.createVariable("x");
-    protected YVariableRef variableY = YVariableRef.Kind.Local.createVariable("y");
-    protected YVariableRef variableZ = YVariableRef.Kind.Local.createVariable("z");
-    protected YVariableRef variableA = YVariableRef.Kind.Local.createVariable("a");
-    protected YVariableRef variableB = YVariableRef.Kind.Local.createVariable("b");
-    protected YVariableRef variableC = YVariableRef.Kind.Local.createVariable("c");
+    protected YVariable variableX = YVariable.Kind.Local.createVariable("x");
+    protected YVariable variableY = YVariable.Kind.Local.createVariable("y");
+    protected YVariable variableZ = YVariable.Kind.Local.createVariable("z");
+    protected YVariable variableA = YVariable.Kind.Local.createVariable("a");
+    protected YVariable variableB = YVariable.Kind.Local.createVariable("b");
+    protected YVariable variableC = YVariable.Kind.Local.createVariable("c");
 
     protected YConstant constant1 = YConstant.fromValue(1);
     protected YConstant constant2 = YConstant.fromValue(2);

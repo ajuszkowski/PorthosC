@@ -8,7 +8,7 @@ import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpr
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariable;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
@@ -23,8 +23,8 @@ import mousquetaires.languages.syntax.ytree.specific.YVariableAssertion;
 import mousquetaires.languages.syntax.ytree.statements.*;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
 import mousquetaires.languages.syntax.ytree.types.YType;
-import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
-import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
+import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
 import mousquetaires.utils.StringUtils;
 import mousquetaires.utils.exceptions.ytree.YtreeVisitorIllegalStateException;
 
@@ -121,7 +121,7 @@ public abstract class YtreeVisitorStrictBase<T> implements YtreeVisitor<T> {
     }
 
     @Override
-    public T visit(YVariableRef node) {
+    public T visit(YVariable node) {
         throw new YtreeVisitorIllegalStateException(getExceptionMessage(node));
     }
 

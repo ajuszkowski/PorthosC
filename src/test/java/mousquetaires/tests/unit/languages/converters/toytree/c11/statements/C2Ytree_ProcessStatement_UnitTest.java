@@ -1,6 +1,5 @@
 package mousquetaires.tests.unit.languages.converters.toytree.c11.statements;
 
-import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
@@ -10,8 +9,8 @@ import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.statements.YVariableDeclarationStatement;
 import mousquetaires.languages.syntax.ytree.types.YMockType;
-import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
-import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
+import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
 import mousquetaires.tests.unit.UnitTestPaths;
 import org.junit.Ignore;
 import org.junit.Test;

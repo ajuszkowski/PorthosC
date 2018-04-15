@@ -3,12 +3,8 @@ package mousquetaires.languages.converters.toxgraph.interpretation;
 import mousquetaires.languages.common.Type;
 import mousquetaires.languages.syntax.xgraph.memories.XLocation;
 import mousquetaires.languages.syntax.xgraph.memories.XLvalueMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XRegister;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
-import mousquetaires.languages.syntax.xgraph.types.XMockType;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
-import mousquetaires.utils.exceptions.xgraph.XUndeclaredMemoryUnitError;
 
 import java.util.HashMap;
 import java.util.Map;

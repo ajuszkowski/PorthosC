@@ -30,7 +30,7 @@ void t1(int &x, int &y) {
     }
 }
 
-
+exists ( y == 3  && t2:b == 3)
 
 //void method() {
 //

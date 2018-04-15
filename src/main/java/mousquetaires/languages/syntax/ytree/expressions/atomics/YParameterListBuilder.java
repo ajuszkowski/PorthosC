@@ -1,4 +1,4 @@
-package mousquetaires.languages.syntax.ytree.types.signatures;
+package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.temporaries.YTempEntity;

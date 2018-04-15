@@ -8,8 +8,8 @@ import mousquetaires.languages.syntax.ytree.statements.YBranchingStatement;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.types.YMockType;
-import mousquetaires.languages.syntax.ytree.types.signatures.YMethodSignature;
-import mousquetaires.languages.syntax.ytree.types.signatures.YParameter;
+import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
 import mousquetaires.tests.unit.UnitTestPaths;
 import org.junit.Test;
 

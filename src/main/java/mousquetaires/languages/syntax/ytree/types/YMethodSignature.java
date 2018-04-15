@@ -1,11 +1,10 @@
-package mousquetaires.languages.syntax.ytree.types.signatures;
+package mousquetaires.languages.syntax.ytree.types;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.syntax.ytree.types.YType;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.CollectionUtils;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 

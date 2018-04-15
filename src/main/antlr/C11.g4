@@ -41,6 +41,7 @@ primaryExpression
     |   StringLiteral+  // TODO: NOTE: In C11 draft, there is just 'StringLiteral'
     |   '(' expression ')'
     |   genericSelection
+    |   Identifier ':' Identifier  // processId:localVariable
     ;
 
 genericSelection
@@ -521,7 +522,8 @@ translationUnit
     ;
 
 externalDeclaration
-    :   functionDefinition
+    :   litmusAssertion
+    |   functionDefinition
     |   declaration
     ;
 
@@ -533,6 +535,10 @@ functionDefinition
 declarationList
     :   declaration
     |   declarationList declaration
+    ;
+
+litmusAssertion
+    :   'exists' '(' logicalOrExpression ')'
     ;
 
 Auto : 'auto';

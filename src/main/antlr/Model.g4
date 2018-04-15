@@ -1,13 +1,15 @@
 // Define a grammar called model
-grammar ModelDirty;
+grammar Model;
 @header{
-import mousquetaires.memorymodels.*;
+import mousquetaires.memorymodels.wmm.old.*;
+import mousquetaires.memorymodels.axioms.old.*;
+import mousquetaires.memorymodels.relations.old.*;
 }
 @parser::members
 {
 String test="test";
 }
-mcm returns [MemoryModel value]: {$value =  new MemoryModel();}
+mcm returns [Wmm value]: {$value =  new Wmm();}
 (ax1=axiom {$value.addAxiom($ax1.value);} | r1=reldef {$value.addRel($r1.value);})+ 
 ;
 

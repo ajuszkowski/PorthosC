@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.ytree.statements;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariable;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.CollectionUtils;
@@ -13,13 +13,13 @@ import java.util.Objects;
 public class YVariableDeclarationStatement extends YStatement {
 
     private final YType type;
-    private final YVariableRef variable;
+    private final YVariable variable;
 
-    public YVariableDeclarationStatement(YType type, YVariableRef variable) {
+    public YVariableDeclarationStatement(YType type, YVariable variable) {
         this(newLabel(), type, variable);
     }
 
-    private YVariableDeclarationStatement(String label, YType type, YVariableRef variable) {
+    private YVariableDeclarationStatement(String label, YType type, YVariable variable) {
         super(label);
         this.type = type;
         this.variable = variable;
@@ -29,7 +29,7 @@ public class YVariableDeclarationStatement extends YStatement {
         return type;
     }
 
-    public YVariableRef getVariable() {
+    public YVariable getVariable() {
         return variable;
     }
 
