@@ -13,7 +13,7 @@ import dartagnan.program.Event;
 import dartagnan.program.Program;
 import mousquetaires.utils.Utils;
 import mousquetaires.memorymodels.relations.old.BasicRelation;
-import mousquetaires.memorymodels.axioms.CandidateAxiom;
+import mousquetaires.memorymodels.axioms.old.CandidateAxiom;
 import mousquetaires.memorymodels.relations.old.RelInterSect;
 import mousquetaires.memorymodels.relations.old.RelUnion;
 import mousquetaires.memorymodels.relations.old.Relation;

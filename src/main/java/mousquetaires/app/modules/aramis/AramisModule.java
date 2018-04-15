@@ -29,7 +29,7 @@
 //import mousquetaires.memorymodels.Domain;
 //import mousquetaires.wmm.MemoryModel;
 //import mousquetaires.memorymodels.relations.old.BasicRelation;
-//import mousquetaires.memorymodels.axioms.CandidateAxiom;
+//import mousquetaires.memorymodels.axioms.old.CandidateAxiom;
 //import mousquetaires.memorymodels.relations.old.RelComposition;
 //import mousquetaires.memorymodels.relations.old.RelInterSect;
 //import mousquetaires.memorymodels.relations.old.RelMinus;

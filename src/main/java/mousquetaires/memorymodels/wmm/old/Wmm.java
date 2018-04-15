@@ -10,9 +10,9 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Event;
 import dartagnan.program.Program;
-import mousquetaires.memorymodels.axioms.Acyclic;
-import mousquetaires.memorymodels.axioms.Axiom;
-import mousquetaires.memorymodels.axioms.Irreflexive;
+import mousquetaires.memorymodels.axioms.old.Acyclic;
+import mousquetaires.memorymodels.axioms.old.Axiom;
+import mousquetaires.memorymodels.axioms.old.Irreflexive;
 import mousquetaires.memorymodels.relations.old.*;
 
 import java.util.HashSet;

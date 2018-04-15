@@ -12,7 +12,7 @@ import mousquetaires.memorymodels.relations.old.Relation;
  *
  * @author Florian Furbach
  */
-public class CandidateAxiom extends Acyclic {
+public class ZCandidateAxiom extends ZAcyclicAxiom {
 
     //denotes whether the axiom fails a Neg test.
 
@@ -20,39 +20,39 @@ public class CandidateAxiom extends Acyclic {
      * Creates an acyclic Axiom that has additional information regarding its behaviour towards the reachability src.mousquetaires.tests.
      * @param rel
      */
-    public CandidateAxiom(Relation rel) {
+    public ZCandidateAxiom(Relation rel) {
                 super(rel);
     }
     
-    public Consistent[] pos=new Consistent[aramis.Aramis.posPrograms.size()];
-    public Consistent[] neg=new Consistent[aramis.Aramis.negPrograms.size()];
+    public ZConsistent[] pos=new ZConsistent[aramis.Aramis.posPrograms.size()];
+    public ZConsistent[] neg=new ZConsistent[aramis.Aramis.negPrograms.size()];
     //public HashMap<Program, Boolean> consProg = new HashMap<>();
     //Denotes whether the axiom passes all POS tests.
     public boolean consistent=false;
     public int position;
-    public CandidateAxiom[] next=new CandidateAxiom[aramis.Aramis.negPrograms.size()];
+    public ZCandidateAxiom[] next=new ZCandidateAxiom[aramis.Aramis.negPrograms.size()];
     public boolean relevant=false;
-    
-    public void largerthan(CandidateAxiom ax){
+
+    public void largerthan(ZCandidateAxiom ax){
         for (int i = 0; i < pos.length; i++) {
-            if(ax.pos[i]==Consistent.INCONSISTENT){
+            if(ax.pos[i]==ZConsistent.INCONSISTENT){
                 consistent=false;
                 pos[i]=ax.pos[i];
             }
         }
         for (int i = 0; i < neg.length; i++) {
-            if(ax.neg[i]==Consistent.INCONSISTENT) neg[i]=ax.neg[i];
-        }        
+            if(ax.neg[i]==ZConsistent.INCONSISTENT) neg[i]=ax.neg[i];
+        }
     }
-    
-    
-    public void smallerthan(CandidateAxiom ax){
+
+
+    public void smallerthan(ZCandidateAxiom ax){
         consistent=(consistent || ax.consistent);
         for (int i = 0; i < pos.length; i++) {
-            if(ax.pos[i]==Consistent.CONSISTENT) pos[i]=ax.pos[i];
+            if(ax.pos[i]==ZConsistent.CONSISTENT) pos[i]=ax.pos[i];
         }
         for (int i = 0; i < neg.length; i++) {
-            if(ax.neg[i]==Consistent.CONSISTENT) neg[i]=ax.neg[i];
+            if(ax.neg[i]==ZConsistent.CONSISTENT) neg[i]=ax.neg[i];
         }
     }
 
@@ -63,7 +63,7 @@ public class CandidateAxiom extends Acyclic {
      */
     public int getNextpass(int firstUncovered) {
         for (int negprog = firstUncovered; negprog < aramis.Aramis.negPrograms.size(); negprog++) {
-            if(neg[negprog]!=Consistent.CONSISTENT) return negprog; 
+            if(neg[negprog]!=ZConsistent.CONSISTENT) return negprog;
         }
         return aramis.Aramis.negPrograms.size();
     }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mousquetaires.memorymodels.axioms;
+package mousquetaires.memorymodels.axioms.old;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;

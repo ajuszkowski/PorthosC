@@ -13,14 +13,15 @@ import mousquetaires.memorymodels.relations.old.Relation;
 
 import java.util.Set;
 
+
 /**
  *
  * @author Florian Furbach
  */
-public abstract class Axiom {
+public abstract class ZAxiom {
         protected Relation rel;
 
-    public Axiom(Relation rel) {
+    public ZAxiom(Relation rel) {
         this.rel = rel;
     }
 

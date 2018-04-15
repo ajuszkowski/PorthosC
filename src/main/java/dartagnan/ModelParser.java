@@ -2,9 +2,9 @@
 
 package dartagnan;
 
-import mousquetaires.memorymodels.axioms.Acyclic;
-import mousquetaires.memorymodels.axioms.Axiom;
-import mousquetaires.memorymodels.axioms.Irreflexive;
+import mousquetaires.memorymodels.axioms.old.Acyclic;
+import mousquetaires.memorymodels.axioms.old.Axiom;
+import mousquetaires.memorymodels.axioms.old.Irreflexive;
 import mousquetaires.memorymodels.relations.old.*;
 import mousquetaires.memorymodels.wmm.old.Wmm;
 import org.antlr.v4.runtime.atn.*;

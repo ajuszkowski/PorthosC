@@ -6,9 +6,9 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Event;
 import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
-import mousquetaires.memorymodels.axioms.Acyclic;
-import mousquetaires.memorymodels.axioms.Axiom;
-import mousquetaires.memorymodels.axioms.Irreflexive;
+import mousquetaires.memorymodels.axioms.old.Acyclic;
+import mousquetaires.memorymodels.axioms.old.Axiom;
+import mousquetaires.memorymodels.axioms.old.Irreflexive;
 import mousquetaires.memorymodels.relations.old.*;
 import mousquetaires.utils.exceptions.NotImplementedException;
 

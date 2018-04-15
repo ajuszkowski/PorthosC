@@ -11,7 +11,7 @@ import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Event;
 import mousquetaires.memorymodels.EncodingsOld;
 import mousquetaires.memorymodels.relations.old.Relation;
-import mousquetaires.utils.Utils;
+
 import java.util.Set;
 
 
@@ -19,30 +19,28 @@ import java.util.Set;
  *
  * @author Florian Furbach
  */
-public class Irreflexive extends Axiom {
+public class ZAcyclicAxiom extends ZAxiom {
 
     @Override
     public BoolExpr Consistent(Set<Event> events, Context ctx) throws Z3Exception {
-        return EncodingsOld.satIrref(rel.getName(), events, ctx);    }
+        return EncodingsOld.satAcyclic(rel.getName(), events, ctx);    }
 
     @Override
     public BoolExpr Inconsistent(Set<Event> events, Context ctx) throws Z3Exception {
-        BoolExpr enc = ctx.mkTrue();
-        for(Event e : events){
-            enc = ctx.mkOr(enc, Utils.edge(rel.getName(), e, e, ctx));
-        }
-        return enc;
+        return ctx.mkAnd(EncodingsOld.satCycleDef(rel.getName(), events, ctx), EncodingsOld.satCycle(rel.getName(), events, ctx));
     }
 
 
 
-    public Irreflexive(Relation rel) {
+    public ZAcyclicAxiom(Relation rel) {
         super(rel);
     }
 
     @Override
     public String write() {
-        return String.format("Irreflexive(%s)", rel.getName());
+        return String.format("Acyclic(%s)", rel.getName());
     }
+    
+    
     
 }
