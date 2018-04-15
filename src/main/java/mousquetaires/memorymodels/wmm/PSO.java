@@ -1,11 +1,13 @@
 package mousquetaires.memorymodels.wmm;
 
-import java.util.Set;
-
-import com.microsoft.z3.*;
-
-import dartagnan.program.*;
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Context;
+import com.microsoft.z3.Z3Exception;
+import dartagnan.program.Event;
+import dartagnan.program.Program;
 import mousquetaires.memorymodels.EncodingsOld;
+
+import java.util.Set;
 
 
 public class PSO {

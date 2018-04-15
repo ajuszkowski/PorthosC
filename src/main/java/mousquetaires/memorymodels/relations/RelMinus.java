@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mousquetaires.memorymodels.relations;
 
 import com.microsoft.z3.BoolExpr;
@@ -10,24 +5,19 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Event;
 import dartagnan.program.Program;
-import mousquetaires.memorymodels.relations.BinaryRelation;
-import mousquetaires.memorymodels.relations.Relation;
 import mousquetaires.utils.Utils;
+
 import java.util.Set;
 
 
-/**
- *
- * @author Florian Furbach
- */
-public class RelMinus extends BinaryRelation {
+public class RelMinus extends ZBinaryRelation {
 
-    public RelMinus(Relation r1, Relation r2, String name) {
+    public RelMinus(ZRelation r1, ZRelation r2, String name) {
         super(r1, r2, name, String.format("(%s\\%s)", r1.getName(), r2.getName()));
 
     }
 
-    public RelMinus(Relation r1, Relation r2) {
+    public RelMinus(ZRelation r1, ZRelation r2) {
         super(r1, r2, String.format("(%s\\%s)", r1.getName(), r2.getName()));
     }
 
@@ -76,11 +66,11 @@ public class RelMinus extends BinaryRelation {
             encodedRels.add(getName());
             BoolExpr enc = r1.encode(program, ctx, encodedRels);
             //the second relation must not be overapproximated since that would mean the inverse is underapproximated.
-            boolean approx = Relation.Approx;
-            Relation.Approx = false;
+            boolean approx = ZRelation.Approx;
+            ZRelation.Approx = false;
             enc = ctx.mkAnd(enc, r2.encode(program, ctx, encodedRels));
-            Relation.Approx = approx;
-            if (Relation.Approx) {
+            ZRelation.Approx = approx;
+            if (ZRelation.Approx) {
                 return ctx.mkAnd(enc, this.encodeBasic(program, ctx));
             } else {
                 return ctx.mkAnd(enc, this.encodeApprox(program, ctx));

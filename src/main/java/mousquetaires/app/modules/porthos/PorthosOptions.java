@@ -9,7 +9,7 @@ import mousquetaires.app.options.validators.FileValidator;
 import mousquetaires.app.options.validators.InputProgramExtensionValidator;
 import mousquetaires.app.options.validators.MemoryModelNameValidator;
 import mousquetaires.app.options.validators.PorthosModeValidator;
-import mousquetaires.memorymodels.wmm.MemoryModelKind;
+import mousquetaires.memorymodels.wmm.MemoryModel;
 
 import java.io.File;
 
@@ -32,7 +32,7 @@ public class PorthosOptions extends AppOptions {
             //validateValueWith = {FileValidator.class, InputModelExtensionValidator.class})
             converter = MemoryModelNameConverter.class,
             validateValueWith = MemoryModelNameValidator.class)
-    public MemoryModelKind sourceModel;
+    public MemoryModel.Kind sourceModel;
 
     @Parameter(names = {"-t", "--target-model"},
             required = true,
@@ -43,7 +43,7 @@ public class PorthosOptions extends AppOptions {
             //validateValueWith = {FileValidator.class, InputModelExtensionValidator.class})
             converter = MemoryModelNameConverter.class,
             validateValueWith = MemoryModelNameValidator.class)
-    public MemoryModelKind targetModel;
+    public MemoryModel.Kind targetModel;
 
     @Parameter(names = {"-m", "--mode"},
             arity = 1,

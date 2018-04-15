@@ -1,9 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package mousquetaires.memorymodels.relations;
+package mousquetaires.memorymodels.relations.old;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
@@ -13,10 +8,6 @@ import dartagnan.program.Program;
 import java.util.Set;
 
 
-/**
- *
- * @author Florian Furbach
- */
 public abstract class BinaryRelation extends Relation {
 
     protected Relation r1;

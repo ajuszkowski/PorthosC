@@ -4,7 +4,7 @@ import mousquetaires.languages.converters.toxgraph.hooks.HookManager;
 import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.XProgramBuilder;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
-import mousquetaires.memorymodels.wmm.MemoryModelKind;
+import mousquetaires.memorymodels.wmm.MemoryModel;
 import mousquetaires.utils.patterns.BuilderBase;
 
 
@@ -12,11 +12,11 @@ public class XProgramInterpreter extends BuilderBase<XProgram> {
 
     // TODO: publish methods also!
     private XProgramBuilder programBuilder;
-    public final MemoryModelKind memoryModel;
+    public final MemoryModel.Kind memoryModel;
     public final XMemoryManager memoryManager;
     public XProcessInterpreter currentProcess;
 
-    public XProgramInterpreter(XMemoryManager memoryManager, MemoryModelKind memoryModel) {
+    public XProgramInterpreter(XMemoryManager memoryManager, MemoryModel.Kind memoryModel) {
         this.memoryManager = memoryManager;
         this.programBuilder = new XProgramBuilder();
         this.memoryModel = memoryModel;

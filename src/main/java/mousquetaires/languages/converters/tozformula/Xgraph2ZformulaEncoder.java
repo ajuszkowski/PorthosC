@@ -38,7 +38,7 @@ public class Xgraph2ZformulaEncoder {
         this.dataFlowEncoder = new XDataflowEncoder(ctx, ssaMap);
     }
 
-    public BoolExpr encodeProgram(XUnrolledProgram program) {
+    public List<BoolExpr> encodeProgram(XUnrolledProgram program) {
         List<BoolExpr> asserts = new LinkedList<>();
         for (XUnrolledProcess process : program.getProcesses()) {
             asserts.addAll(encodeProcess(process));
@@ -47,8 +47,9 @@ public class Xgraph2ZformulaEncoder {
 
         asserts.addAll(encodeProgramComputedRelations(program));
 
-        BoolExpr[] assertsArray = asserts.toArray(new BoolExpr[0]);
-        return ctx.mkAnd(assertsArray);
+        //BoolExpr[] assertsArray = asserts.toArray(new BoolExpr[0]);
+        //return ctx.mkAnd(assertsArray);
+        return asserts;
     }
 
 
@@ -258,6 +259,7 @@ public class Xgraph2ZformulaEncoder {
                     if(program.compareTopologically(e1, e2) < 0) {//e1.getEId() < e2.getEId()
                         enc = ctx.mkAnd(enc, Utils.edge("po", e1, e2, ctx));
                         // TODO: check this condLevel comparison
+                        //see 'ctrl' in Herding cats p. 30
                         if(program.compareTopologicallyAndCondLevel(e1, e2) < 0 //e1.getCondLevel() < e2.getCondLevel()
                                 && e1 instanceof XLoadMemoryEvent
                                 && program.getCondRegs(e2).contains(e1.getReg())) {//e2.getCondRegs().contains(e1.getReg())) {

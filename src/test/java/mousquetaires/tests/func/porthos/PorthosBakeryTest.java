@@ -3,7 +3,7 @@ package mousquetaires.tests.func.porthos;
 import com.googlecode.zohhak.api.TestWith;
 import mousquetaires.app.modules.porthos.PorthosMode;
 import mousquetaires.app.modules.porthos.PorthosVerdict;
-import mousquetaires.memorymodels.wmm.MemoryModelKind;
+import mousquetaires.memorymodels.wmm.MemoryModel;
 import mousquetaires.tests.unit.FuncTestPaths;
 
 import static org.junit.Assert.assertEquals;
@@ -70,8 +70,8 @@ public class PorthosBakeryTest extends AbstractPorthosFuncTest {
             //bakery_pts_rx + ", " + "ARM,   Power, StateInclusion, StatePortable",  // ~40s
     })
     public void test_bakery_pts_rx(String inputProgramFile,
-                                   MemoryModelKind sourceModel,
-                                   MemoryModelKind targetModel,
+                                   MemoryModel.Kind sourceModel,
+                                   MemoryModel.Kind targetModel,
                                    PorthosMode mode,
                                    PorthosVerdict.Status expected) {
         PorthosVerdict verdict = runTest(inputProgramFile, sourceModel, targetModel, mode);

@@ -10,7 +10,7 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Event;
 import mousquetaires.memorymodels.EncodingsOld;
-import mousquetaires.memorymodels.relations.Relation;
+import mousquetaires.memorymodels.relations.old.Relation;
 import mousquetaires.utils.Utils;
 import java.util.Set;
 

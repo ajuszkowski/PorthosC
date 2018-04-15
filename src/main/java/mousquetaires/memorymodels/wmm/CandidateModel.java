@@ -5,9 +5,10 @@
  */
 package mousquetaires.memorymodels.wmm;
 
-import mousquetaires.memorymodels.axioms.Consistent;
 import mousquetaires.memorymodels.axioms.Axiom;
 import mousquetaires.memorymodels.axioms.CandidateAxiom;
+import mousquetaires.memorymodels.axioms.Consistent;
+import mousquetaires.memorymodels.wmm.old.Wmm;
 
 
 /**

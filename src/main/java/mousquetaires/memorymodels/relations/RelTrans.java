@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mousquetaires.memorymodels.relations;
 
 import com.microsoft.z3.BoolExpr;
@@ -12,17 +7,12 @@ import dartagnan.program.Event;
 import dartagnan.program.Program;
 import mousquetaires.utils.Utils;
 
-import static mousquetaires.memorymodels.EncodingsOld.satUnion;
 import java.util.Set;
 
 
-/**
- *
- * @author Florian Furbach
- */
-public class RelTrans extends UnaryRelation {
+public class RelTrans extends ZUnaryRelation {
 
-    public RelTrans(Relation r1) {
+    public RelTrans(ZRelation r1) {
         super(r1,String.format("%s^+", r1.getName()));
     }
 

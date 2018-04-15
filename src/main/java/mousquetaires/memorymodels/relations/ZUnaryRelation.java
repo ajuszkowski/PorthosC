@@ -1,27 +1,18 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mousquetaires.memorymodels.relations;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Program;
-import mousquetaires.memorymodels.relations.Relation;
 
 import java.util.Set;
 
-/**
- *
- * @author Florian Furbach
- */
-public abstract class UnaryRelation extends Relation {
 
-    protected Relation r1;
+public abstract class ZUnaryRelation extends ZRelation {
 
-    public UnaryRelation(Relation r1, String name, String term) {
+    protected ZRelation r1;
+
+    public ZUnaryRelation(ZRelation r1, String name, String term) {
         super(name, term);
         this.r1 = r1;
         containsRec = r1.containsRec;
@@ -29,7 +20,7 @@ public abstract class UnaryRelation extends Relation {
 
     }
 
-    public UnaryRelation(Relation r1, String term) {
+    public ZUnaryRelation(ZRelation r1, String term) {
         super(term);
         this.r1 = r1;
         containsRec = r1.containsRec;
@@ -41,7 +32,7 @@ public abstract class UnaryRelation extends Relation {
         if (!encodedRels.contains(getName())) {
             encodedRels.add(getName());
             BoolExpr enc = r1.encode(program, ctx, encodedRels);
-            if (!Relation.Approx) {
+            if (!ZRelation.Approx) {
                 return ctx.mkAnd(enc, this.encodeBasic(program, ctx));
             } else {
                 return ctx.mkAnd(enc, this.encodeApprox(program, ctx));

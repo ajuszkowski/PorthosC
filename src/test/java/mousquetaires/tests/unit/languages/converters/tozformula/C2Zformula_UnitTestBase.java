@@ -12,7 +12,7 @@ import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
-import mousquetaires.memorymodels.wmm.MemoryModelKind;
+import mousquetaires.memorymodels.wmm.MemoryModel;
 import mousquetaires.tests.TestFailedException;
 import mousquetaires.tests.unit.Assertion;
 import mousquetaires.tests.unit.languages.converters.AbstractConverterUnitTest;
@@ -26,7 +26,7 @@ import java.util.Iterator;
 
 public abstract class C2Zformula_UnitTestBase extends AbstractConverterUnitTest<BoolExpr> {
 
-    protected abstract MemoryModelKind memoryModel();
+    protected abstract MemoryModel.Kind memoryModel();
 
     @Override
     protected Iterator<? extends BoolExpr> parseTestFile(String testFile) {

@@ -2,11 +2,9 @@ package mousquetaires.memorymodels;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
-import com.microsoft.z3.Model;
 import com.microsoft.z3.Z3Exception;
-import dartagnan.program.*;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.memorymodels.relations.Relation;
+import mousquetaires.memorymodels.relations.old.Relation;
 import mousquetaires.utils.Utils;
 
 import java.util.HashSet;

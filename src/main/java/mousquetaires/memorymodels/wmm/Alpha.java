@@ -1,12 +1,16 @@
 package mousquetaires.memorymodels.wmm;
 
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Context;
+import com.microsoft.z3.Z3Exception;
+import dartagnan.program.Event;
+import dartagnan.program.LocalEvent;
+import dartagnan.program.Program;
+import dartagnan.program.SharedMemEvent;
+import mousquetaires.memorymodels.EncodingsOld;
+
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.microsoft.z3.*;
-
-import dartagnan.program.*;
-import mousquetaires.memorymodels.EncodingsOld;
 
 
 public class Alpha {

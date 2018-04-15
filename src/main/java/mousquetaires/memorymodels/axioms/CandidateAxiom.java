@@ -5,7 +5,7 @@
  */
 package mousquetaires.memorymodels.axioms;
 
-import mousquetaires.memorymodels.relations.Relation;
+import mousquetaires.memorymodels.relations.old.Relation;
 
 
 /**

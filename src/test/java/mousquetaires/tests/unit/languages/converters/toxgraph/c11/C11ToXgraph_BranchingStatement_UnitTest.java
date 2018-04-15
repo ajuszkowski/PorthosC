@@ -8,7 +8,7 @@ import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XRegister;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
-import mousquetaires.memorymodels.wmm.MemoryModelKind;
+import mousquetaires.memorymodels.wmm.MemoryModel;
 import mousquetaires.tests.unit.UnitTestPaths;
 import mousquetaires.tests.unit.languages.common.XTestMemoryManager;
 import mousquetaires.tests.unit.languages.converters.toxgraph.C11ToXgraph_UnitTestBase;
@@ -19,8 +19,8 @@ import org.junit.Test;
 public class C11ToXgraph_BranchingStatement_UnitTest extends C11ToXgraph_UnitTestBase {
 
     @Override
-    protected MemoryModelKind memoryModel() {
-        return MemoryModelKind.TSO;//temporary
+    protected MemoryModel.Kind memoryModel() {
+        return MemoryModel.Kind.TSO;//temporary
     }
 
     @Test

@@ -1,13 +1,13 @@
 package mousquetaires.app.options.converters;
 
 import com.beust.jcommander.IStringConverter;
-import mousquetaires.memorymodels.wmm.MemoryModelKind;
+import mousquetaires.memorymodels.wmm.MemoryModel;
 
 
-public class MemoryModelNameConverter implements IStringConverter<MemoryModelKind> {
+public class MemoryModelNameConverter implements IStringConverter<MemoryModel.Kind> {
 
     @Override
-    public MemoryModelKind convert(String value) {
-        return MemoryModelKind.parse(value);
+    public MemoryModel.Kind convert(String value) {
+        return MemoryModel.Kind.parse(value);
     }
 }

@@ -4,7 +4,7 @@ import mousquetaires.languages.converters.toxgraph.interpretation.XProgramInterp
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.*;
-import mousquetaires.memorymodels.wmm.MemoryModelKind;
+import mousquetaires.memorymodels.wmm.MemoryModel;
 import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XMethodInvocationError;
 
@@ -44,7 +44,7 @@ class HardwareInvocationHook implements InvocationHook {
                         throw new XMethodInvocationError(methodName, "2st argument: could not convert to local memory unit: " + wrap(argument));
                     }
 
-                    if (!program.memoryModel.is(MemoryModelKind.Power) && !program.memoryModel.is(MemoryModelKind.ARM)) {
+                    if (!program.memoryModel.is(MemoryModel.Kind.Power) && !program.memoryModel.is(MemoryModel.Kind.ARM)) {
                         if (atomic.equals("_sc")) {
                             //return new Seq(st, mfence);
                             emitStore(receiverShared, argumentLocal);
@@ -57,7 +57,7 @@ class HardwareInvocationHook implements InvocationHook {
 
                     // TODO: in the old code, the 'leading' parameter is always true. Cleanup this logic.
                     boolean leading = true;
-                    if (program.memoryModel.is(MemoryModelKind.Power)) {
+                    if (program.memoryModel.is(MemoryModel.Kind.Power)) {
                         if(atomic.equals("_sc")) {
                             if (leading) {
                                 //return new Seq(sync, st);
@@ -80,7 +80,7 @@ class HardwareInvocationHook implements InvocationHook {
                         }
                     }
 
-                    if(program.memoryModel.is(MemoryModelKind.ARM)) {
+                    if(program.memoryModel.is(MemoryModel.Kind.ARM)) {
                         if(atomic.equals("_sc")) {
                             //return new Seq(ish1, new Seq(st, ish2));
                             emitBarrier(XBarrierEvent.Kind.Ish);
@@ -118,7 +118,7 @@ class HardwareInvocationHook implements InvocationHook {
                     // TODO: it's better to check the type of atomic as well (not only name)
                     String atomic = ((XLvalueMemoryUnit) atomicUnit).getName();
 
-                    if(!program.memoryModel.is(MemoryModelKind.Power) && !program.memoryModel.is(MemoryModelKind.ARM)) {
+                    if(!program.memoryModel.is(MemoryModel.Kind.Power) && !program.memoryModel.is(MemoryModel.Kind.ARM)) {
                         return emitLoad(receiverShared);
                     }
                     if(atomic.equals("_rx") || atomic.equals("_na")) {
@@ -127,7 +127,7 @@ class HardwareInvocationHook implements InvocationHook {
 
                     // TODO: in the old code, the 'leading' parameter is always true. Cleanup this logic.
                     boolean leading = true;
-                    if(program.memoryModel.is(MemoryModelKind.Power)) {
+                    if(program.memoryModel.is(MemoryModel.Kind.Power)) {
                         if(atomic.equals("_sc")) {
                             if(leading) {
                                 //return new Seq(sync, new Seq(ld, lwsync));
@@ -147,7 +147,7 @@ class HardwareInvocationHook implements InvocationHook {
                             return emitBarrier(XBarrierEvent.Kind.Lwsync);
                         }
                     }
-                    if(program.memoryModel.is(MemoryModelKind.ARM)) {
+                    if(program.memoryModel.is(MemoryModel.Kind.ARM)) {
                         if(atomic.equals("_con") || atomic.equals("_acq") || atomic.equals("_sc")) {
                             //return new Seq(ld, ish);
                             emitLoad(receiverShared);

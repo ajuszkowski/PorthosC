@@ -16,7 +16,7 @@ import dartagnan.program.SharedMemEvent;
 import dartagnan.program.Program;
 import dartagnan.program.Register;
 import dartagnan.program.StoreEvent;
-import mousquetaires.memorymodels.relations.Relation;
+import mousquetaires.memorymodels.relations.old.Relation;
 import mousquetaires.utils.Utils;
 import static mousquetaires.utils.Utils.lastValueLoc;
 import static mousquetaires.utils.Utils.lastValueReg;

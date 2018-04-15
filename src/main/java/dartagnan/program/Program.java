@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import com.microsoft.z3.*;
 
 import dartagnan.expression.Assert;
-import mousquetaires.memorymodels.wmm.*;
+import mousquetaires.memorymodels.wmm.old.*;
 import mousquetaires.utils.*;
 
 

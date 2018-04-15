@@ -1,31 +1,22 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mousquetaires.memorymodels.relations;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Program;
-import mousquetaires.memorymodels.relations.Relation;
 
 import java.util.Set;
 
-/**
- *
- * @author Florian Furbach
- */
-public class RelDummy extends Relation{
 
-    private Relation dummyOf;
+public class RelDummy extends ZRelation {
 
-    public Relation getDummyOf() {
+    private ZRelation dummyOf;
+
+    public ZRelation getDummyOf() {
         return dummyOf;
     }
 
-    public void setDummyOf(Relation dummyOf) {
+    public void setDummyOf(ZRelation dummyOf) {
         this.dummyOf = dummyOf;
     }
     

@@ -17,8 +17,8 @@ import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 
 import dartagnan.program.Program;
 import mousquetaires.memorymodels.DomainOld;
-import mousquetaires.memorymodels.relations.Relation;
-import mousquetaires.memorymodels.wmm.Wmm;
+import mousquetaires.memorymodels.relations.old.Relation;
+import mousquetaires.memorymodels.wmm.old.Wmm;
 
 import java.util.logging.Logger;
 

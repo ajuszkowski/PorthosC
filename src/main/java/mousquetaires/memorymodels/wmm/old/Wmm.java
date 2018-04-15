@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mousquetaires.memorymodels.wmm;
+package mousquetaires.memorymodels.wmm.old;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
@@ -13,7 +13,7 @@ import dartagnan.program.Program;
 import mousquetaires.memorymodels.axioms.Acyclic;
 import mousquetaires.memorymodels.axioms.Axiom;
 import mousquetaires.memorymodels.axioms.Irreflexive;
-import mousquetaires.memorymodels.relations.*;
+import mousquetaires.memorymodels.relations.old.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -54,7 +54,7 @@ public class Wmm {
             temp.addAxiom(new Acyclic(ghbtso));
             temp.addAxiom(new Acyclic(new RelUnion(poloc, com)));
             return temp;
-        };
+        }
 
         if (model.contentEquals("power")) {
             //acyclic((po ∩ sloc) ∪ rf ∪ fr ∪ co)
@@ -89,7 +89,7 @@ public class Wmm {
             //ic := ic0 ∪ii ∪cc ∪(ic;cc)∪(ii;ic) 
             Relation ic=new RelUnion(ii, new RelUnion(ccdummy, new RelUnion(new RelComposition(icdummy, ccdummy), new RelComposition(ii, icdummy))), "ic");
             //cc := cc0 ∪ci ∪(ci;ic)∪(cc;cc)
-            Relation cc= new RelUnion(cc0, new RelUnion(ci, new RelUnion(new RelComposition(ci, ic), new RelComposition(ccdummy, ccdummy))),"cc");
+            Relation cc= new RelUnion(cc0, new RelUnion(ci, new RelUnion(new RelComposition(ci, ic), new RelComposition(ccdummy, ccdummy))), "cc");
             //ppo := ((R × R) ∩ ii) ∪ ((R × W) ∩ ic)
             Relation RR=new BasicRelation("RR");
             Relation ppo=new RelUnion(new RelInterSect(ii, RR), new RelInterSect(RW, ic),"ppo");

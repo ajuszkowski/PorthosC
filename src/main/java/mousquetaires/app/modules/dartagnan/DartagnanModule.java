@@ -17,10 +17,11 @@ import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModelLP64;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
-import mousquetaires.memorymodels.wmm.MemoryModelKind;
+import mousquetaires.memorymodels.wmm.MemoryModel;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
 
@@ -43,14 +44,15 @@ public class DartagnanModule extends AppModule {
         try {
             int unrollBound = 10; // TODO: get from options
 
-            MemoryModelKind memoryModel = options.sourceModel;
+            MemoryModel.Kind memoryModelKind = options.sourceModel;
+            MemoryModel memoryModel = memoryModelKind.createModel();
 
             File inputProgramFile = options.inputProgramFile;
             ProgramLanguage language = ProgramExtensions.parseProgramLanguage(inputProgramFile.getName());
             YSyntaxTree internalRepr = YtreeParser.parse(inputProgramFile, language);
             DataModel dataModel = new DataModelLP64(); // TODO: pass as cli-option
 
-            Ytree2XgraphConverter yConverter = new Ytree2XgraphConverter(language, memoryModel, dataModel);
+            Ytree2XgraphConverter yConverter = new Ytree2XgraphConverter(language, memoryModelKind, dataModel);
             XProgram program = yConverter.convert(internalRepr);
 
             XUnrolledProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
@@ -60,10 +62,10 @@ public class DartagnanModule extends AppModule {
             //todo: pass timeouts
 
             Xgraph2ZformulaEncoder encoder = new Xgraph2ZformulaEncoder(ctx, unrolledProgram);
-            BoolExpr zFormula = encoder.encodeProgram(unrolledProgram);
+            List<BoolExpr> asserts = encoder.encodeProgram(unrolledProgram);
 
-
-
+            asserts.addAll(memoryModel.encode(unrolledProgram, ctx));
+            asserts.add(memoryModel.Consistent(unrolledProgram, ctx));
 
             // SmtEncoder.encode(program) ...
 

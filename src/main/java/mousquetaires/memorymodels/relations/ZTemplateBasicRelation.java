@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mousquetaires.memorymodels.relations;
 
 import aramis.ListOfRels;
@@ -13,14 +8,11 @@ import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Event;
 import dartagnan.program.Program;
 import mousquetaires.utils.Utils;
+
 import java.util.Set;
 
 
-/**
- *
- * @author Florian Furbach
- */
-public class TemplateBasicRelation extends Relation {
+public class ZTemplateBasicRelation extends ZRelation {
 
     /**
      *
@@ -28,19 +20,19 @@ public class TemplateBasicRelation extends Relation {
      * @param ctx
      * @return
      */
-    public BasicRelation getSolution(Solver s,Context ctx){
+    public ZBasicRelation getSolution(Solver s, Context ctx){
             for (String baserel : ListOfRels.baserels) {
                 BoolExpr baserelid = ctx.mkBoolConst(baserel + name);
-                if(s.getModel().eval(baserelid, true).isTrue()) return new BasicRelation(baserel);
+                if(s.getModel().eval(baserelid, true).isTrue()) return new ZBasicRelation(baserel);
             }
             System.err.println("could not find solution for basic relation template "+getName());
             return null;
         }
 
     
-    public TemplateBasicRelation() {
-        super("TBR"+String.valueOf(TemplateRelation.ID));
-        TemplateRelation.ID++;
+    public ZTemplateBasicRelation() {
+        super("TBR"+String.valueOf(ZTemplateRelation.ID));
+        ZTemplateRelation.ID++;
     }
 
     @Override
@@ -57,7 +49,7 @@ public class TemplateBasicRelation extends Relation {
             BoolExpr baserelid = ctx.mkBoolConst(baserel + name);
             for (Event e1 : events) {
                 for (Event e2 : events) {
-                    enc2 = ctx.mkAnd(enc2, ctx.mkEq(Utils.edge(getName(), e1, e2, ctx), Utils.edge(TemplateRelation.PREFIX+baserel, e1, e2, ctx)));
+                    enc2 = ctx.mkAnd(enc2, ctx.mkEq(Utils.edge(getName(), e1, e2, ctx), Utils.edge(ZTemplateRelation.PREFIX+baserel, e1, e2, ctx)));
                 }
             }
             enc = ctx.mkOr(ctx.mkAnd(ctx.mkNot(baserelid), enc), ctx.mkAnd(baserelid, enc2));

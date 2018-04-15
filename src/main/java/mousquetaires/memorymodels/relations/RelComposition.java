@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mousquetaires.memorymodels.relations;
 
 import com.microsoft.z3.BoolExpr;
@@ -10,23 +5,18 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Event;
 import dartagnan.program.Program;
-import mousquetaires.memorymodels.relations.BinaryRelation;
-import mousquetaires.memorymodels.relations.Relation;
 import mousquetaires.utils.Utils;
+
 import java.util.Set;
 
 
-/**
- *
- * @author Florian Furbach
- */
-public class RelComposition extends BinaryRelation {
+public class RelComposition extends ZBinaryRelation {
 
-    public RelComposition(Relation r1, Relation r2, String name) {
+    public RelComposition(ZRelation r1, ZRelation r2, String name) {
         super(r1,r2,name, String.format("(%s;%s)", r1.getName(), r2.getName()));
     }
 
-    public RelComposition(Relation r1, Relation r2) {
+    public RelComposition(ZRelation r1, ZRelation r2) {
         super(r1,r2,String.format("(%s;%s)", r1.getName(), r2.getName()));
     }
 

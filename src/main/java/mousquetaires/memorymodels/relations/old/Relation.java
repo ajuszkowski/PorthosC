@@ -1,9 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package mousquetaires.memorymodels.relations;
+package mousquetaires.memorymodels.relations.old;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
@@ -14,10 +9,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-/**
- *
- * @author Florian Furbach
- */
 public abstract class Relation {
 
     /**
@@ -66,9 +57,8 @@ public abstract class Relation {
     }
     
     
-    
     public abstract BoolExpr encode(Program program, Context ctx, Set<String> encodedRels) throws Z3Exception;
-    
+
     protected abstract BoolExpr encodeBasic(Program program, Context ctx) throws Z3Exception;
     
     public BoolExpr encodeApprox(Program program, Context ctx) throws Z3Exception{

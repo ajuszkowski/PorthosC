@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mousquetaires.memorymodels.relations;
 
 import com.microsoft.z3.BoolExpr;
@@ -12,14 +7,11 @@ import dartagnan.program.Program;
 
 import java.util.Set;
 
-/**
- *
- * @author Florian Furbach
- */
-public class BasicRelation extends Relation {
+
+public class ZBasicRelation extends ZRelation {
         public static final String BASERELS[] = {"po", "co", "fr", "rf", "poloc", "rfe", "WR", "mfence"};
 
-    public BasicRelation(String rel) {
+    public ZBasicRelation(String rel) {
         super(rel);
         containsRec=false;
     }

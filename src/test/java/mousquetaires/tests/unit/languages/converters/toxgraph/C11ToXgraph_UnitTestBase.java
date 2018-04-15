@@ -8,7 +8,7 @@ import mousquetaires.languages.syntax.xgraph.XProgramBase;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
-import mousquetaires.memorymodels.wmm.MemoryModelKind;
+import mousquetaires.memorymodels.wmm.MemoryModel;
 import mousquetaires.tests.TestFailedException;
 import mousquetaires.tests.unit.Assertion;
 import mousquetaires.tests.unit.languages.common.graph.AssertionXProcessesEqual;
@@ -21,7 +21,7 @@ import java.util.Iterator;
 
 public abstract class C11ToXgraph_UnitTestBase extends AbstractConverterUnitTest<XProcess> {
 
-    protected abstract MemoryModelKind memoryModel();
+    protected abstract MemoryModel.Kind memoryModel();
 
     @Override
     protected Iterator<? extends XProcess> parseTestFile(String testFile) {
