@@ -1,37 +1,30 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mousquetaires.memorymodels.axioms;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
-import dartagnan.program.Event;
-import mousquetaires.memorymodels.relations.old.Relation;
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.memorymodels.relations.ZRelation;
 
 import java.util.Set;
 
 
-/**
- *
- * @author Florian Furbach
- */
 public abstract class ZAxiom {
-        protected Relation rel;
 
-    public ZAxiom(Relation rel) {
+    protected ZRelation rel;
+
+    public ZAxiom(ZRelation rel) {
         this.rel = rel;
     }
 
-    public Relation getRel() {
+    public ZRelation getRel() {
         return rel;
     }
-    
-    public abstract String write();
-        public abstract BoolExpr Consistent(Set<Event> events, Context ctx) throws Z3Exception;
-        public abstract BoolExpr Inconsistent(Set<Event> events, Context ctx) throws Z3Exception;
 
+    public abstract String write();
+
+    public abstract BoolExpr Consistent(Set<? extends XEvent> events, Context ctx);
+
+    public abstract BoolExpr Inconsistent(Set<? extends XEvent> events, Context ctx);
 
 }

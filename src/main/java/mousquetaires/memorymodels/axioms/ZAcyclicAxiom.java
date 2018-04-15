@@ -1,46 +1,35 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mousquetaires.memorymodels.axioms;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
-import dartagnan.program.Event;
-import mousquetaires.memorymodels.EncodingsOld;
-import mousquetaires.memorymodels.relations.old.Relation;
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.memorymodels.Encodings;
+import mousquetaires.memorymodels.relations.ZRelation;
 
 import java.util.Set;
 
 
-/**
- *
- * @author Florian Furbach
- */
 public class ZAcyclicAxiom extends ZAxiom {
 
-    @Override
-    public BoolExpr Consistent(Set<Event> events, Context ctx) throws Z3Exception {
-        return EncodingsOld.satAcyclic(rel.getName(), events, ctx);    }
-
-    @Override
-    public BoolExpr Inconsistent(Set<Event> events, Context ctx) throws Z3Exception {
-        return ctx.mkAnd(EncodingsOld.satCycleDef(rel.getName(), events, ctx), EncodingsOld.satCycle(rel.getName(), events, ctx));
+    public ZAcyclicAxiom(ZRelation rel) {
+        super(rel);
     }
 
+    @Override
+    public BoolExpr Consistent(Set<? extends XEvent> events, Context ctx) {
+        return Encodings.satAcyclic(rel.getName(), events, ctx);
+    }
 
-
-    public ZAcyclicAxiom(Relation rel) {
-        super(rel);
+    @Override
+    public BoolExpr Inconsistent(Set<? extends XEvent> events, Context ctx) {
+        return ctx.mkAnd(Encodings.satCycleDef(rel.getName(), events, ctx),
+                         Encodings.satCycle(rel.getName(), events, ctx));
     }
 
     @Override
     public String write() {
         return String.format("Acyclic(%s)", rel.getName());
     }
-    
-    
-    
+
 }

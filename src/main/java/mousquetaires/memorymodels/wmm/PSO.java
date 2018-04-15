@@ -1,39 +1,40 @@
 package mousquetaires.memorymodels.wmm;
 
+import com.google.common.collect.ImmutableSet;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
-import com.microsoft.z3.Z3Exception;
-import dartagnan.program.Event;
-import dartagnan.program.Program;
-import mousquetaires.memorymodels.EncodingsOld;
-
-import java.util.Set;
+import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
+import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
+import mousquetaires.memorymodels.Encodings;
 
 
 public class PSO {
 
-    public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getMemEvents();
+    public static BoolExpr encode(XUnrolledProgram program, Context ctx) {
+        ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
 
-        BoolExpr enc = EncodingsOld.satUnion("co", "fr", events, ctx);
-        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("com", "(co+fr)", "rf", events, ctx));
-        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("poloc", "com", events, ctx));
-        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("com-pso", "(co+fr)", "rfe", events, ctx));
-        enc = ctx.mkAnd(enc, EncodingsOld.satIntersection("po", "RM", events, ctx));
-        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("po-pso", "(po&RM)", "mfence", events, ctx));
-        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("ghb-pso", "po-pso", "com-pso", events, ctx));
+        BoolExpr enc = Encodings.satUnion("co", "fr", events, ctx);
+        enc = ctx.mkAnd(enc, Encodings.satUnion("com", "(co+fr)", "rf", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satUnion("poloc", "com", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satUnion("com-pso", "(co+fr)", "rfe", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satIntersection("po", "RM", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satUnion("po-pso", "(po&RM)", "mfence", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satUnion("ghb-pso", "po-pso", "com-pso", events, ctx));
         return enc;
     }
 
-    public static BoolExpr Consistent(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getMemEvents();
-        return ctx.mkAnd(EncodingsOld.satAcyclic("(poloc+com)", events, ctx), EncodingsOld.satAcyclic("ghb-pso", events, ctx));
+    public static BoolExpr Consistent(XUnrolledProgram program, Context ctx) {
+        ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
+        return ctx.mkAnd(Encodings.satAcyclic("(poloc+com)", events, ctx),
+                         Encodings.satAcyclic("ghb-pso", events, ctx));
     }
 
-    public static BoolExpr Inconsistent(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getMemEvents();
-        BoolExpr enc = ctx.mkAnd(EncodingsOld.satCycleDef("(poloc+com)", events, ctx), EncodingsOld.satCycleDef("ghb-pso", events, ctx));
-        enc = ctx.mkAnd(enc, ctx.mkOr(EncodingsOld.satCycle("(poloc+com)", events, ctx), EncodingsOld.satCycle("ghb-pso", events, ctx)));
+    public static BoolExpr Inconsistent(XUnrolledProgram program, Context ctx) {
+        ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
+        BoolExpr enc = ctx.mkAnd(Encodings.satCycleDef("(poloc+com)", events, ctx),
+                                 Encodings.satCycleDef("ghb-pso", events, ctx));
+        enc = ctx.mkAnd(enc, ctx.mkOr(Encodings.satCycle("(poloc+com)", events, ctx),
+                                      Encodings.satCycle("ghb-pso", events, ctx)));
         return enc;
     }
 }

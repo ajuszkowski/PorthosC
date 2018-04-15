@@ -22,6 +22,7 @@ import mousquetaires.utils.exceptions.NotImplementedException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 
 
 public abstract class C2Zformula_UnitTestBase extends AbstractConverterUnitTest<BoolExpr> {
@@ -41,7 +42,9 @@ public abstract class C2Zformula_UnitTestBase extends AbstractConverterUnitTest<
             XUnrolledProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
             Context ctx = new Context();
             Xgraph2ZformulaEncoder encoder = new Xgraph2ZformulaEncoder(ctx, unrolledProgram);
-            BoolExpr smtFormula = encoder.encodeProgram(unrolledProgram);
+            List<BoolExpr> programAsserts = encoder.encodeProgram(unrolledProgram);
+
+            BoolExpr smtFormula = ctx.mkAnd(programAsserts.toArray(new BoolExpr[0]));
             return CollectionUtils.createIteratorFrom(smtFormula);
         } catch (IOException e) {
             e.printStackTrace();

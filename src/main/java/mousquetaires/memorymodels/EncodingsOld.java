@@ -16,7 +16,7 @@ import dartagnan.program.SharedMemEvent;
 import dartagnan.program.Program;
 import dartagnan.program.Register;
 import dartagnan.program.StoreEvent;
-import mousquetaires.memorymodels.relations.old.Relation;
+import mousquetaires.memorymodels.relations.ZRelation;
 import mousquetaires.utils.Utils;
 import static mousquetaires.utils.Utils.lastValueLoc;
 import static mousquetaires.utils.Utils.lastValueReg;
@@ -221,7 +221,7 @@ public class EncodingsOld {
 
     public static BoolExpr satTransRef(String name, Set<Event> events, Context ctx) throws Z3Exception {
         BoolExpr enc;
-        if(Relation.Approx){
+        if(ZRelation.Approx){
                     enc = ctx.mkTrue();
         for (Event e1 : events) {
             for (Event e2 : events) {

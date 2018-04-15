@@ -1,49 +1,41 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mousquetaires.memorymodels.axioms;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
 import dartagnan.program.Event;
-import mousquetaires.memorymodels.EncodingsOld;
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.memorymodels.Encodings;
+import mousquetaires.memorymodels.relations.ZRelation;
 import mousquetaires.memorymodels.relations.old.Relation;
 import mousquetaires.utils.Utils;
 
 import java.util.Set;
 
 
-/**
- *
- * @author Florian Furbach
- */
 public class ZIrreflexiveAxiom extends ZAxiom {
 
-    @Override
-    public BoolExpr Consistent(Set<Event> events, Context ctx) throws Z3Exception {
-        return EncodingsOld.satIrref(rel.getName(), events, ctx);    }
+    public ZIrreflexiveAxiom(ZRelation rel) {
+        super(rel);
+    }
 
     @Override
-    public BoolExpr Inconsistent(Set<Event> events, Context ctx) throws Z3Exception {
+    public BoolExpr Consistent(Set<? extends XEvent> events, Context ctx) {
+        return Encodings.satIrref(rel.getName(), events, ctx);
+    }
+
+    @Override
+    public BoolExpr Inconsistent(Set<? extends XEvent> events, Context ctx) {
         BoolExpr enc = ctx.mkTrue();
-        for(Event e : events){
+        for (XEvent e : events) {
             enc = ctx.mkOr(enc, Utils.edge(rel.getName(), e, e, ctx));
         }
         return enc;
-    }
-
-
-
-    public ZIrreflexiveAxiom(Relation rel) {
-        super(rel);
     }
 
     @Override
     public String write() {
         return String.format("Irreflexive(%s)", rel.getName());
     }
-    
+
 }

@@ -3,13 +3,12 @@ package mousquetaires.memorymodels.wmm;
 import com.google.common.collect.ImmutableSet;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
-import com.microsoft.z3.Z3Exception;
-import dartagnan.program.Event;
 import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
-import mousquetaires.memorymodels.axioms.old.Acyclic;
-import mousquetaires.memorymodels.axioms.old.Axiom;
-import mousquetaires.memorymodels.axioms.old.Irreflexive;
-import mousquetaires.memorymodels.relations.old.*;
+import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
+import mousquetaires.memorymodels.axioms.ZAcyclicAxiom;
+import mousquetaires.memorymodels.axioms.ZAxiom;
+import mousquetaires.memorymodels.axioms.ZIrreflexiveAxiom;
+import mousquetaires.memorymodels.relations.*;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
 import java.util.ArrayList;
@@ -22,10 +21,10 @@ import java.util.function.Supplier;
 public class MemoryModel {
 
     private final Kind kind;
-    private final ImmutableSet<Axiom> axioms;
-    private final ImmutableSet<Relation> namedRelations;
+    private final ImmutableSet<ZAxiom> axioms;
+    private final ImmutableSet<ZRelation> namedRelations;
 
-    private MemoryModel(Kind kind, ImmutableSet<Axiom> axioms, ImmutableSet<Relation> namedRelations) {
+    private MemoryModel(Kind kind, ImmutableSet<ZAxiom> axioms, ImmutableSet<ZRelation> namedRelations) {
         this.kind = kind;
         this.axioms = axioms;
         this.namedRelations = namedRelations;
@@ -35,22 +34,22 @@ public class MemoryModel {
         return kind;
     }
 
-    public ImmutableSet<Axiom> getAxioms() {
+    public ImmutableSet<ZAxiom> getAxioms() {
         return axioms;
     }
 
-    public ImmutableSet<Relation> getNamedRelations() {
+    public ImmutableSet<ZRelation> getNamedRelations() {
         return namedRelations;
     }
 
 
-    public List<BoolExpr> encode(XUnrolledProgram program, Context ctx) throws Z3Exception {
+    public List<BoolExpr> encode(XUnrolledProgram program, Context ctx) {
         List<BoolExpr> asserts = new ArrayList<>();
-        Set<String> encodedRels=new HashSet<String>();
-        for (Axiom ax : axioms) {
+        Set<String> encodedRels=new HashSet<>();
+        for (ZAxiom ax : axioms) {
             asserts.add(ax.getRel().encode(program, ctx, encodedRels));
         }
-        for (Relation namedRelation : getNamedRelations()) {
+        for (ZRelation namedRelation : getNamedRelations()) {
             asserts.add(namedRelation.encode(program, ctx, encodedRels));
         }
 
@@ -58,20 +57,19 @@ public class MemoryModel {
         return asserts;
     }
 
-    public BoolExpr Consistent(XUnrolledProgram program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getMemEvents();
+    public BoolExpr Consistent(XUnrolledProgram program, Context ctx) {
+        ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
         BoolExpr expr = ctx.mkTrue();
-        for (Axiom ax : axioms) {
+        for (ZAxiom ax : axioms) {
             expr = ctx.mkAnd(expr, ax.Consistent(events, ctx));
         }
         return expr;
     }
 
-    public BoolExpr Inconsistent(XUnrolledProgram program, Context ctx) throws Z3Exception {
-        List<BoolExpr> asserts = new ArrayList<>();
-        Set<Event> events = program.getMemEvents();
+    public BoolExpr Inconsistent(XUnrolledProgram program, Context ctx) {
+        ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
         BoolExpr expr = ctx.mkFalse();
-        for (Axiom ax : axioms) {
+        for (ZAxiom ax : axioms) {
             expr = ctx.mkOr(expr, ax.Inconsistent(events, ctx));
         }
         return expr;
@@ -116,91 +114,91 @@ public class MemoryModel {
         }
 
         public MemoryModel createModel() {
-            ImmutableSet.Builder<Axiom> axiomsBuilder = new ImmutableSet.Builder<>();
-            ImmutableSet.Builder<Relation> namedRelationsBuilder = new ImmutableSet.Builder<>();
+            ImmutableSet.Builder<ZAxiom> axiomsBuilder = new ImmutableSet.Builder<>();
+            ImmutableSet.Builder<ZRelation> namedRelationsBuilder = new ImmutableSet.Builder<>();
             Supplier<MemoryModel> buildModel = () -> new MemoryModel(this, axiomsBuilder.build(), namedRelationsBuilder.build());
 
             //basics:
-            Relation co = new BasicRelation("co");
-            Relation po = new BasicRelation("po");
-            Relation fr = new BasicRelation("fr");
-            Relation rf = new BasicRelation("rf");
-            Relation com = new RelUnion(new RelUnion(co, fr), rf, "com");
+            ZRelation co = new ZBasicRelation("co");
+            ZRelation po = new ZBasicRelation("po");
+            ZRelation fr = new ZBasicRelation("fr");
+            ZRelation rf = new ZBasicRelation("rf");
+            ZRelation com = new ZRelUnion(new ZRelUnion(co, fr), rf, "com");
 
             //sc:
             if (is(SC)) {
-                Relation ghbsc = new RelUnion(po, com, "ghb-sc");
-                axiomsBuilder.add(new Acyclic(ghbsc));
+                ZRelation ghbsc = new ZRelUnion(po, com, "ghb-sc");
+                axiomsBuilder.add(new ZAcyclicAxiom(ghbsc));
                 return buildModel.get();
             }
 
             //tso:
-            Relation poloc = new BasicRelation("poloc");
-            Relation rfe = new BasicRelation("rfe");
-            Relation WR = new BasicRelation("WR");
+            ZRelation poloc = new ZBasicRelation("poloc");
+            ZRelation rfe = new ZBasicRelation("rfe");
+            ZRelation WR = new ZBasicRelation("WR");
             if (is(TSO)) {
-                Relation comtso = new RelUnion(new RelUnion(co, fr), rfe, "com-tso");
-                Relation mfence = new BasicRelation("mfence");
-                Relation potso = new RelUnion(new RelMinus(po, WR), mfence, "po-tso");
-                Relation ghbtso = new RelUnion(potso, comtso, "ghb-tso");
-                axiomsBuilder.add(new Acyclic(ghbtso));
-                axiomsBuilder.add(new Acyclic(new RelUnion(poloc, com)));
+                ZRelation comtso = new ZRelUnion(new ZRelUnion(co, fr), rfe, "com-tso");
+                ZRelation mfence = new ZBasicRelation("mfence");
+                ZRelation potso = new ZRelUnion(new ZRelMinus(po, WR), mfence, "po-tso");
+                ZRelation ghbtso = new ZRelUnion(potso, comtso, "ghb-tso");
+                axiomsBuilder.add(new ZAcyclicAxiom(ghbtso));
+                axiomsBuilder.add(new ZAcyclicAxiom(new ZRelUnion(poloc, com)));
                 return buildModel.get();
             }
 
             if (is(Power)) {
                 //acyclic((po ∩ sloc) ∪ rf ∪ fr ∪ co)
-                //Relation sloc=new BasicRelation("sloc");
-                axiomsBuilder.add(new Acyclic(new RelUnion(poloc, new RelUnion(new RelUnion(rf, fr), co))));
+                //ZRelation sloc=new ZBasicRelation("sloc");
+                axiomsBuilder.add(new ZAcyclicAxiom(new ZRelUnion(poloc, new ZRelUnion(new ZRelUnion(rf, fr), co))));
                 //ppo:
                 //dp := ad ∪ dd
                 //TODO: why is addr (ad) empty?
-                Relation RW=new BasicRelation("RW");
-                Relation dd = new RelInterSect(new RelLocTrans(new BasicRelation("idd")), RW);
-                Relation dp = dd;
+                ZRelation RW=new ZBasicRelation("RW");
+                ZRelation dd = new ZRelInterSect(new ZRelLocTrans(new ZBasicRelation("idd")), RW);
+                ZRelation dp = dd;
                 //rdw := (po ∩ sloc) ∩ (fre;rfe):
-                Relation fre=new BasicRelation("fre");
-                Relation rdw = new RelInterSect(poloc, new RelComposition(fre, rfe));
+                ZRelation fre=new ZBasicRelation("fre");
+                ZRelation rdw = new ZRelInterSect(poloc, new ZRelComposition(fre, rfe));
                 // detour := (po ∩ sloc) ∩ (coe;rfe)
-                Relation detour = new RelInterSect(poloc, new RelComposition(new BasicRelation("coe"), rfe));
+                ZRelation detour = new ZRelInterSect(poloc, new ZRelComposition(new ZBasicRelation("coe"), rfe));
                 //ii0 := dp ∪ rdw ∪ rfi
-                Relation ii0=new RelUnion(dp, new RelUnion(rdw, new BasicRelation("rfi")));
+                ZRelation ii0=new ZRelUnion(dp, new ZRelUnion(rdw, new ZBasicRelation("rfi")));
                 //ci0 := cd-isync ∪ detour
-                Relation ci0=new RelUnion(new BasicRelation("ctrlisync"), detour);
+                ZRelation ci0=new ZRelUnion(new ZBasicRelation("ctrlisync"), detour);
                 //cc0 :=dp∪(po∩sloc)∪cd∪(ad;po) addr is empty ?
-                Relation cc0=new RelUnion(dp, new RelUnion(poloc, new BasicRelation("ctrl")));
-                //Relation cc0=new RelUnion(dp, new RelUnion(poloc, new RelUnion(new BasicRelation("ctrl"), new RelComposition(ad, po))));
+                ZRelation cc0=new ZRelUnion(dp, new ZRelUnion(poloc, new ZBasicRelation("ctrl")));
+                //ZRelation cc0=new ZRelUnion(dp, new ZRelUnion(poloc, new ZRelUnion(new ZBasicRelation("ctrl"), new ZRelComposition(ad, po))));
                 //ii:=ii0 ∪ci∪(ic;ci)∪(ii;ii)
-                Relation iidummy=new RelDummy("ii");
-                Relation icdummy=new RelDummy("ic");
-                Relation cidummy=new RelDummy("ci");
-                Relation ccdummy=new RelDummy("cc");
-                Relation ii=new RelUnion(ii0, new RelUnion(cidummy, new RelUnion(new RelComposition(icdummy, cidummy), new RelComposition(iidummy, iidummy))),"ii");
+                ZRelation iidummy=new ZRelDummy("ii");
+                ZRelation icdummy=new ZRelDummy("ic");
+                ZRelation cidummy=new ZRelDummy("ci");
+                ZRelation ccdummy=new ZRelDummy("cc");
+                ZRelation ii=new ZRelUnion(ii0, new ZRelUnion(cidummy, new ZRelUnion(new ZRelComposition(icdummy, cidummy), new ZRelComposition(iidummy, iidummy))),"ii");
                 //ci:=ci0 ∪(ci;ii)∪(cc;ci)
-                Relation ci=new RelUnion(ci0, new RelUnion(new RelComposition(cidummy, ii), new RelComposition(ccdummy, cidummy)), "ci");
+                ZRelation ci=new ZRelUnion(ci0, new ZRelUnion(new ZRelComposition(cidummy, ii), new ZRelComposition(ccdummy, cidummy)), "ci");
                 //ic := ic0 ∪ii ∪cc ∪(ic;cc)∪(ii;ic)
-                Relation ic=new RelUnion(ii, new RelUnion(ccdummy, new RelUnion(new RelComposition(icdummy, ccdummy), new RelComposition(ii, icdummy))), "ic");
+                ZRelation ic=new ZRelUnion(ii, new ZRelUnion(ccdummy, new ZRelUnion(new ZRelComposition(icdummy, ccdummy), new ZRelComposition(ii, icdummy))), "ic");
                 //cc := cc0 ∪ci ∪(ci;ic)∪(cc;cc)
-                Relation cc= new RelUnion(cc0, new RelUnion(ci, new RelUnion(new RelComposition(ci, ic), new RelComposition(ccdummy, ccdummy))), "cc");
+                ZRelation cc= new ZRelUnion(cc0, new ZRelUnion(ci, new ZRelUnion(new ZRelComposition(ci, ic), new ZRelComposition(ccdummy, ccdummy))), "cc");
                 //ppo := ((R × R) ∩ ii) ∪ ((R × W) ∩ ic)
-                Relation RR=new BasicRelation("RR");
-                Relation ppo=new RelUnion(new RelInterSect(ii, RR), new RelInterSect(RW, ic),"ppo");
+                ZRelation RR=new ZBasicRelation("RR");
+                ZRelation ppo=new ZRelUnion(new ZRelInterSect(ii, RR), new ZRelInterSect(RW, ic),"ppo");
                 //fence := sync ∪(lwsync \(W×R))
-                Relation sync=new BasicRelation("sync");
-                Relation lwsync=new BasicRelation("lwsync");
-                Relation fence=new RelUnion(sync, new RelMinus(lwsync, WR));
+                ZRelation sync=new ZBasicRelation("sync");
+                ZRelation lwsync=new ZBasicRelation("lwsync");
+                ZRelation fence=new ZRelUnion(sync, new ZRelMinus(lwsync, WR));
                 //hb := ppo ∪fence ∪rfe
-                Relation hb=new RelUnion(ppo, new RelUnion(fence, rfe),"hb");
+                ZRelation hb=new ZRelUnion(ppo, new ZRelUnion(fence, rfe),"hb");
                 //prop-base := (fence ∪ (rfe; fence)); hb∗
-                Relation propbase=new RelComposition(new RelUnion(fence, new RelComposition(rfe, fence)), new RelTransRef(hb), "propbase");
+                ZRelation propbase=new ZRelComposition(new ZRelUnion(fence, new ZRelComposition(rfe, fence)), new ZRelTransRef(hb), "propbase");
                 //prop := ((W × W) ∩ prop-base) ∪ (com∗; prop-base∗; sync; hb∗)
-                Relation WW=new BasicRelation("WW");
-                Relation prop=new RelUnion(new RelInterSect(WW, propbase), new RelComposition(new RelTransRef(propbase), new RelComposition(sync, new RelTransRef(hb))), "prop");
+                ZRelation WW=new ZBasicRelation("WW");
+                ZRelation prop=new ZRelUnion(new ZRelInterSect(WW, propbase), new ZRelComposition(new ZRelTransRef(propbase), new ZRelComposition(sync, new ZRelTransRef(hb))), "prop");
                 namedRelationsBuilder.add(ci);
                 namedRelationsBuilder.add(cc);
-                axiomsBuilder.add(new Acyclic(hb));
-                axiomsBuilder.add(new Acyclic(new RelUnion(co, prop)));
-                axiomsBuilder.add(new Irreflexive(new RelComposition(fre, new RelComposition(prop, new RelTransRef(hb)))));
+                axiomsBuilder.add(new ZAcyclicAxiom(hb));
+                axiomsBuilder.add(new ZAcyclicAxiom(new ZRelUnion(co, prop)));
+                axiomsBuilder.add(new ZIrreflexiveAxiom(new ZRelComposition(fre, new ZRelComposition(prop, new ZRelTransRef(hb)))));
                 return buildModel.get();
             }
 

@@ -1,32 +1,30 @@
 package mousquetaires.memorymodels.wmm;
 
+import com.google.common.collect.ImmutableSet;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
-import com.microsoft.z3.Z3Exception;
-import dartagnan.program.Event;
-import dartagnan.program.Program;
-import mousquetaires.memorymodels.EncodingsOld;
-
-import java.util.Set;
+import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
+import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
+import mousquetaires.memorymodels.Encodings;
 
 
 public class SC {
 
-    public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getMemEvents();
-        BoolExpr enc = EncodingsOld.satUnion("co", "fr", events, ctx);
-        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("com", "(co+fr)", "rf", events, ctx));
-        enc = ctx.mkAnd(enc, EncodingsOld.satUnion("ghb-sc", "po", "com", events, ctx));
+    public static BoolExpr encode(XUnrolledProgram program, Context ctx) {
+        ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
+        BoolExpr enc = Encodings.satUnion("co", "fr", events, ctx);
+        enc = ctx.mkAnd(enc, Encodings.satUnion("com", "(co+fr)", "rf", events, ctx));
+        enc = ctx.mkAnd(enc, Encodings.satUnion("ghb-sc", "po", "com", events, ctx));
         return enc;
     }
 
-    public static BoolExpr Consistent(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getMemEvents();
-        return EncodingsOld.satAcyclic("ghb-sc", events, ctx);
+    public static BoolExpr Consistent(XUnrolledProgram program, Context ctx) {
+        ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
+        return Encodings.satAcyclic("ghb-sc", events, ctx);
     }
 
-    public static BoolExpr Inconsistent(Program program, Context ctx) throws Z3Exception {
-        Set<Event> events = program.getMemEvents();
-        return ctx.mkAnd(EncodingsOld.satCycleDef("ghb-sc", events, ctx), EncodingsOld.satCycle("ghb-sc", events, ctx));
+    public static BoolExpr Inconsistent(XUnrolledProgram program, Context ctx) {
+        ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
+        return ctx.mkAnd(Encodings.satCycleDef("ghb-sc", events, ctx), Encodings.satCycle("ghb-sc", events, ctx));
     }
 }
