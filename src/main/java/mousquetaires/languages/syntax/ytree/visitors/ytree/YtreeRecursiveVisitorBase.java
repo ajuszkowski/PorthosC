@@ -8,6 +8,7 @@ import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpr
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YLabeledVariable;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariable;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExpression;
@@ -16,10 +17,7 @@ import mousquetaires.languages.syntax.ytree.expressions.ternary.YTernaryExpressi
 import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
-import mousquetaires.languages.syntax.ytree.specific.YPostludeStatement;
-import mousquetaires.languages.syntax.ytree.specific.YPreludeStatement;
-import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
-import mousquetaires.languages.syntax.ytree.specific.YVariableAssertion;
+import mousquetaires.languages.syntax.ytree.litmus.*;
 import mousquetaires.languages.syntax.ytree.statements.*;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
 import mousquetaires.languages.syntax.ytree.types.YType;
@@ -45,7 +43,7 @@ public abstract class YtreeRecursiveVisitorBase<T> implements YtreeVisitor<T> {
         throw new IllegalStateException(getExceptionMessage(node));
     }
 
-    // -- Litmus-specific elements: ------------------------------------------------------------------------------------
+    // -- Litmus-litmus elements: ------------------------------------------------------------------------------------
 
     @Override
     public T visit(YPreludeStatement node) {
@@ -66,12 +64,18 @@ public abstract class YtreeRecursiveVisitorBase<T> implements YtreeVisitor<T> {
     }
 
     @Override
-    public T visit(YVariableAssertion node) {
+    public T visit(YAssertionStatement node) {
         visitChildren(node);
         throw new IllegalStateException(getExceptionMessage(node));
     }
 
-    // -- END OF Litmus-specific elements ------------------------------------------------------------------------------
+    @Override
+    public T visit(YLabeledVariable node) {
+        visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
+    }
+
+    // -- END OF Litmus-litmus elements ------------------------------------------------------------------------------
 
     @Override
     public T visit(YConstant node) {
@@ -110,7 +114,13 @@ public abstract class YtreeRecursiveVisitorBase<T> implements YtreeVisitor<T> {
     }
 
     @Override
-    public T visit(YLogicalBinaryExpression node) {
+    public T visit(YRelativeBinaryExpression.Kind node) {
+        visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
+    }
+
+    @Override
+    public T visit(YIntegerBinaryExpression.Kind node) {
         visitChildren(node);
         throw new IllegalStateException(getExceptionMessage(node));
     }
@@ -122,7 +132,25 @@ public abstract class YtreeRecursiveVisitorBase<T> implements YtreeVisitor<T> {
     }
 
     @Override
+    public T visit(YLogicalBinaryExpression node) {
+        visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
+    }
+
+    @Override
+    public T visit(YLogicalBinaryExpression.Kind node) {
+        visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
+    }
+
+    @Override
     public T visit(YIntegerUnaryExpression node) {
+        visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
+    }
+
+    @Override
+    public T visit(YIntegerUnaryExpression.Kind node) {
         visitChildren(node);
         throw new IllegalStateException(getExceptionMessage(node));
     }
@@ -134,7 +162,19 @@ public abstract class YtreeRecursiveVisitorBase<T> implements YtreeVisitor<T> {
     }
 
     @Override
+    public T visit(YLogicalUnaryExpression.Kind node) {
+        visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
+    }
+
+    @Override
     public T visit(YPointerUnaryExpression node) {
+        visitChildren(node);
+        throw new IllegalStateException(getExceptionMessage(node));
+    }
+
+    @Override
+    public T visit(YPointerUnaryExpression.Kind node) {
         visitChildren(node);
         throw new IllegalStateException(getExceptionMessage(node));
     }

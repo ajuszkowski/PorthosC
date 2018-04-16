@@ -52,6 +52,11 @@ public class YIntegerBinaryExpression extends YBinaryExpression {
         }
 
         @Override
+        public <T> T accept(YtreeVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+
+        @Override
         public YIntegerBinaryExpression createExpression(YExpression leftExpression, YExpression rightExpression) {
             return new YIntegerBinaryExpression(this, leftExpression, rightExpression);
         }

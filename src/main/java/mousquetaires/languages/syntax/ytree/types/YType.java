@@ -5,13 +5,14 @@ import mousquetaires.languages.syntax.ytree.YEntity;
 
 public interface YType extends YEntity {
 
-    public interface Qualifier {
+    interface Qualifier {
     }
 
-    public interface Specifier {
+    interface Specifier {
     }
 
     YType.Qualifier getQualifier();
+
     YType.Specifier getSpecifier();
 
     int getPointerLevel();

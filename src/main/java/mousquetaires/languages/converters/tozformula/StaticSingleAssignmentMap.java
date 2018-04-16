@@ -94,7 +94,7 @@ public class StaticSingleAssignmentMap {
     //        // iterate over all refs of all parents,
     //        // if there some parents have different refs of same var,
     //        // create the new ref of this var for the child
-    //        VarRefCollection childRefs = new VarRefCollection(child.getProcessId(), ctx);
+    //        VarRefCollection childRefs = new VarRefCollection(child.getLabel(), ctx);
     //        for (XEvent parent : parents) {
     //            assert eventVarMap.containsKey(parent) : "access not in topological order: " + child + ", " + parent;
     //            VarRefCollection parentVarRefs = eventVarMap.get(parent);

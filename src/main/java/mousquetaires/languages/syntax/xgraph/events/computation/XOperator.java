@@ -1,5 +1,8 @@
 package mousquetaires.languages.syntax.xgraph.events.computation;
 
-// TODO: merge XOperator and ZOperator into single class
-public interface XOperator {
+import mousquetaires.languages.syntax.xgraph.XEntity;
+
+
+// TODO: replace operators on X-level with method calls!
+public interface XOperator extends XEntity {
 }

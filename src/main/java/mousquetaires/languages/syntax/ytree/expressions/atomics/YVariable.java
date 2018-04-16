@@ -1,54 +1,37 @@
 package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
-import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.CollectionUtils;
 
-import java.util.Iterator;
 import java.util.Objects;
 
 
-// TODO: NOTE!!! IN FUNCTION INVOCATION FUNC. NAME IS YVariableRef!
-public class YVariable implements YAssignee {
+// TODO: NOTE!!! IN FUNCTION INVOCATION FUNC. NAME IS YVariable!
+public class YVariable extends YAtomBase {
 
-    public enum Kind {
-        Local,
-        Global,;
-
-        public YVariable createVariable(String name) {
-            return new YVariable(this, name);
-        }
-    }
-
-    private final Kind kind;
     private final String name;
+    //private final int pointerLevel;
 
-    YVariable(Kind kind, String name) {
+    public YVariable(String name) {
+        this(Kind.Local, name);//, 0);
+    }
+
+    protected YVariable(Kind kind, String name) { //, int pointerLevel) {
+        super(kind);
         this.name = name;
-        this.kind = kind;
-    }
-
-    public YVariable withKind(Kind kind) {
-        return kind.createVariable(getName());
-    }
-
-    public Kind getKind() {
-        return kind;
+        //this.pointerLevel = pointerLevel;
     }
 
     public String getName() {
         return name;
     }
 
-    public boolean isGlobal() {
-        return getKind() == Kind.Global;
-    }
+    //public YVariable withIncrementedPointerLevel() {
+    //    return new YVariable(Kind.Global, getName(), getPointerLevel() + 1);
+    //}
 
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        return CollectionUtils.createIteratorFrom();
-    }
+    //public int getPointerLevel() {
+    //    return pointerLevel;
+    //}
 
     @Override
     public <T> T accept(YtreeVisitor<T> visitor) {
@@ -57,21 +40,22 @@ public class YVariable implements YAssignee {
 
     @Override
     public String toString() {
-        String prefix = kind == Kind.Local ? "%" : "@";
-        return prefix + name;
+        String prefix = getKind() == Kind.Local ? "%" : "@";
+        return prefix + getName();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) { return true; }
         if (!(o instanceof YVariable)) { return false; }
-        YVariable variable = (YVariable) o;
-        return kind == variable.kind &&
-                Objects.equals(name, variable.name);
+        if (!super.equals(o)) { return false; }
+        YVariable yVariable = (YVariable) o;
+        return Objects.equals(getName(), yVariable.getName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(kind, name);
+
+        return Objects.hash(super.hashCode(), getName());
     }
 }

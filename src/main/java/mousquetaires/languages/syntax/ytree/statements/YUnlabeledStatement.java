@@ -6,5 +6,4 @@ public abstract class YUnlabeledStatement extends YStatement {
     public YStatement withLabel(String newLabel) {
         throw new UnsupportedOperationException();
     }
-
 }

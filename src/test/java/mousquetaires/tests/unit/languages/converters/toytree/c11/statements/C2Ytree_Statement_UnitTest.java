@@ -10,12 +10,12 @@ import mousquetaires.tests.unit.languages.converters.toytree.C2Ytree_UnitTestBas
 public abstract class C2Ytree_Statement_UnitTest extends C2Ytree_UnitTestBase {
 
     // shortcuts necessary for tests
-    protected YVariable variableX = YVariable.Kind.Local.createVariable("x");
-    protected YVariable variableY = YVariable.Kind.Local.createVariable("y");
-    protected YVariable variableZ = YVariable.Kind.Local.createVariable("z");
-    protected YVariable variableA = YVariable.Kind.Local.createVariable("a");
-    protected YVariable variableB = YVariable.Kind.Local.createVariable("b");
-    protected YVariable variableC = YVariable.Kind.Local.createVariable("c");
+    protected YVariable variableX = new YVariable("x");
+    protected YVariable variableY = new YVariable("y");
+    protected YVariable variableZ = new YVariable("z");
+    protected YVariable variableA = new YVariable("a");
+    protected YVariable variableB = new YVariable("b");
+    protected YVariable variableC = new YVariable("c");
 
     protected YConstant constant1 = YConstant.fromValue(1);
     protected YConstant constant2 = YConstant.fromValue(2);

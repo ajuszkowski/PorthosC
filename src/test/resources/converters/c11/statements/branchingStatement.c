@@ -1,3 +1,8 @@
+{
+    x=3;
+    t0:a = y;
+}
+
 void t0(int &x, int &y) {
     while (true) {
       int a = 1; //a <- 1;

@@ -1,34 +1,22 @@
 package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
-import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.CollectionUtils;
+import mousquetaires.utils.exceptions.NotSupportedException;
 
-import java.util.Iterator;
 import java.util.Objects;
 
 
-// TODO: NOTE!!! IN FUNCTION INVOCATION FUNC. NAME IS YVariableRef!
 public class YLabeledVariable extends YVariable {
 
-    private final String processId;
+    private final String label;
 
-    public YLabeledVariable(String processId, String name) {
+    public YLabeledVariable(String label, String name) {
         super(Kind.Local, name);
-        this.processId = processId;
+        this.label = label;
     }
 
-    public YLabeledVariable withKind(Kind kind) {
-        throw new IllegalStateException("Not applicable: labeled variables are always local");
-    }
-
-    public String getProcessId() {
-        return processId;
-    }
-
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        return CollectionUtils.createIteratorFrom();
+    public String getLabel() {
+        return label;
     }
 
     @Override
@@ -38,7 +26,7 @@ public class YLabeledVariable extends YVariable {
 
     @Override
     public String toString() {
-        return getProcessId() + ':' + super.toString();
+        return getLabel() + ':' + super.toString();
     }
 
     @Override
@@ -47,11 +35,11 @@ public class YLabeledVariable extends YVariable {
         if (!(o instanceof YLabeledVariable)) { return false; }
         if (!super.equals(o)) { return false; }
         YLabeledVariable that = (YLabeledVariable) o;
-        return Objects.equals(getProcessId(), that.getProcessId());
+        return Objects.equals(getLabel(), that.getLabel());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getProcessId());
+        return Objects.hash(super.hashCode(), getLabel());
     }
 }

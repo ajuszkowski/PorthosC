@@ -1,7 +1,6 @@
-package mousquetaires.languages.syntax.ytree.specific;
+package mousquetaires.languages.syntax.ytree.litmus;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YUnlabeledStatement;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.CollectionUtils;
@@ -9,21 +8,21 @@ import mousquetaires.utils.CollectionUtils;
 import java.util.Iterator;
 
 
-public final class YPreludeStatement extends YUnlabeledStatement {
+public class YPostludeStatement extends YUnlabeledStatement {
 
-    private final YCompoundStatement body;
+    private final YAssertionStatement assertionStatement;
 
-    public YPreludeStatement(YCompoundStatement body) {
-        this.body = body;
+    public YPostludeStatement(YAssertionStatement assertionStatement) {
+        this.assertionStatement = assertionStatement;
     }
 
-    public YCompoundStatement getBody() {
-        return body;
+    public YAssertionStatement getAssertionStatement() {
+        return assertionStatement;
     }
 
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
-        return CollectionUtils.createIteratorFrom(body);
+        return CollectionUtils.createIteratorFrom(getAssertionStatement());
     }
 
     @Override

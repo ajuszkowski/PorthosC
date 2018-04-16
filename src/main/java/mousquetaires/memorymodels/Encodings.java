@@ -359,8 +359,8 @@ public class Encodings {
     //            if(e1P1.getHLId().equals(e1P2.getHLId())) {
     //                for(XEvent e2P1 : memXEventsP1) {
     //                    for(XEvent e2P2 : memXEventsP2) {
-    //                        if(e1P1.getProcessId() != e2P1.getProcessId()) {continue;}
-    //                        if(e1P2.getProcessId() != e2P2.getProcessId()) {continue;}
+    //                        if(e1P1.getLabel() != e2P1.getLabel()) {continue;}
+    //                        if(e1P2.getLabel() != e2P2.getLabel()) {continue;}
     //                        if(e1P1.getEId() >= e2P1.getEId() || e1P2.getEId() >= e2P2.getEId()) {continue;}
     //                        if(e2P1.getHLId().equals(e2P2.getHLId())) {
     //                            enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.edge("sync", e1P1, e2P1, ctx), Utils.edge("sync", e1P2, e2P2, ctx)));

@@ -1,13 +1,10 @@
 package mousquetaires.languages.syntax.ytree.expressions.unary;
 
-import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
-import mousquetaires.languages.syntax.ytree.expressions.YMemoryLocation;
-import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
 // TODO: get rid of pointer arithmetics before constructing the Y-level!
-public class YPointerUnaryExpression extends YUnaryExpression implements YAssignee, YMemoryLocation {
+public class YPointerUnaryExpression extends YUnaryExpression {
     public enum Kind implements YUnaryExpression.Kind {
         Reference,   // &
         Dereference, // * //called 'indirection' in C11 standard, p. 109
@@ -21,6 +18,11 @@ public class YPointerUnaryExpression extends YUnaryExpression implements YAssign
                 default:
                     throw new IllegalArgumentException(this.name());
             }
+        }
+
+        @Override
+        public <T> T accept(YtreeVisitor<T> visitor) {
+            return visitor.visit(this);
         }
 
         @Override

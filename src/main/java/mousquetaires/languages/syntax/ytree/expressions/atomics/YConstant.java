@@ -1,23 +1,20 @@
 package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
-import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.syntax.ytree.expressions.YMemoryLocation;
 import mousquetaires.languages.syntax.ytree.types.YMockType;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.CollectionUtils;
 import mousquetaires.utils.exceptions.ArgumentNullException;
 
-import java.util.Iterator;
 import java.util.Objects;
 
 
-public class YConstant implements YMemoryLocation {
+public class YConstant extends YAtomBase {
 
     private final Object value;
     private final YType type;
 
     private YConstant(Object value, YType type) {
+        super(Kind.Global);
         this.value = value;
         this.type = type;
     }
@@ -29,6 +26,19 @@ public class YConstant implements YMemoryLocation {
     public YType getType() {
         return type;
     }
+
+    @Override
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + getType() + ")" + getValue();
+    }
+
+    // ... todo: other types...
+
 
     public static YConstant fromValue(int value) {
         return new YConstant(value, new YMockType()); //YTypeFactory.getPrimitiveType(YTypeName.Int));
@@ -42,8 +52,6 @@ public class YConstant implements YMemoryLocation {
         return new YConstant(value, new YMockType()); //YTypeFactory.getPrimitiveType(YTypeName.Float));
     }
 
-    // ... todo: other types...
-
     public static YConstant tryParse(String text) {
         if (text == null) {
             throw new ArgumentNullException();
@@ -53,12 +61,14 @@ public class YConstant implements YMemoryLocation {
         try {
             int value = Integer.parseInt(text);
             return fromValue(value);
-        } catch (NumberFormatException e) { }
+        }
+        catch (NumberFormatException e) { }
         // Float:
         try {
             float value = Float.parseFloat(text);
             return fromValue(value);
-        } catch (NumberFormatException e) { }
+        }
+        catch (NumberFormatException e) { }
         // Bool:
         {
             // TODO: set up good parsing of the keywords of C language as a separate module with 'C' in name
@@ -78,24 +88,10 @@ public class YConstant implements YMemoryLocation {
     }
 
     @Override
-    public <T> T accept(YtreeVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
-
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        return CollectionUtils.createIteratorFrom();
-    }
-
-    @Override
-    public String toString() {
-        return "(" + type + ")" + value;
-    }
-
-    @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof YConstant)) return false;
+        if (this == o) { return true; }
+        if (!(o instanceof YConstant)) { return false; }
+        if (!super.equals(o)) { return false; }
         YConstant yConstant = (YConstant) o;
         return Objects.equals(getValue(), yConstant.getValue()) &&
                 Objects.equals(getType(), yConstant.getType());
@@ -103,6 +99,6 @@ public class YConstant implements YMemoryLocation {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getValue(), getType());
+        return Objects.hash(super.hashCode(), getValue(), getType());
     }
 }

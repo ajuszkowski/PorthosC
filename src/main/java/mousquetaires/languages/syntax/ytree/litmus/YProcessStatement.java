@@ -1,4 +1,4 @@
-package mousquetaires.languages.syntax.ytree.specific;
+package mousquetaires.languages.syntax.ytree.litmus;
 
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.ytree.YEntity;

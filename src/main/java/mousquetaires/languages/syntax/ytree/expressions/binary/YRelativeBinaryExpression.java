@@ -49,6 +49,11 @@ public class YRelativeBinaryExpression extends YBinaryExpression {
         }
 
         @Override
+        public <T> T accept(YtreeVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+
+        @Override
         public YRelativeBinaryExpression createExpression(YExpression leftExpression, YExpression rightExpression) {
             return new YRelativeBinaryExpression(this, leftExpression, rightExpression);
         }

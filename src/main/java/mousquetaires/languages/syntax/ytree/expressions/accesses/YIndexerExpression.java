@@ -2,13 +2,13 @@ package mousquetaires.languages.syntax.ytree.expressions.accesses;
 
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
-import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignee;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YAtom;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
 
-public class YIndexerExpression extends YMultiExpression implements YAssignee {
+public class YIndexerExpression extends YMultiExpression implements YAtom {
 
-    public YIndexerExpression(YExpression baseExpression, YExpression indexExpression) {
+    public YIndexerExpression(YAtom baseExpression, YExpression indexExpression) {
         super(baseExpression, indexExpression);
     }
 
@@ -17,15 +17,18 @@ public class YIndexerExpression extends YMultiExpression implements YAssignee {
         return visitor.visit(this);
     }
 
-    public YExpression getBaseExpression() {
-        return getElements().get(0);
+    public YAtom getBaseExpression() {
+        return (YAtom) getElements().get(0);
     }
 
     public YExpression getIndexExpression() {
         return getElements().get(1);
     }
 
-    // todo: override hashCode?
+    @Override
+    public Kind getKind() {
+        return getBaseExpression().getKind();
+    }
 
     @Override
     public String toString() {

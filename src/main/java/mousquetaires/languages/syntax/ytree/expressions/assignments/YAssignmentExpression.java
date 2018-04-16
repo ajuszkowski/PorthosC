@@ -4,6 +4,7 @@ package mousquetaires.languages.syntax.ytree.expressions.assignments;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariable;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.CollectionUtils;
 
@@ -44,12 +45,12 @@ public class YAssignmentExpression extends YMultiExpression {
 
     // TODO: Add fences / atomic/ ...
 
-    public YAssignmentExpression(YAssignee assignee, YExpression expression) {
+    public YAssignmentExpression(YVariable assignee, YExpression expression) {
         super(assignee, expression);
     }
 
-    public YAssignee getAssignee() {
-        return (YAssignee) getElements().get(0);
+    public YVariable getAssignee() {
+        return (YVariable) getElements().get(0);
     }
 
     public YExpression getExpression() {

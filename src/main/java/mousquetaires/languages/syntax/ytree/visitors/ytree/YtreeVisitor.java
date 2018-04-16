@@ -16,10 +16,7 @@ import mousquetaires.languages.syntax.ytree.expressions.ternary.YTernaryExpressi
 import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
-import mousquetaires.languages.syntax.ytree.specific.YPostludeStatement;
-import mousquetaires.languages.syntax.ytree.specific.YPreludeStatement;
-import mousquetaires.languages.syntax.ytree.specific.YProcessStatement;
-import mousquetaires.languages.syntax.ytree.specific.YVariableAssertion;
+import mousquetaires.languages.syntax.ytree.litmus.*;
 import mousquetaires.languages.syntax.ytree.statements.*;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
 import mousquetaires.languages.syntax.ytree.types.YType;
@@ -30,14 +27,14 @@ import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
 public interface YtreeVisitor<T> {
     T visit(YSyntaxTree node);
 
-    // -- Litmus-specific elements: ------------------------------------------------------------------------------------
+    // -- Litmus-litmus elements: ------------------------------------------------------------------------------------
 
     T visit(YPreludeStatement node);
     T visit(YProcessStatement node);
+    T visit(YAssertionStatement node);
     T visit(YPostludeStatement node);
-    T visit(YVariableAssertion node);
 
-    // -- END OF Litmus-specific elements ------------------------------------------------------------------------------
+    // -- END OF Litmus-litmus elements ------------------------------------------------------------------------------
 
     T visit(YConstant node);
 
@@ -50,13 +47,23 @@ public interface YtreeVisitor<T> {
 
     // binary expressions:
     T visit(YRelativeBinaryExpression node);
-    T visit(YLogicalBinaryExpression node);
+    T visit(YRelativeBinaryExpression.Kind node);
+
+    T visit(YIntegerBinaryExpression.Kind node);
     T visit(YIntegerBinaryExpression node);
+
+    T visit(YLogicalBinaryExpression node);
+    T visit(YLogicalBinaryExpression.Kind node);
 
     // unary expressions:
     T visit(YIntegerUnaryExpression node);
+    T visit(YIntegerUnaryExpression.Kind node);
+
     T visit(YLogicalUnaryExpression node);
-    T visit(YPointerUnaryExpression node); //todo: remove YPointerUnaryExpression, instead use global YVariableRef or array of variables
+    T visit(YLogicalUnaryExpression.Kind node);
+
+    T visit(YPointerUnaryExpression node); //todo: remove YPointerUnaryExpression, instead use global YVariableRef or array of variables (???)
+    T visit(YPointerUnaryExpression.Kind node);
 
     T visit(YTernaryExpression node);
 

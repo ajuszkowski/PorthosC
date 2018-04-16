@@ -40,6 +40,11 @@ public class YLogicalBinaryExpression extends YBinaryExpression {
             }
         }
 
+        @Override
+        public <T> T accept(YtreeVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+
         public YLogicalBinaryExpression createExpression(YExpression leftExpression, YExpression rightExpression) {
             return new YLogicalBinaryExpression(this, leftExpression, rightExpression);
         }

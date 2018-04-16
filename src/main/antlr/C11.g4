@@ -11,7 +11,7 @@
     notice, this list of conditions and the following disclaimer in the
     documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    derived from this software without litmus prior written permission.
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -522,7 +522,8 @@ translationUnit
     ;
 
 externalDeclaration
-    :   litmusAssertion
+    :   litmusInitialisation
+    |   litmusAssertion
     |   functionDefinition
     |   declaration
     ;
@@ -540,6 +541,20 @@ declarationList
 litmusAssertion
     :   'exists' '(' logicalOrExpression ')'
     ;
+
+litmusInitialisation
+    :   '{' litmusInitWriteList '}'
+    ;
+
+litmusInitWriteList
+    :   litmusInitWrite
+    |   litmusInitWriteList litmusInitWrite
+    ;
+
+litmusInitWrite
+    :   postfixExpression '=' postfixExpression ';'
+    ;
+
 
 Auto : 'auto';
 Break : 'break';

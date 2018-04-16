@@ -1,6 +1,5 @@
 package mousquetaires.languages.syntax.ytree.temporaries;
 
-import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;

@@ -3,6 +3,7 @@ package mousquetaires.languages.syntax.ytree.expressions.unary;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
+import mousquetaires.languages.syntax.ytree.expressions.YOperator;
 import mousquetaires.utils.CollectionUtils;
 
 import java.util.Iterator;
@@ -11,7 +12,7 @@ import java.util.Objects;
 
 public abstract class YUnaryExpression extends YMultiExpression {
 
-    public interface Kind {
+    public interface Kind extends YOperator {
         YUnaryExpression createExpression(YExpression baseExpression);
     }
 

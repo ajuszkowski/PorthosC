@@ -3,6 +3,7 @@ package mousquetaires.languages.syntax.ytree.expressions.binary;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
+import mousquetaires.languages.syntax.ytree.expressions.YOperator;
 import mousquetaires.utils.CollectionUtils;
 
 import java.util.Iterator;
@@ -10,6 +11,11 @@ import java.util.Objects;
 
 
 public abstract class YBinaryExpression extends YMultiExpression {
+
+    public interface Kind extends YOperator {
+        YBinaryExpression createExpression(YExpression leftExpression, YExpression rightExpression);
+    }
+
     private final YBinaryExpression.Kind kind;
 
     YBinaryExpression(YBinaryExpression.Kind kind, YExpression leftExpression, YExpression rightExpression) {
@@ -34,9 +40,6 @@ public abstract class YBinaryExpression extends YMultiExpression {
         return getElements().get(1);
     }
 
-    public interface Kind {
-        YBinaryExpression createExpression(YExpression leftExpression, YExpression rightExpression);
-    }
 
     @Override
     public boolean equals(Object o) {

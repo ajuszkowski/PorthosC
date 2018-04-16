@@ -1,6 +1,5 @@
 package mousquetaires.languages.syntax.ytree.expressions.unary;
 
-import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
@@ -48,6 +47,11 @@ public class YIntegerUnaryExpression extends YUnaryExpression {
                 default:
                     throw new IllegalArgumentException(this.name());
             }
+        }
+
+        @Override
+        public <T> T accept(YtreeVisitor<T> visitor) {
+            return visitor.visit(this);
         }
 
         @Override
