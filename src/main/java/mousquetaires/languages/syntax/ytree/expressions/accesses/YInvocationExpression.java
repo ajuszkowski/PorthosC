@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YAtom;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.ImmutableUtils;
 
@@ -13,18 +14,16 @@ public class YInvocationExpression extends YMultiExpression {
     private final int elementsCount;
     // TODO: process signatures! firstly only function name. -- not here, on YIndexerExpression level
 
-    public YInvocationExpression(YExpression baseExpression, YExpression... arguments) {
-        this(baseExpression, ImmutableList.copyOf(arguments));
-    }
-
+    //public YInvocationExpression(YExpression baseExpression, YExpression... arguments) {
+    //    this(baseExpression, ImmutableList.copyOf(arguments));
+    //}
     public YInvocationExpression(YExpression baseExpression, ImmutableList<YExpression> arguments) {
-        super(ImmutableUtils.append(baseExpression, arguments));
-        this.elementsCount = arguments.size() + 1;
+        this(baseExpression, arguments, 0);
     }
 
-    @Override
-    public <T> T accept(YtreeVisitor<T> visitor) {
-        return visitor.visit(this);
+    private YInvocationExpression(YExpression baseExpression, ImmutableList<YExpression> arguments, int pointerLevel) {
+        super(pointerLevel, ImmutableUtils.append(baseExpression, arguments));
+        this.elementsCount = arguments.size() + 1;
     }
 
     public YExpression getBaseExpression() {
@@ -35,7 +34,15 @@ public class YInvocationExpression extends YMultiExpression {
         return getElements().subList(1, elementsCount);
     }
 
-    // todo: override hashCode?
+    @Override
+    public YInvocationExpression withPointerLevel(int level) {
+        return new YInvocationExpression(getBaseExpression(), getArguments(), level);
+    }
+
+    @Override
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 
     @Override
     public String toString() {

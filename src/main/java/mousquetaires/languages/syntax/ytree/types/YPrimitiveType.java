@@ -22,7 +22,7 @@ YPrimitiveType(YPrimitiveType.Kind kind,
     this.specifier = specifier;
 }
 
-public Kind getKind() {
+public Kind getOperator() {
     return kind;
 }
 
@@ -33,11 +33,11 @@ public YPrimitiveType.Specifier getSpecifier() {
 
 @Override
 public YType withPointerLevel(int newPointerLevel) {
-    return new YPrimitiveType(getKind(), getSpecifier(), getQualifier(), newPointerLevel);
+    return new YPrimitiveType(getOperator(), getSpecifier(), getQualifier(), newPointerLevel);
 }
 
 public YPrimitiveType asUnsigned() {
-    return new YPrimitiveType(getKind(), Specifier.Unsigned, getQualifier(), getPointerLevel());
+    return new YPrimitiveType(getOperator(), Specifier.Unsigned, getQualifier(), getPointerLevel());
 }
 
 @Override
@@ -52,7 +52,7 @@ public <T> T accept(YtreeVisitor<T> visitor) {
 
 @Override
 public YPrimitiveType copy() {
-    return new YPrimitiveType(getKind(), getSpecifier(), getQualifier(), getPointerLevel());
+    return new YPrimitiveType(getOperator(), getSpecifier(), getQualifier(), getPointerLevel());
 }
 
 @Override
@@ -66,7 +66,7 @@ public String toString() {
     if (specifierText.length() > 0) {
         builder.append(specifierText).append(' ');
     }
-    builder.append(getKind().getText());
+    builder.append(getOperator().getText());
     return builder.toString();
 }
 

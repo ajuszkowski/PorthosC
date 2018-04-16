@@ -8,7 +8,6 @@ import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperator;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperator;
 import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.ytree.YEntity;
@@ -23,14 +22,11 @@ import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YLabeledVariable;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariable;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryOperator;
+import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryOperator;
 import mousquetaires.languages.syntax.ytree.expressions.ternary.YTernaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
 import mousquetaires.languages.syntax.ytree.litmus.YAssertionStatement;
 import mousquetaires.languages.syntax.ytree.litmus.YPostludeStatement;
 import mousquetaires.languages.syntax.ytree.litmus.YPreludeStatement;
@@ -81,9 +77,10 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     public XEvent visit(YProcessStatement node) {
         program.startProcessDefinition(node.getProcessId());
         for (YParameter parameter : node.getSignature().getParameters()) {
-            String name = parameter.getName();
+            YVariable parameterVariable = parameter.getVariable();
+            String name = parameterVariable.getName();
             Type type = YType2TypeConverter.convert(parameter.getType());
-            if (parameter.isGlobal()) {
+            if (parameterVariable.isGlobal()) {
                 program.memoryManager.declareLocation(name, type);
             }
             else {
@@ -189,8 +186,8 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     }
 
     @Override
-    public XEvent visit(YIntegerUnaryExpression node) {
-        YIntegerUnaryExpression.Kind yOperator = node.getKind();
+    public XEvent visit(YUnaryExpression node) {
+        YUnaryOperator yOperator = node.getOperator();
         YExpression yBaseExpression = node.getExpression();
 
         if (Y2XOperatorHelper.isPrefixOperator(yOperator)) {
@@ -211,28 +208,17 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     }
 
     @Override
-    public XUnaryOperator visit(YIntegerUnaryExpression.Kind node) {
-        throw new IllegalStateException("Should be converted by the expression, see visitor for " +
-                                                YIntegerUnaryExpression.class);
-    }
-
-    @Override
-    public XEvent visit(YLogicalUnaryExpression node) {
+    public XEntity visit(YUnaryOperator node) {
         throw new NotImplementedException();
     }
 
     @Override
-    public XEntity visit(YLogicalUnaryExpression.Kind node) {
-        throw new IllegalStateException("not described");
+    public XEntity visit(YBinaryExpression node) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public XComputationEvent visit(YRelativeBinaryExpression node) {
-        return visitBinaryExpression(node);
-    }
-
-    @Override
-    public XBinaryOperator visit(YRelativeBinaryExpression.Kind node) {
+    public XBinaryOperator visit(YBinaryOperator node) {
         switch (node) {
             case Equals:            return XBinaryOperator.CompareEquals;
             case NotEquals:         return XBinaryOperator.CompareNotEquals;
@@ -240,34 +226,8 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
             case GreaterOrEquals:   return XBinaryOperator.CompareGreaterOrEquals;
             case Less:              return XBinaryOperator.CompareLess;
             case LessOrEquals:      return XBinaryOperator.CompareLessOrEquals;
-            default:
-                throw new IllegalArgumentException(node.name());
-        }
-    }
-
-    @Override
-    public XComputationEvent visit(YLogicalBinaryExpression node) {
-        return visitBinaryExpression(node);
-    }
-
-    @Override
-    public XEntity visit(YLogicalBinaryExpression.Kind node) {
-        switch (node) {
             case Conjunction:     return XBinaryOperator.Conjunction;
             case Disjunction:     return XBinaryOperator.Disjunction;
-            default:
-                throw new IllegalArgumentException(node.name());
-        }
-    }
-
-    @Override
-    public XComputationEvent visit(YIntegerBinaryExpression node) {
-        return visitBinaryExpression(node);
-    }
-
-    @Override
-    public XBinaryOperator visit(YIntegerBinaryExpression.Kind node) {
-        switch (node) {
             case Plus:       return XBinaryOperator.Addition;
             case Minus:      return XBinaryOperator.Subtraction;
             case Multiply:   return XBinaryOperator.Multiplication;
@@ -429,22 +389,17 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         }
         return null; //statements return null
     }
-
-    @Override
-    public XSharedMemoryUnit visit(YPointerUnaryExpression node) {
-        XEntity visited = node.getExpression().accept(this);
-        if (!(visited instanceof XLvalueMemoryUnit)) {
-            throw new XInterpretationError("Pointer argument is not an l-value: " + wrap(visited));
-        }
-        XLvalueMemoryUnit lvalue = (XLvalueMemoryUnit) visited;
-        String name = lvalue.getName();
-        return program.memoryManager.redeclareAsSharedIfNeeded(name);
-    }
-
-    @Override
-    public XEntity visit(YPointerUnaryExpression.Kind node) {
-        throw new IllegalStateException("not described");
-    }
+    //
+    //@Override
+    //public XSharedMemoryUnit visit(YPointerUnaryExpression node) {
+    //    XEntity visited = node.getExpression().accept(this);
+    //    if (!(visited instanceof XLvalueMemoryUnit)) {
+    //        throw new XInterpretationError("Pointer argument is not an l-value: " + wrap(visited));
+    //    }
+    //    XLvalueMemoryUnit lvalue = (XLvalueMemoryUnit) visited;
+    //    String name = lvalue.getName();
+    //    return program.memoryManager.redeclareAsSharedIfNeeded(name);
+    //}
 
     @Override
     public XLvalueMemoryUnit visit(YVariable variable) {
@@ -473,7 +428,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
 
 
     private XComputationEvent visitBinaryExpression(YBinaryExpression node) {
-        XBinaryOperator operator = (XBinaryOperator) node.getKind().accept(this);
+        XBinaryOperator operator = (XBinaryOperator) node.getOperator().accept(this);
         XLocalMemoryUnit leftLocal = tryVisitAsLocalOrThrow(node.getLeftExpression());
         XLocalMemoryUnit rightLocal = tryVisitAsLocalOrThrow(node.getRightExpression());
         return program.currentProcess.emitComputationEvent(operator, leftLocal, rightLocal);

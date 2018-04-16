@@ -9,29 +9,28 @@ import java.util.Objects;
 public class YVariable extends YAtomBase {
 
     private final String name;
-    //private final int pointerLevel;
 
     public YVariable(String name) {
-        this(Kind.Local, name);//, 0);
+        this(Kind.Local, name, 0);
     }
 
-    protected YVariable(Kind kind, String name) { //, int pointerLevel) {
-        super(kind);
+    protected YVariable(Kind kind, String name, int pointerLevel) {
+        super(kind, pointerLevel);
         this.name = name;
-        //this.pointerLevel = pointerLevel;
     }
 
     public String getName() {
         return name;
     }
 
-    //public YVariable withIncrementedPointerLevel() {
-    //    return new YVariable(Kind.Global, getName(), getPointerLevel() + 1);
-    //}
+    public YVariable asGlobal() {
+        return new YVariable(Kind.Global, getName(), getPointerLevel());
+    }
 
-    //public int getPointerLevel() {
-    //    return pointerLevel;
-    //}
+    @Override
+    public YVariable withPointerLevel(int level) {
+        return new YVariable(getKind(), getName(), level);
+    }
 
     @Override
     public <T> T accept(YtreeVisitor<T> visitor) {
@@ -49,13 +48,13 @@ public class YVariable extends YAtomBase {
         if (this == o) { return true; }
         if (!(o instanceof YVariable)) { return false; }
         if (!super.equals(o)) { return false; }
-        YVariable yVariable = (YVariable) o;
-        return Objects.equals(getName(), yVariable.getName());
+        YVariable that = (YVariable) o;
+        return getPointerLevel() == that.getPointerLevel() &&
+                Objects.equals(getName(), that.getName());
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(super.hashCode(), getName());
+        return Objects.hash(super.hashCode(), getName(), getPointerLevel());
     }
 }

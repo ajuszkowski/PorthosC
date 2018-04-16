@@ -8,20 +8,21 @@ import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessEx
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YLabeledVariable;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariable;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryOperator;
 import mousquetaires.languages.syntax.ytree.expressions.ternary.YTernaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
-import mousquetaires.languages.syntax.ytree.litmus.*;
+import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryOperator;
+import mousquetaires.languages.syntax.ytree.litmus.YAssertionStatement;
+import mousquetaires.languages.syntax.ytree.litmus.YPostludeStatement;
+import mousquetaires.languages.syntax.ytree.litmus.YPreludeStatement;
+import mousquetaires.languages.syntax.ytree.litmus.YProcessStatement;
 import mousquetaires.languages.syntax.ytree.statements.*;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
-import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
+import mousquetaires.languages.syntax.ytree.types.YType;
 
 
 public interface YtreeVisitor<T> {
@@ -45,25 +46,11 @@ public interface YtreeVisitor<T> {
 
     T visit(YFunctionDefinition node);
 
-    // binary expressions:
-    T visit(YRelativeBinaryExpression node);
-    T visit(YRelativeBinaryExpression.Kind node);
+    T visit(YUnaryExpression node);
+    T visit(YUnaryOperator node);
 
-    T visit(YIntegerBinaryExpression.Kind node);
-    T visit(YIntegerBinaryExpression node);
-
-    T visit(YLogicalBinaryExpression node);
-    T visit(YLogicalBinaryExpression.Kind node);
-
-    // unary expressions:
-    T visit(YIntegerUnaryExpression node);
-    T visit(YIntegerUnaryExpression.Kind node);
-
-    T visit(YLogicalUnaryExpression node);
-    T visit(YLogicalUnaryExpression.Kind node);
-
-    T visit(YPointerUnaryExpression node); //todo: remove YPointerUnaryExpression, instead use global YVariableRef or array of variables (???)
-    T visit(YPointerUnaryExpression.Kind node);
+    T visit(YBinaryExpression node);
+    T visit(YBinaryOperator node);
 
     T visit(YTernaryExpression node);
 

@@ -1,14 +1,17 @@
 package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
-import java.util.Objects;
-
-
 public abstract class YAtomBase implements YAtom {
 
     private final Kind kind;
+    private final int pointerLevel;
 
     YAtomBase(Kind kind) {
+        this(kind, 0);
+    }
+
+    YAtomBase(Kind kind, int pointerLevel) {
         this.kind = kind;
+        this.pointerLevel = pointerLevel;
     }
 
     @Override
@@ -20,16 +23,7 @@ public abstract class YAtomBase implements YAtom {
         return getKind() == Kind.Global;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (!(o instanceof YAtomBase)) { return false; }
-        YAtomBase yAtomBase = (YAtomBase) o;
-        return getKind() == yAtomBase.getKind();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getKind());
+    public int getPointerLevel() {
+        return pointerLevel;
     }
 }

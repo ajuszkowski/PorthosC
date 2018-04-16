@@ -4,6 +4,7 @@ import mousquetaires.languages.syntax.ytree.types.YMockType;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.exceptions.ArgumentNullException;
+import mousquetaires.utils.exceptions.NotSupportedException;
 
 import java.util.Objects;
 
@@ -25,6 +26,11 @@ public class YConstant extends YAtomBase {
 
     public YType getType() {
         return type;
+    }
+
+    @Override
+    public YAtom withPointerLevel(int level) {
+        throw new NotSupportedException("constants cannot be pointers");
     }
 
     @Override

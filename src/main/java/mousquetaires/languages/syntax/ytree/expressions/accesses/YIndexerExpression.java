@@ -9,7 +9,16 @@ import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 public class YIndexerExpression extends YMultiExpression implements YAtom {
 
     public YIndexerExpression(YAtom baseExpression, YExpression indexExpression) {
-        super(baseExpression, indexExpression);
+        this(baseExpression, indexExpression, baseExpression.getPointerLevel() - 1);
+    }
+
+    public YIndexerExpression(YAtom baseExpression, YExpression indexExpression, int pointerLevel) {
+        super(pointerLevel, baseExpression, indexExpression);
+    }
+
+    @Override
+    public YIndexerExpression withPointerLevel(int level) {
+        return new YIndexerExpression(getBaseExpression(), getIndexExpression(), level);
     }
 
     @Override

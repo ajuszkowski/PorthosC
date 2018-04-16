@@ -4,6 +4,7 @@ import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.utils.CollectionUtils;
+import mousquetaires.utils.exceptions.NotSupportedException;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -35,6 +36,16 @@ public class YTernaryExpression implements YExpression {
     @Override
     public Iterator<? extends YEntity> getChildrenIterator() {
         return CollectionUtils.createIteratorFrom(condition, trueExpression, falseExpression);
+    }
+
+    @Override
+    public int getPointerLevel() {
+        return 0;//NOTE: this is because pointers for ternary expressions are not implemented yet
+    }
+
+    @Override
+    public YExpression withPointerLevel(int level) {
+        throw new NotSupportedException("ternary expression cannot be a pointer"); //todo: this is not true
     }
 
     @Override

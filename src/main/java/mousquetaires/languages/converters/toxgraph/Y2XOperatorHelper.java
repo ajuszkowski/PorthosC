@@ -1,38 +1,33 @@
 package mousquetaires.languages.converters.toxgraph;
 
-import mousquetaires.languages.syntax.ytree.expressions.binary.YBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YLogicalBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
-import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperator;
+import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryOperator;
 
 
 class Y2XOperatorHelper {
 
-    static boolean isPrefixOperator(YIntegerUnaryExpression.Kind operator) {
+    static boolean isPrefixOperator(YUnaryOperator operator) {
         return isPrefixIncrement(operator) || isPrefixDecrement(operator);
     }
 
-    static boolean isPrefixIncrement(YIntegerUnaryExpression.Kind operator) {
-        return operator == YIntegerUnaryExpression.Kind.PrefixIncrement;
+    static boolean isPrefixIncrement(YUnaryOperator operator) {
+        return operator == YUnaryOperator.PrefixIncrement;
     }
 
-    static boolean isPrefixDecrement(YIntegerUnaryExpression.Kind operator) {
-        return operator == YIntegerUnaryExpression.Kind.PrefixDecrement;
+    static boolean isPrefixDecrement(YUnaryOperator operator) {
+        return operator == YUnaryOperator.PrefixDecrement;
     }
 
 
-    static boolean isPostfixOperator(YIntegerUnaryExpression.Kind operator) {
+    static boolean isPostfixOperator(YUnaryOperator operator) {
         return isPostfixIncrement(operator) || isPostfixDecrement(operator);
     }
 
-    static boolean isPostfixIncrement(YIntegerUnaryExpression.Kind operator) {
-        return operator == YIntegerUnaryExpression.Kind.PostfixIncrement;
+    static boolean isPostfixIncrement(YUnaryOperator operator) {
+        return operator == YUnaryOperator.PostfixIncrement;
     }
 
-    static boolean isPostfixDecrement(YIntegerUnaryExpression.Kind operator) {
-        return operator == YIntegerUnaryExpression.Kind.PostfixDecrement;
+    static boolean isPostfixDecrement(YUnaryOperator operator) {
+        return operator == YUnaryOperator.PostfixDecrement;
     }
 
 }

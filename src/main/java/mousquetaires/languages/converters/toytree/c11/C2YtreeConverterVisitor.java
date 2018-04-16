@@ -12,12 +12,8 @@ import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpr
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.*;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YIntegerBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.binary.YRelativeBinaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YIntegerUnaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YLogicalUnaryExpression;
-import mousquetaires.languages.syntax.ytree.expressions.unary.YPointerUnaryExpression;
+import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryOperator;
+import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryOperator;
 import mousquetaires.languages.syntax.ytree.litmus.YAssertionStatement;
 import mousquetaires.languages.syntax.ytree.litmus.YPostludeStatement;
 import mousquetaires.languages.syntax.ytree.litmus.YPreludeStatement;
@@ -108,6 +104,9 @@ class C2YtreeConverterVisitor
                 throw new YParserException(ctx, "Could not parse constant: " + wrap(constantNode.getText()));
             }
             return constant;
+        }
+        if (ctx.expression() != null) {
+            return visitExpression(ctx.expression());
         }
         throw new YParserNotImplementedException(ctx);
     }
@@ -209,11 +208,11 @@ class C2YtreeConverterVisitor
             }
             // case (increment):
             if (ctx.getTokens(C11Parser.PlusPlus).size() > 0) {
-                return YIntegerUnaryExpression.Kind.PrefixIncrement.createExpression(baseExpression);
+                return YUnaryOperator.PrefixIncrement.createExpression(baseExpression);
             }
             // case (decrement):
             if (ctx.getTokens(C11Parser.MinusMinus).size() > 0) {
-                return YIntegerUnaryExpression.Kind.PrefixDecrement.createExpression(baseExpression);
+                return YUnaryOperator.PrefixDecrement.createExpression(baseExpression);
             }
         }
         throw new YParserNotImplementedException(ctx);
@@ -263,11 +262,11 @@ class C2YtreeConverterVisitor
             YExpression baseExpression = visitUnaryExpression(unaryExpressionContext);
             // '++' unaryExpression:
             if (C11ParserHelper.hasToken(ctx, C11Parser.PlusPlus)) {
-                return YIntegerUnaryExpression.Kind.PrefixIncrement.createExpression(baseExpression);
+                return YUnaryOperator.PrefixIncrement.createExpression(baseExpression);
             }
             // '--' unaryExpression:
             if (C11ParserHelper.hasToken(ctx, C11Parser.MinusMinus)) {
-                return YIntegerUnaryExpression.Kind.PrefixDecrement.createExpression(baseExpression);
+                return YUnaryOperator.PrefixDecrement.createExpression(baseExpression);
             }
             // 'sizeof' unaryExpression:
             if (C11ParserHelper.hasToken(ctx, C11Parser.Sizeof)) {
@@ -284,17 +283,17 @@ class C2YtreeConverterVisitor
             YExpression operand = visitCastExpression(castExpressionContext);
             switch (operator) {
                 case Ampersand:
-                    return YPointerUnaryExpression.Kind.Reference.createExpression(operand);
+                    return operand.withPointerLevel(operand.getPointerLevel() - 1);
                 case Asterisk:
-                    return YPointerUnaryExpression.Kind.Dereference.createExpression(operand);
+                    return operand.withPointerLevel(operand.getPointerLevel() + 1);
                 case Plus:
-                    return operand; // TODO: check whether expression '+2' really equals to '2' in C
+                    return operand; // '+1' is same as '1'
                 case Minus:
-                    return YIntegerUnaryExpression.Kind.IntegerNegation.createExpression(operand);
+                    return YUnaryOperator.IntegerNegation.createExpression(operand);
                 case Tilde:
-                    return YIntegerUnaryExpression.Kind.BitwiseComplement.createExpression(operand);
+                    return YUnaryOperator.BitwiseComplement.createExpression(operand);
                 case Exclamation:
-                    return YLogicalUnaryExpression.Kind.Negation.createExpression(operand);
+                    return YUnaryOperator.Negation.createExpression(operand);
                 default:
                     throw new YParserNotImplementedException(ctx, "Unsupported unary operator: " + operator.name());
             }
@@ -373,12 +372,12 @@ class C2YtreeConverterVisitor
                 return multiplicativeExpression;
             }
             YExpression additiveExpression = visitAdditiveExpression(additiveExpressionContext);
-            YIntegerBinaryExpression.Kind operator;
+            YBinaryOperator operator;
             if (C11ParserHelper.hasToken(ctx, C11Parser.Plus)) {
-                operator = YIntegerBinaryExpression.Kind.Plus;
+                operator = YBinaryOperator.Plus;
             }
             else if (C11ParserHelper.hasToken(ctx, C11Parser.Minus)) {
-                operator = YIntegerBinaryExpression.Kind.Minus;
+                operator = YBinaryOperator.Minus;
             }
             else {
                 throw new YParserException(ctx, "Could not parse binary additive operator");
@@ -433,11 +432,11 @@ class C2YtreeConverterVisitor
             }
             YExpression leftPart = visitRelationalExpression(relationalExpressionContext);
             YExpression rightPart = visitShiftExpression(shiftExpressionContext);
-            YBinaryExpression.Kind operator =
-                    isLess ? YRelativeBinaryExpression.Kind.Less :
-                            (isLessEqual ? YRelativeBinaryExpression.Kind.LessOrEquals :
-                                    (isGreater ? YRelativeBinaryExpression.Kind.Greater :
-                                            YRelativeBinaryExpression.Kind.GreaterOrEquals));
+            YBinaryOperator operator =
+                    isLess ? YBinaryOperator.Less :
+                            (isLessEqual ? YBinaryOperator.LessOrEquals :
+                                    (isGreater ? YBinaryOperator.Greater :
+                                            YBinaryOperator.GreaterOrEquals));
             return operator.createExpression(leftPart, rightPart);
         }
         if (shiftExpressionContext != null) {
@@ -468,9 +467,9 @@ class C2YtreeConverterVisitor
             }
             YExpression left = visitEqualityExpression(equalityExpressionContext);
             YExpression right = visitRelationalExpression(relationalExpressionContext);
-            YRelativeBinaryExpression.Kind operator = isEquality
-                    ? YRelativeBinaryExpression.Kind.Equals
-                    : YRelativeBinaryExpression.Kind.NotEquals;
+            YBinaryOperator operator = isEquality
+                    ? YBinaryOperator.Equals
+                    : YBinaryOperator.NotEquals;
             return operator.createExpression(left, right);
         }
         if (relationalExpressionContext != null) {
@@ -685,10 +684,19 @@ class C2YtreeConverterVisitor
                 }
                 else if (declarationExpression instanceof YAssignmentExpression) {
                     YAssignmentExpression assignment = (YAssignmentExpression) declarationExpression;
-                    YVariable variable = assignment.getAssignee();
                     YExpression value = assignment.getExpression();
-                    builder.addStatement(new YVariableDeclarationStatement(type, variable));
-                    builder.addLinearStatement(new YAssignmentExpression(variable, value));
+                    YAtom assignee = assignment.getAssignee();
+                    if (assignee instanceof YVariable) {
+                        YVariable variable = (YVariable) assignee;
+                        builder.addStatement(new YVariableDeclarationStatement(type, variable));
+                        builder.addLinearStatement(new YAssignmentExpression(variable, value));
+                    }
+                    else {
+                        throw new YParserException(ctx, "Found declaration of non-variable instance: " +
+                                wrap(assignee) +
+                                " of type: " + wrap(assignee.getClass().getSimpleName()));
+                    }
+
                 }
                 else { //if (declarationExpression instanceof )
                     throw new YParserNotImplementedException(ctx, "Not supported variable declaration " +
@@ -1022,7 +1030,7 @@ class C2YtreeConverterVisitor
      */
     @Override
     public YEntity visitDeclarator(C11Parser.DeclaratorContext ctx) {
-        List<YPointerUnaryExpression.Kind> pointerOperatorList = null;
+        List<YUnaryOperatorKindTemp> pointerOperatorList = null;
         if (ctx.pointer() != null) {
             pointerOperatorList = visitPointer(ctx.pointer()).build();
         }
@@ -1030,25 +1038,40 @@ class C2YtreeConverterVisitor
         C11Parser.DirectDeclaratorContext directDeclaratorContext = ctx.directDeclarator();
         if (directDeclaratorContext != null) {
             YEntity declarator = visitDirectDeclarator(directDeclaratorContext);
-            if (declarator instanceof YVariable) {
-                YExpression result = (YVariable) declarator;
-                if (pointerOperatorList != null) {
-                    // TODO:!!! check the order here !!!
-                    for (YPointerUnaryExpression.Kind operator : pointerOperatorList) {
-                        result = operator.createExpression(result);
-                    }
-                }
-                return result;
-            }
-            else if (declarator instanceof YMethodSignature) {
+            if (declarator instanceof YMethodSignature) {
                 if (pointerOperatorList != null) {
                     throw new NotSupportedException("pointers to functions");
                 }
                 return (YMethodSignature) declarator;
             }
+
+            if (declarator instanceof YExpression) {
+                YExpression expression = (YExpression) declarator;
+                if (pointerOperatorList != null) {
+                    // TODO:!!! check the order here !!!
+                    for (YUnaryOperatorKindTemp operator : pointerOperatorList) {
+                        int level = expression.getPointerLevel();
+                        switch (operator) {
+                            case Ampersand:
+                                expression = expression.withPointerLevel(level - 1);
+                                break;
+                            case Asterisk:
+                                expression = expression.withPointerLevel(level + 1);
+                                break;
+                            case Plus:
+                            case Minus:
+                            case Tilde:
+                            case Exclamation:
+                                throw new IllegalArgumentException(operator.name());
+                        }
+                    }
+                }
+                return expression;
+            }
+
             throw new NotImplementedException("Yet unsupported declarator" +
-                                                      ", found: " + wrap(declarator) +
-                                                      " of type: " + wrap(declarator.getClass().getSimpleName()));
+                                                  ", found: " + wrap(declarator) +
+                                                  " of type: " + wrap(declarator.getClass().getSimpleName()));
         }
         throw new YParserNotImplementedException(ctx);
     }
@@ -1113,8 +1136,8 @@ class C2YtreeConverterVisitor
      * ;
      */
     @Override
-    public YTempListBuilder<YPointerUnaryExpression.Kind> visitPointer(C11Parser.PointerContext ctx) {
-        YTempListBuilder<YPointerUnaryExpression.Kind> result = new YTempListBuilder<>();
+    public YTempListBuilder<YUnaryOperatorKindTemp> visitPointer(C11Parser.PointerContext ctx) {
+        YTempListBuilder<YUnaryOperatorKindTemp> result = new YTempListBuilder<>();
         C11Parser.TypeQualifierListContext typeQualifierListContext = ctx.typeQualifierList();
         C11Parser.PointerContext pointerContext = ctx.pointer();
         if (typeQualifierListContext != null) {
@@ -1125,10 +1148,10 @@ class C2YtreeConverterVisitor
         }
 
         if (C11ParserHelper.hasToken(ctx, C11Parser.Star)) {
-            result.add(YPointerUnaryExpression.Kind.Dereference);
+            result.add(YUnaryOperatorKindTemp.Asterisk);
         }
         else if (C11ParserHelper.hasToken(ctx, C11Parser.And)) {
-            result.add(YPointerUnaryExpression.Kind.Reference);
+            result.add(YUnaryOperatorKindTemp.Ampersand);
         }
         else {
             throw new YParserException(ctx);
@@ -1196,28 +1219,13 @@ class C2YtreeConverterVisitor
             if (ctx.declarationSpecifiers() != null) {
                 // todo: parse type in specifiers
                 YType type = new YMockType();
-
                 YEntity declarator = visitDeclarator(declaratorContext);
-                int pointerLevel = 0;
-                while (declarator instanceof YPointerUnaryExpression) {
-                    YPointerUnaryExpression pointerExpr = ((YPointerUnaryExpression) declarator);
-                    switch (pointerExpr.getKind()) {
-                        case Reference:
-                            pointerLevel--;
-                            break;
-                        case Dereference:
-                            pointerLevel++;
-                            break;
-                        default:
-                            throw new IllegalArgumentException(pointerExpr.getKind().name());
-                    }
-                    declarator = pointerExpr.getExpression();
-                }
                 if (!(declarator instanceof YVariable)) {
-                    throw new YParserException(ctx, "Only identifier is allowed as function parameter name");
+                    throw new YParserException(ctx, "Only identifier is allowed as function parameter name" +
+                            ", found: " + declarator.getClass().getSimpleName());
                 }
                 YVariable variable = (YVariable) declarator;
-                return new YParameter(variable.getName(), type, pointerLevel);
+                return new YParameter(type, variable);
             }
             throw new YParserException(ctx, "Could not find parameter type specifiers");
         }
@@ -1793,12 +1801,12 @@ class C2YtreeConverterVisitor
             C11Parser.PostfixExpressionContext leftContext = postfixExpressionContexts.get(0);
             YExpression right = visitPostfixExpression(rightContext);
             YExpression left = visitPostfixExpression(leftContext);
-            if (!(left instanceof YVariable)) {
+            if (!(left instanceof YAtom)) {
                 throw new YParserException(ctx, "Could not parse initial assignment statement" +
                         ", found assignee: " + left +
                         " of type: " + left.getClass().getSimpleName());
             }
-            YVariable leftVariable = (YVariable) left;
+            YAtom leftVariable = (YAtom) left;
             return new YAssignmentExpression(leftVariable, right);
         }
         throw new YParserException(ctx);

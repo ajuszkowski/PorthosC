@@ -10,13 +10,12 @@ public class YMemberAccessExpression extends YMultiExpression implements YAtom {
     private final String memberName;
 
     public YMemberAccessExpression(YAtom baseExpression, String memberName) {
-        super(baseExpression);
-        this.memberName = memberName;
+        this(baseExpression, memberName, baseExpression.getPointerLevel());
     }
 
-    @Override
-    public <T> T accept(YtreeVisitor<T> visitor) {
-        return visitor.visit(this);
+    private YMemberAccessExpression(YAtom baseExpression, String memberName, int pointerLevel) {
+        super(pointerLevel, baseExpression);
+        this.memberName = memberName;
     }
 
     public YAtom getBaseExpression() {
@@ -30,6 +29,16 @@ public class YMemberAccessExpression extends YMultiExpression implements YAtom {
     @Override
     public Kind getKind() {
         return getBaseExpression().getKind();
+    }
+
+    @Override
+    public YMemberAccessExpression withPointerLevel(int level) {
+        return new YMemberAccessExpression(getBaseExpression(), getMemberName(), level);
+    }
+
+    @Override
+    public <T> T accept(YtreeVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 
     @Override

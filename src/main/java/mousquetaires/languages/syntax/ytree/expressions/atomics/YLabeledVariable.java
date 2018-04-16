@@ -11,12 +11,27 @@ public class YLabeledVariable extends YVariable {
     private final String label;
 
     public YLabeledVariable(String label, String name) {
-        super(Kind.Local, name);
+        this(label, name, 0);
+    }
+
+    private YLabeledVariable(String label, String name, int pointerLevel) {
+        super(Kind.Local, name, pointerLevel);
         this.label = label;
     }
 
+
     public String getLabel() {
         return label;
+    }
+
+    @Override
+    public YVariable asGlobal() {
+        throw new NotSupportedException("Labeled variables may be only local");
+    }
+
+    @Override
+    public YLabeledVariable withPointerLevel(int level) {
+        return new YLabeledVariable(getLabel(), getName(), level);
     }
 
     @Override
