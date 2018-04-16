@@ -34,11 +34,6 @@ public class YTernaryExpression implements YExpression {
     }
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        return CollectionUtils.createIteratorFrom(condition, trueExpression, falseExpression);
-    }
-
-    @Override
     public int getPointerLevel() {
         return 0;//NOTE: this is because pointers for ternary expressions are not implemented yet
     }

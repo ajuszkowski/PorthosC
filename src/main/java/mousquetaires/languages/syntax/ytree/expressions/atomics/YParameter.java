@@ -1,12 +1,7 @@
 package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
-import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.CollectionUtils;
-
-import java.util.Iterator;
-import java.util.Objects;
 
 
 public class YParameter implements YAtom {
@@ -40,11 +35,6 @@ public class YParameter implements YAtom {
     @Override
     public YParameter withPointerLevel(int level) {
         return new YParameter(getType(), getVariable().withPointerLevel(level));
-    }
-
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        return CollectionUtils.createIteratorFrom(getVariable(), getType());
     }
 
     @Override

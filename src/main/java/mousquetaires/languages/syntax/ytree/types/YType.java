@@ -14,9 +14,4 @@ public interface YType extends YEntity {
     YType.Qualifier getQualifier();
 
     YType.Specifier getSpecifier();
-
-    int getPointerLevel();
-
-    YType withPointerLevel(int newPointerLevel);
-
 }

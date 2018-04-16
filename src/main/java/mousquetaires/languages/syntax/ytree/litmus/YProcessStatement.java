@@ -1,14 +1,10 @@
 package mousquetaires.languages.syntax.ytree.litmus;
 
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
-import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.CollectionUtils;
-
-import java.util.Iterator;
 
 
 /**
@@ -25,11 +21,6 @@ public class YProcessStatement extends YFunctionDefinition {
 
     public XProcessId getProcessId() {
         return processId;
-    }
-
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        return CollectionUtils.createIteratorFrom(getBody());
     }
 
     @Override

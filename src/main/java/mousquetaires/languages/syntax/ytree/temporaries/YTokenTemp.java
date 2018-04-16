@@ -1,12 +1,6 @@
 package mousquetaires.languages.syntax.ytree.temporaries;
 
-import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-
-import java.util.Iterator;
-
-
-public class YTokenTemp extends YTempEntityBase {
+public class YTokenTemp implements YTempEntity {
 
     private final String value;
 
@@ -16,15 +10,5 @@ public class YTokenTemp extends YTempEntityBase {
 
     public String getValue() {
         return value;
-    }
-
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <T> T accept(YtreeVisitor<T> visitor) {
-        throw new UnsupportedOperationException();
     }
 }

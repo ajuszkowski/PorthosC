@@ -53,7 +53,7 @@ class C2YtreeConverterVisitor
     public YSyntaxTree visitMain(C11Parser.MainContext ctx) {
         C11Parser.CompilationUnitContext compilationUnitContext = ctx.compilationUnit();
         if (compilationUnitContext != null) {
-            YEntityListBuilder compilationUnitBuilder = visitCompilationUnit(compilationUnitContext);
+            YTempListBuilder<YEntity> compilationUnitBuilder = visitCompilationUnit(compilationUnitContext);
             ImmutableList<YEntity> rootsList = compilationUnitBuilder.build();
             syntaxTreeBuilder.addAll(rootsList);
             return syntaxTreeBuilder.build();
@@ -182,9 +182,9 @@ class C2YtreeConverterVisitor
             // case (invocation expression):
             if (ctx.getTokens(C11Parser.LeftParen).size() > 0 && ctx.getTokens(C11Parser.RightParen).size() > 0) {
                 C11Parser.ArgumentExpressionListContext argumentExpressionListContextList = ctx.argumentExpressionList();
-                YExpressionListBuilder argumentsBuilder = argumentExpressionListContextList != null
+                YTempListBuilder<YExpression> argumentsBuilder = argumentExpressionListContextList != null
                         ? visitArgumentExpressionList(argumentExpressionListContextList)
-                        : new YExpressionListBuilder();
+                        : new YTempListBuilder<>();
                 ImmutableList<YExpression> arguments = argumentsBuilder.build();
                 return new YInvocationExpression(baseExpression, arguments);
             }
@@ -225,8 +225,8 @@ class C2YtreeConverterVisitor
      * ;
      */
     @Override
-    public YExpressionListBuilder visitArgumentExpressionList(C11Parser.ArgumentExpressionListContext ctx) {
-        YExpressionListBuilder result = new YExpressionListBuilder();
+    public YTempListBuilder<YExpression> visitArgumentExpressionList(C11Parser.ArgumentExpressionListContext ctx) {
+        YTempListBuilder<YExpression> result = new YTempListBuilder<>();
         C11Parser.AssignmentExpressionContext assignmentExpressionContext = ctx.assignmentExpression();
         C11Parser.ArgumentExpressionListContext argumentExpressionListContext = ctx.argumentExpressionList();
         if (assignmentExpressionContext != null) {
@@ -675,7 +675,7 @@ class C2YtreeConverterVisitor
             if (initDeclaratorListContext == null) {
                 throw new YParserNotImplementedException(ctx, "Missing variable declarator");
             }
-            YExpressionListBuilder declarationListBuilder = visitInitDeclaratorList(initDeclaratorListContext);
+            YTempListBuilder<YExpression> declarationListBuilder = visitInitDeclaratorList(initDeclaratorListContext);
             ImmutableList<YExpression> declarationList = declarationListBuilder.build();
             for (YExpression declarationExpression : declarationList) {
                 if (declarationExpression instanceof YVariable) {
@@ -754,8 +754,8 @@ class C2YtreeConverterVisitor
      * ;
      */
     @Override
-    public YExpressionListBuilder visitInitDeclaratorList(C11Parser.InitDeclaratorListContext ctx) {
-        YExpressionListBuilder result = new YExpressionListBuilder();
+    public YTempListBuilder<YExpression> visitInitDeclaratorList(C11Parser.InitDeclaratorListContext ctx) {
+        YTempListBuilder<YExpression> result = new YTempListBuilder<>();
         C11Parser.InitDeclaratorListContext recursiveListContext = ctx.initDeclaratorList();
         if (recursiveListContext != null) {
             result.addAll(visitInitDeclaratorList(recursiveListContext));
@@ -1640,7 +1640,7 @@ class C2YtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntityListBuilder visitCompilationUnit(C11Parser.CompilationUnitContext ctx) {
+    public YTempListBuilder<YEntity> visitCompilationUnit(C11Parser.CompilationUnitContext ctx) {
         C11Parser.TranslationUnitContext translationUnitContext = ctx.translationUnit();
         if (translationUnitContext == null) {
             throw new YParserException(ctx, "Empty input");
@@ -1655,8 +1655,8 @@ class C2YtreeConverterVisitor
      * ;
      */
     @Override
-    public YEntityListBuilder visitTranslationUnit(C11Parser.TranslationUnitContext ctx) {
-        YEntityListBuilder result = new YEntityListBuilder();
+    public YTempListBuilder<YEntity> visitTranslationUnit(C11Parser.TranslationUnitContext ctx) {
+        YTempListBuilder<YEntity> result = new YTempListBuilder<>();
         C11Parser.TranslationUnitContext translationUnitContext = ctx.translationUnit();
         if (translationUnitContext != null) {
             result.addAll(visitTranslationUnit(translationUnitContext));

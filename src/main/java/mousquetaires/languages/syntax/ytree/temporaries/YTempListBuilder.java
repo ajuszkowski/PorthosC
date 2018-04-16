@@ -37,11 +37,6 @@ public class YTempListBuilder<T extends YEntity>
     }
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public <S> S accept(YtreeVisitor<S> visitor) {
         throw new UnsupportedOperationException();
     }

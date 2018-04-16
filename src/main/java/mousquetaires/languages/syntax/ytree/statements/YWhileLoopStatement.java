@@ -1,15 +1,11 @@
 package mousquetaires.languages.syntax.ytree.statements;
 
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
-import mousquetaires.utils.CollectionUtils;
+import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
-import java.util.Iterator;
 import java.util.Objects;
 
 
-// TODO: separate while+for and dowhile loops!
 public class YWhileLoopStatement extends YStatement {
 
     private final YExpression condition;
@@ -37,11 +33,6 @@ public class YWhileLoopStatement extends YStatement {
     @Override
     public YWhileLoopStatement withLabel(String newLabel) {
         return new YWhileLoopStatement(newLabel, getCondition(), getBody());
-    }
-
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        return CollectionUtils.createIteratorFrom(getCondition(), getBody());
     }
 
     @Override

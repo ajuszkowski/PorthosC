@@ -4,9 +4,7 @@ import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
 import java.util.Iterator;
 
-public interface YEntity extends Cloneable {
-
-    Iterator<? extends YEntity> getChildrenIterator();
+public interface YEntity {
 
     <T> T accept(YtreeVisitor<T> visitor);
 }

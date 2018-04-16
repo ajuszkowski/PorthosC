@@ -1,14 +1,11 @@
 package mousquetaires.languages.syntax.ytree.temporaries;
 
-import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.statements.YStatement;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.patterns.BuilderBase;
-
-import java.util.Iterator;
 
 
 public class YCompoundStatementBuilder extends BuilderBase<YCompoundStatement> implements YTempEntity {
@@ -48,13 +45,6 @@ public class YCompoundStatementBuilder extends BuilderBase<YCompoundStatement> i
     public void addFrom(YCompoundStatementBuilder builder) {
         YCompoundStatement compoundStatement = builder.build();
         statementsBuilder.addAll(compoundStatement.getStatements());
-    }
-
-
-
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        throw new UnsupportedOperationException();
     }
 
     @Override

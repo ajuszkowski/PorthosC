@@ -1,11 +1,8 @@
 package mousquetaires.languages.syntax.ytree.statements.jumps;
 
-import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.statements.YStatement;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.CollectionUtils;
 
-import java.util.Iterator;
 import java.util.Objects;
 
 
@@ -61,11 +58,6 @@ public class YJumpStatement extends YStatement {
     @Override
     public YStatement withLabel(String newLabel) {
         return new YJumpStatement(newLabel, getKind(), getJumpLabel());
-    }
-
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        return CollectionUtils.createIteratorFrom();
     }
 
     @Override

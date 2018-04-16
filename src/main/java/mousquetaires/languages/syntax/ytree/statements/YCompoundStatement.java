@@ -1,10 +1,8 @@
 package mousquetaires.languages.syntax.ytree.statements;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
-import java.util.Iterator;
 import java.util.Objects;
 
 
@@ -42,12 +40,6 @@ public class YCompoundStatement extends YStatement {
     @Override
     public YCompoundStatement withLabel(String newLabel) {
         return new YCompoundStatement(newLabel, hasBraces, statements);
-    }
-
-
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        return getStatements().iterator();
     }
 
     @Override

@@ -1,12 +1,9 @@
 package mousquetaires.languages.syntax.ytree.definitions;
 
-import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.CollectionUtils;
 
-import java.util.Iterator;
 import java.util.Objects;
 
 
@@ -26,11 +23,6 @@ public class YFunctionDefinition implements YDefinition {
 
     public YCompoundStatement getBody() {
         return body;
-    }
-
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        return CollectionUtils.createIteratorFrom(body);
     }
 
     @Override

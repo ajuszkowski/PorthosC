@@ -20,17 +20,6 @@ public enum YUnaryOperatorKindTemp implements YTempEntity {
     Exclamation,
     ;
 
-
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <T> T accept(YtreeVisitor<T> visitor) {
-        throw new UnsupportedOperationException();
-    }
-
     public static YUnaryOperatorKindTemp tryParse(String value) {
         switch (value) {
             case "&": return Ampersand;

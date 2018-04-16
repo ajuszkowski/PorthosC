@@ -1,13 +1,10 @@
 package mousquetaires.languages.syntax.ytree.expressions.operations;
 
-import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.CollectionUtils;
 import mousquetaires.utils.exceptions.NotSupportedException;
 
-import java.util.Iterator;
 import java.util.Objects;
 
 
@@ -26,11 +23,6 @@ public class YUnaryExpression extends YMultiExpression {
 
     public YExpression getExpression() {
         return getElements().get(0);
-    }
-
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        return CollectionUtils.createIteratorFrom(getExpression());
     }
 
     public String toString() {

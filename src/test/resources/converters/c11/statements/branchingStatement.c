@@ -1,8 +1,3 @@
-{
-    (*x).a[3] = 3;
-    x=3;
-    t0:a = y;
-}
 
 void t0(int &x, int &y) {
     while (true) {

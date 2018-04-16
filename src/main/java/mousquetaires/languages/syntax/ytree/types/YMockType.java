@@ -1,10 +1,7 @@
 package mousquetaires.languages.syntax.ytree.types;
 
-import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
-
-import java.util.Iterator;
 
 
 public class YMockType implements YType {
@@ -17,21 +14,6 @@ public class YMockType implements YType {
     @Override
     public Specifier getSpecifier() {
         return null;
-    }
-
-    @Override
-    public int getPointerLevel() {
-        return 0;
-    }
-
-    @Override
-    public YType withPointerLevel(int newPointerLevel) {
-        return this;
-    }
-
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        throw new NotImplementedException();
     }
 
     @Override

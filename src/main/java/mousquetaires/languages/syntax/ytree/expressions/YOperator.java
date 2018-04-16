@@ -8,8 +8,4 @@ import java.util.Iterator;
 
 public interface YOperator extends YEntity {
 
-    @Override
-    default Iterator<? extends YEntity> getChildrenIterator() {
-        return CollectionUtils.createIteratorFrom();
-    }
 }

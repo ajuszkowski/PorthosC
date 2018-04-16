@@ -3,9 +3,6 @@ package mousquetaires.languages.syntax.ytree.types;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.CollectionUtils;
-
-import java.util.Iterator;
 
 
 public class YMethodSignature implements YEntity {
@@ -43,11 +40,6 @@ public class YMethodSignature implements YEntity {
         }
         sb.append(")]");
         return sb.toString();
-    }
-
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        return CollectionUtils.createIteratorFrom();
     }
 
     @Override

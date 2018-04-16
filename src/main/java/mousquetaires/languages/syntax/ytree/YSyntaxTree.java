@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 
 public class YSyntaxTree implements YEntity {
@@ -21,11 +20,6 @@ public class YSyntaxTree implements YEntity {
 
     public YSyntaxTree(Collection<YEntity> statements) {
         this.roots = ImmutableList.copyOf(statements);
-    }
-
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        return roots.iterator();
     }
 
     public ImmutableList<YEntity> getRoots() {

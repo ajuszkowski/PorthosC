@@ -37,11 +37,6 @@ public abstract class YMultiExpression implements YExpression {
     }
 
     @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        return CollectionUtils.createIteratorFrom(elements);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof YMultiExpression)) return false;

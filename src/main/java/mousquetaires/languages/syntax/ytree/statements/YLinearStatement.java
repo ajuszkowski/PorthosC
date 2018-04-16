@@ -1,12 +1,9 @@
 package mousquetaires.languages.syntax.ytree.statements;
 
-import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.CollectionUtils;
 
 import javax.annotation.Nullable;
-import java.util.Iterator;
 import java.util.Objects;
 
 
@@ -35,11 +32,6 @@ public class YLinearStatement extends YStatement {
     @Override
     public YLinearStatement withLabel(String newLabel) {
         return new YLinearStatement(newLabel, getExpression());
-    }
-
-    @Override
-    public Iterator<? extends YEntity> getChildrenIterator() {
-        return CollectionUtils.createIteratorFrom(getExpression());
     }
 
     @Override
