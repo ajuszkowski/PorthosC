@@ -2,17 +2,31 @@ package mousquetaires.languages.converters.toxgraph.interpretation;
 
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XFakeEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 class XBlockContext {
+
+    public enum State {
+        Idle,
+        WaitingAdditionalCommand,
+
+        WaitingFirstConditionEvent,
+        WaitingFirstSubBlockEvent,
+        WaitingNextLinearEvent,
+
+        //JustFinishedBranch,
+        JustJumped,
+        JustFinished,
+    }
+
     /*private*/public XEvent entryEvent;
 
-    /*private*/public final XBlockContextKind kind;
-    /*private*/public XProcessInterpreter.ContextState state;
+    /*private*/public final XInterpreter.BlockKind kind;
+    /*private*/public State state;
     /*private*/public XProcessInterpreter.BranchKind currentBranchKind;
 
     /*private*/public XComputationEvent conditionEvent;
@@ -23,11 +37,12 @@ class XBlockContext {
     /*private*/public XEvent lastThenBranchEvent;
     /*private*/public XEvent lastElseBranchEvent;
 
-    /*private*/public List<XFakeEvent> continueingEvents;
-    /*private*/public List<XFakeEvent> breakingEvents;
+    /*private*/public List<XJumpEvent> continueingEvents;
+    /*private*/public List<XJumpEvent> breakingEvents;
 
-    public XBlockContext(XBlockContextKind kind) {
+    public XBlockContext(XInterpreter.BlockKind kind) {
         this.kind = kind;
+        this.state = State.WaitingAdditionalCommand;
     }
 
     public void setEntryEvent(XEvent entryEvent) {
@@ -41,7 +56,7 @@ class XBlockContext {
         this.conditionEvent = conditionEvent;
     }
 
-    public void setState(XProcessInterpreter.ContextState state) {
+    public void setState(State state) {
         this.state = state;
     }
 
@@ -55,20 +70,23 @@ class XBlockContext {
     //    this.firstFalseBranchEvent = event;
     //}
 
-    public void addContinueEvent(XFakeEvent previousEvent) {
-        //assert event != conditionEvent;
-        if (continueingEvents == null) {
-            continueingEvents = new ArrayList<>();
+    public void addJumpEvent(XInterpreter.JumpKind jumpKind, XJumpEvent jumpEvent) {
+        switch (jumpKind) {
+            case Break:
+                if (breakingEvents == null) {
+                    breakingEvents = new ArrayList<>();
+                }
+                breakingEvents.add(jumpEvent);
+                break;
+            case Continue:
+                if (continueingEvents == null) {
+                    continueingEvents = new ArrayList<>();
+                }
+                continueingEvents.add(jumpEvent);
+                break;
+            default:
+                throw new IllegalArgumentException(jumpKind.name());
         }
-        continueingEvents.add(previousEvent);
-    }
-
-    public void addBreakEvent(XFakeEvent previousEvent) {
-        //assert event != conditionEvent;
-        if (breakingEvents == null) {
-            breakingEvents = new ArrayList<>();
-        }
-        breakingEvents.add(previousEvent);
     }
 
     public boolean hasContinueEvents() {

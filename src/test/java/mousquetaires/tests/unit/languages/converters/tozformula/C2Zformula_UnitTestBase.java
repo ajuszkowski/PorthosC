@@ -43,7 +43,7 @@ public abstract class C2Zformula_UnitTestBase extends AbstractConverterUnitTest<
             XUnrolledProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
             Context ctx = new Context();
             Xgraph2ZformulaEncoder encoder = new Xgraph2ZformulaEncoder(ctx, unrolledProgram);
-            List<BoolExpr> programAsserts = encoder.encodeProgram(unrolledProgram);
+            List<BoolExpr> programAsserts = encoder.encode(unrolledProgram);
 
             BoolExpr smtFormula = ctx.mkAnd(programAsserts.toArray(new BoolExpr[0]));
             return CollectionUtils.createIteratorFrom(smtFormula);

@@ -7,8 +7,8 @@ import org.antlr.v4.runtime.misc.Interval;
 
 public class AntlrUtils {
     public static String getText(ParserRuleContext ctx) {
-        int a = ctx.start.getStartIndex();
-        int b = ctx.stop.getStopIndex();
+        int a = ctx.start.getTokenIndex();
+        int b = ctx.stop.getTokenIndex();
         Interval interval = new Interval(a,b);
         CharStream inputStream = ctx.start.getInputStream();
         return inputStream.getText(interval);

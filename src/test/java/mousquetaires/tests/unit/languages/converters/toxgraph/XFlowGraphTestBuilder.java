@@ -14,24 +14,24 @@ import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
-import mousquetaires.languages.syntax.xgraph.process.XProcess;
-import mousquetaires.languages.syntax.xgraph.process.XProcessBuilder;
+import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
+import mousquetaires.languages.syntax.xgraph.process.XCyclicProcessBuilder;
 import mousquetaires.utils.patterns.BuilderBase;
 
 
 // TODO:!!!!! inherit it from TestFlowGraphBuilderBase!
-public class XFlowGraphTestBuilder extends BuilderBase<XProcess> {
+public class XFlowGraphTestBuilder extends BuilderBase<XCyclicProcess> {
 
-    private final XProcessBuilder builder;
+    private final XCyclicProcessBuilder builder;
 
     public XFlowGraphTestBuilder(XProcessId processId) {
-        builder = new XProcessBuilder(processId);
+        builder = new XCyclicProcessBuilder(processId);
         builder.setSource(new XEntryEvent(createEventInfo()));
         builder.setSink(new XExitEvent(createEventInfo()));
     }
 
     @Override
-    public XProcess build() {
+    public XCyclicProcess build() {
         return builder.build();
     }
 

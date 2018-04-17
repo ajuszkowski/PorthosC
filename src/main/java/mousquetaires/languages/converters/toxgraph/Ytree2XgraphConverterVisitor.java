@@ -2,6 +2,7 @@ package mousquetaires.languages.converters.toxgraph;
 
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.common.Type;
+import mousquetaires.languages.converters.toxgraph.interpretation.XInterpreter;
 import mousquetaires.languages.converters.toxgraph.interpretation.XProgramInterpreter;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.XProgram;
@@ -10,6 +11,8 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperator;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.*;
+import mousquetaires.languages.syntax.xgraph.process.XProcessId;
+import mousquetaires.languages.syntax.xgraph.process.XProcessKind;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
@@ -70,12 +73,17 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XEvent visit(YPreludeStatement node) {
-        throw new NotImplementedException();
+        program.startProcessDefinition(XProcessKind.Prelude, XProcessId.preludeProcessId);
+        for (YAssignmentExpression assignment : node.getInitialWrites()) {
+            assignment.accept(this);
+        }
+        program.finishProcessDefinition();
+        return null; //statements return null
     }
 
     @Override
     public XEvent visit(YProcessStatement node) {
-        program.startProcessDefinition(node.getProcessId());
+        program.startProcessDefinition(XProcessKind.ConcurrentProcess, node.getProcessId());
         for (YParameter parameter : node.getSignature().getParameters()) {
             YVariable parameterVariable = parameter.getVariable();
             String name = parameterVariable.getName();
@@ -214,7 +222,10 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XEntity visit(YBinaryExpression node) {
-        throw new NotImplementedException();
+        XBinaryOperator operator = (XBinaryOperator) node.getOperator().accept(this);
+        XLocalMemoryUnit leftLocal = tryVisitAsLocalOrThrow(node.getLeftExpression());
+        XLocalMemoryUnit rightLocal = tryVisitAsLocalOrThrow(node.getRightExpression());
+        return program.currentProcess.emitComputationEvent(operator, leftLocal, rightLocal);
     }
 
     @Override
@@ -310,25 +321,25 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XEvent visit(YBranchingStatement node) {
-        program.currentProcess.startBranchingBlockDefinition();
+        program.currentProcess.startBlockDefinition(XInterpreter.BlockKind.Branching);
 
-        program.currentProcess.startConditionDefinition();
+        program.currentProcess.startBlockConditionDefinition();
         node.getCondition().accept(this);
-        program.currentProcess.finishConditionDefinition();
+        program.currentProcess.finishBlockConditionDefinition();
 
-        program.currentProcess.startThenBranchDefinition();
+        program.currentProcess.startBlockBranchDefinition(XInterpreter.BranchKind.Then);
         node.getThenBranch().accept(this);
-        program.currentProcess.finishBranchDefinition();
+        program.currentProcess.finishBlockBranchDefinition();
 
         YStatement elseBranch = node.getElseBranch();
-        program.currentProcess.startElseBranchDefinition();
+        program.currentProcess.startBlockBranchDefinition(XInterpreter.BranchKind.Else);
         if (elseBranch != null) {
             elseBranch.accept(this);
         }
         else {
             program.currentProcess.emitNopEvent(); // needed for encoding, TODO: add reference to the doc here
         }
-        program.currentProcess.finishBranchDefinition();
+        program.currentProcess.finishBlockBranchDefinition();
 
 
         program.currentProcess.finishNonlinearBlockDefinition();
@@ -338,15 +349,15 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XEvent visit(YWhileLoopStatement node) {
-        program.currentProcess.startLoopBlockDefinition();
+        program.currentProcess.startBlockDefinition(XInterpreter.BlockKind.Loop);
 
-        program.currentProcess.startConditionDefinition();
+        program.currentProcess.startBlockConditionDefinition();
         node.getCondition().accept(this);
-        program.currentProcess.finishConditionDefinition();
+        program.currentProcess.finishBlockConditionDefinition();
 
-        program.currentProcess.startThenBranchDefinition();
+        program.currentProcess.startBlockBranchDefinition(XInterpreter.BranchKind.Then);
         node.getBody().accept(this);
-        program.currentProcess.finishBranchDefinition();
+        program.currentProcess.finishBlockBranchDefinition();
 
         program.currentProcess.finishNonlinearBlockDefinition();
         return null; //statements return null
@@ -362,10 +373,10 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
                 throw new NotImplementedException();
                 //break;
             case Break:
-                program.currentProcess.processLoopBreakStatement();
+                program.currentProcess.processJumpStatement(XInterpreter.JumpKind.Break);
                 break;
             case Continue:
-                program.currentProcess.processLoopContinueStatement();
+                program.currentProcess.processJumpStatement(XInterpreter.JumpKind.Continue);
                 break;
             default:
                 throw new XInterpretationError("Unknown jump statement kind: " + node.getKind());
@@ -424,14 +435,6 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     @Override
     public XEvent visit(YParameter node) {
         throw new NotImplementedException();
-    }
-
-
-    private XComputationEvent visitBinaryExpression(YBinaryExpression node) {
-        XBinaryOperator operator = (XBinaryOperator) node.getOperator().accept(this);
-        XLocalMemoryUnit leftLocal = tryVisitAsLocalOrThrow(node.getLeftExpression());
-        XLocalMemoryUnit rightLocal = tryVisitAsLocalOrThrow(node.getRightExpression());
-        return program.currentProcess.emitComputationEvent(operator, leftLocal, rightLocal);
     }
 
     private XMemoryUnit tryVisitAsMemoryUnitOrThrow(YExpression expression) {

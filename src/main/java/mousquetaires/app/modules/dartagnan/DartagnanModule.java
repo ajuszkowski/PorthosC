@@ -65,8 +65,8 @@ public class DartagnanModule extends AppModule {
             Context ctx = new Context();
 
             Xgraph2ZformulaEncoder encoder = new Xgraph2ZformulaEncoder(ctx, unrolledProgram);
-            List<BoolExpr> asserts = encoder.encodeProgram(unrolledProgram);
 
+            List<BoolExpr> asserts = encoder.encode(unrolledProgram);
             asserts.addAll(memoryModel.encode(unrolledProgram, ctx));
             asserts.add(memoryModel.Consistent(unrolledProgram, ctx));
 
@@ -92,7 +92,6 @@ public class DartagnanModule extends AppModule {
             //
             //}
 
-            String target = options.sourceModel.name();
         /*
         program.initialize();
         program.compile(target, false, true);

@@ -1,14 +1,14 @@
 package mousquetaires.tests.unit.languages.common.graph;
 
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.languages.syntax.xgraph.process.XProcess;
+import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
 import mousquetaires.tests.unit.Assertion;
 import mousquetaires.tests.unit.AssertionObjectsEqual;
 
 
-public class AssertionXProcessesEqual extends AssertionGraphsEqual<XEvent, XProcess> {
+public class AssertionXProcessesEqual extends AssertionGraphsEqual<XEvent, XCyclicProcess> {
 
-    public AssertionXProcessesEqual(XProcess expected, XProcess actual) {
+    public AssertionXProcessesEqual(XCyclicProcess expected, XCyclicProcess actual) {
         super(expected, actual);
     }
 

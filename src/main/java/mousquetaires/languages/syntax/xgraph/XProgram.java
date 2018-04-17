@@ -1,12 +1,12 @@
 package mousquetaires.languages.syntax.xgraph;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.syntax.xgraph.process.XProcess;
+import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
 
 
-public final class XProgram extends XProgramBase<XProcess> {
+public final class XProgram extends XProgramBase<XCyclicProcess> {
 
-    XProgram(ImmutableList<XProcess> processes) {
+    XProgram(ImmutableList<XCyclicProcess> processes) {
         super(processes);
     }
 }

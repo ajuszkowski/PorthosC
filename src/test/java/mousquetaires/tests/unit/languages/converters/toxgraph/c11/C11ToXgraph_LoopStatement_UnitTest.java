@@ -6,7 +6,7 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEven
 import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XRegister;
-import mousquetaires.languages.syntax.xgraph.process.XProcess;
+import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.memorymodels.wmm.MemoryModel;
 import mousquetaires.tests.unit.UnitTestPaths;
@@ -68,7 +68,7 @@ public class C11ToXgraph_LoopStatement_UnitTest extends C11ToXgraph_UnitTestBase
         builder.processBranchingEvent(conditionConst10, conditionConst10, assignX11);
         builder.processLastEvents(assignX11);
 
-        XProcess process = builder.build();
+        XCyclicProcess process = builder.build();
 
         run(UnitTestPaths.c11StatementsDirectory + "loopStatement.c",
             getIterator(process));

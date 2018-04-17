@@ -6,7 +6,7 @@ import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.syntax.xgraph.XProgramBase;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
-import mousquetaires.languages.syntax.xgraph.process.XProcess;
+import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.memorymodels.wmm.MemoryModel;
 import mousquetaires.tests.TestFailedException;
@@ -19,12 +19,12 @@ import java.io.IOException;
 import java.util.Iterator;
 
 
-public abstract class C11ToXgraph_UnitTestBase extends AbstractConverterUnitTest<XProcess> {
+public abstract class C11ToXgraph_UnitTestBase extends AbstractConverterUnitTest<XCyclicProcess> {
 
     protected abstract MemoryModel.Kind memoryModel();
 
     @Override
-    protected Iterator<? extends XProcess> parseTestFile(String testFile) {
+    protected Iterator<? extends XCyclicProcess> parseTestFile(String testFile) {
         try {
             DataModel dataModel = null; // TODO: consider data model also
             File file = new File(testFile);
@@ -41,7 +41,7 @@ public abstract class C11ToXgraph_UnitTestBase extends AbstractConverterUnitTest
     }
 
     @Override
-    protected Assertion getComparingAssertion(XProcess expected, XProcess actual) {
+    protected Assertion getComparingAssertion(XCyclicProcess expected, XCyclicProcess actual) {
         return new AssertionXProcessesEqual(expected, actual);
     }
 }

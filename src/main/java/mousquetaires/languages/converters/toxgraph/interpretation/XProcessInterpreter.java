@@ -1,57 +1,31 @@
 package mousquetaires.languages.converters.toxgraph.interpretation;
 
-import mousquetaires.languages.common.Type;
 import mousquetaires.languages.converters.toxgraph.hooks.HookManager;
 import mousquetaires.languages.converters.toxgraph.hooks.InterceptionAction;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.*;
-import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XNopEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.*;
-import mousquetaires.languages.syntax.xgraph.process.XProcess;
-import mousquetaires.languages.syntax.xgraph.process.XProcessBuilder;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import mousquetaires.utils.exceptions.xgraph.XInterpreterUsageError;
+import org.antlr.v4.codegen.model.Loop;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Stack;
 
 import static mousquetaires.utils.StringUtils.wrap;
 
 
-public class XProcessInterpreter {
+class XProcessInterpreter extends XInterpreterBase {
 
-    public enum ContextState {
-        Idle,
-        WaitingAdditionalCommand,
-
-        WaitingFirstConditionEvent,
-        WaitingFirstSubBlockEvent,
-        WaitingNextLinearEvent,
-
-        //JustFinishedBranch,
-        JustJumped,
-        JustFinished,
-    }
-
-    public enum BranchKind {
-        Then,
-        Else,
-    }
-
-    private final XProcessId processId;
-    private final XProcessBuilder graphBuilder;
-    public final XMemoryManager memoryManager;
     private final HookManager hookManager;
-    private XProcess result;
 
     // todo: add add/put methods with non-null checks
     private final Stack<XBlockContext> contextStack;
@@ -62,185 +36,116 @@ public class XProcessInterpreter {
 
 
     XProcessInterpreter(XProcessId processId, XMemoryManager memoryManager, HookManager hookManager) {
-        this.processId = processId; //todo: non-uniqueness case
-        this.memoryManager = memoryManager;
-        this.graphBuilder = new XProcessBuilder(processId);
+        super(processId, memoryManager); //todo: non-uniqueness case
         contextStack = new Stack<>();
         readyContexts = new LinkedList<>();
         almostReadyContexts = new LinkedList<>();
 
-        XBlockContext linearContext = new XBlockContext(XBlockContextKind.Sequential);
-        linearContext.state = XProcessInterpreter.ContextState.WaitingNextLinearEvent;
+        XBlockContext linearContext = new XBlockContext(BlockKind.Sequential);
+        linearContext.state = XBlockContext.State.WaitingNextLinearEvent;
         this.contextStack.push(linearContext);
 
         this.hookManager = hookManager;
     }
 
+    // --
 
-    public void finish() {
-        emitExitEvent();
+    @Override
+    public void finalise() {
         //todo: verify
         assert contextStack.size() == 1; //linear entry context only
         assert readyContexts.isEmpty();
         assert almostReadyContexts.isEmpty();
-        memoryManager.clearLocals();
-        result = graphBuilder.build();
     }
 
-    public XProcess getResult() {
-        if (result == null) {
-            finish();
-        }
-        return result;
-    }
-
-    // --
-
-    public XProcessId getProcessId() {
-        return processId;
-    }
-
-    // --
-
-    public XLocalMemoryUnit tryConvertToLocalOrNull(XEntity expression) {
-        if (expression != null) {
-            if (expression instanceof XLocalMemoryUnit) {
-                // computation events, constants here
-                return (XLocalMemoryUnit) expression;
-            }
-            if (expression instanceof XSharedMemoryUnit) {
-                return copyToLocalMemory((XSharedMemoryUnit) expression);
-            }
-        }
-        return null;
-    }
-
-    public XLocalLvalueMemoryUnit tryConvertToLocalLvalueOrNull(XEntity expression) {
-        XLocalMemoryUnit local = tryConvertToLocalOrNull(expression);
-        if (local instanceof XLocalLvalueMemoryUnit) {
-            return (XLocalLvalueMemoryUnit) local;
-        }
-        return null;
-    }
-
-    //public XLocalMemoryUnit copyToLocalMemoryIfNecessary(XMemoryUnit memoryUnit) {
-    //    if (memoryUnit instanceof XLocation) {
-    //        return copyToLocalMemory((XLocation) memoryUnit);
-    //    }
-    //    else if (memoryUnit instanceof XLocalMemoryUnit) { // also here: XComputationEvent
-    //        return (XLocalMemoryUnit) memoryUnit;
-    //    }
-    //    throw new XInterpretationError("Illegal attempt to write to the local memory a memory unit of type "
-    //            + memoryUnit.getClass().getSimpleName());
-    //}
-
-    public XRegister copyToLocalMemory(XSharedMemoryUnit shared) {
-        XRegister tempLocal = memoryManager.newTempRegister(shared.getType());
-        emitMemoryEvent(tempLocal, shared);
-        return tempLocal;
-    }
-
-    // --
-
-    public XConstant getConstant(Object value, Type type) {
-        return XConstant.create(value, type);
-    }
-
-    public XComputationEvent evaluateMemoryUnit(XMemoryUnit memoryUnit) {
-        XLocalMemoryUnit localUnit = null;
-        if (memoryUnit instanceof XLocalMemoryUnit) {
-            localUnit = (XLocalMemoryUnit) memoryUnit;
-        }
-        else if (memoryUnit instanceof XSharedMemoryUnit) {
-            localUnit = tryConvertToLocalOrNull(memoryUnit);
-        }
-        if (localUnit == null) {
-            throw new IllegalStateException("Memory unit may be either local or shared, found: "
-                                                    + memoryUnit.getClass().getSimpleName());
-        }
-        return emitComputationEvent(XUnaryOperator.NoOperation, localUnit);
-    }
-    //
-    //public XComputationEvent evaluateConstant(XConstant constant) {
-    //    return emitComputationEvent(XUnaryOperator.NoOperation, constant);
-    //}
-
-    // --
-
-    public XEntryEvent emitEntryEvent() {
-        XEntryEvent entryEvent = new XEntryEvent(createEventInfo());
-        graphBuilder.setSource(entryEvent);
-        processNextEvent(entryEvent);
-        return entryEvent;
-    }
-
-    public XExitEvent emitExitEvent() {
-        XExitEvent exitEvent = new XExitEvent(createEventInfo());
-        assert contextStack.size() == 1; //only entry linear context
-        processNextEvent(exitEvent);
-        graphBuilder.setSink(exitEvent);
-        return exitEvent;
-    }
-
+    @Override
     public XBarrierEvent emitBarrierEvent(XBarrierEvent.Kind kind) {
         XBarrierEvent event = kind.create(createEventInfo());
         processNextEvent(event);
         return event;
     }
 
-    /**
-     * For modelling empty statement
-    */
-    public XNopEvent emitNopEvent() {
-        XNopEvent event = new XNopEvent(createEventInfo());
-        processNextEvent(event);
-        return event;
-    }
-
-    public XComputationEvent emitComputationEvent(XUnaryOperator operator, XLocalMemoryUnit operand) {
-        XComputationEvent event = new XUnaryComputationEvent(createEventInfo(), operator, operand);
-        processNextEvent(event);
-        return event;
-    }
-
-    public XComputationEvent emitComputationEvent(XBinaryOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand) {
-        XComputationEvent event = new XBinaryComputationEvent(createEventInfo(), operator, firstOperand, secondOperand);
-        processNextEvent(event);
-        return event;
-    }
-
-    // --
-
-    public XLocalMemoryEvent emitMemoryEvent(XLocalLvalueMemoryUnit destination, XLocalMemoryUnit source) {
-        XRegisterMemoryEvent event = new XRegisterMemoryEvent(createEventInfo(), destination, source);
-        processNextEvent(event);
-        return event;
-    }
-
-    public XSharedMemoryEvent emitMemoryEvent(XLocalLvalueMemoryUnit destination, XSharedMemoryUnit source) {
-        XLoadMemoryEvent event = new XLoadMemoryEvent(createEventInfo(), destination, source);
-        processNextEvent(event);
-        return event;
-    }
-
-    public XSharedMemoryEvent emitMemoryEvent(XSharedLvalueMemoryUnit destination, XLocalMemoryUnit source) {
-        XStoreMemoryEvent event = new XStoreMemoryEvent(createEventInfo(), destination, source);
-        processNextEvent(event);
-        return event;
-    }
-
-    private XJumpEvent emitJumpEvent() {
+    @Override
+    public XJumpEvent emitJumpEvent() {
         XJumpEvent event = new XJumpEvent(createEventInfo());
         processNextEvent(event);
         return event;
     }
 
-    private void processNextEvent(XEvent nextEvent) {
+    @Override
+    protected void processNextEvent(XEvent nextEvent) {
         assert nextEvent != null;
 
-        boolean alreadySetEdgeToNextEvent = false;
+        boolean alreadySetEdgeToNextEvent = processReadyContexts(nextEvent);
 
+        assert !contextStack.empty();
+        for (int i = contextStack.size() - 1; i >= 0; i--) { //NonlinearBlock context : contextStack) {
+            XBlockContext context = contextStack.get(i);
+
+            switch (context.state) {
+                case WaitingNextLinearEvent: {
+                    if (!alreadySetEdgeToNextEvent) {
+                        if (previousEvent != null) {
+                            graphBuilder.addEdge(true,previousEvent, nextEvent);
+                        }
+                        alreadySetEdgeToNextEvent = true;
+                    }
+                }
+                break;
+
+                case Idle: {
+                    // do nothing
+                }
+                break;
+
+                case WaitingAdditionalCommand: {
+                    throw new IllegalStateException("waiting for an additional command before processing next event");
+                }
+                //break;
+
+                case WaitingFirstConditionEvent: {
+                    context.setEntryEvent(nextEvent);//already initialised above
+                }
+                break;
+
+                case WaitingFirstSubBlockEvent: { //this case of stateStack should be on stack
+                    assert nextEvent != context.conditionEvent;
+                    switch (context.currentBranchKind) {
+                        case Then:
+                            // todo: do all nonlinear edge settings from ready hashset
+                            context.firstThenBranchEvent = nextEvent;
+                            break;
+                        case Else:
+                            context.firstElseBranchEvent = nextEvent;
+                            break;
+                    }
+                    context.setState(XBlockContext.State.WaitingNextLinearEvent);
+                    alreadySetEdgeToNextEvent = true; //delayed edge set (in traversing ready-contexts)
+                }
+                break;
+
+                case JustJumped: {
+                    // do nothing
+                }
+                break;
+
+                case JustFinished: {
+                    // do nothing
+                }
+                break;
+
+                default:
+                    throw new XInterpreterUsageError("Received new event while in invalid stateStack: " + context.state.name());
+            }
+        }
+
+        previousEvent = nextEvent;
+    }
+
+    private boolean processReadyContexts(XEvent nextEvent) {
+        boolean alreadySetEdgeToNextEvent = false;
         if (!readyContexts.isEmpty()) {
+
             for (XBlockContext context : readyContexts) {
 
                 if (context.firstThenBranchEvent != null) {
@@ -322,125 +227,59 @@ public class XProcessInterpreter {
             }
             readyContexts.clear();
         }
-
-
-        assert !contextStack.empty();
-        for (int i = contextStack.size() - 1; i >= 0; i--) { //NonlinearBlock context : contextStack) {
-            XBlockContext context = contextStack.get(i);
-
-            switch (context.state) {
-                case WaitingNextLinearEvent: {
-                    if (!alreadySetEdgeToNextEvent) {
-                        if (previousEvent != null) {
-                            graphBuilder.addEdge(true,previousEvent, nextEvent);
-                        }
-                        alreadySetEdgeToNextEvent = true;
-                    }
-                }
-                break;
-
-                case Idle: {
-                    // do nothing
-                }
-                break;
-
-                case WaitingAdditionalCommand: {
-                    throw new IllegalStateException("waiting for an additional command before processing next event");
-                }
-                //break;
-
-                case WaitingFirstConditionEvent: {
-                    context.setEntryEvent(nextEvent);//already initialised above
-                }
-                break;
-
-                case WaitingFirstSubBlockEvent: { //this case of stateStack should be on stack
-                    assert nextEvent != context.conditionEvent;
-                    switch (context.currentBranchKind) {
-                        case Then:
-                            // todo: do all nonlinear edge settings from ready hashset
-                            context.firstThenBranchEvent = nextEvent;
-                            break;
-                        case Else:
-                            context.firstElseBranchEvent = nextEvent;
-                            break;
-                    }
-                    context.setState(ContextState.WaitingNextLinearEvent);
-                    alreadySetEdgeToNextEvent = true; //delayed edge set (in traversing ready-contexts)
-                }
-                break;
-
-                case JustJumped: {
-                    // do nothing
-                }
-                break;
-
-                case JustFinished: {
-                    // do nothing
-                }
-                break;
-
-                default:
-                    throw new XInterpreterUsageError("Received new event while in invalid stateStack: " + context.state.name());
-            }
-        }
-
-        previousEvent = nextEvent;
+        return alreadySetEdgeToNextEvent;
     }
-
-
-    private XEventInfo createEventInfo() {
-        return new XEventInfo(processId);
-    }
-
 
     // -- BRANCHING + LOOPS --------------------------------------------------------------------------------------------
 
-    public void startBranchingBlockDefinition() {
-        startNonlinearBlockDefinition(XBlockContextKind.Branching);
+    @Override
+    public void startBlockDefinition(BlockKind blockKind) {
+        contextStack.push(new XBlockContext(blockKind));
     }
 
-    public void startLoopBlockDefinition() {
-        startNonlinearBlockDefinition(XBlockContextKind.Loop);
-    }
-
-    public void startConditionDefinition() {
+    @Override
+    public void startBlockConditionDefinition() {
         XBlockContext context = contextStack.peek();
-        context.setState(ContextState.WaitingFirstConditionEvent);
+        assert context.state == XBlockContext.State.WaitingAdditionalCommand : context.state.name();
+        context.setState(XBlockContext.State.WaitingFirstConditionEvent);
     }
 
-    public void finishConditionDefinition() {
+    @Override
+    public void finishBlockConditionDefinition() {
         if (!(previousEvent instanceof XComputationEvent)) {
             throw new XInterpretationError("Attempt to make branching on non-computation event "
                     + wrap(previousEvent.toString())
                     + " of type " + previousEvent.getClass().getSimpleName());
         }
         XBlockContext context = contextStack.peek();
-        // TODO: send here Branching event!
+        // TODO: send here Branching event! -- ? maybe we don't need them, as it's implemented now
         context.setConditionEvent((XComputationEvent) previousEvent);
-        context.setState(ContextState.WaitingAdditionalCommand);
+        context.setState(XBlockContext.State.WaitingAdditionalCommand);
     }
 
-    public void startThenBranchDefinition() {
+    @Override
+    public void startBlockBranchDefinition(BranchKind branchKind) {
         XBlockContext context = contextStack.peek();
-        assert context.state == ContextState.WaitingAdditionalCommand : context.state.name();
-        context.setState(ContextState.WaitingFirstSubBlockEvent);
-        context.currentBranchKind = BranchKind.Then;
-    }
-
-    public void startElseBranchDefinition() {
-        XBlockContext context = contextStack.peek();
-        assert context.state == ContextState.WaitingAdditionalCommand : context.state.name();
-        context.setState(ContextState.WaitingFirstSubBlockEvent);
-        context.currentBranchKind = BranchKind.Else;
-
-        if (!readyContexts.isEmpty()) {
-            almostReadyContexts.addAll(readyContexts);
-            readyContexts.clear();
+        assert context.state == XBlockContext.State.WaitingAdditionalCommand : context.state.name();
+        context.setState(XBlockContext.State.WaitingFirstSubBlockEvent);
+        switch (branchKind) {
+            case Then: {
+                context.currentBranchKind = BranchKind.Then;
+            }
+            break;
+            case Else: {
+                context.currentBranchKind = BranchKind.Else;
+                if (!readyContexts.isEmpty()) {
+                    almostReadyContexts.addAll(readyContexts);
+                    readyContexts.clear();
+                }
+            }
+            break;
         }
     }
 
-    public void finishBranchDefinition() {
+    @Override
+    public void finishBlockBranchDefinition() {
         XBlockContext context = contextStack.peek();
         assert context.currentBranchKind != null;
         if (previousEvent != context.conditionEvent) {
@@ -462,15 +301,16 @@ public class XProcessInterpreter {
             }
         }
         context.currentBranchKind = null;
-        context.setState(ContextState.WaitingAdditionalCommand);
+        context.setState(XBlockContext.State.WaitingAdditionalCommand);
         previousEvent = context.conditionEvent; //todo: check
     }
 
 
+    @Override
     public void finishNonlinearBlockDefinition() {
         XBlockContext context = contextStack.pop();
         context.currentBranchKind = null;
-        context.setState(ContextState.JustFinished);
+        context.setState(XBlockContext.State.JustFinished);
         almostReadyContexts.add(context);
         previousEvent = null; //not to set too many linear jumps: e.g. `if (a) { while(b) do1(); } do2();`
 
@@ -480,28 +320,19 @@ public class XProcessInterpreter {
         }
     }
 
-    public void processLoopBreakStatement() {
+    @Override
+    public void processJumpStatement(JumpKind jumpKind) {
         XJumpEvent jumpEvent = emitJumpEvent();
         XBlockContext context = currentNearestLoopContext(); //context should peeked after the jump event was emitted
-        context.addBreakEvent(jumpEvent);
-        context.state = ContextState.JustJumped;
-    }
-
-    public void processLoopContinueStatement() {
-        XJumpEvent jumpEvent = emitJumpEvent();
-        XBlockContext context = currentNearestLoopContext(); //context should peeked after the jump event was emitted
-        context.addContinueEvent(jumpEvent);
-        context.state = ContextState.JustJumped;
-    }
-
-    private void startNonlinearBlockDefinition(XBlockContextKind kind) {
-        contextStack.push(new XBlockContext(kind));
+        context.addJumpEvent(jumpKind, jumpEvent);
+        context.state = XBlockContext.State.JustJumped;
     }
 
     // -- METHOD CALLS -------------------------------------------------------------------------------------------------
 
     // TODO: signature instead of just name
     // TODO: arguments: write all shared to registers and set up control-flow binding
+    @Override
     public XEntity processMethodCall(String methodName, @Nullable XMemoryUnit receiver, XMemoryUnit... arguments) {
         InterceptionAction intercepted = hookManager.tryInterceptInvocation(methodName);
         if (intercepted != null) {
@@ -515,13 +346,12 @@ public class XProcessInterpreter {
                                                       ", however, the method call binding is not implemented yet");
     }
 
-
     // =================================================================================================================
 
     private XBlockContext currentNearestLoopContext() {
         for (int i = contextStack.size() - 1; i >= 0; --i) {
             XBlockContext context = contextStack.get(i);
-            if (context.kind == XBlockContextKind.Loop) {
+            if (context.kind == BlockKind.Loop) {
                 return context;
             }
         }

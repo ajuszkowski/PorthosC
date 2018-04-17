@@ -1,26 +1,24 @@
 package mousquetaires.languages.syntax.xgraph;
 
 import com.google.common.collect.ImmutableList;
-import dartagnan.program.Register;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
-import mousquetaires.languages.syntax.xgraph.process.XUnrolledProcess;
+import mousquetaires.languages.syntax.xgraph.process.XProcess;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 import static mousquetaires.utils.StringUtils.wrap;
 
 
-public final class XUnrolledProgram extends XProgramBase<XUnrolledProcess> {
+public final class XUnrolledProgram extends XProgramBase<XProcess> {
 
-    XUnrolledProgram(ImmutableList<XUnrolledProcess> processes) {
+    XUnrolledProgram(ImmutableList<XProcess> processes) {
         super(processes);
     }
 
-    public XUnrolledProcess getProcess(XProcessId processId) {
-        for (XUnrolledProcess process : getProcesses()) {
+    public XProcess getProcess(XProcessId processId) {
+        for (XProcess process : getProcesses()) {
             if (process.getId() == processId) {
                 return process;
             }
@@ -38,12 +36,12 @@ public final class XUnrolledProgram extends XProgramBase<XUnrolledProcess> {
 
 
     public int compareTopologically(XEvent one, XEvent two) {
-        XUnrolledProcess process = getProcess(getProcessId(one, two));
+        XProcess process = getProcess(getProcessId(one, two));
         return process.compareTopologically(one, two);
     }
 
     public int compareTopologicallyAndCondLevel(XEvent one, XEvent two) {
-        XUnrolledProcess process = getProcess(getProcessId(one, two));
+        XProcess process = getProcess(getProcessId(one, two));
         return process.compareTopologicallyAndCondLevel(one, two);
     }
 

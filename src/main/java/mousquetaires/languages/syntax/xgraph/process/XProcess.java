@@ -1,23 +1,39 @@
 package mousquetaires.languages.syntax.xgraph.process;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import mousquetaires.languages.common.graph.FlowGraph;
+import com.google.common.collect.ImmutableSet;
+import mousquetaires.languages.common.graph.UnrolledFlowGraph;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
+import mousquetaires.languages.syntax.xgraph.memories.XLocalLvalueMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XLvalueMemoryUnit;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 
-public class XProcess extends FlowGraph<XEvent> {
+public final class XProcess extends UnrolledFlowGraph<XEvent> {
 
     private final XProcessId id;
+    private final ImmutableMap<XEvent, ImmutableSet<XLocalLvalueMemoryUnit>> condRegMap;
 
     XProcess(XProcessId id,
              XEntryEvent source,
              XExitEvent sink,
-             ImmutableMap<XEvent, XEvent> trueEdges,
-             ImmutableMap<XEvent, XEvent> falseEdges) {
-        super(source, sink, trueEdges, falseEdges);
+             ImmutableMap<XEvent, XEvent> edges,
+             ImmutableMap<XEvent, XEvent> altEdges,
+             ImmutableMap<XEvent, ImmutableSet<XEvent>> edgesReversed,
+             ImmutableMap<XEvent, ImmutableSet<XEvent>> altEdgesReversed,
+             ImmutableList<XEvent> nodesLinearised,
+             ImmutableMap<XEvent, Integer> condLevelMap,
+             ImmutableMap<XEvent, ImmutableSet<XLocalLvalueMemoryUnit>> condRegMap) {
+        super(source, sink, edges, altEdges, edgesReversed, altEdgesReversed, nodesLinearised, condLevelMap);
         this.id = id;
+        this.condRegMap = condRegMap;
     }
 
     public XProcessId getId() {
@@ -32,5 +48,9 @@ public class XProcess extends FlowGraph<XEvent> {
     @Override
     public XExitEvent sink() {
         return (XExitEvent) super.sink();
+    }
+
+    public ImmutableSet<XLocalLvalueMemoryUnit> getCondRegs(XEvent event) {
+        return condRegMap.get(event);
     }
 }

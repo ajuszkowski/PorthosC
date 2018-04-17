@@ -2,16 +2,16 @@ package mousquetaires.languages.transformers.xgraph;
 
 import mousquetaires.languages.common.graph.traverse.FlowGraphDfsTraverser;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
-import mousquetaires.languages.syntax.xgraph.process.XUnrolledProcess;
-import mousquetaires.languages.syntax.xgraph.process.XUnrolledProcessBuilder;
+import mousquetaires.languages.syntax.xgraph.process.XProcessBuilder;
 
 
-class XFlowGraphUnroller extends FlowGraphDfsTraverser<XEvent, XUnrolledProcess> {
+class XFlowGraphUnroller extends FlowGraphDfsTraverser<XEvent, XProcess> {
 
     // TODO: pass settings structure: bound, flags which agents to use
 
-    XFlowGraphUnroller(XProcess graph, int unrollingBound) {
-        super(graph, new XUnrolledProcessBuilder(graph.getId(), graph.size()), unrollingBound);
+    XFlowGraphUnroller(XCyclicProcess graph, int unrollingBound) {
+        super(graph, new XProcessBuilder(graph.getId(), graph.size()), unrollingBound);
     }
 }

@@ -5,7 +5,6 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.IntExpr;
-import dartagnan.program.*;
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
@@ -16,7 +15,7 @@ import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedLvalueMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.process.XUnrolledProcess;
+import mousquetaires.languages.syntax.xgraph.process.XProcess;
 import mousquetaires.memorymodels.Encodings;
 import mousquetaires.utils.Utils;
 
@@ -38,9 +37,9 @@ public class Xgraph2ZformulaEncoder {
         this.dataFlowEncoder = new XDataflowEncoder(ctx, ssaMap);
     }
 
-    public List<BoolExpr> encodeProgram(XUnrolledProgram program) {
+    public List<BoolExpr> encode(XUnrolledProgram program) {
         List<BoolExpr> asserts = new LinkedList<>();
-        for (XUnrolledProcess process : program.getProcesses()) {
+        for (XProcess process : program.getProcesses()) {
             asserts.addAll(encodeProcess(process));
             asserts.addAll(encodeProcessRFRelation(process));
         }
@@ -54,7 +53,7 @@ public class Xgraph2ZformulaEncoder {
 
 
     // encodeCF + encodeDF
-    private List<BoolExpr> encodeProcess(XUnrolledProcess process) {
+    private List<BoolExpr> encodeProcess(XProcess process) {
         List<BoolExpr> asserts = new ArrayList<>();
 
         Iterator<XEvent> nodesIterator = process.linearisedNodesIterator();
@@ -137,7 +136,7 @@ public class Xgraph2ZformulaEncoder {
         return asserts;
     }
 
-    private List<BoolExpr> encodeProcessRFRelation(XUnrolledProcess process) {
+    private List<BoolExpr> encodeProcessRFRelation(XProcess process) {
         List<BoolExpr> asserts = new ArrayList<>();
         for (XEvent loadEvent : process.getNodesExceptSource(e -> e instanceof XLoadMemoryEvent)) {
             XLoadMemoryEvent load = (XLoadMemoryEvent) loadEvent;
