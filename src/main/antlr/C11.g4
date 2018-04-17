@@ -928,22 +928,22 @@ PragmaDirective
 
 Whitespace
     :   [ \t]+
-        -> skip
+        -> channel(HIDDEN)
     ;
 
 Newline
     :   (   '\r' '\n'?
         |   '\n'
         )
-        -> skip
+        -> channel(HIDDEN)
     ;
 
 BlockComment
     :   '/*' .*? '*/'
-        -> skip
+        -> channel(HIDDEN)
     ;
 
 LineComment
     :   '//' ~[\r\n]*
-        -> skip
+        -> channel(HIDDEN)
     ;
