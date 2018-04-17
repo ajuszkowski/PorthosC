@@ -1,15 +1,18 @@
 package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
+import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
 
 public class YParameter implements YAtom {
 
+    private final CodeLocation location;
     private final YType type;
     private final YVariable variable;
 
-    public YParameter(YType type, YVariable variable) {
+    public YParameter(CodeLocation location, YType type, YVariable variable) {
+        this.location = location;
         this.variable = variable.asGlobal();
         this.type = type;
     }
@@ -34,7 +37,12 @@ public class YParameter implements YAtom {
 
     @Override
     public YParameter withPointerLevel(int level) {
-        return new YParameter(getType(), getVariable().withPointerLevel(level));
+        return new YParameter(codeLocation(), getType(), getVariable().withPointerLevel(level));
+    }
+
+    @Override
+    public CodeLocation codeLocation() {
+        return location;
     }
 
     @Override

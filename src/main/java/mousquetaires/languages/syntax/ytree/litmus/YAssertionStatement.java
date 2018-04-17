@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.ytree.litmus;
 
+import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.statements.YUnlabeledStatement;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
@@ -9,7 +10,8 @@ public final class YAssertionStatement extends YUnlabeledStatement {
 
     private final YExpression expression; //a recursive boolean expression-tree
 
-    public YAssertionStatement(YExpression expression) {
+    public YAssertionStatement(CodeLocation location, YExpression expression) {
+        super(location);
         this.expression = expression;
     }
 

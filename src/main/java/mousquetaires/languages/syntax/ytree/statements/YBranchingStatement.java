@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.ytree.statements;
 
+import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
@@ -13,17 +14,19 @@ public class YBranchingStatement extends YStatement {  // TODO: inherit from YJu
     private final YStatement thenBranch;
     @Nullable private final YStatement elseBranch;
 
-    public YBranchingStatement(YExpression condition,
+    public YBranchingStatement(CodeLocation location,
+                               YExpression condition,
                                YStatement thenBranch,
                                YStatement elseBranch) {
-        this(newLabel(), condition, thenBranch, elseBranch);
+        this(location, newLabel(), condition, thenBranch, elseBranch);
     }
 
-    private YBranchingStatement(String label,
+    private YBranchingStatement(CodeLocation location,
+                                String label,
                                 YExpression condition,
                                 YStatement thenBranch,
                                 YStatement elseBranch) {
-        super(label);
+        super(location, label);
         this.condition = condition;
         this.thenBranch = thenBranch;
         this.elseBranch = elseBranch;
@@ -44,7 +47,7 @@ public class YBranchingStatement extends YStatement {  // TODO: inherit from YJu
 
     @Override
     public YBranchingStatement withLabel(String newLabel) {
-        return new YBranchingStatement(newLabel, getCondition(), getThenBranch(), getElseBranch());
+        return new YBranchingStatement(codeLocation(), newLabel, getCondition(), getThenBranch(), getElseBranch());
     }
 
     @Override

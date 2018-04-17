@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.ytree.types;
 
+import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
@@ -26,6 +27,11 @@ public class YMethodSignature implements YEntity {
 
     public YParameter[] getParameters() {
         return parameters;
+    }
+
+    @Override
+    public CodeLocation codeLocation() {
+        return CodeLocation.empty; //TODO: method signature must not be a YEntity! this is a common class used by all representations!
     }
 
     @Override

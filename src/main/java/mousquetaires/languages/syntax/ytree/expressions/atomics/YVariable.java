@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
+import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
 import java.util.Objects;
@@ -10,12 +11,12 @@ public class YVariable extends YAtomBase {
 
     private final String name;
 
-    public YVariable(String name) {
-        this(Kind.Local, name, 0);
+    public YVariable(CodeLocation location, String name) {
+        this(location, Kind.Local, name, 0);
     }
 
-    protected YVariable(Kind kind, String name, int pointerLevel) {
-        super(kind, pointerLevel);
+    protected YVariable(CodeLocation location, Kind kind, String name, int pointerLevel) {
+        super(location, kind, pointerLevel);
         this.name = name;
     }
 
@@ -24,12 +25,12 @@ public class YVariable extends YAtomBase {
     }
 
     public YVariable asGlobal() {
-        return new YVariable(Kind.Global, getName(), getPointerLevel());
+        return new YVariable(codeLocation(), Kind.Global, getName(), getPointerLevel());
     }
 
     @Override
     public YVariable withPointerLevel(int level) {
-        return new YVariable(getKind(), getName(), level);
+        return new YVariable(codeLocation(), getKind(), getName(), level);
     }
 
     @Override

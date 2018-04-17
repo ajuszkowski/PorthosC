@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.ytree.expressions.operations;
 
+import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
@@ -12,8 +13,8 @@ public class YBinaryExpression extends YMultiExpression {
 
     private final YBinaryOperator operator;
 
-    YBinaryExpression(YBinaryOperator operator, YExpression leftExpression, YExpression rightExpression) {
-        super(leftExpression, rightExpression);
+    YBinaryExpression(CodeLocation location, YBinaryOperator operator, YExpression leftExpression, YExpression rightExpression) {
+        super(location, leftExpression, rightExpression);
         this.operator = operator;
     }
 

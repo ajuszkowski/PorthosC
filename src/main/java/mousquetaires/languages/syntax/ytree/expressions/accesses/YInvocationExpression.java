@@ -1,6 +1,7 @@
 package mousquetaires.languages.syntax.ytree.expressions.accesses;
 
 import com.google.common.collect.ImmutableList;
+import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
@@ -17,12 +18,12 @@ public class YInvocationExpression extends YMultiExpression {
     //public YInvocationExpression(YExpression baseExpression, YExpression... arguments) {
     //    this(baseExpression, ImmutableList.copyOf(arguments));
     //}
-    public YInvocationExpression(YExpression baseExpression, ImmutableList<YExpression> arguments) {
-        this(baseExpression, arguments, 0);
+    public YInvocationExpression(CodeLocation location, YExpression baseExpression, ImmutableList<YExpression> arguments) {
+        this(location, baseExpression, arguments, 0);
     }
 
-    private YInvocationExpression(YExpression baseExpression, ImmutableList<YExpression> arguments, int pointerLevel) {
-        super(pointerLevel, ImmutableUtils.append(baseExpression, arguments));
+    private YInvocationExpression(CodeLocation location, YExpression baseExpression, ImmutableList<YExpression> arguments, int pointerLevel) {
+        super(location, pointerLevel, ImmutableUtils.append(baseExpression, arguments));
         this.elementsCount = arguments.size() + 1;
     }
 
@@ -36,7 +37,7 @@ public class YInvocationExpression extends YMultiExpression {
 
     @Override
     public YInvocationExpression withPointerLevel(int level) {
-        return new YInvocationExpression(getBaseExpression(), getArguments(), level);
+        return new YInvocationExpression(codeLocation(), getBaseExpression(), getArguments(), level);
     }
 
     @Override

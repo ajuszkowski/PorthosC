@@ -1,6 +1,7 @@
 package mousquetaires.languages.syntax.ytree.litmus;
 
 import com.google.common.collect.ImmutableList;
+import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.statements.YUnlabeledStatement;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
@@ -10,7 +11,8 @@ public class YPreludeStatement extends YUnlabeledStatement {
 
     private final ImmutableList<YAssignmentExpression> initialWrites;
 
-    public YPreludeStatement(ImmutableList<YAssignmentExpression> initialWrites) {
+    public YPreludeStatement(CodeLocation location, ImmutableList<YAssignmentExpression> initialWrites) {
+        super(location);
         this.initialWrites = initialWrites;
     }
 

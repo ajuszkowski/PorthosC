@@ -8,6 +8,7 @@ import mousquetaires.app.errors.UnrecognisedError;
 import mousquetaires.app.modules.AppModule;
 import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
+import mousquetaires.languages.common.citation.CodeCitationService;
 import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.converters.tozformula.Xgraph2ZformulaEncoder;
@@ -42,32 +43,32 @@ public class DartagnanModule extends AppModule {
         verdict.onStartExecution();
 
         try {
+            //todo: solving timeout!
             int unrollBound = 10; // TODO: get from options
+            DataModel dataModel = new DataModelLP64(); // TODO: pass as cli-option
 
             MemoryModel.Kind memoryModelKind = options.sourceModel;
             MemoryModel memoryModel = memoryModelKind.createModel();
 
             File inputProgramFile = options.inputProgramFile;
             ProgramLanguage language = ProgramExtensions.parseProgramLanguage(inputProgramFile.getName());
-            YSyntaxTree internalRepr = YtreeParser.parse(inputProgramFile, language);
-            DataModel dataModel = new DataModelLP64(); // TODO: pass as cli-option
+            YtreeParser ytreeParser = new YtreeParser(inputProgramFile, language);
+            YSyntaxTree yTree = ytreeParser.parseFile();
+
+            CodeCitationService citationService = ytreeParser.getCitationService();
 
             Ytree2XgraphConverter yConverter = new Ytree2XgraphConverter(language, memoryModelKind, dataModel);
-            XProgram program = yConverter.convert(internalRepr);
+            XProgram program = yConverter.convert(yTree);
 
             XUnrolledProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
 
             Context ctx = new Context();
-
-            //todo: pass timeouts
 
             Xgraph2ZformulaEncoder encoder = new Xgraph2ZformulaEncoder(ctx, unrolledProgram);
             List<BoolExpr> asserts = encoder.encodeProgram(unrolledProgram);
 
             asserts.addAll(memoryModel.encode(unrolledProgram, ctx));
             asserts.add(memoryModel.Consistent(unrolledProgram, ctx));
-
-            // SmtEncoder.encode(program) ...
 
             // TODO: cat-file parsing
             //if (cmd.hasOption("file")) {

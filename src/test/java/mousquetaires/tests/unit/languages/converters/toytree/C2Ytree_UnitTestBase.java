@@ -22,7 +22,8 @@ public abstract class C2Ytree_UnitTestBase extends AbstractConverterUnitTest<YEn
         try {
             File file = new File(testFile);
             ProgramLanguage language = ProgramExtensions.parseProgramLanguage(file.getName());
-            YSyntaxTree syntaxTree = YtreeParser.parse(file, language);
+            YtreeParser parser = new YtreeParser(file, language);
+            YSyntaxTree syntaxTree = parser.parseFile();
             return syntaxTree.getRoots().iterator();
         } catch (IOException e) {
             e.printStackTrace();

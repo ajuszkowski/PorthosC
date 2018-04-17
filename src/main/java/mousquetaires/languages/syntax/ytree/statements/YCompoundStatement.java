@@ -1,6 +1,7 @@
 package mousquetaires.languages.syntax.ytree.statements;
 
 import com.google.common.collect.ImmutableList;
+import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
 import java.util.Objects;
@@ -11,20 +12,20 @@ public class YCompoundStatement extends YStatement {
     private final boolean hasBraces; // defines whether sequence of statements has surrounding braces '{' '}'
     private final ImmutableList<YStatement> statements; // <- recursive
 
-    public YCompoundStatement(YStatement... statements) {
-        this(true, statements);
+    public YCompoundStatement(CodeLocation location, YStatement... statements) {
+        this(location, true, statements);
     }
 
-    public YCompoundStatement(boolean hasBraces, YStatement... statements) {
-        this(hasBraces, ImmutableList.copyOf(statements));
+    public YCompoundStatement(CodeLocation location, boolean hasBraces, YStatement... statements) {
+        this(location, hasBraces, ImmutableList.copyOf(statements));
     }
 
-    public YCompoundStatement(boolean hasBraces, ImmutableList<YStatement> statements) {
-        this("", hasBraces, statements);
+    public YCompoundStatement(CodeLocation location, boolean hasBraces, ImmutableList<YStatement> statements) {
+        this(location, "", hasBraces, statements);
     }
 
-    private YCompoundStatement(String label, boolean hasBraces, ImmutableList<YStatement> statements) {
-        super(label);
+    private YCompoundStatement(CodeLocation location, String label, boolean hasBraces, ImmutableList<YStatement> statements) {
+        super(location, label);
         this.statements = statements;
         this.hasBraces = hasBraces;
     }
@@ -39,7 +40,7 @@ public class YCompoundStatement extends YStatement {
 
     @Override
     public YCompoundStatement withLabel(String newLabel) {
-        return new YCompoundStatement(newLabel, hasBraces, statements);
+        return new YCompoundStatement(codeLocation(), newLabel, hasBraces, statements);
     }
 
     @Override

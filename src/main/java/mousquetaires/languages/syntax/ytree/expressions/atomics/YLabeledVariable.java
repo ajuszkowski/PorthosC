@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
+import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.exceptions.NotSupportedException;
 
@@ -10,12 +11,12 @@ public class YLabeledVariable extends YVariable {
 
     private final String label;
 
-    public YLabeledVariable(String label, String name) {
-        this(label, name, 0);
+    public YLabeledVariable(CodeLocation location, String label, String name) {
+        this(location, label, name, 0);
     }
 
-    private YLabeledVariable(String label, String name, int pointerLevel) {
-        super(Kind.Local, name, pointerLevel);
+    private YLabeledVariable(CodeLocation location, String label, String name, int pointerLevel) {
+        super(location, Kind.Local, name, pointerLevel);
         this.label = label;
     }
 
@@ -31,7 +32,7 @@ public class YLabeledVariable extends YVariable {
 
     @Override
     public YLabeledVariable withPointerLevel(int level) {
-        return new YLabeledVariable(getLabel(), getName(), level);
+        return new YLabeledVariable(codeLocation(), getLabel(), getName(), level);
     }
 
     @Override

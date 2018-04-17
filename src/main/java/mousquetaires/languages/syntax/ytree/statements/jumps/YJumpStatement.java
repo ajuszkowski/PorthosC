@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.ytree.statements.jumps;
 
+import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.statements.YStatement;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
@@ -15,13 +16,12 @@ public class YJumpStatement extends YStatement {
         Continue,
         ;
 
-
-        public YJumpStatement createJumpStatement() {
-            return new YJumpStatement(this, new YJumpLabel(this.toString()));
+        public YJumpStatement createJumpStatement(CodeLocation location) {
+            return new YJumpStatement(location, this, new YJumpLabel(this.toString()));
         }
 
-        public YJumpStatement createJumpStatement(YJumpLabel jumpLabel) {
-            return new YJumpStatement(this, jumpLabel);
+        public YJumpStatement createJumpStatement(CodeLocation location, YJumpLabel jumpLabel) {
+            return new YJumpStatement(location, this, jumpLabel);
         }
 
         @Override
@@ -33,12 +33,12 @@ public class YJumpStatement extends YStatement {
     private final Kind kind;
     private final YJumpLabel jumpLabel; // label of statement to which we jump
 
-    private YJumpStatement(Kind kind, YJumpLabel jumpLabel) {
-        this(newLabel(), kind, jumpLabel);
+    private YJumpStatement(CodeLocation location, Kind kind, YJumpLabel jumpLabel) {
+        this(location, newLabel(), kind, jumpLabel);
     }
 
-    private YJumpStatement(String selfLabel, Kind kind, YJumpLabel jumpLabel) {
-        super(selfLabel);
+    private YJumpStatement(CodeLocation location, String selfLabel, Kind kind, YJumpLabel jumpLabel) {
+        super(location, selfLabel);
         this.kind = kind;
         this.jumpLabel = jumpLabel;
     }
@@ -57,7 +57,7 @@ public class YJumpStatement extends YStatement {
      */
     @Override
     public YStatement withLabel(String newLabel) {
-        return new YJumpStatement(newLabel, getKind(), getJumpLabel());
+        return new YJumpStatement(codeLocation(), newLabel, getKind(), getJumpLabel());
     }
 
     @Override

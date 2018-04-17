@@ -36,7 +36,8 @@ public abstract class C2Zformula_UnitTestBase extends AbstractConverterUnitTest<
             int unrollBound = 6; // TODO: PASS IT AS TEST PARAMETER (object testSettings)
             File file = new File(testFile);
             ProgramLanguage language = ProgramExtensions.parseProgramLanguage(file.getName());
-            YSyntaxTree internalRepr = YtreeParser.parse(file, language);
+            YtreeParser parser = new YtreeParser(file, language);
+            YSyntaxTree internalRepr = parser.parseFile();
             Ytree2XgraphConverter converter = new Ytree2XgraphConverter(language, memoryModel(), dataModel);
             XProgram program = converter.convert(internalRepr);
             XUnrolledProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);

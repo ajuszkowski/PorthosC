@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.ytree.temporaries;
 
+import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
@@ -10,17 +11,19 @@ import mousquetaires.utils.patterns.BuilderBase;
 
 public class YCompoundStatementBuilder extends BuilderBase<YCompoundStatement> implements YTempEntity {
 
+    private final CodeLocation location;
     private boolean hasBraces;
     private YTempListBuilder<YStatement> statementsBuilder;
 
-    public YCompoundStatementBuilder() {
+    public YCompoundStatementBuilder(CodeLocation location) {
+        this.location = location;
         this.statementsBuilder = new YTempListBuilder<>();
     }
 
     @Override
     public YCompoundStatement build() {
         // TODO: buildAndOptimise() ?
-        return new YCompoundStatement(hasBraces, statementsBuilder.build());
+        return new YCompoundStatement(location, hasBraces, statementsBuilder.build());
     }
 
     public void markHasBraces() {
@@ -28,7 +31,7 @@ public class YCompoundStatementBuilder extends BuilderBase<YCompoundStatement> i
     }
 
     public void addLinearStatement(YExpression expression) {
-        statementsBuilder.add(new YLinearStatement(expression));
+        statementsBuilder.add(new YLinearStatement(expression.codeLocation(), expression));
     }
 
     public void addStatement(YStatement statement) {

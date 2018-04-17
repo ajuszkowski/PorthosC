@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.ytree.types;
 
+import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
@@ -19,7 +20,11 @@ public class YMockType implements YType {
     @Override
     public <T> T accept(YtreeVisitor<T> visitor) {
         throw new NotImplementedException();
+    }
 
+    @Override
+    public CodeLocation codeLocation() {
+        return CodeLocation.empty;
     }
 
     @Override

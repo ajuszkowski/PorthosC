@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
+import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.types.YMockType;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
@@ -14,8 +15,8 @@ public class YConstant extends YAtomBase {
     private final Object value;
     private final YType type;
 
-    private YConstant(Object value, YType type) {
-        super(Kind.Global);
+    private YConstant(CodeLocation location, Object value, YType type) {
+        super(location, Kind.Global);
         this.value = value;
         this.type = type;
     }
@@ -47,15 +48,15 @@ public class YConstant extends YAtomBase {
 
 
     public static YConstant fromValue(int value) {
-        return new YConstant(value, new YMockType()); //YTypeFactory.getPrimitiveType(YTypeName.Int));
+        return new YConstant(CodeLocation.empty, value, new YMockType()); //YTypeFactory.getPrimitiveType(YTypeName.Int));
     }
 
     public static YConstant fromValue(boolean value) {
-        return new YConstant(value, new YMockType()); //YTypeFactory.getPrimitiveType(YTypeName.Bool));
+        return new YConstant(CodeLocation.empty, value, new YMockType()); //YTypeFactory.getPrimitiveType(YTypeName.Bool));
     }
 
     public static YConstant fromValue(float value) {
-        return new YConstant(value, new YMockType()); //YTypeFactory.getPrimitiveType(YTypeName.Float));
+        return new YConstant(CodeLocation.empty, value, new YMockType()); //YTypeFactory.getPrimitiveType(YTypeName.Float));
     }
 
     public static YConstant tryParse(String text) {
