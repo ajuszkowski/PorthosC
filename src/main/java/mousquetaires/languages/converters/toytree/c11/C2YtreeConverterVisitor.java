@@ -1,5 +1,6 @@
 package mousquetaires.languages.converters.toytree.c11;
 
+import com.beust.jcommander.WrappedParameter;
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.common.citation.CodeCitationService;
 import mousquetaires.languages.common.citation.CodeLocation;
@@ -13,9 +14,9 @@ import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpr
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.*;
+import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryOperator;
 import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryOperator;
-import mousquetaires.languages.syntax.ytree.litmus.YAssertionStatement;
 import mousquetaires.languages.syntax.ytree.litmus.YPostludeStatement;
 import mousquetaires.languages.syntax.ytree.litmus.YPreludeStatement;
 import mousquetaires.languages.syntax.ytree.litmus.YProcessStatement;
@@ -35,6 +36,7 @@ import mousquetaires.utils.exceptions.ytree.YParserNotImplementedException;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.tool.LeftRecursionCyclesMessage;
 
 import java.util.List;
 
@@ -356,8 +358,25 @@ class C2YtreeConverterVisitor
         C11Parser.CastExpressionContext castExpressionContext = ctx.castExpression();
         C11Parser.MultiplicativeExpressionContext multiplicativeExpressionContext = ctx.multiplicativeExpression();
         if (castExpressionContext != null) {
-            // todo: others
-            return visitCastExpression(castExpressionContext);
+            YExpression right = visitCastExpression(castExpressionContext);
+            if (multiplicativeExpressionContext != null) {
+                YExpression left = visitMultiplicativeExpression(multiplicativeExpressionContext);
+                YBinaryOperator operator;
+                if (C11ParserHelper.hasToken(ctx, C11Parser.Star)) {
+                    operator = YBinaryOperator.Multiply;
+                }
+                else if (C11ParserHelper.hasToken(ctx, C11Parser.Div)) {
+                    operator = YBinaryOperator.Divide;
+                }
+                else if (C11ParserHelper.hasToken(ctx, C11Parser.Mod)) {
+                    operator = YBinaryOperator.Modulo;
+                }
+                else {
+                    throw new YParserException(ctx);
+                }
+                return operator.createExpression(location(ctx), left, right);
+            }
+            return right;
         }
         throw new YParserException(ctx);
     }
@@ -408,7 +427,9 @@ class C2YtreeConverterVisitor
         C11Parser.AdditiveExpressionContext additiveExpressionContext = ctx.additiveExpression();
         C11Parser.ShiftExpressionContext shiftExpressionContext = ctx.shiftExpression();
         if (additiveExpressionContext != null) {
-            // todo: others
+            if (shiftExpressionContext != null) {
+                throw new NotImplementedException();
+            }
             return visitAdditiveExpression(additiveExpressionContext);
         }
         throw new YParserException(ctx);
@@ -497,7 +518,9 @@ class C2YtreeConverterVisitor
         C11Parser.EqualityExpressionContext equalityExpressionContext = ctx.equalityExpression();
         C11Parser.AndExpressionContext andExpressionContext = ctx.andExpression();
         if (equalityExpressionContext != null) {
-            // todo: others
+            if (andExpressionContext != null) {
+                throw new NotImplementedException();
+            }
             return visitEqualityExpression(equalityExpressionContext);
         }
         throw new YParserException(ctx);
@@ -514,7 +537,9 @@ class C2YtreeConverterVisitor
         C11Parser.AndExpressionContext andExpressionContext = ctx.andExpression();
         C11Parser.ExclusiveOrExpressionContext exclusiveOrExpressionContext = ctx.exclusiveOrExpression();
         if (andExpressionContext != null) {
-            // todo: others
+            if (exclusiveOrExpressionContext != null) {
+                throw new NotImplementedException();
+            }
             return visitAndExpression(andExpressionContext);
         }
         throw new YParserException(ctx);
@@ -531,7 +556,9 @@ class C2YtreeConverterVisitor
         C11Parser.ExclusiveOrExpressionContext exclusiveOrExpressionContext = ctx.exclusiveOrExpression();
         C11Parser.InclusiveOrExpressionContext inclusiveOrExpressionContext = ctx.inclusiveOrExpression();
         if (exclusiveOrExpressionContext != null) {
-            // todo: others
+            if (inclusiveOrExpressionContext != null) {
+                throw new NotImplementedException();
+            }
             return visitExclusiveOrExpression(exclusiveOrExpressionContext);
         }
         throw new YParserException(ctx);
@@ -548,8 +575,12 @@ class C2YtreeConverterVisitor
         C11Parser.InclusiveOrExpressionContext inclusiveOrExpressionContext = ctx.inclusiveOrExpression();
         C11Parser.LogicalAndExpressionContext logicalAndExpressionContext = ctx.logicalAndExpression();
         if (inclusiveOrExpressionContext != null) {
-            // todo: others
-            return visitInclusiveOrExpression(inclusiveOrExpressionContext);
+            YExpression right = visitInclusiveOrExpression(inclusiveOrExpressionContext);
+            if (logicalAndExpressionContext != null) {
+                YExpression left = visitLogicalAndExpression(logicalAndExpressionContext);
+                return YBinaryOperator.Conjunction.createExpression(location(ctx), left, right);
+            }
+            return right;
         }
         throw new YParserException(ctx);
     }
@@ -562,11 +593,15 @@ class C2YtreeConverterVisitor
      */
     @Override
     public YExpression visitLogicalOrExpression(C11Parser.LogicalOrExpressionContext ctx) {
-        C11Parser.LogicalAndExpressionContext logicalAndExpressionContext = ctx.logicalAndExpression();
         C11Parser.LogicalOrExpressionContext logicalOrExpressionContext = ctx.logicalOrExpression();
+        C11Parser.LogicalAndExpressionContext logicalAndExpressionContext = ctx.logicalAndExpression();
         if (logicalAndExpressionContext != null) {
-            // todo: others
-            return visitLogicalAndExpression(logicalAndExpressionContext);
+            YExpression right = visitLogicalAndExpression(logicalAndExpressionContext);
+            if (logicalOrExpressionContext != null) {
+                YExpression left = visitLogicalOrExpression(logicalOrExpressionContext);
+                return YBinaryOperator.Disjunction.createExpression(location(ctx), left, right);
+            }
+            return right;
         }
         throw new YParserException(ctx);
     }
@@ -579,9 +614,18 @@ class C2YtreeConverterVisitor
     @Override
     public YExpression visitConditionalExpression(C11Parser.ConditionalExpressionContext ctx) {
         C11Parser.LogicalOrExpressionContext logicalOrExpressionContext = ctx.logicalOrExpression();
+        C11Parser.ExpressionContext expressionContext = ctx.expression();
+        C11Parser.ConditionalExpressionContext conditionalExpressionContext = ctx.conditionalExpression();
         if (logicalOrExpressionContext != null) {
+            boolean hasThen = expressionContext != null;
+            boolean hasElse = conditionalExpressionContext != null;
+            if (hasThen && hasElse) {
+                throw new NotImplementedException();
+            }
+            if (hasThen || hasElse) {
+                throw new YParserException(ctx);//missing either than or else
+            }
             return visitLogicalOrExpression(logicalOrExpressionContext);
-            // todo: others
         }
         throw new YParserException(ctx);
     }
