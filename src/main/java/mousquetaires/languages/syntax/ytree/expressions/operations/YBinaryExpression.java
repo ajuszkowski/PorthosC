@@ -36,6 +36,11 @@ public class YBinaryExpression extends YMultiExpression {
     }
 
     @Override
+    public String toString() {
+        return "(" + getLeftExpression() + getOperator() + getRightExpression() + ")";
+    }
+
+    @Override
     public <T> T accept(YtreeVisitor<T> visitor) {
         return visitor.visit(this);
     }

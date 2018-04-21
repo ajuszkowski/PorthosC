@@ -7,7 +7,7 @@ import mousquetaires.languages.syntax.ytree.statements.YUnlabeledStatement;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
 
-public class YPreludeStatement extends YUnlabeledStatement {
+public final class YPreludeStatement extends YUnlabeledStatement {
 
     private final ImmutableList<YAssignmentExpression> initialWrites;
 

@@ -1799,7 +1799,7 @@ class C2YtreeConverterVisitor
         C11Parser.LogicalOrExpressionContext logicalOrExpressionContext = ctx.logicalOrExpression();
         if (logicalOrExpressionContext != null) {
             YExpression assertion = visitLogicalOrExpression(logicalOrExpressionContext);
-            return new YPostludeStatement(location(ctx), new YAssertionStatement(location(ctx), assertion));
+            return new YPostludeStatement(location(ctx), assertion);
         }
         throw new YParserException(ctx);
     }

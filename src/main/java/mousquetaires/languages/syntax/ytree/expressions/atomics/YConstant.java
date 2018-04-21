@@ -41,7 +41,7 @@ public class YConstant extends YAtomBase {
 
     @Override
     public String toString() {
-        return "(" + getType() + ")" + getValue();
+        return /*"(" + getType() + ")" +*/ ""+getValue();
     }
 
     // ... todo: other types...

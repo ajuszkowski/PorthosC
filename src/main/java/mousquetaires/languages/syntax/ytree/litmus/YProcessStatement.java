@@ -11,7 +11,7 @@ import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 /**
  * Temporary class representing explicitly defined processName in c-like code.
  */
-public class YProcessStatement extends YFunctionDefinition {
+public final class YProcessStatement extends YFunctionDefinition {
 
     private final XProcessId processId;
 
