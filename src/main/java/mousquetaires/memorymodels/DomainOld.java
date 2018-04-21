@@ -93,6 +93,7 @@ public class DomainOld {
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("MW", e1, e2, ctx)));
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("WW", e1, e2, ctx)));
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("RW", e1, e2, ctx)));
+
                 }
                 else {
                     enc = ctx.mkAnd(enc, Utils.edge("MW", e1, e2, ctx));

@@ -20,6 +20,8 @@ public class StaticSingleAssignmentMap {
 
     private final Map<XLvalueMemoryUnit, Set<XEvent>> lastModMap;
 
+    // TODO: for prelude and postlude, SSA map must work in different mode (just return variable itself)
+
     StaticSingleAssignmentMap(Context ctx, int initialCapacity, Set<XEntryEvent> entryEvents) {
         this.ctx = ctx;
         this.eventVarMap = new HashMap<>(initialCapacity);
@@ -124,7 +126,7 @@ public class StaticSingleAssignmentMap {
     //}
 
     public VarRefCollection getEventMap(XEvent event) {
-        assert eventVarMap.containsKey(event) : "access not in registered event: " + event;
+        assert eventVarMap.containsKey(event) : "access to non-registered event: " + event;
         return eventVarMap.get(event);
     }
 

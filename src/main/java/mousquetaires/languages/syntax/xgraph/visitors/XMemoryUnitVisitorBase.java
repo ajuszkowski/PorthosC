@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.xgraph.visitors;
 
+import mousquetaires.languages.syntax.xgraph.XAssertion;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XConstant;
@@ -31,6 +32,11 @@ public class XMemoryUnitVisitorBase<T> implements XMemoryUnitVisitor<T> {
 
     @Override
     public T visit(XBinaryComputationEvent entity) {
+        throw new XVisitorIllegalStateException();
+    }
+
+    @Override
+    public T visit(XAssertion entity) {
         throw new XVisitorIllegalStateException();
     }
 }

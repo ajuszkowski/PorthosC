@@ -3,7 +3,7 @@ package mousquetaires.memorymodels.wmm;
 import com.google.common.collect.ImmutableSet;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
-import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
+import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
 import mousquetaires.memorymodels.Encodings;
@@ -11,7 +11,7 @@ import mousquetaires.memorymodels.Encodings;
 
 public class Alpha {
 
-    public static BoolExpr encode(XUnrolledProgram program, Context ctx) {
+    public static BoolExpr encode(XProgram program, Context ctx) {
         ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
         ImmutableSet<XMemoryEvent> eventsL = program.getMemoryEvents();
 
@@ -38,14 +38,14 @@ public class Alpha {
         return enc;
     }
 
-    public static BoolExpr Consistent(XUnrolledProgram program, Context ctx) {
+    public static BoolExpr Consistent(XProgram program, Context ctx) {
         ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
         return ctx.mkAnd(Encodings.satAcyclic("(poloc+com)", events, ctx),
                          Encodings.satAcyclic("(dp-alpha+rf)", events, ctx),
                          Encodings.satAcyclic("ghb-alpha", events, ctx));
     }
 
-    public static BoolExpr Inconsistent(XUnrolledProgram program, Context ctx) {
+    public static BoolExpr Inconsistent(XProgram program, Context ctx) {
         ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
         BoolExpr enc = ctx.mkAnd(Encodings.satCycleDef("(poloc+com)", events, ctx),
                                  Encodings.satCycleDef("(dp-alpha+rf)", events, ctx),

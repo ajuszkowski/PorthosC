@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
-import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
+import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
 import mousquetaires.utils.Utils;
@@ -24,7 +24,7 @@ public class ZRelMinus extends ZBinaryRelation {
     }
 
     @Override
-    public BoolExpr encodeBasic(XUnrolledProgram program, Context ctx) throws Z3Exception {
+    public BoolExpr encodeBasic(XProgram program, Context ctx) throws Z3Exception {
         BoolExpr enc = ctx.mkTrue();
         //Set<XEvent> events = program.getMemEvents();
         ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
@@ -48,7 +48,7 @@ public class ZRelMinus extends ZBinaryRelation {
     }
 
     @Override
-    public BoolExpr encodeApprox(XUnrolledProgram program, Context ctx) throws Z3Exception {
+    public BoolExpr encodeApprox(XProgram program, Context ctx) throws Z3Exception {
         BoolExpr enc = ctx.mkTrue();
         //Set<XEvent> events = program.getMemEvents();
         ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
@@ -68,7 +68,7 @@ public class ZRelMinus extends ZBinaryRelation {
     }
 
     @Override
-    public BoolExpr encode(XUnrolledProgram program, Context ctx, Set<String> encodedRels) throws Z3Exception {
+    public BoolExpr encode(XProgram program, Context ctx, Set<String> encodedRels) throws Z3Exception {
         if (!encodedRels.contains(getName())) {
             encodedRels.add(getName());
             BoolExpr enc = r1.encode(program, ctx, encodedRels);

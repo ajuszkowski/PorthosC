@@ -15,7 +15,6 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
-import org.antlr.v4.codegen.model.Loop;
 
 import javax.annotation.Nullable;
 
@@ -45,9 +44,14 @@ public interface XInterpreter {
 
     XProcessId getProcessId();
 
-    default void finalise() {
-        // do nothing by default
-    }
+    void finishInterpretation();
+
+    XLocation declareLocation(String name, Type type);
+    XRegister declareRegister(String name, Type type);
+    XRegister newTempRegister(Type type);
+    XLvalueMemoryUnit declareUnresolvedUnit(String name, boolean isGlobal);
+    XLvalueMemoryUnit getDeclaredUnitOrNull(String name);
+    XRegister getDeclaredRegister(String name, XProcessId processId);
 
     XLocalMemoryUnit tryConvertToLocalOrNull(XEntity expression);
 
@@ -69,7 +73,11 @@ public interface XInterpreter {
 
     XNopEvent emitNopEvent();
 
+    XComputationEvent createComputationEvent(XUnaryOperator operator, XLocalMemoryUnit operand);
+
     XComputationEvent emitComputationEvent(XUnaryOperator operator, XLocalMemoryUnit operand);
+
+    XComputationEvent createComputationEvent(XBinaryOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand);
 
     XComputationEvent emitComputationEvent(XBinaryOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand);
 
@@ -92,6 +100,8 @@ public interface XInterpreter {
     void finishNonlinearBlockDefinition();
 
     void processJumpStatement(JumpKind kind);
+
+    void processAssertion(XLocalMemoryUnit assertion);
 
     // TODO: signature instead of just name
     // TODO: arguments: write all shared to registers and set up control-flow binding

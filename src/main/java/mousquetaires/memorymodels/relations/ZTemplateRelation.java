@@ -2,7 +2,7 @@ package mousquetaires.memorymodels.relations;
 
 import com.google.common.collect.ImmutableSet;
 import com.microsoft.z3.*;
-import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
+import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
 import mousquetaires.memorymodels.Encodings;
@@ -31,7 +31,7 @@ public class ZTemplateRelation extends ZBinaryRelation {
     }
 
 
-    public BoolExpr Inconsistent(String prefix, XUnrolledProgram p, Context ctx) throws Z3Exception {
+    public BoolExpr Inconsistent(String prefix, XProgram p, Context ctx) throws Z3Exception {
         PREFIX = prefix;
         boolean approxtemp = ZRelation.Approx;
         ZRelation.Approx = false;
@@ -95,7 +95,7 @@ public class ZTemplateRelation extends ZBinaryRelation {
     }
 
     @Override
-    protected BoolExpr encodeBasic(XUnrolledProgram program, Context ctx) throws Z3Exception {
+    protected BoolExpr encodeBasic(XProgram program, Context ctx) throws Z3Exception {
         //TODO: relminus
 
         //union:

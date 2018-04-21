@@ -3,7 +3,7 @@ package mousquetaires.memorymodels.relations;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
-import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
+import mousquetaires.languages.syntax.xgraph.XProgram;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -65,11 +65,11 @@ public abstract class ZRelation {
     }
 
 
-    public abstract BoolExpr encode(XUnrolledProgram program, Context ctx, Set<String> encodedRels) throws Z3Exception;
+    public abstract BoolExpr encode(XProgram program, Context ctx, Set<String> encodedRels) throws Z3Exception;
 
-    protected abstract BoolExpr encodeBasic(XUnrolledProgram program, Context ctx) throws Z3Exception;
+    protected abstract BoolExpr encodeBasic(XProgram program, Context ctx) throws Z3Exception;
 
-    public BoolExpr encodeApprox(XUnrolledProgram program, Context ctx) throws Z3Exception {
+    public BoolExpr encodeApprox(XProgram program, Context ctx) throws Z3Exception {
         return this.encodeBasic(program, ctx);
     }
 }

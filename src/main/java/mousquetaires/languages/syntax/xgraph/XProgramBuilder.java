@@ -1,19 +1,19 @@
 package mousquetaires.languages.syntax.xgraph;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
+import mousquetaires.languages.syntax.xgraph.process.XProcess;
 import mousquetaires.utils.patterns.BuilderBase;
 
 
 public class XProgramBuilder extends BuilderBase<XProgram> {
 
-    private ImmutableList.Builder<XCyclicProcess> processes;
+    private ImmutableList.Builder<XProcess> processes;
 
     public XProgramBuilder() {
         this.processes = new ImmutableList.Builder<>();
     }
 
-    public void addProcess(XCyclicProcess process) {
+    public void addProcess(XProcess process) {
         processes.add(process);
     }
 

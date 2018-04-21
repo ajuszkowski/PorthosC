@@ -3,8 +3,8 @@ package mousquetaires.languages.converters.toxgraph.interpretation;
 import mousquetaires.languages.common.Type;
 import mousquetaires.languages.converters.toxgraph.hooks.HookManager;
 import mousquetaires.languages.syntax.xgraph.XEntity;
-import mousquetaires.languages.syntax.xgraph.XProgram;
-import mousquetaires.languages.syntax.xgraph.XProgramBuilder;
+import mousquetaires.languages.syntax.xgraph.XCyclicProgram;
+import mousquetaires.languages.syntax.xgraph.XCyclicProgramBuilder;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperator;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
@@ -20,7 +20,6 @@ import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.xgraph.process.XProcessKind;
 import mousquetaires.memorymodels.wmm.MemoryModel;
-import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.patterns.BuilderBase;
 
 import javax.annotation.Nullable;
@@ -28,26 +27,30 @@ import javax.annotation.Nullable;
 import static mousquetaires.utils.StringUtils.wrap;
 
 
-public class XProgramInterpreter extends BuilderBase<XProgram> implements XInterpreter {
+public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements XInterpreter {
 
     // TODO: publish methods also!
-    private XProgramBuilder programBuilder;
+    private XCyclicProgramBuilder programBuilder;
     public final MemoryModel.Kind memoryModel;
-    public final XMemoryManager memoryManager;
+    private final XMemoryManager memoryManager;
     public XInterpreter currentProcess;
 
     public XProgramInterpreter(XMemoryManager memoryManager, MemoryModel.Kind memoryModel) {
         this.memoryManager = memoryManager;
-        this.programBuilder = new XProgramBuilder();
+        this.programBuilder = new XCyclicProgramBuilder();
         this.memoryModel = memoryModel;
         // TODO: add prelude and postlude processes!..
     }
 
     @Override
-    public XProgram build() {
-        markFinished();
+    public XCyclicProgram build() {
         assert currentProcess == null : "process " + currentProcess.getProcessId() + " is not finished yet";
         return programBuilder.build(); //preludeBuilder.build(), process.build(), postludeBuilder.build());
+    }
+
+    @Override
+    public void finishInterpretation() {
+        throw new IllegalStateException("method is not used for this class");//todo: fix inheritance here
     }
 
     @Override
@@ -60,32 +63,65 @@ public class XProgramInterpreter extends BuilderBase<XProgram> implements XInter
         throw new IllegalStateException("method is not used for this class");//todo: fix inheritance here
     }
 
+    @Override
+    public void processAssertion(XLocalMemoryUnit assertion) {
+        throw new IllegalStateException("method is not used for this class");//todo: fix inheritance here
+    }
+
+    @Override
+    public XLocation declareLocation(String name, Type type) {
+        return currentProcess().declareLocation(name, type);
+    }
+
+    @Override
+    public XRegister declareRegister(String name, Type type) {
+        return currentProcess().declareRegister(name, type);
+    }
+
+    @Override
+    public XRegister newTempRegister(Type type) {
+        return currentProcess().newTempRegister(type);
+    }
+
+    @Override
+    public XLvalueMemoryUnit declareUnresolvedUnit(String name, boolean isGlobal) {
+        return currentProcess().declareUnresolvedUnit(name, isGlobal);
+    }
+
+    @Override
+    public XLvalueMemoryUnit getDeclaredUnitOrNull(String name) {
+        return currentProcess().getDeclaredUnitOrNull(name);
+    }
+
+    @Override
+    public XRegister getDeclaredRegister(String name, XProcessId processId) {
+        return currentProcess().getDeclaredRegister(name, processId);
+    }
+
     public void startProcessDefinition(XProcessKind processKind, XProcessId processId) {
         resetState(processId);
         switch (processKind) {
             case Prelude:
-                setCurrentProcess(new XPreludeInterpreter(processId, memoryManager));
+                setCurrentProcess(new XLudeInterpreter(XProcessId.PreludeProcessId, memoryManager));
                 break;
             case ConcurrentProcess:
                 setCurrentProcess(new XProcessInterpreter(processId, memoryManager, new HookManager(this)));
-                currentProcess().emitEntryEvent();
                 break;
             case Postlude:
-                throw new NotImplementedException();
-                //break;
+                setCurrentProcess(new XLudeInterpreter(XProcessId.PostludeProcessId, memoryManager));
+                break;
             default:
                 throw new IllegalArgumentException(processKind.name());
         }
+        currentProcess().emitEntryEvent();
     }
 
     public void finishProcessDefinition() {
         XInterpreter proc = currentProcess();
-        proc.finalise();
+        proc.finishInterpretation();
         programBuilder.addProcess(proc.getResult());
         setCurrentProcess(null);
     }
-
-
 
     @Override
     public XLocalMemoryUnit tryConvertToLocalOrNull(XEntity expression) {
@@ -138,14 +174,24 @@ public class XProgramInterpreter extends BuilderBase<XProgram> implements XInter
     }
 
     @Override
+    public XComputationEvent createComputationEvent(XUnaryOperator operator, XLocalMemoryUnit operand) {
+        return currentProcess().createComputationEvent(operator, operand);
+    }
+
+    @Override
     public XComputationEvent emitComputationEvent(XUnaryOperator operator, XLocalMemoryUnit operand) {
         return currentProcess().emitComputationEvent(operator, operand);
     }
 
     @Override
-    public XComputationEvent emitComputationEvent(XBinaryOperator operator,
-                                                  XLocalMemoryUnit firstOperand,
-                                                  XLocalMemoryUnit secondOperand) {
+    public XComputationEvent createComputationEvent(XBinaryOperator operator,
+                                                    XLocalMemoryUnit firstOperand,
+                                                    XLocalMemoryUnit secondOperand) {
+        return currentProcess().createComputationEvent(operator, firstOperand, secondOperand);
+    }
+
+    @Override
+    public XComputationEvent emitComputationEvent(XBinaryOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand) {
         return currentProcess().emitComputationEvent(operator, firstOperand, secondOperand);
     }
 
@@ -212,7 +258,7 @@ public class XProgramInterpreter extends BuilderBase<XProgram> implements XInter
     }
 
     private void setCurrentProcess(XInterpreter process) {
-        assert currentProcess == null : currentProcess;
+        assert currentProcess == null || process == null : currentProcess;
         currentProcess = process;
     }
 

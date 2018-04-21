@@ -11,9 +11,9 @@ import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.common.citation.CodeCitationService;
 import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
-import mousquetaires.languages.converters.tozformula.Xgraph2ZformulaEncoder;
+import mousquetaires.languages.converters.tozformula.XProgram2ZformulaEncoder;
+import mousquetaires.languages.syntax.xgraph.XCyclicProgram;
 import mousquetaires.languages.syntax.xgraph.XProgram;
-import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModelLP64;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
@@ -58,13 +58,13 @@ public class DartagnanModule extends AppModule {
             CodeCitationService citationService = ytreeParser.getCitationService();
 
             Ytree2XgraphConverter yConverter = new Ytree2XgraphConverter(language, memoryModelKind, dataModel);
-            XProgram program = yConverter.convert(yTree);
+            XCyclicProgram program = yConverter.convert(yTree);
 
-            XUnrolledProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
+            XProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
 
             Context ctx = new Context();
 
-            Xgraph2ZformulaEncoder encoder = new Xgraph2ZformulaEncoder(ctx, unrolledProgram);
+            XProgram2ZformulaEncoder encoder = new XProgram2ZformulaEncoder(ctx, unrolledProgram);
 
             List<BoolExpr> asserts = encoder.encode(unrolledProgram);
             asserts.addAll(memoryModel.encode(unrolledProgram, ctx));

@@ -1,6 +1,7 @@
 package mousquetaires.languages.converters.tozformula;
 
 import com.microsoft.z3.*;
+import mousquetaires.languages.syntax.xgraph.XAssertion;
 import mousquetaires.utils.Utils;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
@@ -148,6 +149,11 @@ class XMemoryUnitEncoder {
         @Override
         public Expr visit(XLocation location) {
             return Utils.ssaLoc(location, processId, varRefCollection.getRefIndex(location), ctx);
+        }
+
+        @Override
+        public Expr visit(XAssertion entity) {
+            throw new NotImplementedException(); //todo: here we add assert + visit entity.getAssertion() recursively
         }
 
         private ArithExpr asArithExpr(Expr expr) {

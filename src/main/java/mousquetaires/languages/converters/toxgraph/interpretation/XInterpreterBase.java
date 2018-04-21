@@ -15,19 +15,34 @@ import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
 import mousquetaires.languages.syntax.xgraph.process.XCyclicProcessBuilder;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 
+import javax.annotation.CheckReturnValue;
+
+import static mousquetaires.utils.StringUtils.wrap;
+
 
 abstract class XInterpreterBase implements XInterpreter {
 
     private final XProcessId processId;
-    protected final XMemoryManager memoryManager;
+    private final XMemoryManager memoryManager;
     protected final XCyclicProcessBuilder graphBuilder;
     private XCyclicProcess result;
+
+    private XComputationEvent lastNonEmittedComputation;
 
     XInterpreterBase(XProcessId processId, XMemoryManager memoryManager) {
         this.processId = processId;
         this.memoryManager = memoryManager;
         this.graphBuilder = new XCyclicProcessBuilder(processId);
     }
+
+    // TODO: find out where exactly should we use this (where the computation event is used, and where we can loose it)
+    protected void flushComputationEvent() {
+        if (lastNonEmittedComputation != null) {
+            processNextEvent(lastNonEmittedComputation);
+            lastNonEmittedComputation = null;
+        }
+    }
+
 
     protected abstract void processNextEvent(XEvent nextEvent);
 
@@ -56,6 +71,37 @@ abstract class XInterpreterBase implements XInterpreter {
 
     // --
 
+    @Override
+    public XLocation declareLocation(String name, Type type) {
+        return memoryManager.declareLocation(name, type);
+    }
+
+    @Override
+    public XRegister declareRegister(String name, Type type) {
+        return memoryManager.declareRegister(name, type);
+    }
+
+    @Override
+    public XRegister newTempRegister(Type type) {
+        return memoryManager.newTempRegister(type);
+    }
+
+    @Override
+    public XLvalueMemoryUnit declareUnresolvedUnit(String name, boolean isGlobal) {
+        return memoryManager.declareUnresolvedUnit(name, isGlobal);
+    }
+
+    @Override
+    public XLvalueMemoryUnit getDeclaredUnitOrNull(String name) {
+        return memoryManager.getDeclaredUnitOrNull(name);
+    }
+
+    @Override
+    public XRegister getDeclaredRegister(String name, XProcessId processId) {
+        return memoryManager.getDeclaredRegister(name, processId);
+    }
+
+    // --
 
     /**
      * For modelling empty statement
@@ -63,20 +109,37 @@ abstract class XInterpreterBase implements XInterpreter {
     @Override
     public XNopEvent emitNopEvent() {
         XNopEvent event = new XNopEvent(createEventInfo());
+        lastNonEmittedComputation = null;
         processNextEvent(event);
+        return event;
+    }
+
+    @Override
+    public XComputationEvent createComputationEvent(XUnaryOperator operator, XLocalMemoryUnit operand) {
+        XUnaryComputationEvent event = new XUnaryComputationEvent(createEventInfo(), operator, operand);
+        lastNonEmittedComputation = event;
         return event;
     }
 
     @Override
     public XComputationEvent emitComputationEvent(XUnaryOperator operator, XLocalMemoryUnit operand) {
-        XComputationEvent event = new XUnaryComputationEvent(createEventInfo(), operator, operand);
+        XComputationEvent event = createComputationEvent(operator, operand);
+        lastNonEmittedComputation = null;
         processNextEvent(event);
         return event;
     }
 
     @Override
+    public XComputationEvent createComputationEvent(XBinaryOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand) {
+        XBinaryComputationEvent event = new XBinaryComputationEvent(createEventInfo(), operator, firstOperand, secondOperand);
+        lastNonEmittedComputation = event;
+        return event;
+    }
+
+    @Override
     public XComputationEvent emitComputationEvent(XBinaryOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand) {
-        XComputationEvent event = new XBinaryComputationEvent(createEventInfo(), operator, firstOperand, secondOperand);
+        XComputationEvent event = createComputationEvent(operator, firstOperand, secondOperand);
+        lastNonEmittedComputation = null;
         processNextEvent(event);
         return event;
     }
@@ -85,6 +148,7 @@ abstract class XInterpreterBase implements XInterpreter {
     public XLocalMemoryEvent emitMemoryEvent(XLocalLvalueMemoryUnit destination, XLocalMemoryUnit source) {
         //emit local memory event here
         XRegisterMemoryEvent event = new XRegisterMemoryEvent(createEventInfo(), destination, source);
+        lastNonEmittedComputation = null;
         processNextEvent(event);
         return event;
     }
@@ -92,6 +156,7 @@ abstract class XInterpreterBase implements XInterpreter {
     @Override
     public XSharedMemoryEvent emitMemoryEvent(XLocalLvalueMemoryUnit destination, XSharedMemoryUnit source) {
         XLoadMemoryEvent event = new XLoadMemoryEvent(createEventInfo(), destination, source);
+        lastNonEmittedComputation = null;
         processNextEvent(event);
         return event;
     }
@@ -99,20 +164,25 @@ abstract class XInterpreterBase implements XInterpreter {
     @Override
     public XSharedMemoryEvent emitMemoryEvent(XSharedLvalueMemoryUnit destination, XLocalMemoryUnit source) {
         XStoreMemoryEvent event = new XStoreMemoryEvent(createEventInfo(), destination, source);
+        lastNonEmittedComputation = null;
         processNextEvent(event);
         return event;
     }
 
-
     // --
+
+    @Override
+    public void finishInterpretation() {
+        flushComputationEvent();
+        emitExitEvent();
+        result = graphBuilder.build();
+    }
 
     @Override
     public final XCyclicProcess getResult() {
         if (result == null) {
-            emitExitEvent();
-            memoryManager.clearLocals();
-            result = graphBuilder.build();
-            finalise();
+            finishInterpretation();
+            assert result != null;
         }
         return result;
     }
@@ -178,11 +248,14 @@ abstract class XInterpreterBase implements XInterpreter {
             throw new IllegalStateException("Memory unit may be either local or shared, found: "
                                                     + memoryUnit.getClass().getSimpleName());
         }
-        return emitComputationEvent(XUnaryOperator.NoOperation, localUnit);
+        return createComputationEvent(XUnaryOperator.NoOperation, localUnit);
     }
-
 
     protected XEventInfo createEventInfo() {
         return new XEventInfo(getProcessId());
+    }
+
+    protected String getIllegalOperationMessage() {
+        return "Illegal operation for " + getClass().getSimpleName() + " interpreter";
     }
 }

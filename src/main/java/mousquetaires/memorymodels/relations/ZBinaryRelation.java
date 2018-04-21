@@ -3,7 +3,7 @@ package mousquetaires.memorymodels.relations;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
-import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
+import mousquetaires.languages.syntax.xgraph.XProgram;
 
 import java.util.Set;
 
@@ -41,7 +41,7 @@ public abstract class ZBinaryRelation extends ZRelation {
     }
 
     @Override
-    public BoolExpr encode(XUnrolledProgram program, Context ctx, Set<String> encodedRels) throws Z3Exception {
+    public BoolExpr encode(XProgram program, Context ctx, Set<String> encodedRels) throws Z3Exception {
         if (!encodedRels.contains(getName())) {
             encodedRels.add(getName());
             BoolExpr enc = r1.encode(program, ctx, encodedRels);

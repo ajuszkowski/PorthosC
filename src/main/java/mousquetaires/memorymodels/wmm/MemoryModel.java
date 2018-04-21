@@ -3,7 +3,7 @@ package mousquetaires.memorymodels.wmm;
 import com.google.common.collect.ImmutableSet;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
-import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
+import mousquetaires.languages.syntax.xgraph.XProgram;
 import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
 import mousquetaires.memorymodels.axioms.ZAcyclicAxiom;
 import mousquetaires.memorymodels.axioms.ZAxiom;
@@ -43,7 +43,7 @@ public class MemoryModel {
     }
 
 
-    public List<BoolExpr> encode(XUnrolledProgram program, Context ctx) {
+    public List<BoolExpr> encode(XProgram program, Context ctx) {
         List<BoolExpr> asserts = new ArrayList<>();
         Set<String> encodedRels=new HashSet<>();
         for (ZAxiom ax : axioms) {
@@ -57,7 +57,7 @@ public class MemoryModel {
         return asserts;
     }
 
-    public BoolExpr Consistent(XUnrolledProgram program, Context ctx) {
+    public BoolExpr Consistent(XProgram program, Context ctx) {
         ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
         BoolExpr expr = ctx.mkTrue();
         for (ZAxiom ax : axioms) {
@@ -66,7 +66,7 @@ public class MemoryModel {
         return expr;
     }
 
-    public BoolExpr Inconsistent(XUnrolledProgram program, Context ctx) {
+    public BoolExpr Inconsistent(XProgram program, Context ctx) {
         ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
         BoolExpr expr = ctx.mkFalse();
         for (ZAxiom ax : axioms) {

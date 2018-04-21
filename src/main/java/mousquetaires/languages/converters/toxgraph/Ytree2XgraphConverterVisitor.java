@@ -5,7 +5,7 @@ import mousquetaires.languages.common.Type;
 import mousquetaires.languages.converters.toxgraph.interpretation.XInterpreter;
 import mousquetaires.languages.converters.toxgraph.interpretation.XProgramInterpreter;
 import mousquetaires.languages.syntax.xgraph.XEntity;
-import mousquetaires.languages.syntax.xgraph.XProgram;
+import mousquetaires.languages.syntax.xgraph.XCyclicProgram;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperator;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
@@ -30,7 +30,6 @@ import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryOperat
 import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryOperator;
 import mousquetaires.languages.syntax.ytree.expressions.ternary.YTernaryExpression;
-import mousquetaires.languages.syntax.ytree.litmus.YAssertionStatement;
 import mousquetaires.languages.syntax.ytree.litmus.YPostludeStatement;
 import mousquetaires.languages.syntax.ytree.litmus.YPreludeStatement;
 import mousquetaires.languages.syntax.ytree.litmus.YProcessStatement;
@@ -57,7 +56,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         this.program = program;
     }
 
-    public XProgram getProgram() {
+    public XCyclicProgram getProgram() {
         return program.build();
     }
 
@@ -73,7 +72,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XEvent visit(YPreludeStatement node) {
-        program.startProcessDefinition(XProcessKind.Prelude, XProcessId.preludeProcessId);
+        program.startProcessDefinition(XProcessKind.Prelude, XProcessId.PreludeProcessId);
         for (YAssignmentExpression assignment : node.getInitialWrites()) {
             assignment.accept(this);
         }
@@ -89,10 +88,10 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
             String name = parameterVariable.getName();
             Type type = YType2TypeConverter.convert(parameter.getType());
             if (parameterVariable.isGlobal()) {
-                program.memoryManager.declareLocation(name, type);
+                program.declareLocation(name, type);
             }
             else {
-                program.memoryManager.declareRegister(name, type);
+                program.declareRegister(name, type);
             }
         }
 
@@ -103,13 +102,11 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     }
 
     @Override
-    public XEntity visit(YAssertionStatement node) {
-        throw new NotImplementedException();
-    }
-
-    @Override
     public XEntity visit(YPostludeStatement node) {
-        throw new NotImplementedException();
+        program.startProcessDefinition(XProcessKind.Postlude, XProcessId.PostludeProcessId);
+        node.getExpression().accept(this);
+        program.finishProcessDefinition();
+        return null; //statements return null
     }
 
 // end of Litmus-litmus visits.
@@ -225,7 +222,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         XBinaryOperator operator = (XBinaryOperator) node.getOperator().accept(this);
         XLocalMemoryUnit leftLocal = tryVisitAsLocalOrThrow(node.getLeftExpression());
         XLocalMemoryUnit rightLocal = tryVisitAsLocalOrThrow(node.getRightExpression());
-        return program.currentProcess.emitComputationEvent(operator, leftLocal, rightLocal);
+        return program.currentProcess.createComputationEvent(operator, leftLocal, rightLocal);
     }
 
     @Override
@@ -393,10 +390,10 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         String name = variable.getName();
         Type type = YType2TypeConverter.convert(node.getType());
         if (variable.isGlobal()) {
-            program.memoryManager.declareLocation(name, type);
+            program.declareLocation(name, type);
         }
         else {
-            program.memoryManager.declareRegister(name, type);
+            program.declareRegister(name, type);
         }
         return null; //statements return null
     }
@@ -415,14 +412,14 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     @Override
     public XLvalueMemoryUnit visit(YVariable variable) {
         String name = variable.getName();
-        XLvalueMemoryUnit result = program.memoryManager.getDeclaredUnitOrNull(name);
+        XLvalueMemoryUnit result = program.getDeclaredUnitOrNull(name);
         return (result == null)
-                ? program.memoryManager.declareUnresolvedUnit(name, variable.isGlobal())
+                ? program.declareUnresolvedUnit(name, variable.isGlobal())
                 : result;
     }
 
     public XLvalueMemoryUnit visit(YLabeledVariable variable) {
-        throw new NotImplementedException();
+        return program.getDeclaredRegister(variable.getName(), new XProcessId(variable.getLabel()));
     }
 
     @Override

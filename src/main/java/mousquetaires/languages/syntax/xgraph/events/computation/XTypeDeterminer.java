@@ -48,6 +48,8 @@ class XTypeDeterminer {
                 }
                 return firstType;
             }
+            case Conjunction:
+            case Disjunction:
             case CompareEquals:
             case CompareNotEquals:
             case CompareLess:

@@ -2,7 +2,7 @@ package mousquetaires.languages.converters.toxgraph;
 
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.converters.toxgraph.interpretation.XMemoryManager;
-import mousquetaires.languages.syntax.xgraph.XProgram;
+import mousquetaires.languages.syntax.xgraph.XCyclicProgram;
 import mousquetaires.languages.converters.toxgraph.interpretation.XProgramInterpreter;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
@@ -22,7 +22,7 @@ public class Ytree2XgraphConverter {
         this.dataModel = dataModel;
     }
 
-    public XProgram convert(YSyntaxTree internalSyntaxTree) {
+    public XCyclicProgram convert(YSyntaxTree internalSyntaxTree) {
         XMemoryManager sharedMemoryManager = new XMemoryManager();//dataModel
         XProgramInterpreter programInterpreter = new XProgramInterpreter(sharedMemoryManager, memoryModel);
         Ytree2XgraphConverterVisitor visitor = new Ytree2XgraphConverterVisitor(programInterpreter);

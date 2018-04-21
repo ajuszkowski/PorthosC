@@ -6,9 +6,9 @@ import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
-import mousquetaires.languages.converters.tozformula.Xgraph2ZformulaEncoder;
+import mousquetaires.languages.converters.tozformula.XProgram2ZformulaEncoder;
+import mousquetaires.languages.syntax.xgraph.XCyclicProgram;
 import mousquetaires.languages.syntax.xgraph.XProgram;
-import mousquetaires.languages.syntax.xgraph.XUnrolledProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
@@ -39,10 +39,10 @@ public abstract class C2Zformula_UnitTestBase extends AbstractConverterUnitTest<
             YtreeParser parser = new YtreeParser(file, language);
             YSyntaxTree internalRepr = parser.parseFile();
             Ytree2XgraphConverter converter = new Ytree2XgraphConverter(language, memoryModel(), dataModel);
-            XProgram program = converter.convert(internalRepr);
-            XUnrolledProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
+            XCyclicProgram program = converter.convert(internalRepr);
+            XProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
             Context ctx = new Context();
-            Xgraph2ZformulaEncoder encoder = new Xgraph2ZformulaEncoder(ctx, unrolledProgram);
+            XProgram2ZformulaEncoder encoder = new XProgram2ZformulaEncoder(ctx, unrolledProgram);
             List<BoolExpr> programAsserts = encoder.encode(unrolledProgram);
 
             BoolExpr smtFormula = ctx.mkAnd(programAsserts.toArray(new BoolExpr[0]));

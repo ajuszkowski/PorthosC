@@ -176,7 +176,7 @@ class HardwareInvocationHook implements InvocationHook {
     }
 
     private XLocalLvalueMemoryUnit emitLoad(XSharedMemoryUnit receiverShared) {
-        XLocalLvalueMemoryUnit resultRegister = program.memoryManager.newTempRegister(receiverShared.getType());
+        XLocalLvalueMemoryUnit resultRegister = program.newTempRegister(receiverShared.getType());
         program.currentProcess.emitMemoryEvent(resultRegister, receiverShared);
         return resultRegister;
     }

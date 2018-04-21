@@ -7,13 +7,11 @@ import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.*;
 import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
-import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import mousquetaires.utils.exceptions.xgraph.XInterpreterUsageError;
-import org.antlr.v4.codegen.model.Loop;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -51,11 +49,12 @@ class XProcessInterpreter extends XInterpreterBase {
     // --
 
     @Override
-    public void finalise() {
+    public void finishInterpretation() {
         //todo: verify
-        assert contextStack.size() == 1; //linear entry context only
-        assert readyContexts.isEmpty();
-        assert almostReadyContexts.isEmpty();
+        super.finishInterpretation();
+        assert contextStack.size() == 1 : contextStack.size(); //linear entry context only
+        assert readyContexts.isEmpty() : readyContexts.size();
+        assert almostReadyContexts.isEmpty() : almostReadyContexts.size();
     }
 
     @Override
@@ -99,7 +98,7 @@ class XProcessInterpreter extends XInterpreterBase {
                 break;
 
                 case WaitingAdditionalCommand: {
-                    throw new IllegalStateException("waiting for an additional command before processing next event");
+                    throw new IllegalStateException("waiting for an additional command before processing next event: " + nextEvent);
                 }
                 //break;
 
@@ -239,6 +238,7 @@ class XProcessInterpreter extends XInterpreterBase {
 
     @Override
     public void startBlockConditionDefinition() {
+        //flushComputationEvent();
         XBlockContext context = contextStack.peek();
         assert context.state == XBlockContext.State.WaitingAdditionalCommand : context.state.name();
         context.setState(XBlockContext.State.WaitingFirstConditionEvent);
@@ -246,6 +246,7 @@ class XProcessInterpreter extends XInterpreterBase {
 
     @Override
     public void finishBlockConditionDefinition() {
+        flushComputationEvent();
         if (!(previousEvent instanceof XComputationEvent)) {
             throw new XInterpretationError("Attempt to make branching on non-computation event "
                     + wrap(previousEvent.toString())
@@ -259,6 +260,7 @@ class XProcessInterpreter extends XInterpreterBase {
 
     @Override
     public void startBlockBranchDefinition(BranchKind branchKind) {
+        //flushComputationEvent();
         XBlockContext context = contextStack.peek();
         assert context.state == XBlockContext.State.WaitingAdditionalCommand : context.state.name();
         context.setState(XBlockContext.State.WaitingFirstSubBlockEvent);
@@ -280,6 +282,7 @@ class XProcessInterpreter extends XInterpreterBase {
 
     @Override
     public void finishBlockBranchDefinition() {
+        flushComputationEvent();
         XBlockContext context = contextStack.peek();
         assert context.currentBranchKind != null;
         if (previousEvent != context.conditionEvent) {
@@ -308,6 +311,7 @@ class XProcessInterpreter extends XInterpreterBase {
 
     @Override
     public void finishNonlinearBlockDefinition() {
+        flushComputationEvent();
         XBlockContext context = contextStack.pop();
         context.currentBranchKind = null;
         context.setState(XBlockContext.State.JustFinished);
@@ -322,10 +326,16 @@ class XProcessInterpreter extends XInterpreterBase {
 
     @Override
     public void processJumpStatement(JumpKind jumpKind) {
+        //flushComputationEvent();
         XJumpEvent jumpEvent = emitJumpEvent();
         XBlockContext context = currentNearestLoopContext(); //context should peeked after the jump event was emitted
         context.addJumpEvent(jumpKind, jumpEvent);
         context.state = XBlockContext.State.JustJumped;
+    }
+
+    @Override
+    public void processAssertion(XLocalMemoryUnit assertion) {
+        throw new XInterpretationError(getIllegalOperationMessage());
     }
 
     // -- METHOD CALLS -------------------------------------------------------------------------------------------------
