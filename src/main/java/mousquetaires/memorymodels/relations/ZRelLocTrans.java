@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
-import mousquetaires.languages.syntax.xgraph.XProgram;
+import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import mousquetaires.utils.Utils;

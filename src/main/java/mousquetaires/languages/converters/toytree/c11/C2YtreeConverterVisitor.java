@@ -1846,7 +1846,7 @@ class C2YtreeConverterVisitor
     @Override
     public YAssignmentExpression visitLitmusInitWrite(C11Parser.LitmusInitWriteContext ctx) {
         List<C11Parser.PostfixExpressionContext> postfixExpressionContexts = ctx.postfixExpression();
-        if (postfixExpressionContexts != null && postfixExpressionContexts.size() > 0) {
+        if (postfixExpressionContexts != null && postfixExpressionContexts.size() == 2) {
             C11Parser.PostfixExpressionContext rightContext = postfixExpressionContexts.get(1);
             C11Parser.PostfixExpressionContext leftContext = postfixExpressionContexts.get(0);
             YExpression right = visitPostfixExpression(rightContext);

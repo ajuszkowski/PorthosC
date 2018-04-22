@@ -1,4 +1,4 @@
-package mousquetaires.languages.syntax.xgraph;
+package mousquetaires.languages.syntax.xgraph.program;
 
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;

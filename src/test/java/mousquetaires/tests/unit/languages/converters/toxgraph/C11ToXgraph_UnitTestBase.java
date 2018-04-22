@@ -4,7 +4,7 @@ import mousquetaires.languages.ProgramExtensions;
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
-import mousquetaires.languages.syntax.xgraph.XProgramBase;
+import mousquetaires.languages.syntax.xgraph.program.XProgramBase;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;

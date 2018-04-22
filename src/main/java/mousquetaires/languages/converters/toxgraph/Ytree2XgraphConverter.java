@@ -2,7 +2,7 @@ package mousquetaires.languages.converters.toxgraph;
 
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.converters.toxgraph.interpretation.XMemoryManager;
-import mousquetaires.languages.syntax.xgraph.XCyclicProgram;
+import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
 import mousquetaires.languages.converters.toxgraph.interpretation.XProgramInterpreter;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;

@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.common.Type;
 import mousquetaires.languages.converters.toxgraph.interpretation.XInterpreter;
 import mousquetaires.languages.converters.toxgraph.interpretation.XProgramInterpreter;
-import mousquetaires.languages.syntax.xgraph.XCyclicProgram;
+import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperator;

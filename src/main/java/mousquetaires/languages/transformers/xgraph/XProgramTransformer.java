@@ -1,8 +1,8 @@
 package mousquetaires.languages.transformers.xgraph;
 
-import mousquetaires.languages.syntax.xgraph.XCyclicProgram;
-import mousquetaires.languages.syntax.xgraph.XProgram;
-import mousquetaires.languages.syntax.xgraph.XProgramBuilder;
+import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
+import mousquetaires.languages.syntax.xgraph.program.XProgram;
+import mousquetaires.languages.syntax.xgraph.program.XProgramBuilder;
 import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
 
 
