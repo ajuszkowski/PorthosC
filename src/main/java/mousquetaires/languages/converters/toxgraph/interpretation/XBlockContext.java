@@ -51,8 +51,10 @@ class XBlockContext {
     }
 
     public void setConditionEvent(XComputationEvent conditionEvent) {
-        assert entryEvent != null;
         assert conditionEvent != null;
+        if (entryEvent == null) {
+            setEntryEvent(conditionEvent);
+        }
         this.conditionEvent = conditionEvent;
     }
 

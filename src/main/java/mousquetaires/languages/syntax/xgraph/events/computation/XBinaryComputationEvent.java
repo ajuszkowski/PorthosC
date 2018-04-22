@@ -59,7 +59,7 @@ public class XBinaryComputationEvent extends XComputationEventBase {
 
     @Override
     public String toString() {
-        return wrapWithBracketsAndDepth("eval(" + getFirstOperand() + getOperator() + getSecondOperand() + ")");
+        return wrapWithBracketsAndDepth("_c(" + getFirstOperand() + getOperator() + getSecondOperand() + ")");
     }
 
     @Override

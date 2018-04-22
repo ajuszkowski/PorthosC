@@ -4,6 +4,7 @@ import mousquetaires.languages.common.Type;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
@@ -20,8 +21,6 @@ public class XLudeInterpreter extends XInterpreterBase {
     private final Set<String> accessedLocalUnits;
     private final Set<String> accessedSharedUnits;
 
-    private XEvent previousEvent;
-
     public XLudeInterpreter(XProcessId processId, XMemoryManager memoryManager) {
         super(processId, memoryManager);
         this.accessedLocalUnits = new HashSet<>();
@@ -30,11 +29,11 @@ public class XLudeInterpreter extends XInterpreterBase {
 
     @Override
     protected void processNextEvent(XEvent nextEvent) {
-        assert nextEvent != null;
+        preProcessEvent(nextEvent);
         if (previousEvent != null) {
             graphBuilder.addEdge(true, previousEvent, nextEvent);
         }
-        previousEvent = nextEvent;
+        postProcessEvent(nextEvent);
     }
 
     @Override
@@ -116,7 +115,7 @@ public class XLudeInterpreter extends XInterpreterBase {
     }
 
     @Override
-    public void finishBlockConditionDefinition() {
+    public void finishBlockConditionDefinition(XComputationEvent conditionEvent) {
         throw new XInterpretationError(getIllegalOperationMessage());
     }
 

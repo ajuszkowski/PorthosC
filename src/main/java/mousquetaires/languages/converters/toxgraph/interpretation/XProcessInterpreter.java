@@ -5,9 +5,10 @@ import mousquetaires.languages.converters.toxgraph.hooks.InterceptionAction;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.*;
+import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
-import mousquetaires.languages.syntax.xgraph.memories.*;
+import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
@@ -29,9 +30,6 @@ class XProcessInterpreter extends XInterpreterBase {
     private final Stack<XBlockContext> contextStack;
     private final Queue<XBlockContext> almostReadyContexts;
     private final Queue<XBlockContext> readyContexts;
-
-    private XEvent previousEvent;
-
 
     XProcessInterpreter(XProcessId processId, XMemoryManager memoryManager, HookManager hookManager) {
         super(processId, memoryManager); //todo: non-uniqueness case
@@ -59,6 +57,7 @@ class XProcessInterpreter extends XInterpreterBase {
 
     @Override
     public XBarrierEvent emitBarrierEvent(XBarrierEvent.Kind kind) {
+        //flushPostfixOperationsCache();
         XBarrierEvent event = kind.create(createEventInfo());
         processNextEvent(event);
         return event;
@@ -66,6 +65,7 @@ class XProcessInterpreter extends XInterpreterBase {
 
     @Override
     public XJumpEvent emitJumpEvent() {
+        //flushPostfixOperationsCache();
         XJumpEvent event = new XJumpEvent(createEventInfo());
         processNextEvent(event);
         return event;
@@ -73,7 +73,7 @@ class XProcessInterpreter extends XInterpreterBase {
 
     @Override
     protected void processNextEvent(XEvent nextEvent) {
-        assert nextEvent != null;
+        preProcessEvent(nextEvent);
 
         boolean alreadySetEdgeToNextEvent = processReadyContexts(nextEvent);
 
@@ -138,9 +138,10 @@ class XProcessInterpreter extends XInterpreterBase {
             }
         }
 
-        previousEvent = nextEvent;
+        postProcessEvent(nextEvent);
     }
 
+    // TODO: should be in preProcessEvent()
     private boolean processReadyContexts(XEvent nextEvent) {
         boolean alreadySetEdgeToNextEvent = false;
         if (!readyContexts.isEmpty()) {
@@ -238,29 +239,22 @@ class XProcessInterpreter extends XInterpreterBase {
 
     @Override
     public void startBlockConditionDefinition() {
-        //flushComputationEvent();
         XBlockContext context = contextStack.peek();
         assert context.state == XBlockContext.State.WaitingAdditionalCommand : context.state.name();
         context.setState(XBlockContext.State.WaitingFirstConditionEvent);
     }
 
     @Override
-    public void finishBlockConditionDefinition() {
-        flushComputationEvent();
-        if (!(previousEvent instanceof XComputationEvent)) {
-            throw new XInterpretationError("Attempt to make branching on non-computation event "
-                    + wrap(previousEvent.toString())
-                    + " of type " + previousEvent.getClass().getSimpleName());
-        }
+    public void finishBlockConditionDefinition(XComputationEvent conditionEvent) {
         XBlockContext context = contextStack.peek();
         // TODO: send here Branching event! -- ? maybe we don't need them, as it's implemented now
-        context.setConditionEvent((XComputationEvent) previousEvent);
+        processNextEvent(conditionEvent);
+        context.setConditionEvent(conditionEvent);
         context.setState(XBlockContext.State.WaitingAdditionalCommand);
     }
 
     @Override
     public void startBlockBranchDefinition(BranchKind branchKind) {
-        //flushComputationEvent();
         XBlockContext context = contextStack.peek();
         assert context.state == XBlockContext.State.WaitingAdditionalCommand : context.state.name();
         context.setState(XBlockContext.State.WaitingFirstSubBlockEvent);
@@ -282,7 +276,6 @@ class XProcessInterpreter extends XInterpreterBase {
 
     @Override
     public void finishBlockBranchDefinition() {
-        flushComputationEvent();
         XBlockContext context = contextStack.peek();
         assert context.currentBranchKind != null;
         if (previousEvent != context.conditionEvent) {
@@ -311,7 +304,6 @@ class XProcessInterpreter extends XInterpreterBase {
 
     @Override
     public void finishNonlinearBlockDefinition() {
-        flushComputationEvent();
         XBlockContext context = contextStack.pop();
         context.currentBranchKind = null;
         context.setState(XBlockContext.State.JustFinished);
@@ -326,7 +318,7 @@ class XProcessInterpreter extends XInterpreterBase {
 
     @Override
     public void processJumpStatement(JumpKind jumpKind) {
-        //flushComputationEvent();
+        //flushPostfixOperationsCache();
         XJumpEvent jumpEvent = emitJumpEvent();
         XBlockContext context = currentNearestLoopContext(); //context should peeked after the jump event was emitted
         context.addJumpEvent(jumpKind, jumpEvent);
@@ -344,6 +336,7 @@ class XProcessInterpreter extends XInterpreterBase {
     // TODO: arguments: write all shared to registers and set up control-flow binding
     @Override
     public XEntity processMethodCall(String methodName, @Nullable XMemoryUnit receiver, XMemoryUnit... arguments) {
+        //flushPostfixOperationsCache();
         InterceptionAction intercepted = hookManager.tryInterceptInvocation(methodName);
         if (intercepted != null) {
             XEntity res = intercepted.execute(receiver, arguments);

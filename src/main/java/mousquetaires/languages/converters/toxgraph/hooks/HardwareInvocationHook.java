@@ -39,7 +39,7 @@ class HardwareInvocationHook implements InvocationHook {
                     String atomic = ((XLvalueMemoryUnit) atomicUnit).getName();
 
                     XMemoryUnit argument = arguments[1];
-                    XLocalMemoryUnit argumentLocal = program.currentProcess.tryConvertToLocalOrNull(argument);
+                    XLocalMemoryUnit argumentLocal = program.tryConvertToLocalOrNull(argument);
                     if (argumentLocal == null) {
                         throw new XMethodInvocationError(methodName, "2st argument: could not convert to local memory unit: " + wrap(argument));
                     }
@@ -177,15 +177,15 @@ class HardwareInvocationHook implements InvocationHook {
 
     private XLocalLvalueMemoryUnit emitLoad(XSharedMemoryUnit receiverShared) {
         XLocalLvalueMemoryUnit resultRegister = program.newTempRegister(receiverShared.getType());
-        program.currentProcess.emitMemoryEvent(resultRegister, receiverShared);
+        program.emitMemoryEvent(resultRegister, receiverShared);
         return resultRegister;
     }
 
     private XSharedMemoryEvent emitStore(XSharedLvalueMemoryUnit receiverShared, XLocalMemoryUnit argumentLocal) {
-        return program.currentProcess.emitMemoryEvent(receiverShared, argumentLocal);
+        return program.emitMemoryEvent(receiverShared, argumentLocal);
     }
 
     private XBarrierEvent emitBarrier(XBarrierEvent.Kind kind) {
-        return program.currentProcess.emitBarrierEvent(kind);
+        return program.emitBarrierEvent(kind);
     }
 }

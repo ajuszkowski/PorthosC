@@ -33,7 +33,7 @@ public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements 
     private XCyclicProgramBuilder programBuilder;
     public final MemoryModel.Kind memoryModel;
     private final XMemoryManager memoryManager;
-    public XInterpreter currentProcess;
+    private XInterpreter currentProcess;
 
     public XProgramInterpreter(XMemoryManager memoryManager, MemoryModel.Kind memoryModel) {
         this.memoryManager = memoryManager;
@@ -129,23 +129,13 @@ public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements 
     }
 
     @Override
-    public XLocalLvalueMemoryUnit tryConvertToLocalLvalueOrNull(XEntity expression) {
-        return currentProcess().tryConvertToLocalLvalueOrNull(expression);
-    }
-
-    @Override
     public XRegister copyToLocalMemory(XSharedMemoryUnit shared) {
         return currentProcess().copyToLocalMemory(shared);
     }
 
     @Override
-    public XConstant getConstant(Object value, Type type) {
-        return currentProcess().getConstant(value, type);
-    }
-
-    @Override
-    public XComputationEvent evaluateMemoryUnit(XMemoryUnit memoryUnit) {
-        return currentProcess().evaluateMemoryUnit(memoryUnit);
+    public XComputationEvent tryEvaluateComputation(XEntity entity) {
+        return currentProcess().tryEvaluateComputation(entity);
     }
 
     @Override
@@ -174,28 +164,6 @@ public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements 
     }
 
     @Override
-    public XComputationEvent createComputationEvent(XUnaryOperator operator, XLocalMemoryUnit operand) {
-        return currentProcess().createComputationEvent(operator, operand);
-    }
-
-    @Override
-    public XComputationEvent emitComputationEvent(XUnaryOperator operator, XLocalMemoryUnit operand) {
-        return currentProcess().emitComputationEvent(operator, operand);
-    }
-
-    @Override
-    public XComputationEvent createComputationEvent(XBinaryOperator operator,
-                                                    XLocalMemoryUnit firstOperand,
-                                                    XLocalMemoryUnit secondOperand) {
-        return currentProcess().createComputationEvent(operator, firstOperand, secondOperand);
-    }
-
-    @Override
-    public XComputationEvent emitComputationEvent(XBinaryOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand) {
-        return currentProcess().emitComputationEvent(operator, firstOperand, secondOperand);
-    }
-
-    @Override
     public XLocalMemoryEvent emitMemoryEvent(XLocalLvalueMemoryUnit destination, XLocalMemoryUnit source) {
         return currentProcess().emitMemoryEvent(destination, source);
     }
@@ -210,6 +178,32 @@ public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements 
         return currentProcess().emitMemoryEvent(destination, source);
     }
 
+    // --
+
+    //@Override
+    //public XComputationEvent emitSimpleComputationEvent(XUnaryOperator operator, XLocalMemoryUnit operand) {
+    //    return currentProcess().emitSimpleComputationEvent(operator, operand);
+    //}
+    //
+    //@Override
+    //public XComputationEvent emitSimpleComputationEvent(XBinaryOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand) {
+    //    return currentProcess().emitSimpleComputationEvent(operator, firstOperand, secondOperand);
+    //}
+
+    @Override
+    public XComputationEvent createComputationEvent(XUnaryOperator operator, XLocalMemoryUnit operand) {
+        return currentProcess().createComputationEvent(operator, operand);
+    }
+
+    @Override
+    public XComputationEvent createComputationEvent(XBinaryOperator operator,
+                                                    XLocalMemoryUnit firstOperand,
+                                                    XLocalMemoryUnit secondOperand) {
+        return currentProcess().createComputationEvent(operator, firstOperand, secondOperand);
+    }
+
+    // --
+
     @Override
     public void startBlockDefinition(BlockKind blockKind) {
         currentProcess().startBlockDefinition(blockKind);
@@ -221,8 +215,8 @@ public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements 
     }
 
     @Override
-    public void finishBlockConditionDefinition() {
-        currentProcess().finishBlockConditionDefinition();
+    public void finishBlockConditionDefinition(XComputationEvent conditionEvent) {
+        currentProcess().finishBlockConditionDefinition(conditionEvent);
     }
 
     @Override

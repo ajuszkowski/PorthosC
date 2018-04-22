@@ -2,6 +2,7 @@ package mousquetaires.languages.converters.toxgraph.interpretation;
 
 import mousquetaires.languages.common.Type;
 import mousquetaires.languages.syntax.xgraph.XEntity;
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperator;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
@@ -53,15 +54,12 @@ public interface XInterpreter {
     XLvalueMemoryUnit getDeclaredUnitOrNull(String name);
     XRegister getDeclaredRegister(String name, XProcessId processId);
 
+    //XMemoryUnit tryConvertToMemoryUnitOrNull(XEntity expression);
     XLocalMemoryUnit tryConvertToLocalOrNull(XEntity expression);
-
-    XLocalLvalueMemoryUnit tryConvertToLocalLvalueOrNull(XEntity expression);
+    //XLvalueMemoryUnit tryConvertToLvalueOrNull(XEntity expression);
+    XComputationEvent tryEvaluateComputation(XEntity entity);
 
     XRegister copyToLocalMemory(XSharedMemoryUnit shared);
-
-    XConstant getConstant(Object value, Type type);
-
-    XComputationEvent evaluateMemoryUnit(XMemoryUnit memoryUnit);
 
     XEntryEvent emitEntryEvent();
 
@@ -73,25 +71,28 @@ public interface XInterpreter {
 
     XNopEvent emitNopEvent();
 
-    XComputationEvent createComputationEvent(XUnaryOperator operator, XLocalMemoryUnit operand);
-
-    XComputationEvent emitComputationEvent(XUnaryOperator operator, XLocalMemoryUnit operand);
-
-    XComputationEvent createComputationEvent(XBinaryOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand);
-
-    XComputationEvent emitComputationEvent(XBinaryOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand);
-
     XLocalMemoryEvent emitMemoryEvent(XLocalLvalueMemoryUnit destination, XLocalMemoryUnit source);
 
     XSharedMemoryEvent emitMemoryEvent(XLocalLvalueMemoryUnit destination, XSharedMemoryUnit source);
 
     XSharedMemoryEvent emitMemoryEvent(XSharedLvalueMemoryUnit destination, XLocalMemoryUnit source);
 
+    // -- computations:
+
+    //XComputationEvent emitSimpleComputationEvent(XUnaryOperator operator, XLocalMemoryUnit operand);
+    //XComputationEvent emitSimpleComputationEvent(XBinaryOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand);
+
+    XComputationEvent createComputationEvent(XUnaryOperator operator, XLocalMemoryUnit operand);
+    XComputationEvent createComputationEvent(XBinaryOperator operator, XLocalMemoryUnit firstOperand, XLocalMemoryUnit secondOperand);
+
+    //void rememberPostfixOperation(XLocalLvalueMemoryUnit memoryUnit, boolean isIncrement);
+
+    // --
+
     void startBlockDefinition(BlockKind blockKind);
 
     void startBlockConditionDefinition();
-
-    void finishBlockConditionDefinition();
+    void finishBlockConditionDefinition(XComputationEvent conditionEvent);
 
     void startBlockBranchDefinition(BranchKind branchKind);
 

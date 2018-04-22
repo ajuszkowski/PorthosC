@@ -4,11 +4,12 @@ import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.common.Type;
 import mousquetaires.languages.converters.toxgraph.interpretation.XInterpreter;
 import mousquetaires.languages.converters.toxgraph.interpretation.XProgramInterpreter;
-import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.XCyclicProgram;
+import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperator;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperator;
 import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
@@ -163,7 +164,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         else if (yBaseExpression instanceof YMemberAccessExpression) {
             YMemberAccessExpression asMemberAccess = (YMemberAccessExpression) yBaseExpression;
             methodName = asMemberAccess.getMemberName();
-            receiver = tryVisitAsMemoryUnitOrThrow(asMemberAccess.getBaseExpression());
+            receiver = tryCastToMemoryUnit(asMemberAccess.getBaseExpression().accept(this));
         }
         else {
             throw new NotImplementedException("only 'receiver.method()' and 'method()' invocations are supported so far");
@@ -171,18 +172,15 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         ImmutableList<YExpression> yArguments = node.getArguments();
         Set<XMemoryUnit> argumentsList = new HashSet<>(yArguments.size());
         for (YExpression yArgument : yArguments) {
-            argumentsList.add(tryVisitAsMemoryUnitOrThrow(yArgument));
+            argumentsList.add(tryCastToMemoryUnit(yArgument.accept(this)));
         }
         XMemoryUnit[] arguments = argumentsList.toArray(new XMemoryUnit[0]);
 
-        XEntity methodCallResult = program.currentProcess.processMethodCall(methodName, receiver, arguments);
+        XEntity methodCallResult = program.processMethodCall(methodName, receiver, arguments);
         if (methodCallResult instanceof XEvent) {
             return (XEvent) methodCallResult;
         }
-        else if (methodCallResult instanceof XMemoryUnit) {
-            return program.currentProcess.evaluateMemoryUnit((XMemoryUnit) methodCallResult);
-        }
-        return null;
+        return program.tryEvaluateComputation(methodCallResult);
     }
 
     @Override
@@ -191,38 +189,66 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     }
 
     @Override
-    public XEvent visit(YUnaryExpression node) {
+    public XEntity visit(YUnaryExpression node) {
         YUnaryOperator yOperator = node.getOperator();
         YExpression yBaseExpression = node.getExpression();
+        //XLocalMemoryUnit baseLocal = tryConvertToLocal(yBaseExpression.accept(this));
+        XMemoryUnit base = tryCastToMemoryUnit(yBaseExpression.accept(this));
 
-        if (Y2XOperatorHelper.isPrefixOperator(yOperator)) {
-            XLocalLvalueMemoryUnit baseLocal = tryVisitToLocalLvalueOrThrow(yBaseExpression);
-            XBinaryOperator xOperator = Y2XOperatorHelper.isPrefixIncrement(yOperator)
-                    ? XBinaryOperator.Addition
-                    : XBinaryOperator.Subtraction;
-            XConstant one = program.currentProcess.getConstant(1, Type.int32);
-            XComputationEvent incremented = program.currentProcess.emitComputationEvent(xOperator, baseLocal, one);
-            return program.currentProcess.emitMemoryEvent(baseLocal, incremented);
-        }
-        else if (Y2XOperatorHelper.isPostfixOperator(yOperator)) {
-            throw new NotImplementedException("Postfix operators are not supported for now");
+        boolean isPostfixIncrement = (yOperator == YUnaryOperator.PostfixIncrement);
+        boolean isPostfixDecrement = (yOperator == YUnaryOperator.PostfixDecrement);
+
+        if (isPostfixIncrement || isPostfixDecrement) {
+            XRegister tempReg = program.newTempRegister(base.getType());
+            XConstant constantOne = XConstant.create(1, base.getType());
+            XBinaryOperator operator = isPostfixIncrement ? XBinaryOperator.Addition : XBinaryOperator.Subtraction;
+            XComputationEvent increment = program.createComputationEvent(operator, tempReg, constantOne);
+            if (base instanceof XLocalLvalueMemoryUnit) {
+                XLocalLvalueMemoryUnit baseLocal = (XLocalLvalueMemoryUnit) base;
+                program.emitMemoryEvent(tempReg, baseLocal);
+                program.emitMemoryEvent(baseLocal, increment);
+            }
+            else if (base instanceof XSharedLvalueMemoryUnit) {
+                XSharedLvalueMemoryUnit baseShared = (XSharedLvalueMemoryUnit) base;
+                program.emitMemoryEvent(tempReg, baseShared);
+                program.emitMemoryEvent(baseShared, increment);
+            }
+            else {
+                throw new XInterpretationError("memory unit may be either local or shared l-value: " + wrap(base));
+            }
+            return tempReg;
         }
         else {
-            throw new NotImplementedException();
+            XUnaryOperator resultOperator = (XUnaryOperator) yOperator.accept(this);
+            return program.createComputationEvent(resultOperator, tryConvertToLocal(base));
         }
     }
 
     @Override
-    public XEntity visit(YUnaryOperator node) {
-        throw new NotImplementedException();
+    public XUnaryOperator visit(YUnaryOperator node) {
+        switch (node) {
+            case PrefixIncrement:
+            case PrefixDecrement:
+            case PostfixIncrement:
+            case PostfixDecrement:
+                throw new IllegalStateException("on x-level, it is a binary operation and it should be processed on the upper level");
+            case IntegerNegation:
+                throw new NotImplementedException();
+            case BitwiseComplement:
+                return XUnaryOperator.BitNegation;
+            case Negation:
+                throw new NotImplementedException();
+            default:
+                throw new IllegalArgumentException(node.name());
+        }
     }
 
     @Override
     public XEntity visit(YBinaryExpression node) {
         XBinaryOperator operator = (XBinaryOperator) node.getOperator().accept(this);
-        XLocalMemoryUnit leftLocal = tryVisitAsLocalOrThrow(node.getLeftExpression());
-        XLocalMemoryUnit rightLocal = tryVisitAsLocalOrThrow(node.getRightExpression());
-        return program.currentProcess.createComputationEvent(operator, leftLocal, rightLocal);
+        XLocalMemoryUnit leftLocal = tryConvertToLocal(node.getLeftExpression().accept(this));
+        XLocalMemoryUnit rightLocal = tryConvertToLocal(node.getRightExpression().accept(this));
+        return program.createComputationEvent(operator, leftLocal, rightLocal);
     }
 
     @Override
@@ -273,7 +299,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         if (leftLvalue instanceof XSharedLvalueMemoryUnit) {
             XSharedLvalueMemoryUnit leftShared = (XSharedLvalueMemoryUnit) leftLvalue;
             if (right instanceof XSharedMemoryUnit) {
-                rightLocal = program.currentProcess.copyToLocalMemory((XSharedMemoryUnit) right);
+                rightLocal = program.copyToLocalMemory((XSharedMemoryUnit) right);
             }
             else if (right instanceof XLocalMemoryUnit) {
                 // computation events and constants are local memory units
@@ -282,16 +308,16 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
             else {
                 throw new XInterpretationError(getUnexpectedOperandTypeErrorMessage(right));
             }
-            return program.currentProcess.emitMemoryEvent(leftShared, rightLocal);
+            return program.emitMemoryEvent(leftShared, rightLocal);
         }
         else if (leftLvalue instanceof XLocalLvalueMemoryUnit) {
             leftLocal = (XLocalLvalueMemoryUnit) leftLvalue;
             if (right instanceof XSharedMemoryUnit) {
-                return program.currentProcess.emitMemoryEvent(leftLocal, (XSharedMemoryUnit) right);
+                return program.emitMemoryEvent(leftLocal, (XSharedMemoryUnit) right);
             }
             else if (right instanceof XLocalMemoryUnit) {
                 // computation events and constants are local memory units
-                return program.currentProcess.emitMemoryEvent(leftLocal, (XLocalMemoryUnit) right);
+                return program.emitMemoryEvent(leftLocal, (XLocalMemoryUnit) right);
             }
             else {
                 throw new XInterpretationError(getUnexpectedOperandTypeErrorMessage(right));
@@ -312,51 +338,51 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
             }
             return null; //statements return null
         }
-        program.currentProcess.emitNopEvent();
+        program.emitNopEvent();
         return null; //statements return null
     }
 
     @Override
     public XEvent visit(YBranchingStatement node) {
-        program.currentProcess.startBlockDefinition(XInterpreter.BlockKind.Branching);
+        program.startBlockDefinition(XInterpreter.BlockKind.Branching);
 
-        program.currentProcess.startBlockConditionDefinition();
-        node.getCondition().accept(this);
-        program.currentProcess.finishBlockConditionDefinition();
+        program.startBlockConditionDefinition();
+        XComputationEvent condition = program.tryEvaluateComputation(node.getCondition().accept(this));
+        program.finishBlockConditionDefinition(condition);
 
-        program.currentProcess.startBlockBranchDefinition(XInterpreter.BranchKind.Then);
+        program.startBlockBranchDefinition(XInterpreter.BranchKind.Then);
         node.getThenBranch().accept(this);
-        program.currentProcess.finishBlockBranchDefinition();
+        program.finishBlockBranchDefinition();
 
         YStatement elseBranch = node.getElseBranch();
-        program.currentProcess.startBlockBranchDefinition(XInterpreter.BranchKind.Else);
+        program.startBlockBranchDefinition(XInterpreter.BranchKind.Else);
         if (elseBranch != null) {
             elseBranch.accept(this);
         }
         else {
-            program.currentProcess.emitNopEvent(); // needed for encoding, TODO: add reference to the doc here
+            program.emitNopEvent(); // needed for encoding, TODO: add reference to the doc here
         }
-        program.currentProcess.finishBlockBranchDefinition();
+        program.finishBlockBranchDefinition();
 
 
-        program.currentProcess.finishNonlinearBlockDefinition();
+        program.finishNonlinearBlockDefinition();
 
         return null; //statements return null
     }
 
     @Override
     public XEvent visit(YWhileLoopStatement node) {
-        program.currentProcess.startBlockDefinition(XInterpreter.BlockKind.Loop);
+        program.startBlockDefinition(XInterpreter.BlockKind.Loop);
 
-        program.currentProcess.startBlockConditionDefinition();
-        node.getCondition().accept(this);
-        program.currentProcess.finishBlockConditionDefinition();
+        program.startBlockConditionDefinition();
+        XComputationEvent condition = program.tryEvaluateComputation(node.getCondition().accept(this));
+        program.finishBlockConditionDefinition(condition);
 
-        program.currentProcess.startBlockBranchDefinition(XInterpreter.BranchKind.Then);
+        program.startBlockBranchDefinition(XInterpreter.BranchKind.Then);
         node.getBody().accept(this);
-        program.currentProcess.finishBlockBranchDefinition();
+        program.finishBlockBranchDefinition();
 
-        program.currentProcess.finishNonlinearBlockDefinition();
+        program.finishNonlinearBlockDefinition();
         return null; //statements return null
     }
 
@@ -370,10 +396,10 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
                 throw new NotImplementedException();
                 //break;
             case Break:
-                program.currentProcess.processJumpStatement(XInterpreter.JumpKind.Break);
+                program.processJumpStatement(XInterpreter.JumpKind.Break);
                 break;
             case Continue:
-                program.currentProcess.processJumpStatement(XInterpreter.JumpKind.Continue);
+                program.processJumpStatement(XInterpreter.JumpKind.Continue);
                 break;
             default:
                 throw new XInterpretationError("Unknown jump statement kind: " + node.getKind());
@@ -423,10 +449,9 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     }
 
     @Override
-    public XComputationEvent visit(YConstant node) {
+    public XLocalMemoryUnit visit(YConstant node) {
         Type type = YType2TypeConverter.convert(node.getType());
-        XConstant constant = XConstant.create(node.getValue(), type);
-        return program.currentProcess.evaluateMemoryUnit(constant);
+        return XConstant.create(node.getValue(), type);
     }
 
     @Override
@@ -434,31 +459,24 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         throw new NotImplementedException();
     }
 
-    private XMemoryUnit tryVisitAsMemoryUnitOrThrow(YExpression expression) {
-        XEntity visited = expression.accept(this);
-        if (!(visited instanceof XMemoryUnit)) {
-            throw new XInterpreterUsageError(
-                    "Could not convert expression " + wrap(expression) + " to a memory unit");
+    private XMemoryUnit tryCastToMemoryUnit(XEntity expression) {
+        if (expression instanceof XMemoryUnit) {
+            return (XMemoryUnit) expression;
         }
-        return (XMemoryUnit) visited;
+        throw new XInterpreterUsageError("Could not convert expression " + wrap(expression) + " to a memory unit");
     }
 
-    private XLocalMemoryUnit tryVisitAsLocalOrThrow(YExpression expression) {
-        XEntity visited = expression.accept(this);
-        XLocalMemoryUnit converted = program.currentProcess.tryConvertToLocalOrNull(visited);
-        if (converted == null) {
-            throw new XInterpreterUsageError(
-                    "Could not convert expression " + wrap(expression) + " to a local memory unit");
+    private XLvalueMemoryUnit tryCastToLvalue(XMemoryUnit expression) {
+        if (expression instanceof XLvalueMemoryUnit) {
+            return (XLvalueMemoryUnit) expression;
         }
-        return converted;
+        throw new XInterpreterUsageError("Could not convert expression " + wrap(expression) + " to an l-value memory unit");
     }
 
-    private XLocalLvalueMemoryUnit tryVisitToLocalLvalueOrThrow(YExpression expression) {
-        XEntity visited = expression.accept(this);
-        XLocalLvalueMemoryUnit converted = program.currentProcess.tryConvertToLocalLvalueOrNull(visited);
+    private XLocalMemoryUnit tryConvertToLocal(XEntity expression) {
+        XLocalMemoryUnit converted = program.tryConvertToLocalOrNull(expression);
         if (converted == null) {
-            throw new XInterpreterUsageError(
-                    "Could not convert expression " + wrap(expression) + " to a local l-value memory unit");
+            throw new XInterpreterUsageError("Could not convert expression " + wrap(expression) + " to a local memory unit");
         }
         return converted;
     }
