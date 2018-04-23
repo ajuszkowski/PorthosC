@@ -5,6 +5,7 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XAssertionEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
@@ -12,10 +13,7 @@ import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XNopEvent;
-import mousquetaires.languages.syntax.xgraph.events.memory.XInitialWriteEvent;
-import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
-import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
-import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
@@ -25,7 +23,7 @@ import mousquetaires.utils.exceptions.NotImplementedException;
 import java.util.Map;
 
 
-class XDataflowEncoder implements XEventVisitor<BoolExpr> {
+public class XDataflowEncoder implements XEventVisitor<BoolExpr> {
 
     private final Context ctx;
     private final XMemoryUnitEncoder memoryUnitEncoder;
@@ -88,6 +86,16 @@ class XDataflowEncoder implements XEventVisitor<BoolExpr> {
         // no data-flow
         return null;
     }
+
+    @Override
+    public BoolExpr visit(XAssertionEvent event) {
+        return memoryUnitEncoder.encodeAssertion(event);
+    }
+
+    //@Override
+    //public BoolExpr visit(XDeclarationEvent event) {
+    //    return null;
+    //}
 
     @Override
     public BoolExpr visit(XEntryEvent event) {

@@ -27,7 +27,7 @@ class XBlockContext {
 
     /*private*/public final XInterpreter.BlockKind kind;
     /*private*/public State state;
-    /*private*/public XProcessInterpreter.BranchKind currentBranchKind;
+    /*private*/public XThreadInterpreter.BranchKind currentBranchKind;
 
     /*private*/public XComputationEvent conditionEvent;
 

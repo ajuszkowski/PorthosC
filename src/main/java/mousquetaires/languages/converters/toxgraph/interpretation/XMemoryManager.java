@@ -20,7 +20,6 @@ public class XMemoryManager {
     private final Map<String, XLocation> sharedUnits;
     private final Map<XProcessId, Map<String, XRegister>> localUnitsMap;
     private XProcessId currentProcessId;
-    private int tempRegisterNamesCounter;
 
     public XMemoryManager() {
         this.sharedUnits = new HashMap<>();
@@ -30,7 +29,6 @@ public class XMemoryManager {
     public void reset(XProcessId newProcessId) {
         currentProcessId = newProcessId;
         localUnitsMap.put(currentProcessId, new HashMap<>());
-        tempRegisterNamesCounter = 1;
     }
 
     public XLvalueMemoryUnit getDeclaredUnitOrNull(String name) {
@@ -77,6 +75,7 @@ public class XMemoryManager {
         return declareLocationImpl(name, type, true);
     }
 
+    // todo: combine this method with declareRegister() by creating method that generates new unique temp name (simplify logic)
     public XRegister newTempRegister(Type type) {
         String tempName = newTempRegisterName();
         Map<String, XRegister> map = currentLocalUnitsMap();
@@ -109,11 +108,12 @@ public class XMemoryManager {
         return result;
     }
 
-    private String newTempRegisterName() {
+    private static int tempRegisterNamesCounter;
+    private static String newTempRegisterName() {
         return getRegisterName(tempRegisterNamesCounter++);
     }
 
-    private String getRegisterName(int count) {
+    private static String getRegisterName(int count) {
         return "temp_reg_" + count;
     }
 }

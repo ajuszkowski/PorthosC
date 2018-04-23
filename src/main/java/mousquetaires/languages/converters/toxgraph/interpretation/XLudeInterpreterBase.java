@@ -16,12 +16,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class XLudeInterpreter extends XInterpreterBase {
+public abstract class XLudeInterpreterBase extends XInterpreterBase {
 
     private final Set<String> accessedLocalUnits;
     private final Set<String> accessedSharedUnits;
 
-    public XLudeInterpreter(XProcessId processId, XMemoryManager memoryManager) {
+    public XLudeInterpreterBase(XProcessId processId, XMemoryManager memoryManager) {
         super(processId, memoryManager);
         this.accessedLocalUnits = new HashSet<>();
         this.accessedSharedUnits = new HashSet<>();
@@ -34,11 +34,6 @@ public class XLudeInterpreter extends XInterpreterBase {
             graphBuilder.addEdge(true, previousEvent, nextEvent);
         }
         postProcessEvent(nextEvent);
-    }
-
-    @Override
-    public void processAssertion(XLocalMemoryUnit assertion) {
-        throw new NotImplementedException();
     }
 
     // --

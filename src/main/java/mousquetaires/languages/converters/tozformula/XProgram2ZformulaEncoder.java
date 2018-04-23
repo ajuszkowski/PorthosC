@@ -5,6 +5,10 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.IntExpr;
+import mousquetaires.languages.converters.tozformula.process.XProcessEncoder;
+import mousquetaires.languages.converters.tozformula.process.XProcessEncoderFactory;
+import mousquetaires.languages.converters.tozformula.process.XThreadEncoder;
+import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
@@ -28,20 +32,36 @@ public class XProgram2ZformulaEncoder {
     private final Context ctx;
     private final StaticSingleAssignmentMap ssaMap;
     private final XDataflowEncoder dataFlowEncoder;
-    private final XProcess2ZformulaEncoder processEncoder;
 
     public XProgram2ZformulaEncoder(Context ctx, XProgram program) {
         this.ctx = ctx;
         this.ssaMap = new StaticSingleAssignmentMap(ctx, program.size(), program.getEntryEvents());
         this.dataFlowEncoder = new XDataflowEncoder(ctx, ssaMap);
-        this.processEncoder = new XProcess2ZformulaEncoder(ctx, ssaMap, dataFlowEncoder);
     }
 
     public List<BoolExpr> encode(XProgram program) {
         List<BoolExpr> asserts = new LinkedList<>();
+        XProcessEncoderFactory factory = new XProcessEncoderFactory(ctx, ssaMap, dataFlowEncoder);
+        boolean postludeEncoded = false;
         for (XProcess process : program.getProcesses()) {
-            asserts.addAll(processEncoder.encodeProcess(process));
-            asserts.addAll(processEncoder.encodeProcessRFRelation(process));
+
+            //kostyl==
+            if (postludeEncoded) {
+                throw new IllegalStateException();
+            }
+            if (process.getId() == XProcessId.PostludeProcessId) {
+                for (XProcess anotherProcess : program.getProcesses()) {
+                    if (anotherProcess != process) {
+                        ssaMap.updateRefs(process.source(), anotherProcess.sink());
+                    }
+                }
+                postludeEncoded = true;
+            }
+            //kostyl==
+
+            XProcessEncoder encoder = factory.getEncoder(process);
+            asserts.addAll(encoder.encodeProcess(process));
+            asserts.addAll(encoder.encodeProcessRFRelation(process));
         }
 
         asserts.addAll(encodeProgramComputedRelations(program));

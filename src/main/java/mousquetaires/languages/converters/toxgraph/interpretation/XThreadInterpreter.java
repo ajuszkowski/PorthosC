@@ -5,6 +5,8 @@ import mousquetaires.languages.converters.toxgraph.hooks.InterceptionAction;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XAssertionEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
@@ -22,7 +24,7 @@ import java.util.Stack;
 import static mousquetaires.utils.StringUtils.wrap;
 
 
-class XProcessInterpreter extends XInterpreterBase {
+class XThreadInterpreter extends XInterpreterBase {
 
     private final HookManager hookManager;
 
@@ -31,7 +33,7 @@ class XProcessInterpreter extends XInterpreterBase {
     private final Queue<XBlockContext> almostReadyContexts;
     private final Queue<XBlockContext> readyContexts;
 
-    XProcessInterpreter(XProcessId processId, XMemoryManager memoryManager, HookManager hookManager) {
+    XThreadInterpreter(XProcessId processId, XMemoryManager memoryManager, HookManager hookManager) {
         super(processId, memoryManager); //todo: non-uniqueness case
         contextStack = new Stack<>();
         readyContexts = new LinkedList<>();
@@ -156,6 +158,8 @@ class XProcessInterpreter extends XInterpreterBase {
                         case Branching:
                         case Loop:
                             graphBuilder.addEdge(true, context.conditionEvent, context.firstThenBranchEvent);
+                            graphBuilder.addEdge(false, context.conditionEvent, nextEvent);
+                            alreadySetEdgeToNextEvent = true;
                             break;
                     }
                 }
@@ -326,11 +330,10 @@ class XProcessInterpreter extends XInterpreterBase {
     }
 
     @Override
-    public void processAssertion(XLocalMemoryUnit assertion) {
+    public XAssertionEvent processAssertion(XBinaryComputationEvent assertion) {
         throw new XInterpretationError(getIllegalOperationMessage());
     }
-
-    // -- METHOD CALLS -------------------------------------------------------------------------------------------------
+// -- METHOD CALLS -------------------------------------------------------------------------------------------------
 
     // TODO: signature instead of just name
     // TODO: arguments: write all shared to registers and set up control-flow binding

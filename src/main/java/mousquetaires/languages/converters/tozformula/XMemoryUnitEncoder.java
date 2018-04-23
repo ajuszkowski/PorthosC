@@ -1,7 +1,7 @@
 package mousquetaires.languages.converters.tozformula;
 
 import com.microsoft.z3.*;
-import mousquetaires.languages.syntax.xgraph.XAssertion;
+import mousquetaires.languages.syntax.xgraph.events.computation.XAssertionEvent;
 import mousquetaires.utils.Utils;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
@@ -10,8 +10,10 @@ import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
-import org.apache.xpath.operations.Bool;
-import org.omg.CORBA.INTERNAL;
+import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
+import org.w3c.dom.ls.LSLoadEvent;
+
+import static mousquetaires.utils.StringUtils.wrap;
 
 
 class XMemoryUnitEncoder {
@@ -24,8 +26,17 @@ class XMemoryUnitEncoder {
         this.ssaMap = ssaMap;
     }
 
+    public BoolExpr encodeAssertion(XAssertionEvent assertion) {
+        XMemoryUnitEncoderVisitor visitor = getVisitor(assertion, true);
+        Expr result = assertion.accept(visitor);
+        if (!(result instanceof BoolExpr)) {
+            throw new XInterpretationError("non-boolean assertion: " + wrap(result));
+        }
+        return (BoolExpr) result;
+    }
+
     public Expr encodeVar(XMemoryUnit unit, XEvent accessingEvent) {
-        XMemoryUnitEncoderVisitor visitor = getVisitor(accessingEvent);
+        XMemoryUnitEncoderVisitor visitor = getVisitor(accessingEvent, false);
         return unit.accept(visitor);
     }
 
@@ -34,27 +45,31 @@ class XMemoryUnitEncoder {
         refsCollection.updateRef(unit);
         ssaMap.addLastModEvent(unit, event);
 
-        XMemoryUnitEncoderVisitor visitor = createVisitor(event.getProcessId(), refsCollection);
+        XMemoryUnitEncoderVisitor visitor = createVisitor(event.getProcessId(), refsCollection, false);
         return unit.accept(visitor);
     }
 
-
-    private XMemoryUnitEncoderVisitor getVisitor(XEvent event) {
-        return createVisitor(event.getProcessId(), ssaMap.getEventMap(event));
+    private XMemoryUnitEncoderVisitor getVisitor(XEvent event, boolean isLastValue) {
+        return createVisitor(event.getProcessId(), ssaMap.getEventMap(event), isLastValue);
     }
 
-    private XMemoryUnitEncoderVisitor createVisitor(XProcessId processId, VarRefCollection varRefCollection) {
-        return new XMemoryUnitEncoderVisitor(processId, varRefCollection);
+    private XMemoryUnitEncoderVisitor createVisitor(XProcessId processId, VarRefCollection varRefCollection, boolean isLastValue) {
+        return new XMemoryUnitEncoderVisitor(processId, varRefCollection, isLastValue);
     }
+
+    // --
 
     private final class XMemoryUnitEncoderVisitor implements XMemoryUnitVisitor<Expr> {
 
         private final XProcessId processId;
         private final VarRefCollection varRefCollection;
 
-        public XMemoryUnitEncoderVisitor(XProcessId processId, VarRefCollection varRefCollection) {
+        private final boolean isLastValue;
+
+        public XMemoryUnitEncoderVisitor(XProcessId processId, VarRefCollection varRefCollection, boolean isLastValue) {
             this.processId = processId;
             this.varRefCollection = varRefCollection;
+            this.isLastValue = isLastValue;
         }
 
         @Override
@@ -148,12 +163,17 @@ class XMemoryUnitEncoder {
 
         @Override
         public Expr visit(XLocation location) {
-            return Utils.ssaLoc(location, processId, varRefCollection.getRefIndex(location), ctx);
+            if (isLastValue) {
+                return Utils.lastValueLoc(location, ctx);
+            }
+            else {
+                return Utils.ssaLoc(location, processId, varRefCollection.getRefIndex(location), ctx);
+            }
         }
 
         @Override
-        public Expr visit(XAssertion entity) {
-            throw new NotImplementedException(); //todo: here we add assert + visit entity.getAssertion() recursively
+        public Expr visit(XAssertionEvent entity) {
+            return entity.getAssertion().accept(this);
         }
 
         private ArithExpr asArithExpr(Expr expr) {

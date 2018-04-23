@@ -1,6 +1,7 @@
 package mousquetaires.languages.converters.tozformula;
 
 import mousquetaires.languages.syntax.xgraph.memories.XLvalueMemoryUnit;
+import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,9 +42,9 @@ public class VarRefCollection implements Cloneable {
         map.put(memoryUnit, index);
     }
 
-    public Set<XLvalueMemoryUnit> getVars() {
-        return map.keySet();
-    }
+    //public Set<XLvalueMemoryUnit> getVars() {
+    //    return map.keySet();
+    //}
 
     public boolean containsVarRef(XLvalueMemoryUnit memoryUnit) {
         return map.containsKey(memoryUnit);
@@ -62,7 +63,7 @@ public class VarRefCollection implements Cloneable {
 
     public int getRefIndex(XLvalueMemoryUnit memoryUnit) {
         if (!map.containsKey(memoryUnit)) {
-            throw new IllegalStateException("key " + wrap(memoryUnit) + " not found"); // TODO: more eloquent message
+            throw new XInterpretationError("ssa-map: unregistered memory unit: " + wrap(memoryUnit)); // TODO: more eloquent message
         }
         return map.get(memoryUnit);
     }

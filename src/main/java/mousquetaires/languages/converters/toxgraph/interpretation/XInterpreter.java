@@ -1,12 +1,9 @@
 package mousquetaires.languages.converters.toxgraph.interpretation;
 
 import mousquetaires.languages.common.Type;
+import mousquetaires.languages.syntax.xgraph.events.computation.*;
 import mousquetaires.languages.syntax.xgraph.XEntity;
-import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperator;
-import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperator;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
@@ -49,7 +46,7 @@ public interface XInterpreter {
 
     XLocation declareLocation(String name, Type type);
     XRegister declareRegister(String name, Type type);
-    XRegister newTempRegister(Type type);
+    XRegister declareTempRegister(Type type);
     XLvalueMemoryUnit declareUnresolvedUnit(String name, boolean isGlobal);
     XLvalueMemoryUnit getDeclaredUnitOrNull(String name);
     XRegister getDeclaredRegister(String name, XProcessId processId);
@@ -87,6 +84,8 @@ public interface XInterpreter {
 
     //void rememberPostfixOperation(XLocalLvalueMemoryUnit memoryUnit, boolean isIncrement);
 
+    XAssertionEvent processAssertion(XBinaryComputationEvent assertion);
+
     // --
 
     void startBlockDefinition(BlockKind blockKind);
@@ -101,8 +100,6 @@ public interface XInterpreter {
     void finishNonlinearBlockDefinition();
 
     void processJumpStatement(JumpKind kind);
-
-    void processAssertion(XLocalMemoryUnit assertion);
 
     // TODO: signature instead of just name
     // TODO: arguments: write all shared to registers and set up control-flow binding

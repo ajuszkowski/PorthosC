@@ -3,12 +3,8 @@ package mousquetaires.languages.converters.toxgraph.interpretation;
 import mousquetaires.languages.common.Type;
 import mousquetaires.languages.converters.toxgraph.hooks.HookManager;
 import mousquetaires.languages.syntax.xgraph.XEntity;
-import mousquetaires.languages.syntax.xgraph.XCyclicProgram;
-import mousquetaires.languages.syntax.xgraph.XCyclicProgramBuilder;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperator;
-import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryOperator;
+import mousquetaires.languages.syntax.xgraph.events.computation.*;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
@@ -19,6 +15,8 @@ import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.xgraph.process.XProcessKind;
+import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
+import mousquetaires.languages.syntax.xgraph.program.XCyclicProgramBuilder;
 import mousquetaires.memorymodels.wmm.MemoryModel;
 import mousquetaires.utils.patterns.BuilderBase;
 
@@ -64,11 +62,6 @@ public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements 
     }
 
     @Override
-    public void processAssertion(XLocalMemoryUnit assertion) {
-        throw new IllegalStateException("method is not used for this class");//todo: fix inheritance here
-    }
-
-    @Override
     public XLocation declareLocation(String name, Type type) {
         return currentProcess().declareLocation(name, type);
     }
@@ -79,8 +72,8 @@ public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements 
     }
 
     @Override
-    public XRegister newTempRegister(Type type) {
-        return currentProcess().newTempRegister(type);
+    public XRegister declareTempRegister(Type type) {
+        return currentProcess().declareTempRegister(type);
     }
 
     @Override
@@ -102,13 +95,13 @@ public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements 
         resetState(processId);
         switch (processKind) {
             case Prelude:
-                setCurrentProcess(new XLudeInterpreter(XProcessId.PreludeProcessId, memoryManager));
+                setCurrentProcess(new XPreludeInterpreter(XProcessId.PreludeProcessId, memoryManager));
                 break;
             case ConcurrentProcess:
-                setCurrentProcess(new XProcessInterpreter(processId, memoryManager, new HookManager(this)));
+                setCurrentProcess(new XThreadInterpreter(processId, memoryManager, new HookManager(this)));
                 break;
             case Postlude:
-                setCurrentProcess(new XLudeInterpreter(XProcessId.PostludeProcessId, memoryManager));
+                setCurrentProcess(new XPostludeInterpreter(XProcessId.PostludeProcessId, memoryManager));
                 break;
             default:
                 throw new IllegalArgumentException(processKind.name());
@@ -200,6 +193,11 @@ public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements 
                                                     XLocalMemoryUnit firstOperand,
                                                     XLocalMemoryUnit secondOperand) {
         return currentProcess().createComputationEvent(operator, firstOperand, secondOperand);
+    }
+
+    @Override
+    public XAssertionEvent processAssertion(XBinaryComputationEvent assertion) {
+        return currentProcess().processAssertion(assertion);
     }
 
     // --

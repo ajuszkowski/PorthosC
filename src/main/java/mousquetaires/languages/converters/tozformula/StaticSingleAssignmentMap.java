@@ -37,7 +37,9 @@ public class StaticSingleAssignmentMap {
     public void updateRefs(XEvent child, XEvent parent) {
         assert eventVarMap.containsKey(parent) : "access not in topological order: " + child + ", " + parent;
         VarRefCollection parentVarRefs = eventVarMap.get(parent);
-        VarRefCollection childVarRefs = eventVarMap.getOrDefault(child, VarRefCollection.copy(parentVarRefs));
+        VarRefCollection childVarRefs = eventVarMap.getOrDefault(child, new VarRefCollection());
+        childVarRefs.addAll(parentVarRefs);
+
         for (XMemoryUnit memoryUnit : child.accept(memoryUnitCollector)) {
             if (memoryUnit instanceof XLvalueMemoryUnit) {
                 XLvalueMemoryUnit lvalue = (XLvalueMemoryUnit) memoryUnit;

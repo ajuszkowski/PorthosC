@@ -1,7 +1,6 @@
 package mousquetaires.languages.converters.toxgraph.interpretation;
 
 
-import com.beust.jcommander.WrappedParameter;
 import mousquetaires.languages.common.Type;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
@@ -15,9 +14,6 @@ import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
 import mousquetaires.languages.syntax.xgraph.process.XCyclicProcessBuilder;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
-import org.antlr.v4.misc.OrderedHashMap;
-
-import java.util.*;
 
 import static mousquetaires.utils.StringUtils.wrap;
 
@@ -75,21 +71,33 @@ abstract class XInterpreterBase implements XInterpreter {
 
     @Override
     public XLocation declareLocation(String name, Type type) {
+        //XLocation location = memoryManager.declareLocation(name, type);
+        //emitDeclarationEvent(location);
+        //return location;
         return memoryManager.declareLocation(name, type);
     }
 
     @Override
     public XRegister declareRegister(String name, Type type) {
+        //XRegister register = memoryManager.declareRegister(name, type);
+        //emitDeclarationEvent(register);
+        //return register;
         return memoryManager.declareRegister(name, type);
     }
 
     @Override
-    public XRegister newTempRegister(Type type) {
+    public XRegister declareTempRegister(Type type) {
+        //XRegister register = memoryManager.newTempRegister(type);
+        //emitDeclarationEvent(register);
+        //return register;
         return memoryManager.newTempRegister(type);
     }
 
     @Override
     public XLvalueMemoryUnit declareUnresolvedUnit(String name, boolean isGlobal) {
+        //XLvalueMemoryUnit unit = memoryManager.declareUnresolvedUnit(name, isGlobal);
+        //emitDeclarationEvent(unit);
+        //return unit;
         return memoryManager.declareUnresolvedUnit(name, isGlobal);
     }
 
@@ -102,6 +110,12 @@ abstract class XInterpreterBase implements XInterpreter {
     public XRegister getDeclaredRegister(String name, XProcessId processId) {
         return memoryManager.getDeclaredRegister(name, processId);
     }
+
+    //public XDeclarationEvent emitDeclarationEvent(XMemoryUnit memoryUnit) {
+    //    XDeclarationEvent event = new XDeclarationEvent(createEventInfo(), memoryUnit);
+    //    processNextEvent(event);
+    //    return event;
+    //}
 
     // --
 

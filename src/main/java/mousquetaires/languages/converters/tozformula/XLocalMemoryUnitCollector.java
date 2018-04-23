@@ -1,16 +1,14 @@
 package mousquetaires.languages.converters.tozformula;
 
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XAssertionEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XNopEvent;
-import mousquetaires.languages.syntax.xgraph.events.memory.XInitialWriteEvent;
-import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
-import mousquetaires.languages.syntax.xgraph.events.memory.XRegisterMemoryEvent;
-import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
@@ -20,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 
+// TODO: remove this class, use XMemoryUnitCollector and cast to local memory unit
 public class XLocalMemoryUnitCollector implements XEventVisitor<Iterable<XLocalMemoryUnit>> {
 
     @Override
@@ -31,6 +30,20 @@ public class XLocalMemoryUnitCollector implements XEventVisitor<Iterable<XLocalM
     public Iterable<XLocalMemoryUnit> visit(XBinaryComputationEvent event) {
         return Arrays.asList(event.getFirstOperand(), event.getSecondOperand());
     }
+
+    @Override
+    public Iterable<XLocalMemoryUnit> visit(XAssertionEvent event) {
+        return event.getAssertion().accept(this);
+    }
+
+    //@Override
+    //public Iterable<XLocalMemoryUnit> visit(XDeclarationEvent event) {
+    //    XMemoryUnit unit = event.getUnit();
+    //    if (unit instanceof XLocalMemoryUnit) {
+    //        return Collections.singletonList((XLocalMemoryUnit) unit);
+    //    }
+    //    return Collections.emptyList();
+    //}
 
     @Override
     public Iterable<XLocalMemoryUnit> visit(XInitialWriteEvent event) {
