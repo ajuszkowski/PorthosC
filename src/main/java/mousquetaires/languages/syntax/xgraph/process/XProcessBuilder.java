@@ -8,8 +8,8 @@ import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
 import mousquetaires.languages.converters.tozformula.XLocalMemoryUnitCollector;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.utils.CollectionUtils;
@@ -48,7 +48,8 @@ public class XProcessBuilder extends UnrolledFlowGraphBuilder<XEvent, XProcess> 
 
     @Override
     public void finishBuilding() {
-        for (XEvent node : buildNodesLinearised()) {
+        // todo: commented for debugging
+        /*for (XEvent node : buildNodesLinearised()) {
             XLocalMemoryUnitCollector localMemoryUnitCollector = new XLocalMemoryUnitCollector();
             for (boolean b : FlowGraph.edgeKinds()) {
                 Map<XEvent, Set<XEvent>> reversedEdges = getReversedEdges(b);
@@ -56,7 +57,7 @@ public class XProcessBuilder extends UnrolledFlowGraphBuilder<XEvent, XProcess> 
                     continue;
                 }
                 for (XEvent parent : reversedEdges.get(node)) {
-                    assert condRegMap.containsKey(parent) : parent;
+                    assert condRegMap.containsKey(parent) : parent + ", " + node;
                     assert parent.getRefId() <= node.getRefId() : parent.getRefId() + "," + node.getRefId(); //just a check
 
                     Set<XLocalLvalueMemoryUnit> nodeSet = condRegMap.getOrDefault(node, new HashSet<>());
@@ -72,7 +73,7 @@ public class XProcessBuilder extends UnrolledFlowGraphBuilder<XEvent, XProcess> 
                     condRegMap.put(node, nodeSet);
                 }
             }
-        }
+        }*/
 
         super.finishBuilding();
     }

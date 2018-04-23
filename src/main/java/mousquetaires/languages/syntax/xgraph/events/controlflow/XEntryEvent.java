@@ -1,5 +1,6 @@
-package mousquetaires.languages.syntax.xgraph.events.fake;
+package mousquetaires.languages.syntax.xgraph.events.controlflow;
 
+import mousquetaires.languages.syntax.xgraph.events.XEmptyEventBase;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 import mousquetaires.utils.exceptions.NotSupportedException;
@@ -7,10 +8,12 @@ import mousquetaires.utils.exceptions.NotSupportedException;
 import java.util.Objects;
 
 
-public final class XEntryEvent extends XFakeEvent {
+public final class XEntryEvent extends XEmptyEventBase {
+
+    private static final int ENTRY_EMPTY_EVENT_ID = 0;
 
     public XEntryEvent(XEventInfo info) {
-        super(SOURCE_NODE_REF_ID, info);
+        super(SOURCE_NODE_REF_ID, info, ENTRY_EMPTY_EVENT_ID);
     }
 
     @Override
@@ -32,11 +35,11 @@ public final class XEntryEvent extends XFakeEvent {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof XEntryEvent)) return false;
-        return Objects.equals(getInfo().getProcessId(), ((XEntryEvent) o).getInfo().getProcessId());
+        return eventInfoEquals((XEntryEvent) o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getInfo().stamplessHashCode());
+        return Objects.hash(getInfo().weakHashCode());
     }
 }

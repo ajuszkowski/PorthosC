@@ -9,18 +9,14 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XAssertionEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XNopEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XExitEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XNopEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
-import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.memories.XLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
-
-import java.util.Map;
 
 
 public class XDataflowEncoder implements XEventVisitor<BoolExpr> {

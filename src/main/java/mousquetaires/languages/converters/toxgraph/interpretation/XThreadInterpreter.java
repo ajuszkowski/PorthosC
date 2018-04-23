@@ -8,8 +8,7 @@ import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XAssertionEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
-import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.utils.exceptions.NotImplementedException;
@@ -17,8 +16,8 @@ import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import mousquetaires.utils.exceptions.xgraph.XInterpreterUsageError;
 
 import javax.annotation.Nullable;
+import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Stack;
 
 import static mousquetaires.utils.StringUtils.wrap;
@@ -30,8 +29,8 @@ class XThreadInterpreter extends XInterpreterBase {
 
     // todo: add add/put methods with non-null checks
     private final Stack<XBlockContext> contextStack;
-    private final Queue<XBlockContext> almostReadyContexts;
-    private final Queue<XBlockContext> readyContexts;
+    private final Deque<XBlockContext> almostReadyContexts;
+    private final Deque<XBlockContext> readyContexts;
 
     XThreadInterpreter(XProcessId processId, XMemoryManager memoryManager, HookManager hookManager) {
         super(processId, memoryManager); //todo: non-uniqueness case
@@ -257,6 +256,7 @@ class XThreadInterpreter extends XInterpreterBase {
         processNextEvent(conditionEvent);
         context.setConditionEvent(conditionEvent);
         context.setState(XBlockContext.State.WaitingAdditionalCommand);
+        previousEvent = null;
     }
 
     @Override
@@ -304,7 +304,7 @@ class XThreadInterpreter extends XInterpreterBase {
         }
         context.currentBranchKind = null;
         context.setState(XBlockContext.State.WaitingAdditionalCommand);
-        previousEvent = context.conditionEvent; //todo: check
+        previousEvent = null; //todo: check
     }
 
 
@@ -313,13 +313,14 @@ class XThreadInterpreter extends XInterpreterBase {
         XBlockContext context = contextStack.pop();
         context.currentBranchKind = null;
         context.setState(XBlockContext.State.JustFinished);
-        almostReadyContexts.add(context);
+        almostReadyContexts.addFirst(context);
         previousEvent = null; //not to set too many linear jumps: e.g. `if (a) { while(b) do1(); } do2();`
 
         if (!almostReadyContexts.isEmpty()) {
             readyContexts.addAll(almostReadyContexts);
             almostReadyContexts.clear();
         }
+        previousEvent = null;
     }
 
     @Override

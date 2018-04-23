@@ -2,7 +2,7 @@ package mousquetaires.languages.converters.tozformula;
 
 import com.microsoft.z3.Context;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 

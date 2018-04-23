@@ -2,7 +2,7 @@ package mousquetaires.languages.converters.toxgraph.interpretation;
 
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.fake.XJumpEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
 
 import java.util.ArrayList;
 import java.util.List;
