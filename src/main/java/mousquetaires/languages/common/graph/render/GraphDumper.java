@@ -25,11 +25,16 @@ public class GraphDumper {
 
     public static <T extends FlowGraphNode> boolean tryDumpToFile(FlowGraph<T> graph, String filePath, String fileName) {
         Graph vizGraph = graph("graph").directed();
-        for (boolean edgeType : new boolean[]{true, false}) {
-            for (Map.Entry<T, T> pair : graph.getEdges(edgeType).entrySet()) {
-                Node fromNode = node(pair.getKey().toString());  // TODO: node serializer
-                Node toNode = node(pair.getValue().toString());  // TODO: node serializer
-                Link edge = to(toNode).with( edgeType ? Style.SOLID : Style.DASHED );
+        for (boolean b : FlowGraph.edgeKinds()) {
+            for (Map.Entry<T, T> pair : graph.getEdges(b).entrySet()) {
+
+                T from = pair.getKey();
+                Node fromNode = node(from.toString() + "\n{" + from.hashCode() + "}");  // TODO: node serializer
+
+                T to = pair.getValue();
+                Node toNode = node(to.toString() + "\n{" + to.hashCode() + "}");  // TODO: node serializer
+
+                Link edge = to(toNode).with( b ? Style.SOLID : Style.DASHED );
                 vizGraph = vizGraph.with(fromNode.link(edge));
             }
         }
