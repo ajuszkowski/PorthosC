@@ -53,8 +53,7 @@ abstract class XLvalueMemoryUnitBase extends XMemoryUnitBase implements XLvalueM
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(uniqueId, getName());
+        return Objects.hash(uniqueId, getName(), isResolved());
     }
 
     private static int lastUniqueId = 0;
