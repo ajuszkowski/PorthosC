@@ -60,13 +60,20 @@ public class XEventInfo {
                 Objects.equals(getProcessId(), that.getProcessId());
     }
 
+    public boolean weakEquals(Object o) {
+        if (this == o) { return true; }
+        if (!(o instanceof XEventInfo)) { return false; }
+        XEventInfo that = (XEventInfo) o;
+        return Objects.equals(getProcessId(), that.getProcessId());
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(getProcessId(), getEventId());
     }
 
-    public int stamplessHashCode() {
-        return Objects.hash(super.hashCode(), getProcessId());
+    public int weakHashCode() {
+        return Objects.hash(getProcessId());
     }
 
 

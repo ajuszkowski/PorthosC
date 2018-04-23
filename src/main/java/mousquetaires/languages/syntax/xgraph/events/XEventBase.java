@@ -45,13 +45,22 @@ public abstract class XEventBase implements XEvent {
         if (this == o) { return true; }
         if (!(o instanceof XEventBase)) { return false; }
         XEventBase that = (XEventBase) o;
-        return getRefId() == that.getRefId() &&
-                Objects.equals(getInfo(), that.getInfo());
+        return this.getRefId() == that.getRefId() &&
+                this.getInfo().equals(that.getInfo());
+    }
+
+    public boolean weakEquals(XEventBase that) {
+        return this.getRefId() == that.getRefId() &&
+                this.getInfo().weakEquals(that.getInfo());
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(getRefId(), getInfo());
+    }
+
+    public int weakHashCode() {
+        return Objects.hash(getRefId(), getInfo().weakHashCode());
     }
 
     protected String wrapWithBracketsAndDepth(String message) {

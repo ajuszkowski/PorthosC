@@ -33,16 +33,17 @@ public final class XExitEvent extends XEmptyEventBase {
     }
 
     // TODO: split exit into  two types: bound-achieved / bound-not-achieved
+    // todo: do not forget to set up hashcode for the splitted exit events
 
     @Override
     public boolean equals(Object o) {
         if (this == o) { return true; }
         if (!(o instanceof XExitEvent)) { return false; }
-        return eventInfoEquals((XExitEvent) o);
+        return this.weakEquals((XExitEvent) o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getInfo().weakHashCode());
+        return weakHashCode();
     }
 }

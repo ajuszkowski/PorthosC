@@ -35,11 +35,11 @@ public final class XEntryEvent extends XEmptyEventBase {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof XEntryEvent)) return false;
-        return eventInfoEquals((XEntryEvent) o);
+        return this.weakEquals((XEntryEvent) o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getInfo().weakHashCode());
+        return weakHashCode();
     }
 }
