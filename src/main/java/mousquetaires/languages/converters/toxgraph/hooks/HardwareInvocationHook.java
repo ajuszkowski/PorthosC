@@ -15,6 +15,9 @@ class HardwareInvocationHook implements InvocationHook {
 
     private final XProgramInterpreter program;
 
+    // FOR DEBUG ONLY: THIS MUST BE A TYPE-CHECK! For now, the code is just a map from the old code.
+    private final ImmutableList<String> valid_atomics = ImmutableList.of("_sc", "_rx", "_na", "_rel" );
+
     HardwareInvocationHook(XProgramInterpreter program) {
         this.program = program;
     }
@@ -37,6 +40,9 @@ class HardwareInvocationHook implements InvocationHook {
                     }
                     // TODO: it's better to check the type of atomic as well (not only name)
                     String atomic = ((XLvalueMemoryUnit) atomicUnit).getName();
+                    if (!valid_atomics.contains(atomic)) {
+                        return null;
+                    }
 
                     XMemoryUnit argument = arguments[1];
                     XLocalMemoryUnit argumentLocal = program.tryConvertToLocalOrNull(argument);
