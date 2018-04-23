@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.common.Type;
 import mousquetaires.languages.converters.toxgraph.interpretation.XInterpreter;
 import mousquetaires.languages.converters.toxgraph.interpretation.XProgramInterpreter;
+import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
@@ -17,15 +18,16 @@ import mousquetaires.languages.syntax.xgraph.process.XProcessKind;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
+import mousquetaires.languages.syntax.ytree.expressions.YEmptyExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YLabeledVariable;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YLabeledVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariable;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryOperator;
 import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryExpression;
@@ -43,7 +45,9 @@ import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import mousquetaires.utils.exceptions.xgraph.XInterpreterUsageError;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static mousquetaires.utils.StringUtils.wrap;
@@ -85,7 +89,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     public XEvent visit(YProcessStatement node) {
         program.startProcessDefinition(XProcessKind.ConcurrentProcess, node.getProcessId());
         for (YParameter parameter : node.getSignature().getParameters()) {
-            YVariable parameterVariable = parameter.getVariable();
+            YVariableRef parameterVariable = parameter.getVariable();
             String name = parameterVariable.getName();
             Type type = YType2TypeConverter.convert(parameter.getType());
             if (parameterVariable.isGlobal()) {
@@ -105,7 +109,12 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     @Override
     public XEntity visit(YPostludeStatement node) {
         program.startProcessDefinition(XProcessKind.Postlude, XProcessId.PostludeProcessId);
-        node.getExpression().accept(this);
+        XEntity expression = node.getExpression().accept(this);
+        if (!(expression instanceof XBinaryComputationEvent)) {
+            throw new XInterpreterUsageError("Could not convert assertion expression " +
+                                                     wrap(expression) + " to a binary computation event");
+        }
+        program.processAssertion((XBinaryComputationEvent) expression);
         program.finishProcessDefinition();
         return null; //statements return null
     }
@@ -151,6 +160,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XEvent visit(YInvocationExpression node) {
+        // TODO: visit base expression (after implementing member access after implementing arrays)
         YExpression yBaseExpression = node.getBaseExpression();
         //if (!(yBaseExpression instanceof YVariableRef)) {
         //    throw new NotImplementedException("For now, only simple named method invocations are supported: unsupported base expression: " + wrap(yBaseExpression));
@@ -158,8 +168,8 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         XMemoryUnit receiver = null;
         // TODO: work with signature here!
         String methodName;
-        if (yBaseExpression instanceof YVariable) {
-            methodName = ((YVariable) yBaseExpression).getName();
+        if (yBaseExpression instanceof YVariableRef) {
+            methodName = ((YVariableRef) yBaseExpression).getName();
         }
         else if (yBaseExpression instanceof YMemberAccessExpression) {
             YMemberAccessExpression asMemberAccess = (YMemberAccessExpression) yBaseExpression;
@@ -189,6 +199,11 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     }
 
     @Override
+    public XEntity visit(YEmptyExpression node) {
+        return program.emitNopEvent();
+    }
+
+    @Override
     public XEntity visit(YUnaryExpression node) {
         YUnaryOperator yOperator = node.getOperator();
         YExpression yBaseExpression = node.getExpression();
@@ -199,7 +214,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         boolean isPostfixDecrement = (yOperator == YUnaryOperator.PostfixDecrement);
 
         if (isPostfixIncrement || isPostfixDecrement) {
-            XRegister tempReg = program.newTempRegister(base.getType());
+            XRegister tempReg = program.declareTempRegister(base.getType());
             XConstant constantOne = XConstant.create(1, base.getType());
             XBinaryOperator operator = isPostfixIncrement ? XBinaryOperator.Addition : XBinaryOperator.Subtraction;
             XComputationEvent increment = program.createComputationEvent(operator, tempReg, constantOne);
@@ -331,14 +346,10 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     @Override
     public XEvent visit(YLinearStatement node) {
         YExpression yExpression = node.getExpression();
-        if (yExpression != null) {
-            XEntity visited = yExpression.accept(this);
-            if (!(visited instanceof XEvent)) {
-                throw new XInterpretationError("Could not interpret linear statement: " + wrap(node.getExpression()));
-            }
-            return null; //statements return null
+        XEntity visited = yExpression.accept(this);
+        if (!(visited instanceof XEvent)) {
+            throw new XInterpretationError("Could not interpret linear statement: " + wrap(node.getExpression()));
         }
-        program.emitNopEvent();
         return null; //statements return null
     }
 
@@ -412,16 +423,15 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XLvalueMemoryUnit visit(YVariableDeclarationStatement node) {
-        YVariable variable = node.getVariable();
+        YVariableRef variable = node.getVariable();
         String name = variable.getName();
         Type type = YType2TypeConverter.convert(node.getType());
         if (variable.isGlobal()) {
-            program.declareLocation(name, type);
+            return program.declareLocation(name, type);
         }
         else {
-            program.declareRegister(name, type);
+            return program.declareRegister(name, type);
         }
-        return null; //statements return null
     }
     //
     //@Override
@@ -436,7 +446,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     //}
 
     @Override
-    public XLvalueMemoryUnit visit(YVariable variable) {
+    public XLvalueMemoryUnit visit(YVariableRef variable) {
         String name = variable.getName();
         XLvalueMemoryUnit result = program.getDeclaredUnitOrNull(name);
         return (result == null)
@@ -444,7 +454,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
                 : result;
     }
 
-    public XLvalueMemoryUnit visit(YLabeledVariable variable) {
+    public XLvalueMemoryUnit visit(YLabeledVariableRef variable) {
         return program.getDeclaredRegister(variable.getName(), new XProcessId(variable.getLabel()));
     }
 
@@ -458,6 +468,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     public XEvent visit(YParameter node) {
         throw new NotImplementedException();
     }
+
 
     private XMemoryUnit tryCastToMemoryUnit(XEntity expression) {
         if (expression instanceof XMemoryUnit) {

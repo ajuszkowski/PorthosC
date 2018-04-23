@@ -1,12 +1,12 @@
 package mousquetaires.languages.syntax.xgraph.events.barrier;
 
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.languages.syntax.xgraph.events.XEventBase;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
+import mousquetaires.languages.syntax.xgraph.events.XEmptyEventBase;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
-public class XBarrierEvent extends XEventBase {
+public class XBarrierEvent extends XEmptyEventBase {
 
     public enum Kind {
         Mfence,
@@ -31,7 +31,7 @@ public class XBarrierEvent extends XEventBase {
     }
 
     private XBarrierEvent(int refId, XEventInfo info, Kind kind) {
-        super(refId, info);
+        super(refId, info, createUniqueEventId());
         this.kind = kind;
     }
 

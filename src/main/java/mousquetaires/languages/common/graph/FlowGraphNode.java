@@ -9,7 +9,7 @@ public interface FlowGraphNode extends NamedAtom {
     int SOURCE_NODE_REF_ID = 0;
     int SINK_NODE_REF_ID = Integer.MAX_VALUE;
 
-    int getId();
+    int getUniqueId();
 
     int getRefId();
 }

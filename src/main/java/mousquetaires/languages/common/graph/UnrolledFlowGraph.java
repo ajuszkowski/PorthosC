@@ -19,8 +19,8 @@ public abstract class UnrolledFlowGraph<N extends FlowGraphNode>
     private ImmutableMap<N, ImmutableSet<N>> edgesReversed;
     private ImmutableMap<N, ImmutableSet<N>> altEdgesReversed;
 
-    private final ImmutableList<N> nodesLinearised; // TODO: need new builder for test unrolled graph
-    private final ImmutableMap<N, Integer> condLevelMap;
+    private final ImmutableList<N> nodesLinearised;
+    private final ImmutableMap<N, Integer> condLevelMap;//TODO: this is unnecessary information
 
     public UnrolledFlowGraph(N source,
                              N sink,

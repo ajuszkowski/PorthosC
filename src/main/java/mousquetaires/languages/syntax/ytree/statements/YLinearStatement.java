@@ -19,10 +19,10 @@ public class YLinearStatement extends YStatement {
 
     private YLinearStatement(CodeLocation location, String label, YExpression expression) {
         super(location, label);
+        assert expression != null;//TODO: add non-null asserts everywhere
         this.expression = expression;
     }
 
-    @Nullable
     public YExpression getExpression() {
         return expression;
     }

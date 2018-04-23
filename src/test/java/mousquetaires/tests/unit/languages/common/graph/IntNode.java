@@ -18,7 +18,7 @@ public final class IntNode implements FlowGraphNode {
     }
 
     @Override
-    public int getId() {
+    public int getUniqueId() {
         return value;
     }
 
@@ -29,7 +29,7 @@ public final class IntNode implements FlowGraphNode {
 
     @Override
     public String getName() {
-        return "[" + "n=" + getId() + ",d=" + getRefId() + "]";
+        return "[" + "n=" + getUniqueId() + ",d=" + getRefId() + "]";
     }
 
     @Override

@@ -3,7 +3,7 @@ package mousquetaires.memorymodels.relations;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
-import mousquetaires.languages.syntax.xgraph.XProgram;
+import mousquetaires.languages.syntax.xgraph.program.XProgram;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -2,7 +2,7 @@ package mousquetaires.memorymodels.relations;
 
 import com.google.common.collect.ImmutableSet;
 import com.microsoft.z3.*;
-import mousquetaires.languages.syntax.xgraph.XProgram;
+import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
 import mousquetaires.memorymodels.Encodings;

@@ -8,6 +8,8 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+import static mousquetaires.utils.StringUtils.wrap;
+
 
 public abstract class FlowGraphBuilder<N extends FlowGraphNode, G extends FlowGraph<N>>
         extends BuilderBase<G>
@@ -98,7 +100,9 @@ public abstract class FlowGraphBuilder<N extends FlowGraphNode, G extends FlowGr
         if (edgesMap.containsKey(from)) {
             N oldTo = edgesMap.get(from);
             if (!oldTo.equals(to)) {
-                System.err.println("WARNING: overwriting edge " + from + " -> " + oldTo + " with edge " + from + " -> " + to);
+                System.err.println("WARNING: overwriting edge " + wrap(from + " -> " + oldTo)
+                                           + " with edge " + wrap(from + " -> " + to));
+                edgesMap.remove(from, oldTo);
             }
         }
 

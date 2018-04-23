@@ -25,6 +25,6 @@ public class UnrolledIntFlowGraphBuilder extends UnrolledFlowGraphBuilder<IntNod
 
     @Override
     public IntNode createNodeRef(IntNode node, int newRefId) {
-        return new IntNode(node.getId(), newRefId);
+        return new IntNode(node.getUniqueId(), newRefId);
     }
 }

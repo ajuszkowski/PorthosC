@@ -16,7 +16,7 @@ public abstract class XEventBase implements XEvent {
     }
 
     @Override
-    public int getId() {
+    public int getUniqueId() {
         return getInfo().getEventId();
     }
 
@@ -32,7 +32,7 @@ public abstract class XEventBase implements XEvent {
 
     @Override
     public String getName() {
-        return "e_" + getInfo().getText();
+        return "e_" + hashCode();
     }
 
     @Override

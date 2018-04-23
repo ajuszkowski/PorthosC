@@ -1,5 +1,7 @@
 package mousquetaires.languages.converters.toxgraph.hooks;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import mousquetaires.languages.converters.toxgraph.interpretation.XProgramInterpreter;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
@@ -7,6 +9,9 @@ import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.memorymodels.wmm.MemoryModel;
 import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XMethodInvocationError;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static mousquetaires.utils.StringUtils.wrap;
 
@@ -182,7 +187,7 @@ class HardwareInvocationHook implements InvocationHook {
     }
 
     private XLocalLvalueMemoryUnit emitLoad(XSharedMemoryUnit receiverShared) {
-        XLocalLvalueMemoryUnit resultRegister = program.newTempRegister(receiverShared.getType());
+        XLocalLvalueMemoryUnit resultRegister = program.declareTempRegister(receiverShared.getType());
         program.emitMemoryEvent(resultRegister, receiverShared);
         return resultRegister;
     }

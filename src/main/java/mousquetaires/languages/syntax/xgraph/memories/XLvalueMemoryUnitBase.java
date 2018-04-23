@@ -13,7 +13,7 @@ abstract class XLvalueMemoryUnitBase extends XMemoryUnitBase implements XLvalueM
 
     private final int uniqueId;
     private final String name;
-    private final boolean isResolved;
+    private final boolean isResolved; //TODO: this information should be stored as a map in MemoryManager!!!
 
     XLvalueMemoryUnitBase(String name, Type type, boolean isResolved) {
         super(type);

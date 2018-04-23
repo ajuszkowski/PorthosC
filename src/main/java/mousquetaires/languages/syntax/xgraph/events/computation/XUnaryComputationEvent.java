@@ -46,7 +46,7 @@ public class XUnaryComputationEvent extends XComputationEventBase {
 
     @Override
     public String toString() {
-        return wrapWithBracketsAndDepth("_c(" + getOperator() + getOperand() + ")");
+        return wrapWithBracketsAndDepth("eval(" + getOperator() + getOperand() + ")");
     }
 
     @Override

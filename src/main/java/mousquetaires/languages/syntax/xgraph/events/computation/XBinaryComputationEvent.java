@@ -20,7 +20,7 @@ public class XBinaryComputationEvent extends XComputationEventBase {
         this(NOT_UNROLLED_REF_ID, info, operator, firstOperand, secondOperand);
     }
 
-    public XBinaryComputationEvent(int refId,
+    protected XBinaryComputationEvent(int refId,
                                    XEventInfo info,
                                    XBinaryOperator operator,
                                    XLocalMemoryUnit firstOperand,
@@ -59,7 +59,7 @@ public class XBinaryComputationEvent extends XComputationEventBase {
 
     @Override
     public String toString() {
-        return wrapWithBracketsAndDepth("_c(" + getFirstOperand() + getOperator() + getSecondOperand() + ")");
+        return wrapWithBracketsAndDepth("eval(" + getFirstOperand() + getOperator() + getSecondOperand() + ")");
     }
 
     @Override
