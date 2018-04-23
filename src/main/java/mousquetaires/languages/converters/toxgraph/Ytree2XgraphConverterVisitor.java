@@ -170,7 +170,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
             throw new NotImplementedException("only 'receiver.method()' and 'method()' invocations are supported so far");
         }
         ImmutableList<YExpression> yArguments = node.getArguments();
-        Set<XMemoryUnit> argumentsList = new HashSet<>(yArguments.size());
+        List<XMemoryUnit> argumentsList = new ArrayList<>(yArguments.size());
         for (YExpression yArgument : yArguments) {
             argumentsList.add(tryCastToMemoryUnit(yArgument.accept(this)));
         }
