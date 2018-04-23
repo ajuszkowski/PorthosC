@@ -5,6 +5,8 @@ import mousquetaires.languages.common.Type;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
+import java.util.Objects;
+
 
 /**
  * Shortcut for working with constant values as with values stored in local memoryevents (registers).
@@ -41,5 +43,18 @@ public final class XConstant extends XMemoryUnitBase implements XLocalMemoryUnit
     @Override
     public String toString() {
         return "const_" + getValue();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) { return true; }
+        if (!(o instanceof XConstant)) { return false; }
+        XConstant xConstant = (XConstant) o;
+        return Objects.equals(getValue(), xConstant.getValue());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getValue());
     }
 }

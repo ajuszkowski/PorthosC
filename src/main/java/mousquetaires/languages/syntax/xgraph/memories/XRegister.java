@@ -4,6 +4,8 @@ import mousquetaires.languages.common.Type;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 
+import java.util.Objects;
+
 
 public final class XRegister extends XLvalueMemoryUnitBase implements XLocalLvalueMemoryUnit {
 
@@ -22,5 +24,19 @@ public final class XRegister extends XLvalueMemoryUnitBase implements XLocalLval
     @Override
     public <T> T accept(XMemoryUnitVisitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) { return true; }
+        if (!(o instanceof XRegister)) { return false; }
+        if (!super.equals(o)) { return false; }
+        XRegister xRegister = (XRegister) o;
+        return Objects.equals(getProcessId(), xRegister.getProcessId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getProcessId());
     }
 }
