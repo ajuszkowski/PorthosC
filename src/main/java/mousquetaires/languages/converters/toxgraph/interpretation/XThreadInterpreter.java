@@ -156,6 +156,8 @@ class XThreadInterpreter extends XInterpreterBase {
                             assert false : "no then-events are allowed for linear statements";
                             break;
                         case Branching:
+                            graphBuilder.addEdge(true, context.conditionEvent, context.firstThenBranchEvent);
+                            break;
                         case Loop:
                             graphBuilder.addEdge(true, context.conditionEvent, context.firstThenBranchEvent);
                             graphBuilder.addEdge(false, context.conditionEvent, nextEvent);
