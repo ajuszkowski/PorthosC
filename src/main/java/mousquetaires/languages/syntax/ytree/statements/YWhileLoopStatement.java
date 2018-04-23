@@ -43,7 +43,7 @@ public class YWhileLoopStatement extends YStatement {
 
     @Override
     public String toString() {
-        return String.format("while (%s) { %s }", getCondition(), getBody());
+        return String.format("while (%s) %s", getCondition(), getBody());
     }
 
     @Override

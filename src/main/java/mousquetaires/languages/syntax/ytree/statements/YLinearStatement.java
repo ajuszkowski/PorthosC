@@ -1,6 +1,7 @@
 package mousquetaires.languages.syntax.ytree.statements;
 
 import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.syntax.ytree.expressions.YEmptyExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
@@ -12,8 +13,8 @@ public class YLinearStatement extends YStatement {
 
     private final YExpression expression;
 
-    public YLinearStatement(CodeLocation location, YExpression expression) {
-        this(location, newLabel(), expression);
+    public YLinearStatement(YExpression expression) {
+        this(expression.codeLocation(), newLabel(), expression);
     }
 
     private YLinearStatement(CodeLocation location, String label, YExpression expression) {
@@ -24,10 +25,6 @@ public class YLinearStatement extends YStatement {
     @Nullable
     public YExpression getExpression() {
         return expression;
-    }
-
-    public static YLinearStatement createEmptyStatement() {
-        return new YLinearStatement(CodeLocation.empty, null);
     }
 
     @Override

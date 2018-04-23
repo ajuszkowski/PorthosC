@@ -7,15 +7,15 @@ import mousquetaires.utils.exceptions.NotSupportedException;
 import java.util.Objects;
 
 
-public class YLabeledVariable extends YVariable {
+public class YLabeledVariableRef extends YVariableRef {
 
     private final String label;
 
-    public YLabeledVariable(CodeLocation location, String label, String name) {
+    public YLabeledVariableRef(CodeLocation location, String label, String name) {
         this(location, label, name, 0);
     }
 
-    private YLabeledVariable(CodeLocation location, String label, String name, int pointerLevel) {
+    private YLabeledVariableRef(CodeLocation location, String label, String name, int pointerLevel) {
         super(location, Kind.Local, name, pointerLevel);
         this.label = label;
     }
@@ -26,13 +26,13 @@ public class YLabeledVariable extends YVariable {
     }
 
     @Override
-    public YVariable asGlobal() {
+    public YVariableRef asGlobal() {
         throw new NotSupportedException("Labeled variables may be only local");
     }
 
     @Override
-    public YLabeledVariable withPointerLevel(int level) {
-        return new YLabeledVariable(codeLocation(), getLabel(), getName(), level);
+    public YLabeledVariableRef withPointerLevel(int level) {
+        return new YLabeledVariableRef(codeLocation(), getLabel(), getName(), level);
     }
 
     @Override
@@ -48,9 +48,9 @@ public class YLabeledVariable extends YVariable {
     @Override
     public boolean equals(Object o) {
         if (this == o) { return true; }
-        if (!(o instanceof YLabeledVariable)) { return false; }
+        if (!(o instanceof YLabeledVariableRef)) { return false; }
         if (!super.equals(o)) { return false; }
-        YLabeledVariable that = (YLabeledVariable) o;
+        YLabeledVariableRef that = (YLabeledVariableRef) o;
         return Objects.equals(getLabel(), that.getLabel());
     }
 

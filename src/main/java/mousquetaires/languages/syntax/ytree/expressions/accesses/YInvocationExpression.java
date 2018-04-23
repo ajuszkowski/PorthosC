@@ -48,13 +48,11 @@ public class YInvocationExpression extends YMultiExpression {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append(getBaseExpression()).append('(');
-        ImmutableList<YExpression> arguments = getArguments();
-        int lastIndex = arguments.size() - 1;
-        for (int i = 0; i < lastIndex; i++) {
-            sb.append(arguments.get(i)).append(", ");
+        sb.append(getBaseExpression()).append("(");
+        for (YExpression arg : getArguments()) {
+            sb.append(arg).append(", ");
         }
-        sb.append(arguments.get(lastIndex)).append(')');
+        sb.append(")");
         return sb.toString();
     }
 }

@@ -9,9 +9,9 @@ public class YParameter implements YAtom {
 
     private final CodeLocation location;
     private final YType type;
-    private final YVariable variable;
+    private final YVariableRef variable;
 
-    public YParameter(CodeLocation location, YType type, YVariable variable) {
+    public YParameter(CodeLocation location, YType type, YVariableRef variable) {
         this.location = location;
         this.variable = variable.asGlobal();
         this.type = type;
@@ -21,7 +21,7 @@ public class YParameter implements YAtom {
         return type;
     }
 
-    public YVariable getVariable() {
+    public YVariableRef getVariable() {
         return variable;
     }
 
@@ -43,6 +43,11 @@ public class YParameter implements YAtom {
     @Override
     public CodeLocation codeLocation() {
         return location;
+    }
+
+    @Override
+    public String toString() {
+        return "param(" + getType() + getVariable() + ")";
     }
 
     @Override

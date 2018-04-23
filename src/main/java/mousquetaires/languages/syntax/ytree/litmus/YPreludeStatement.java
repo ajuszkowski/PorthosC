@@ -21,6 +21,11 @@ public final class YPreludeStatement extends YUnlabeledStatement {
     }
 
     @Override
+    public String toString() {
+        return "init { " + initialWrites + " }";
+    }
+
+    @Override
     public <T> T accept(YtreeVisitor<T> visitor) {
         return visitor.visit(this);
     }

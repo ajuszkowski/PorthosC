@@ -1,5 +1,6 @@
 package mousquetaires.languages.syntax.ytree.types;
 
+import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
@@ -7,11 +8,16 @@ import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
 
 
 public class YMethodSignature implements YEntity {
+
     private final String name;
     private final YType returnType;
-    private final YParameter[] parameters;
+    private final ImmutableList<YParameter> parameters;
 
-    public YMethodSignature(String name, YType returnType, YParameter[] parameters) {
+    public YMethodSignature(String name, YType returnType) {
+        this(name, returnType, ImmutableList.of());
+    }
+
+    public YMethodSignature(String name, YType returnType, ImmutableList<YParameter> parameters) {
         this.name = name;
         this.returnType = returnType;
         this.parameters = parameters;
@@ -25,7 +31,7 @@ public class YMethodSignature implements YEntity {
         return returnType;
     }
 
-    public YParameter[] getParameters() {
+    public ImmutableList<YParameter> getParameters() {
         return parameters;
     }
 
@@ -38,9 +44,9 @@ public class YMethodSignature implements YEntity {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[").append(returnType).append(" ").append(name).append("(");
-        for (int i = 0; i < parameters.length; i++) {
-            sb.append(parameters[i]);
-            if (i < parameters.length - 1) {
+        for (int i = 0; i < parameters.size(); i++) {
+            sb.append(parameters.get(i));
+            if (i < parameters.size() - 1) {
                 sb.append(",");
             }
         }

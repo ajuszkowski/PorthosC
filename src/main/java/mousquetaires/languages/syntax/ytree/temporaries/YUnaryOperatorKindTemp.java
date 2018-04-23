@@ -1,11 +1,5 @@
 package mousquetaires.languages.syntax.ytree.temporaries;
 
-import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-
-import java.util.Iterator;
-
-
 /**
  * unaryOperator
  * :   '&' | '*' | '+' | '-' | '~' | '!'

@@ -2,14 +2,15 @@ package mousquetaires.languages.syntax.ytree.visitors.ytree;
 
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
+import mousquetaires.languages.syntax.ytree.expressions.YEmptyExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YIndexerExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YInvocationExpression;
 import mousquetaires.languages.syntax.ytree.expressions.accesses.YMemberAccessExpression;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YLabeledVariable;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YLabeledVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariable;
+import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
 import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryOperator;
 import mousquetaires.languages.syntax.ytree.expressions.ternary.YTernaryExpression;
@@ -44,6 +45,7 @@ public interface YtreeVisitor<T> {
 
     T visit(YFunctionDefinition node);
 
+    T visit(YEmptyExpression node);
     T visit(YUnaryExpression node);
     T visit(YUnaryOperator node);
 
@@ -52,8 +54,8 @@ public interface YtreeVisitor<T> {
 
     T visit(YTernaryExpression node);
 
-    T visit(YVariable node);
-    T visit(YLabeledVariable node);
+    T visit(YVariableRef node);
+    T visit(YLabeledVariableRef node);
     T visit(YType node);
     T visit(YAssignmentExpression node);
 

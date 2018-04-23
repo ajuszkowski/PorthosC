@@ -7,15 +7,15 @@ import java.util.Objects;
 
 
 // TODO: NOTE!!! IN FUNCTION INVOCATION FUNC. NAME IS YVariable!
-public class YVariable extends YAtomBase {
+public class YVariableRef extends YAtomBase {
 
     private final String name;
 
-    public YVariable(CodeLocation location, String name) {
+    public YVariableRef(CodeLocation location, String name) {
         this(location, Kind.Local, name, 0);
     }
 
-    protected YVariable(CodeLocation location, Kind kind, String name, int pointerLevel) {
+    protected YVariableRef(CodeLocation location, Kind kind, String name, int pointerLevel) {
         super(location, kind, pointerLevel);
         this.name = name;
     }
@@ -24,13 +24,13 @@ public class YVariable extends YAtomBase {
         return name;
     }
 
-    public YVariable asGlobal() {
-        return new YVariable(codeLocation(), Kind.Global, getName(), getPointerLevel());
+    public YVariableRef asGlobal() {
+        return new YVariableRef(codeLocation(), Kind.Global, getName(), getPointerLevel());
     }
 
     @Override
-    public YVariable withPointerLevel(int level) {
-        return new YVariable(codeLocation(), getKind(), getName(), level);
+    public YVariableRef withPointerLevel(int level) {
+        return new YVariableRef(codeLocation(), getKind(), getName(), level);
     }
 
     @Override
@@ -47,9 +47,9 @@ public class YVariable extends YAtomBase {
     @Override
     public boolean equals(Object o) {
         if (this == o) { return true; }
-        if (!(o instanceof YVariable)) { return false; }
+        if (!(o instanceof YVariableRef)) { return false; }
         if (!super.equals(o)) { return false; }
-        YVariable that = (YVariable) o;
+        YVariableRef that = (YVariableRef) o;
         return getPointerLevel() == that.getPointerLevel() &&
                 Objects.equals(getName(), that.getName());
     }
