@@ -8,9 +8,8 @@ import mousquetaires.languages.syntax.ytree.litmus.YProcessStatement;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.statements.YVariableDeclarationStatement;
-import mousquetaires.languages.syntax.ytree.types.YMockType;
 import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
+import mousquetaires.languages.syntax.ytree.types.YMockType;
 import mousquetaires.tests.unit.UnitTestPaths;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -25,11 +24,11 @@ public class C2Ytree_ProcessStatement_UnitTest extends C2Ytree_Statement_UnitTes
     public void test() {
         Iterator<? extends YEntity> expected = getIterator(
                 new YProcessStatement(location,
-                                      new YMethodSignature("?", new YMockType(), new YParameter[0]),// TODO: replace this mock signature with real
+                                      new YMethodSignature("?", new YMockType()),// TODO: replace this mock signature with real
                                       new YCompoundStatement(location,
                                                              true,
                                                              new YVariableDeclarationStatement(location, typeInt, variableA),
-                                                             new YLinearStatement(location, new YAssignmentExpression(location, variableA, constant1)))),
+                                                             new YLinearStatement(new YAssignmentExpression(location, variableA, constant1)))),
                 new YPostludeStatement(location, YBinaryOperator.Equals.createExpression(location, variableA, constant2)));
 
         run(UnitTestPaths.c11StatementsDirectory + "processStatement.c", expected);

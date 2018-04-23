@@ -21,16 +21,16 @@ public class C2Ytree_BranchingStatement_UnitTest extends C2Ytree_Statement_UnitT
     @Test
     public void test() {
         Iterator<? extends YEntity> expected = getIterator(new YFunctionDefinition(location,
-                new YMethodSignature("?", new YMockType(), new YParameter[0]),// TODO: replace this mock signature with real
+                new YMethodSignature("?", new YMockType()),// TODO: replace this mock signature with real
                 new YCompoundStatement(location, true,
                         new YBranchingStatement(location, YBinaryOperator.Equals.createExpression(location, variableX, constant1),
                                 new YCompoundStatement(location, true,
-                                    new YLinearStatement(location, new YAssignmentExpression(location, variableY, constant2)),
-                                    new YLinearStatement(location, new YAssignmentExpression(location, variableX, variableY))                            ),
+                                    new YLinearStatement(new YAssignmentExpression(location, variableY, constant2)),
+                                    new YLinearStatement(new YAssignmentExpression(location, variableX, variableY))                            ),
                                 new YBranchingStatement(location, YBinaryOperator.Greater.createExpression(location, variableX, constant2),
-                                    new YCompoundStatement(location, true, new YLinearStatement(location, new YAssignmentExpression(location, variableY, constant3))),
+                                    new YCompoundStatement(location, true, new YLinearStatement(new YAssignmentExpression(location, variableY, constant3))),
                                     new YCompoundStatement(location, true))),
-                        new YLinearStatement(location, new YAssignmentExpression(location, variableX, constant4)))));
+                        new YLinearStatement(new YAssignmentExpression(location, variableX, constant4)))));
         run(UnitTestPaths.c11StatementsDirectory + "branchingStatement.c", expected);
     }
 }
