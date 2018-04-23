@@ -12,10 +12,12 @@ import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XStoreMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
-import mousquetaires.languages.syntax.xgraph.process.XProcessId;
+import mousquetaires.languages.syntax.zformula.ZFormulaBuilder;
 import mousquetaires.utils.Utils;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 
 public class XThreadEncoder implements XProcessEncoder {
@@ -32,11 +34,10 @@ public class XThreadEncoder implements XProcessEncoder {
 
     // encodeCF + encodeDF
     @Override
-    public List<BoolExpr> encodeProcess(XProcess process) {
-        List<BoolExpr> asserts = new ArrayList<>();
+    public void encodeProcess(XProcess process, ZFormulaBuilder formulaBuilder) {
         Iterator<XEvent> nodesIterator = process.linearisedNodesIterator();
         // execute the entry event indefinitely:
-        asserts.add(process.source().executes(ctx));
+        formulaBuilder.addAssert(process.source().executes(ctx));
 
         while (nodesIterator.hasNext()) {
             XEvent currentEvent = nodesIterator.next();
@@ -59,7 +60,7 @@ public class XThreadEncoder implements XProcessEncoder {
                 BoolExpr eitherParentAssert = (parentsVars.length == 1)
                         ? parentsVars[0]
                         : ctx.mkOr(parentsVars);
-                asserts.add(ctx.mkImplies(currentVar, eitherParentAssert));
+                formulaBuilder.addAssert(ctx.mkImplies(currentVar, eitherParentAssert));
             }
 
             // if not a sink node:
@@ -77,15 +78,15 @@ public class XThreadEncoder implements XProcessEncoder {
 
                     // not together children:
                     BoolExpr notBothChildrenAssert = ctx.mkNot(ctx.mkAnd(childVar, alternativeChildVar));
-                    asserts.add(notBothChildrenAssert);
+                    formulaBuilder.addAssert(notBothChildrenAssert);
 
                     // encode guard:
                     assert currentEvent instanceof XComputationEvent : "only XComputationEvent can be a branching point";
                     BoolExpr guard = dataFlowEncoder.encodeGuard((XComputationEvent) currentEvent);
                     BoolExpr thenBranchGuardAssert = ctx.mkImplies(childVar, guard);
                     BoolExpr elseBranchGuardAssert = ctx.mkImplies(alternativeChildVar, guard);
-                    asserts.add(thenBranchGuardAssert);
-                    asserts.add(elseBranchGuardAssert);
+                    formulaBuilder.addAssert(thenBranchGuardAssert);
+                    formulaBuilder.addAssert(elseBranchGuardAssert);
                 }
             }
             else {
@@ -96,16 +97,14 @@ public class XThreadEncoder implements XProcessEncoder {
             // encode event's inner data-flow:
             BoolExpr currentEventDataFlowAssert = currentEvent.accept(dataFlowEncoder);
             if (currentEventDataFlowAssert != null) {
-                asserts.add(ctx.mkImplies(currentVar, currentEventDataFlowAssert));
+                formulaBuilder.addAssert(ctx.mkImplies(currentVar, currentEventDataFlowAssert));
             }
         }
 
-        return asserts;
     }
 
     @Override
-    public List<BoolExpr> encodeProcessRFRelation(XProcess process) {
-        List<BoolExpr> asserts = new ArrayList<>();
+    public void encodeProcessRFRelation(XProcess process, ZFormulaBuilder formulaBuilder) {
         for (XEvent loadEvent : process.getNodesExceptSource(e -> e instanceof XLoadMemoryEvent)) {
             XLoadMemoryEvent load = (XLoadMemoryEvent) loadEvent;
             XSharedLvalueMemoryUnit loadLoc = load.getSource();
@@ -116,11 +115,10 @@ public class XThreadEncoder implements XProcessEncoder {
                 Expr storeLocVar = dataFlowEncoder.encodeMemoryUnit(storeLoc, store);
                 if (loadLoc.equals(storeLoc)) {
                     BoolExpr rfRelationVar = Utils.edge("rf", store, load, ctx);
-                    asserts.add(ctx.mkImplies(rfRelationVar, ctx.mkEq(storeLocVar, loadLocVar)));
+                    formulaBuilder.addAssert(ctx.mkImplies(rfRelationVar, ctx.mkEq(storeLocVar, loadLocVar)));
                 }
             }
             // TODO: same for process.getInitEvents() ...
         }
-        return asserts;
     }
 }

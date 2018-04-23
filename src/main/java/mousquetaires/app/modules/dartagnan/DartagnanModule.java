@@ -2,6 +2,8 @@ package mousquetaires.app.modules.dartagnan;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
+import com.microsoft.z3.Solver;
+import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 import mousquetaires.app.errors.AppError;
 import mousquetaires.app.errors.IOError;
 import mousquetaires.app.errors.UnrecognisedError;
@@ -12,16 +14,18 @@ import mousquetaires.languages.common.citation.CodeCitationService;
 import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.converters.tozformula.XProgram2ZformulaEncoder;
-import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
-import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModelLP64;
+import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
+import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
+import mousquetaires.languages.syntax.zformula.ZFormulaBuilder;
 import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
 import mousquetaires.memorymodels.wmm.MemoryModel;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -44,7 +48,7 @@ public class DartagnanModule extends AppModule {
 
         try {
             //todo: solving timeout!
-            int unrollBound = 10; // TODO: get from options
+            int unrollBound = 20; // TODO: get from options
             DataModel dataModel = new DataModelLP64(); // TODO: pass as cli-option
 
             MemoryModel.Kind memoryModelKind = options.sourceModel;
@@ -66,9 +70,32 @@ public class DartagnanModule extends AppModule {
 
             XProgram2ZformulaEncoder encoder = new XProgram2ZformulaEncoder(ctx, unrolledProgram);
 
-            List<BoolExpr> asserts = encoder.encode(unrolledProgram);
-            asserts.addAll(memoryModel.encode(unrolledProgram, ctx));
-            asserts.add(memoryModel.Consistent(unrolledProgram, ctx));
+            //for (XProcess process : unrolledProgram.getProcesses()) {
+            //    GraphDumper.tryDumpToFile(process, "build/graphs", process.getId().getValue());
+            //}
+            //System.exit(1);
+
+            System.out.println("Encoding...");
+            ZFormulaBuilder formulaBuilder = new ZFormulaBuilder(ctx);
+
+            encoder.encode(unrolledProgram, formulaBuilder);
+            memoryModel.encode(unrolledProgram, ctx, formulaBuilder);
+            memoryModel.Consistent(unrolledProgram, ctx, formulaBuilder);
+
+            Solver solver = ctx.mkSolver();
+            BoolExpr formula = formulaBuilder.build();
+
+            solver.add(formula);
+
+            System.out.println("Solving...");
+            ctx.setPrintMode(Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL);
+
+            if (solver.check() == com.microsoft.z3.Status.SATISFIABLE) {
+                verdict.result = DartagnanVerdict.Status.NonReachable;
+            }
+            else {
+                verdict.result = DartagnanVerdict.Status.Reachable;
+            }
 
             // TODO: cat-file parsing
             //if (cmd.hasOption("file")) {

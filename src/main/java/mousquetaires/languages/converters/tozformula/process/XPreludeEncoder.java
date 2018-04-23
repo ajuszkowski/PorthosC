@@ -7,8 +7,11 @@ import mousquetaires.languages.converters.tozformula.StaticSingleAssignmentMap;
 import mousquetaires.languages.converters.tozformula.XDataflowEncoder;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
+import mousquetaires.languages.syntax.zformula.ZFormulaBuilder;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Set;
 
 
 public class XPreludeEncoder implements XProcessEncoder {
@@ -24,11 +27,10 @@ public class XPreludeEncoder implements XProcessEncoder {
     }
 
     @Override
-    public List<BoolExpr> encodeProcess(XProcess process) {
-        List<BoolExpr> asserts = new ArrayList<>();
+    public void encodeProcess(XProcess process, ZFormulaBuilder formulaBuilder) {
         Iterator<XEvent> nodesIterator = process.linearisedNodesIterator();
         // execute the entry event indefinitely:
-        asserts.add(process.source().executes(ctx));
+        formulaBuilder.addAssert(process.source().executes(ctx));
 
         while (nodesIterator.hasNext()) {
             XEvent currentEvent = nodesIterator.next();
@@ -49,15 +51,13 @@ public class XPreludeEncoder implements XProcessEncoder {
             // encode event's inner data-flow:
             BoolExpr currentEventDataFlowAssert = currentEvent.accept(dataFlowEncoder);
             if (currentEventDataFlowAssert != null) {
-                asserts.add(ctx.mkImplies(currentVar, currentEventDataFlowAssert));
+                formulaBuilder.addAssert(ctx.mkImplies(currentVar, currentEventDataFlowAssert));
             }
         }
-        return asserts;
     }
 
     @Override
-    public List<BoolExpr> encodeProcessRFRelation(XProcess process) {
+    public void encodeProcessRFRelation(XProcess process, ZFormulaBuilder formulaBuilder) {
         //throw new NotImplementedException();
-        return new ArrayList<>();
     }
 }

@@ -11,6 +11,7 @@ import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
+import org.apache.xpath.operations.Bool;
 import org.w3c.dom.ls.LSLoadEvent;
 
 import static mousquetaires.utils.StringUtils.wrap;
@@ -104,7 +105,7 @@ class XMemoryUnitEncoder {
                 case Division:
                     return ctx.mkDiv(asArithExpr(op1), asArithExpr(op2));
                 case Modulo:
-                    throw new NotImplementedException(); // mkMod ?
+                    return ctx.mkMod(asIntExpr(op1), asIntExpr(op2)); //todo: check whether this is indeed modulo operation
 
                 case LeftShift:
                     throw new NotImplementedException(); // bit vectors yet not supported
@@ -144,16 +145,25 @@ class XMemoryUnitEncoder {
         public Expr visit(XConstant constant) {
             // TODO: determine type of constant here
             Object value = constant.getValue();
-            switch (constant.getType()) {
-                case bit1:
-                    assert value instanceof Boolean : value;
-                    return ctx.mkBool((Boolean) value);
-                case int32:
-                    assert value instanceof Integer : value;
-                    return ctx.mkInt((Integer) value);
-                default:
-                    throw new NotImplementedException();
+            // Note, this casting is temporary, we need to have a proper typisation
+            if (value instanceof Boolean) {
+                return ctx.mkBool((Boolean) value);
             }
+            if (value instanceof Integer) {
+                return ctx.mkInt((Integer) value);
+            }
+            throw new NotImplementedException(value.getClass().getSimpleName());
+            //for now, we don't preserve consistency of types, it's Mocks and int32 everywhere
+            //switch (constant.getType()) {
+            //    case bit1:
+            //        assert value instanceof Boolean : value;
+            //        return ctx.mkBool((Boolean) value);
+            //    case int32:
+            //        assert value instanceof Integer : value;
+            //        return ctx.mkInt((Integer) value);
+            //    default:
+            //        throw new NotImplementedException();
+            //}
         }
 
         @Override

@@ -11,6 +11,7 @@ import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
 import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
+import mousquetaires.languages.syntax.zformula.ZFormulaBuilder;
 import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
 import mousquetaires.memorymodels.wmm.MemoryModel;
 import mousquetaires.tests.TestFailedException;
@@ -43,9 +44,10 @@ public abstract class C2Zformula_UnitTestBase extends AbstractConverterUnitTest<
             XProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
             Context ctx = new Context();
             XProgram2ZformulaEncoder encoder = new XProgram2ZformulaEncoder(ctx, unrolledProgram);
-            List<BoolExpr> programAsserts = encoder.encode(unrolledProgram);
+            ZFormulaBuilder formulaBuilder = new ZFormulaBuilder(ctx);
+            encoder.encode(unrolledProgram, formulaBuilder);
 
-            BoolExpr smtFormula = ctx.mkAnd(programAsserts.toArray(new BoolExpr[0]));
+            BoolExpr smtFormula = formulaBuilder.build();
             return CollectionUtils.createIteratorFrom(smtFormula);
         } catch (IOException e) {
             e.printStackTrace();

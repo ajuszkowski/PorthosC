@@ -7,7 +7,6 @@ import com.microsoft.z3.Expr;
 import com.microsoft.z3.IntExpr;
 import mousquetaires.languages.converters.tozformula.process.XProcessEncoder;
 import mousquetaires.languages.converters.tozformula.process.XProcessEncoderFactory;
-import mousquetaires.languages.converters.tozformula.process.XThreadEncoder;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
@@ -18,6 +17,7 @@ import mousquetaires.languages.syntax.xgraph.memories.XLocalLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
+import mousquetaires.languages.syntax.zformula.ZFormulaBuilder;
 import mousquetaires.memorymodels.Encodings;
 import mousquetaires.utils.Utils;
 
@@ -39,8 +39,7 @@ public class XProgram2ZformulaEncoder {
         this.dataFlowEncoder = new XDataflowEncoder(ctx, ssaMap);
     }
 
-    public List<BoolExpr> encode(XProgram program) {
-        List<BoolExpr> asserts = new LinkedList<>();
+    public void encode(XProgram program, ZFormulaBuilder formulaBuilder) {
         XProcessEncoderFactory factory = new XProcessEncoderFactory(ctx, ssaMap, dataFlowEncoder);
         boolean postludeEncoded = false;
         for (XProcess process : program.getProcesses()) {
@@ -60,18 +59,17 @@ public class XProgram2ZformulaEncoder {
             //kostyl==
 
             XProcessEncoder encoder = factory.getEncoder(process);
-            asserts.addAll(encoder.encodeProcess(process));
-            asserts.addAll(encoder.encodeProcessRFRelation(process));
+            encoder.encodeProcess(process, formulaBuilder);
+            encoder.encodeProcessRFRelation(process, formulaBuilder);
         }
 
-        asserts.addAll(encodeProgramComputedRelations(program));
+        encodeProgramComputedRelations(program, formulaBuilder);
 
         //BoolExpr[] assertsArray = asserts.toArray(new BoolExpr[0]);
         //return ctx.mkAnd(assertsArray);
-        return asserts;
     }
 
-    private List<BoolExpr> encodeProgramComputedRelations(XProgram program) {
+    private void encodeProgramComputedRelations(XProgram program, ZFormulaBuilder formulaBuilder) {
         BoolExpr enc = ctx.mkTrue();
 
         ImmutableSet<XSharedMemoryEvent> mEvents = program.getSharedMemoryEvents();
@@ -537,6 +535,6 @@ public class XProgram2ZformulaEncoder {
             }
         }
         // TODO: collect and return set of conjuncts!
-        return Collections.singletonList(enc);
+        formulaBuilder.addAssert(enc);
     }
 }

@@ -3,6 +3,7 @@ package mousquetaires.languages.converters.toytree;
 import mousquetaires.languages.ProgramLanguage;
 import mousquetaires.languages.parsers.C11Lexer;
 import mousquetaires.languages.parsers.C11Parser;
+import mousquetaires.utils.exceptions.ytree.YParserException;
 import mousquetaires.utils.io.FileUtils;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -11,6 +12,8 @@ import org.antlr.v4.runtime.misc.Interval;
 
 import java.io.File;
 import java.io.IOException;
+
+import static mousquetaires.utils.StringUtils.wrap;
 
 
 class InputProgramParserFactory {
@@ -40,12 +43,20 @@ class InputProgramParserFactory {
     }
 
     static ParserRuleContext getParser(CommonTokenStream tokenStream, ProgramLanguage language) {
+        SyntaxErrorListener errorListener = new SyntaxErrorListener();
+        ParserRuleContext result;
         switch (language) {
             case C11:
                 C11Parser parser = new C11Parser(tokenStream);
-                return parser.main();
+                parser.addErrorListener(errorListener);
+                result = parser.main();
+                break;
             default:
                 throw new IllegalArgumentException(language.name());
         }
+        if (errorListener.hasSyntaxErrors()) {
+            throw new YParserException(result, "Syntax errors while parsing: " + wrap(errorListener));
+        }
+        return result;
     }
 }

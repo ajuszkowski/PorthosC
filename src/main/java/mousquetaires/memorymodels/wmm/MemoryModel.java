@@ -5,6 +5,7 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
+import mousquetaires.languages.syntax.zformula.ZFormulaBuilder;
 import mousquetaires.memorymodels.axioms.ZAcyclicAxiom;
 import mousquetaires.memorymodels.axioms.ZAxiom;
 import mousquetaires.memorymodels.axioms.ZIrreflexiveAxiom;
@@ -43,36 +44,34 @@ public class MemoryModel {
     }
 
 
-    public List<BoolExpr> encode(XProgram program, Context ctx) {
-        List<BoolExpr> asserts = new ArrayList<>();
+    public void encode(XProgram program, Context ctx, ZFormulaBuilder formulaBuilder) {
         Set<String> encodedRels=new HashSet<>();
         for (ZAxiom ax : axioms) {
-            asserts.add(ax.getRel().encode(program, ctx, encodedRels));
+            formulaBuilder.addAssert(ax.getRel().encode(program, ctx, encodedRels));
         }
         for (ZRelation namedRelation : getNamedRelations()) {
-            asserts.add(namedRelation.encode(program, ctx, encodedRels));
+            formulaBuilder.addAssert(namedRelation.encode(program, ctx, encodedRels));
         }
 
         //System.out.println("encoded rels: "+encodedRels.toString());
-        return asserts;
     }
 
-    public BoolExpr Consistent(XProgram program, Context ctx) {
+    public void Consistent(XProgram program, Context ctx, ZFormulaBuilder formulaBuilder) {
         ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
         BoolExpr expr = ctx.mkTrue();
         for (ZAxiom ax : axioms) {
             expr = ctx.mkAnd(expr, ax.Consistent(events, ctx));
         }
-        return expr;
+        formulaBuilder.addAssert(expr);
     }
 
-    public BoolExpr Inconsistent(XProgram program, Context ctx) {
+    public void Inconsistent(XProgram program, Context ctx, ZFormulaBuilder formulaBuilder) {
         ImmutableSet<XSharedMemoryEvent> events = program.getSharedMemoryEvents();
         BoolExpr expr = ctx.mkFalse();
         for (ZAxiom ax : axioms) {
             expr = ctx.mkOr(expr, ax.Inconsistent(events, ctx));
         }
-        return expr;
+        formulaBuilder.addAssert(expr);
     }
 
 

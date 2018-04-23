@@ -64,7 +64,8 @@ public abstract class XEventBase implements XEvent {
     }
 
     protected String wrapWithBracketsAndDepth(String message) {
-        String refIdSuffix = (refId == NOT_UNROLLED_REF_ID) ? "" : "," + refId;
-        return "[" + message + refIdSuffix + "]";
+        return refId != NOT_UNROLLED_REF_ID
+                ? "[" + message + ", " + getRefId() + "]"
+                : message;
     }
 }
