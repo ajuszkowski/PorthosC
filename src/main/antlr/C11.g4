@@ -543,7 +543,7 @@ litmusAssertion
     ;
 
 litmusInitialisation
-    :   '{' litmusInitWriteList '}'
+    :   '{' litmusInitWriteList? '}'
     ;
 
 litmusInitWriteList
