@@ -75,15 +75,26 @@ public abstract class FlowGraphDfsTraverser<N extends FlowGraphNode, G extends U
         boolean boundAchieved = (childDepth > unrollingBound);
         boolean needToUnrollGrandChildren = !(isSink || boundAchieved);
 
-        N childRef = needToUnrollGrandChildren
-                ? compositeActor.builder.createNodeRef(child, childDepth)
-                : getSinkNode(isSink || isBackEdge);
+        N childRef;
+        if (needToUnrollGrandChildren) {
+            childRef = compositeActor.builder.createNodeRef(child, childDepth);
+        }
+        else {
+            childRef = getSinkNodeRef(isSink || isBackEdge);
+            child = getSinkNode(isSink || isBackEdge);
+        }
 
         compositeActor.onEdgeVisit(edgeSign, parentRef, childRef);
         unrollRecursively(child, childRef, childDepth, needToUnrollGrandChildren);
     }
 
     private N getSinkNode(boolean completed) {
+        return completed
+                ? graph.sink()
+                : graph.sink(); // TODO: create incompleted sink node here
+    }
+
+    private N getSinkNodeRef(boolean completed) {
         return completed
                 ? graph.sink()
                 : graph.sink(); // TODO: create incompleted sink node here
