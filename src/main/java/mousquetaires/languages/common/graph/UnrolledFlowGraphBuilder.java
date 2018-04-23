@@ -77,6 +77,29 @@ public abstract class UnrolledFlowGraphBuilder<N extends FlowGraphNode, G extend
 
     public ImmutableList<N> buildNodesLinearised() {
         return ImmutableList.copyOf(linearisationQueue);
+        // todo: alternative way is to use level-ids (ref-id) :
+        //List<N> result = new ArrayList<>(getEdges(true).size() + 1);
+        //result.add(getSource());
+        //
+        //int currentLevel = 1;
+        //while (true) {
+        //    boolean added = false;
+        //    for (boolean b : FlowGraph.edgeKinds()) {
+        //        for (N node : getEdges(b).values()) {
+        //            if (result.contains(node)) { continue; }
+        //
+        //            if (node.getRefId() == currentLevel) {
+        //                result.add(node);
+        //                added = true;
+        //            }
+        //        }
+        //    }
+        //    if (!added) {
+        //        break;
+        //    }
+        //    currentLevel++;
+        //}
+        //return ImmutableList.copyOf(result);
     }
 
     public ImmutableMap<N, Integer> buildCondLevelMap() {
