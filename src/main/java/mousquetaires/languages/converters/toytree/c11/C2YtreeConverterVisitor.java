@@ -34,6 +34,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static mousquetaires.utils.StringUtils.wrap;
@@ -45,7 +46,7 @@ class C2YtreeConverterVisitor
 
     private final CodeCitationService citationService;
 
-    public C2YtreeConverterVisitor(CodeCitationService citationService) {
+    C2YtreeConverterVisitor(CodeCitationService citationService) {
         this.citationService = citationService;
     }
 
@@ -1816,7 +1817,7 @@ class C2YtreeConverterVisitor
 
     /**
      * litmusAssertion
-     *  :   'exists' LeftParen logicalOrExpression RightParen Comma
+     *  :   'exists' '(' logicalOrExpression ')'
      *  ;
      */
     @Override
@@ -1831,62 +1832,23 @@ class C2YtreeConverterVisitor
 
     /**
      * litmusInitialisation
-     *  :   '{' litmusInitWriteList '}'
+     *  :   '{' declaration* '}'
      *  ;
      */
     @Override
     public YPreludeStatement visitLitmusInitialisation(C11Parser.LitmusInitialisationContext ctx) {
-        ImmutableList<YAssignmentExpression> assertions = (ctx.litmusInitWriteList() != null)
-                ?   visitLitmusInitWriteList(ctx.litmusInitWriteList()).buildValues()
-                :   ImmutableList.of();
-        return new YPreludeStatement(location(ctx), assertions);
-    }
-
-    /**
-     * litmusInitWriteList
-     *  :   litmusInitWrite
-     *  |   litmusInitWriteList litmusInitWrite
-     *  ;
-     */
-    @Override
-    public YQueueTemp<YAssignmentExpression> visitLitmusInitWriteList(C11Parser.LitmusInitWriteListContext ctx) {
-        YQueueTemp<YAssignmentExpression> result = new YQueueFIFOTemp<>();
-        C11Parser.LitmusInitWriteListContext recursiveListContext = ctx.litmusInitWriteList();
-        if (recursiveListContext != null) {
-            List<YAssignmentExpression> recursive = visitLitmusInitWriteList(recursiveListContext).getValues();
-            result.addAll(recursive);
-        }
-        C11Parser.LitmusInitWriteContext litmusInitWriteContext = ctx.litmusInitWrite();
-        if (litmusInitWriteContext != null) {
-            YAssignmentExpression element = visitLitmusInitWrite(litmusInitWriteContext);
-            result.add(element);
-        }
-        return result;
-    }
-
-    /**
-     * litmusInitWrite
-     *  :   postfixExpression '=' postfixExpression ';'
-     *  ;
-     */
-    @Override
-    public YAssignmentExpression visitLitmusInitWrite(C11Parser.LitmusInitWriteContext ctx) {
-        List<C11Parser.PostfixExpressionContext> postfixExpressionContexts = ctx.postfixExpression();
-        if (postfixExpressionContexts != null && postfixExpressionContexts.size() == 2) {
-            C11Parser.PostfixExpressionContext rightContext = postfixExpressionContexts.get(1);
-            C11Parser.PostfixExpressionContext leftContext = postfixExpressionContexts.get(0);
-            YExpression right = visitPostfixExpression(rightContext);
-            YExpression left = visitPostfixExpression(leftContext);
-            if (!(left instanceof YAtom)) {
-                throw new YParserException(ctx, "Could not parse initial assignment statement" +
-                        ", found assignee: " + left +
-                        " of type: " + left.getClass().getSimpleName());
+        List<C11Parser.DeclarationContext> declarationContextList = ctx.declaration();
+        if (declarationContextList != null && declarationContextList.size() > 0) {
+            ImmutableList.Builder<YStatement> statements = new ImmutableList.Builder<>();
+            for (C11Parser.DeclarationContext declarationContext : declarationContextList) {
+                List<YStatement> declarations = visitDeclaration(declarationContext).getValues();
+                statements.addAll(declarations);
             }
-            YAtom leftVariable = (YAtom) left;
-            return new YAssignmentExpression(location(ctx), leftVariable, right);
+            return new YPreludeStatement(location(ctx), statements.build());
         }
         throw new YParserException(ctx);
     }
+
 
     private CodeLocation location(ParserRuleContext ctx) {
         return citationService.getLocation(ctx);

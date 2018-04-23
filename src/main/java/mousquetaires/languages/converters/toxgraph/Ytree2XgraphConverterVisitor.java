@@ -78,8 +78,8 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     @Override
     public XEvent visit(YPreludeStatement node) {
         program.startProcessDefinition(XProcessKind.Prelude, XProcessId.PreludeProcessId);
-        for (YAssignmentExpression assignment : node.getInitialWrites()) {
-            assignment.accept(this);
+        for (YStatement statement : node.getInitialWrites()) {
+            statement.accept(this);
         }
         program.finishProcessDefinition();
         return null; //statements return null

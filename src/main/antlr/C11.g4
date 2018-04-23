@@ -543,16 +543,7 @@ litmusAssertion
     ;
 
 litmusInitialisation
-    :   '{' litmusInitWriteList? '}'
-    ;
-
-litmusInitWriteList
-    :   litmusInitWrite
-    |   litmusInitWriteList litmusInitWrite
-    ;
-
-litmusInitWrite
-    :   postfixExpression '=' postfixExpression ';'
+    :   '{' declaration* '}'
     ;
 
 
