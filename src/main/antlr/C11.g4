@@ -37,11 +37,11 @@ main
 
 primaryExpression
     :   Identifier
+    |   LitmusSpecificLabelledVariable
     |   Constant
     |   StringLiteral+  // TODO: NOTE: In C11 draft, there is just 'StringLiteral'
     |   '(' expression ')'
     |   genericSelection
-    |   Identifier ':' Identifier  // processId:localVariable
     ;
 
 genericSelection
@@ -653,6 +653,10 @@ Identifier
         (   IdentifierNondigit
         |   Digit
         )*
+    ;
+
+LitmusSpecificLabelledVariable
+    :   DigitSequence ':' Identifier
     ;
 
 fragment

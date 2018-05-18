@@ -72,37 +72,38 @@ class C2YtreeConverterVisitor
     /**
      * primaryExpression
      * :   Identifier
+     * |   LitmusSpecificLabelledVariable  // `DigitSequence ':' Identifier`
      * |   Constant
      * |   StringLiteral+
      * |   '(' expression ')'
      * |   genericSelection
-     * |   Identifier ':' Identifier  // processId:localVariable
      * ;
      */
     @Override
     public YExpression visitPrimaryExpression(C11Parser.PrimaryExpressionContext ctx) {
-        List<TerminalNode> identifiers = ctx.Identifier();
-        if (identifiers != null && identifiers.size() > 0) {
-            if (identifiers.size() == 1) {
-                String identifier = identifiers.get(0).getText();
-                // firstly, try parse as a keyword (e.g., true, false, ...)
-                YConstant constant = YConstant.tryParse(identifier);
-                if (constant != null) {
-                    return constant;
-                }
-                // if could not parse as a constant, consider as a variable (which also is an identifier)
-                return new YVariableRef(location(ctx), identifier);
+        TerminalNode identifier = ctx.Identifier();
+        if (identifier != null) {
+             // firstly, try parse as a keyword (e.g., true, false, ...)
+            String identifierText = identifier.getText();
+            YConstant constant = YConstant.tryParse(identifierText);
+             if (constant != null) {
+             return constant;
+             }
+             // if could not parse as a constant, consider as a variable (which also is an identifier)
+             return new YVariableRef(location(ctx), identifierText);
+        }
+        TerminalNode processIdentifierContext = ctx.LitmusSpecificLabelledVariable();
+        if (processIdentifierContext != null) {
+            String processLabelSeparator = ":";
+            String labelledVariable = processIdentifierContext.getText();
+            int separatorIndex = labelledVariable.indexOf(processLabelSeparator);
+            if (separatorIndex <= 0) {
+                throw new YParserException(ctx, "Illegal format of the process-labeled variable " +
+                        "(expect it to have a semicolon separator): " + labelledVariable);
             }
-            else if (identifiers.size() == 2) {
-                // integer-constant is process-id, identifier is variable
-                String processId = identifiers.get(0).getText();
-                String variableName = identifiers.get(1).getText();
-                return new YLabeledVariableRef(location(ctx), processId, variableName);
-            }
-            else {
-                throw new YParserException(ctx, "expect either 1 or 2 identifiers");
-            }
-
+            String processId = labelledVariable.substring(0, separatorIndex);
+            String variableName = labelledVariable.substring(separatorIndex);
+            return new YLabeledVariableRef(location(ctx), processId, variableName);
         }
         TerminalNode constantNode = ctx.Constant();
         if (constantNode != null) {
