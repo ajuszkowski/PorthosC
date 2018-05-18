@@ -426,7 +426,8 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         YVariableRef variable = node.getVariable();
         String name = variable.getName();
         Type type = YType2TypeConverter.convert(node.getType());
-        if (variable.isGlobal()) {
+        //TODO: should determine the type of variables during the preprocessing!
+        if (variable.isGlobal() || program.getProcessId() == XProcessId.PreludeProcessId) {
             return program.declareLocation(name, type);
         }
         else {

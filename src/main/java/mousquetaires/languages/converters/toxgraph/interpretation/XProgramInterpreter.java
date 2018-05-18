@@ -58,7 +58,7 @@ public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements 
 
     @Override
     public XProcessId getProcessId() {
-        throw new IllegalStateException("method is not used for this class");//todo: fix inheritance here
+        return currentProcess().getProcessId();
     }
 
     @Override

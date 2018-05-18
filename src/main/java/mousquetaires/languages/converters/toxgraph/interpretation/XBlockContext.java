@@ -14,13 +14,13 @@ class XBlockContext {
         Idle,
         WaitingAdditionalCommand,
 
-        WaitingFirstConditionEvent,
+        //WaitingFirstConditionEvent,
         WaitingFirstSubBlockEvent,
         WaitingNextLinearEvent,
 
         //JustFinishedBranch,
-        JustJumped,
-        JustFinished,
+        //JustJumped,
+        //JustFinished,
     }
 
     /*private*/public XEvent entryEvent;

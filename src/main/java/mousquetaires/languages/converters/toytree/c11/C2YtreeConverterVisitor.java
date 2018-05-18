@@ -802,7 +802,7 @@ class C2YtreeConverterVisitor
      */
     @Override
     public YQueueTemp<YExpression> visitInitDeclaratorList(C11Parser.InitDeclaratorListContext ctx) {
-        YQueueTemp<YExpression> result = new YQueueFIFOTemp<>();
+        YQueueTemp<YExpression> result = new YQueueFILOTemp<>();
         C11Parser.InitDeclaratorListContext recursiveListContext = ctx.initDeclaratorList();
         if (recursiveListContext != null) {
             List<YExpression> recursive = visitInitDeclaratorList(recursiveListContext).getValues();
@@ -1144,7 +1144,6 @@ class C2YtreeConverterVisitor
         C11Parser.DirectDeclaratorContext directDeclaratorContext;
         C11Parser.TypeQualifierListContext typeQualifierListContext;
         C11Parser.AssignmentExpressionContext assignmentExpressionContext;
-        C11Parser.ParameterTypeListContext parameterTypeListContext;
         C11Parser.IdentifierListContext identifierListContext;
 
         if ((identifier = ctx.Identifier()) != null) {
@@ -1161,17 +1160,16 @@ class C2YtreeConverterVisitor
             // '['
             // ...
             if (hasParentheses) {
-                if ((parameterTypeListContext = ctx.parameterTypeList()) != null) {
-                    YQueueTemp<YParameter> parameterTypeList = visitParameterTypeList(parameterTypeListContext);
-                    ImmutableList<YParameter> parameters = parameterTypeList.buildValues();
-                    if (recursive instanceof YVariableRef) {
-                        YVariableRef methodVariable = (YVariableRef) recursive;
-                        // todo: parse return type
-                        return new YMethodSignature(methodVariable.getName(), new YMockType(), parameters);
-                    }
-                    throw new YParserException(ctx, "For now, only simple name-based method definitions are supported");
+                C11Parser.ParameterTypeListContext parameterTypeListContext = ctx.parameterTypeList();
+                ImmutableList<YParameter> parameters = (parameterTypeListContext != null)
+                        ?   visitParameterTypeList(parameterTypeListContext).buildValues()
+                        :   ImmutableList.of();
+                if (recursive instanceof YVariableRef) {
+                    YVariableRef methodVariable = (YVariableRef) recursive;
+                    // todo: parse return type
+                    return new YMethodSignature(methodVariable.getName(), new YMockType(), parameters);
                 }
-                throw new YParserException(ctx);
+                throw new YParserException(ctx, "For now, only simple name-based method definitions are supported");
             }
         }
         // todo: some others
@@ -1839,12 +1837,12 @@ class C2YtreeConverterVisitor
     public YPreludeStatement visitLitmusInitialisation(C11Parser.LitmusInitialisationContext ctx) {
         List<C11Parser.DeclarationContext> declarationContextList = ctx.declaration();
         if (declarationContextList != null && declarationContextList.size() > 0) {
-            ImmutableList.Builder<YStatement> statements = new ImmutableList.Builder<>();
+            YQueueTemp<YStatement> statements = new YQueueFILOTemp<>();
             for (C11Parser.DeclarationContext declarationContext : declarationContextList) {
                 List<YStatement> declarations = visitDeclaration(declarationContext).getValues();
                 statements.addAll(declarations);
             }
-            return new YPreludeStatement(location(ctx), statements.build());
+            return new YPreludeStatement(location(ctx), statements.buildValues());
         }
         throw new YParserException(ctx);
     }

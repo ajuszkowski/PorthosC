@@ -93,20 +93,20 @@ class XThreadInterpreter extends XInterpreterBase {
                 }
                 break;
 
-                case Idle: {
-                    // do nothing
-                }
-                break;
+                //case Idle: {
+                //    // do nothing
+                //}
+                //break;
 
                 case WaitingAdditionalCommand: {
                     throw new IllegalStateException("waiting for an additional command before processing next event: " + nextEvent);
                 }
                 //break;
 
-                case WaitingFirstConditionEvent: {
-                    context.setEntryEvent(nextEvent);//already initialised above
-                }
-                break;
+                //case WaitingFirstConditionEvent: {
+                //    context.setEntryEvent(nextEvent);//already initialised above
+                //}
+                //break;
 
                 case WaitingFirstSubBlockEvent: { //this case of stateStack should be on stack
                     assert nextEvent != context.conditionEvent;
@@ -124,12 +124,7 @@ class XThreadInterpreter extends XInterpreterBase {
                 }
                 break;
 
-                case JustJumped: {
-                    // do nothing
-                }
-                break;
-
-                case JustFinished: {
+                case Idle: {
                     // do nothing
                 }
                 break;
@@ -246,7 +241,7 @@ class XThreadInterpreter extends XInterpreterBase {
     public void startBlockConditionDefinition() {
         XBlockContext context = contextStack.peek();
         assert context.state == XBlockContext.State.WaitingAdditionalCommand : context.state.name();
-        context.setState(XBlockContext.State.WaitingFirstConditionEvent);
+        context.setState(XBlockContext.State.Idle);
     }
 
     @Override
@@ -312,7 +307,7 @@ class XThreadInterpreter extends XInterpreterBase {
     public void finishNonlinearBlockDefinition() {
         XBlockContext context = contextStack.pop();
         context.currentBranchKind = null;
-        context.setState(XBlockContext.State.JustFinished);
+        context.setState(XBlockContext.State.Idle);
         almostReadyContexts.addFirst(context);
         previousEvent = null; //not to set too many linear jumps: e.g. `if (a) { while(b) do1(); } do2();`
 
@@ -329,7 +324,7 @@ class XThreadInterpreter extends XInterpreterBase {
         XJumpEvent jumpEvent = emitJumpEvent();
         XBlockContext context = currentNearestLoopContext(); //context should peeked after the jump event was emitted
         context.addJumpEvent(jumpKind, jumpEvent);
-        context.state = XBlockContext.State.JustJumped;
+        context.setState(XBlockContext.State.Idle);
     }
 
     @Override
