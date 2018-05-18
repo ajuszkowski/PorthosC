@@ -3,7 +3,7 @@ package mousquetaires.languages.syntax.ytree.litmus;
 import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.statements.YUnlabeledStatement;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 
 public final class YPostludeStatement extends YUnlabeledStatement {

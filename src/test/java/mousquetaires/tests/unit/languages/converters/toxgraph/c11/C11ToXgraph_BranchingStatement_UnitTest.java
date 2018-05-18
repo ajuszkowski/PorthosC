@@ -1,6 +1,6 @@
 package mousquetaires.tests.unit.languages.converters.toxgraph.c11;
 
-import mousquetaires.languages.common.Type;
+import mousquetaires.languages.common.XType;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryOperator;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
@@ -28,12 +28,12 @@ public class C11ToXgraph_BranchingStatement_UnitTest extends C11ToXgraph_UnitTes
         XProcessId processId = new XProcessId("P0");//TODO: process id
         XFlowGraphTestBuilder builder = new XFlowGraphTestBuilder(processId);
         XTestMemoryManager memoryManager = new XTestMemoryManager(processId);
-        XRegister registerX = memoryManager.declareRegister("x", Type.int32);
-        XRegister registerY = memoryManager.declareRegister("y", Type.int32);
-        XConstant const1 = XConstant.create(1, Type.int32);
-        XConstant const2 = XConstant.create(2, Type.int32);
-        XConstant const3 = XConstant.create(3, Type.int32);
-        XConstant const4 = XConstant.create(4, Type.int32);
+        XRegister registerX = memoryManager.declareRegister("x", XType.int32);
+        XRegister registerY = memoryManager.declareRegister("y", XType.int32);
+        XConstant const1 = XConstant.create(1, XType.int32);
+        XConstant const2 = XConstant.create(2, XType.int32);
+        XConstant const3 = XConstant.create(3, XType.int32);
+        XConstant const4 = XConstant.create(4, XType.int32);
 
         XComputationEvent conditionXequals1 = builder.createComputationEvent(XBinaryOperator.CompareEquals, registerX, const1);
         XComputationEvent conditionXgreater2 = builder.createComputationEvent(XBinaryOperator.CompareGreater, registerX, const2);

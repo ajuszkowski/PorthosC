@@ -1,19 +1,19 @@
 package mousquetaires.languages.syntax.xgraph.memories;
 
 
-import mousquetaires.languages.common.Type;
+import mousquetaires.languages.common.XType;
 
 
 abstract class XMemoryUnitBase implements XMemoryUnit {
 
-    private final Type type;
+    private final XType type;
 
-    XMemoryUnitBase(Type type) {
+    XMemoryUnitBase(XType type) {
         this.type = type;
     }
 
     @Override
-    public Type getType() {
+    public XType getType() {
         return type;
     }
 }

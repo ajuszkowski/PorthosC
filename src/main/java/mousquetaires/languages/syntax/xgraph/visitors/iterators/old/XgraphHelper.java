@@ -1,7 +1,7 @@
 //package mousquetaires.languages.syntax.xgraph.visitors.iterators.old;
 //
 //import mousquetaires.languages.syntax.xgraph.events.XEvent;
-//import mousquetaires.languages.syntax.xgraph.events.controlflow.XExitEvent;
+//import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 //import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 //import mousquetaires.languages.syntax.xgraph.process.XFlowGraph;
 //

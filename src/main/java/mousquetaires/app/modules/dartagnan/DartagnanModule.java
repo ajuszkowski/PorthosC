@@ -8,10 +8,11 @@ import mousquetaires.app.errors.AppError;
 import mousquetaires.app.errors.IOError;
 import mousquetaires.app.errors.UnrecognisedError;
 import mousquetaires.app.modules.AppModule;
-import mousquetaires.languages.ProgramExtensions;
-import mousquetaires.languages.ProgramLanguage;
+import mousquetaires.languages.InputExtensions;
+import mousquetaires.languages.InputLanguage;
 import mousquetaires.languages.common.citation.CodeCitationService;
 import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
+import mousquetaires.languages.converters.InputParserBase;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.converters.tozformula.XProgram2ZformulaEncoder;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
@@ -25,8 +26,6 @@ import mousquetaires.memorymodels.wmm.MemoryModel;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 
@@ -55,11 +54,11 @@ public class DartagnanModule extends AppModule {
             MemoryModel memoryModel = memoryModelKind.createModel();
 
             File inputProgramFile = options.inputProgramFile;
-            ProgramLanguage language = ProgramExtensions.parseProgramLanguage(inputProgramFile.getName());
-            YtreeParser ytreeParser = new YtreeParser(inputProgramFile, language);
-            YSyntaxTree yTree = ytreeParser.parseFile();
+            InputLanguage language = InputExtensions.parseProgramLanguage(inputProgramFile.getName());
+            YtreeParser parser = new YtreeParser(inputProgramFile, language);
+            YSyntaxTree yTree = parser.parseFile();
 
-            CodeCitationService citationService = ytreeParser.getCitationService();
+            CodeCitationService citationService = parser.getCitationService();
 
             Ytree2XgraphConverter yConverter = new Ytree2XgraphConverter(language, memoryModelKind, dataModel);
             XCyclicProgram program = yConverter.convert(yTree);

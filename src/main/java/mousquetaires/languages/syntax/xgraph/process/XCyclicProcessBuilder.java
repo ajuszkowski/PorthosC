@@ -3,8 +3,8 @@ package mousquetaires.languages.syntax.xgraph.process;
 import com.google.common.collect.ImmutableMap;
 import mousquetaires.languages.common.graph.FlowGraphBuilder;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XEntryEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XExitEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 
 
 public class XCyclicProcessBuilder extends FlowGraphBuilder<XEvent, XCyclicProcess> {

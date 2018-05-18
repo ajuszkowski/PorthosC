@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.ytree.statements.jumps;
 
 import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.statements.YStatement;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 import java.util.Objects;
 

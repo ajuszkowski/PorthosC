@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.memories;
 
 
-import mousquetaires.languages.common.Type;
+import mousquetaires.languages.common.XType;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
@@ -18,7 +18,7 @@ public final class XConstant extends XMemoryUnitBase implements XLocalMemoryUnit
 
     private final Object value;
 
-    private XConstant(Object value, Type type) {
+    private XConstant(Object value, XType type) {
         // TODO: make name unique (add bitness to it)
         super(type);
         if (!(value instanceof Integer || value instanceof Boolean)) {
@@ -31,7 +31,7 @@ public final class XConstant extends XMemoryUnitBase implements XLocalMemoryUnit
         return value;
     }
 
-    public static XConstant create(Object value, Type type) {
+    public static XConstant create(Object value, XType type) {
         return new XConstant(value, type);
     }
 

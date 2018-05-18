@@ -1,14 +1,14 @@
 package mousquetaires.languages.syntax.xgraph.events.computation;
 
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
-import mousquetaires.languages.common.Type;
+import mousquetaires.languages.common.XType;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
 
 class XTypeDeterminer {
 
-    static Type determineType(XUnaryOperator operator, XLocalMemoryUnit operand) {
-        Type operandType = operand.getType();
+    static XType determineType(XUnaryOperator operator, XLocalMemoryUnit operand) {
+        XType operandType = operand.getType();
         switch (operator) {
             case BitNegation:
             case NoOperation:
@@ -18,11 +18,11 @@ class XTypeDeterminer {
         }
     }
 
-    static Type determineType(XBinaryOperator operator,
-                              XLocalMemoryUnit firstOperand,
-                              XLocalMemoryUnit secondOperand) {
-        Type firstType = firstOperand.getType();
-        Type secondType = secondOperand.getType();
+    static XType determineType(XBinaryOperator operator,
+                               XLocalMemoryUnit firstOperand,
+                               XLocalMemoryUnit secondOperand) {
+        XType firstType = firstOperand.getType();
+        XType secondType = secondOperand.getType();
         switch (operator) {
             case Addition:
             case Subtraction:
@@ -56,7 +56,7 @@ class XTypeDeterminer {
             case CompareLessOrEquals:
             case CompareGreater:
             case CompareGreaterOrEquals: {
-                return Type.bit1;
+                return XType.bit1;
             }
             default:
                 throw new IllegalArgumentException(operator.name());

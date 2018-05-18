@@ -2,13 +2,14 @@ package mousquetaires.languages.syntax.ytree.statements;
 
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.common.citation.CodeLocation;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 import java.util.Objects;
 
 
 public class YCompoundStatement extends YStatement {
 
+    // TODO: perhaps, we don't need the Compound statement without braces.
     private final boolean hasBraces; // defines whether sequence of statements has surrounding braces '{' '}'
     private final ImmutableList<YStatement> statements; // <- recursive
 

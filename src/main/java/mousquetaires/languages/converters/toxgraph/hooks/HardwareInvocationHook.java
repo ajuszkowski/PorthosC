@@ -1,7 +1,6 @@
 package mousquetaires.languages.converters.toxgraph.hooks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import mousquetaires.languages.converters.toxgraph.interpretation.XProgramInterpreter;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
@@ -10,12 +9,10 @@ import mousquetaires.memorymodels.wmm.MemoryModel;
 import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XMethodInvocationError;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static mousquetaires.utils.StringUtils.wrap;
 
 
+// TODO: rename to XPorthosInvocationHook
 class HardwareInvocationHook implements InvocationHook {
 
     private final XProgramInterpreter program;
@@ -28,12 +25,12 @@ class HardwareInvocationHook implements InvocationHook {
     }
 
     @Override
-    public InterceptionAction tryInterceptInvocation(String methodName) {
+    public XInvocationHookAction tryInterceptInvocation(String methodName) {
         switch (methodName) {
 
             case "store": {
             // syntax: `location.store(_rx, register)'
-                return new InterceptionAction((receiver, arguments) -> {
+                return new XInvocationHookAction((receiver, arguments) -> {
                     XSharedLvalueMemoryUnit receiverShared = tryCastReceiver(receiver, methodName);
                     if (arguments.length != 2) {
                         return null;
@@ -116,7 +113,7 @@ class HardwareInvocationHook implements InvocationHook {
 
             case "load": {
             // syntax: `register <- location.load(_rx)'
-                return new InterceptionAction((receiver, arguments) -> {
+                return new XInvocationHookAction((receiver, arguments) -> {
                     XSharedLvalueMemoryUnit receiverShared = tryCastReceiver(receiver, methodName);
                     if (arguments.length != 1) {
                         return null;
@@ -172,6 +169,7 @@ class HardwareInvocationHook implements InvocationHook {
             }
 
             default:
+                // TODO: do not return null, but the empty hook action
                 return null;
         }
     }
@@ -187,7 +185,7 @@ class HardwareInvocationHook implements InvocationHook {
     }
 
     private XLocalLvalueMemoryUnit emitLoad(XSharedMemoryUnit receiverShared) {
-        XLocalLvalueMemoryUnit resultRegister = program.declareTempRegister(receiverShared.getType());
+        XLocalLvalueMemoryUnit resultRegister = program.getMemoryManager().declareTempRegister(receiverShared.getType());
         program.emitMemoryEvent(resultRegister, receiverShared);
         return resultRegister;
     }

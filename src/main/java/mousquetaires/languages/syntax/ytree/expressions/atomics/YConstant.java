@@ -1,9 +1,7 @@
 package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
 import mousquetaires.languages.common.citation.CodeLocation;
-import mousquetaires.languages.syntax.ytree.types.YMockType;
-import mousquetaires.languages.syntax.ytree.types.YType;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 import mousquetaires.utils.exceptions.ArgumentNullException;
 import mousquetaires.utils.exceptions.NotSupportedException;
 
@@ -13,20 +11,14 @@ import java.util.Objects;
 public class YConstant extends YAtomBase {
 
     private final Object value;
-    private final YType type;
 
-    private YConstant(CodeLocation location, Object value, YType type) {
+    private YConstant(CodeLocation location, Object value) {
         super(location, Kind.Global);
         this.value = value;
-        this.type = type;
     }
 
     public Object getValue() {
         return value;
-    }
-
-    public YType getType() {
-        return type;
     }
 
     @Override
@@ -48,15 +40,15 @@ public class YConstant extends YAtomBase {
 
 
     public static YConstant fromValue(int value) {
-        return new YConstant(CodeLocation.empty, value, new YMockType()); //YTypeFactory.getPrimitiveType(YTypeName.Int));
+        return new YConstant(CodeLocation.empty, value); //YTypeFactory.getPrimitiveType(YTypeName.Int));
     }
 
     public static YConstant fromValue(boolean value) {
-        return new YConstant(CodeLocation.empty, value, new YMockType()); //YTypeFactory.getPrimitiveType(YTypeName.Bool));
+        return new YConstant(CodeLocation.empty, value); //YTypeFactory.getPrimitiveType(YTypeName.Bool));
     }
 
     public static YConstant fromValue(float value) {
-        return new YConstant(CodeLocation.empty, value, new YMockType()); //YTypeFactory.getPrimitiveType(YTypeName.Float));
+        return new YConstant(CodeLocation.empty, value); //YTypeFactory.getPrimitiveType(YTypeName.Float));
     }
 
     public static YConstant tryParse(String text) {
@@ -100,12 +92,11 @@ public class YConstant extends YAtomBase {
         if (!(o instanceof YConstant)) { return false; }
         if (!super.equals(o)) { return false; }
         YConstant yConstant = (YConstant) o;
-        return Objects.equals(getValue(), yConstant.getValue()) &&
-                Objects.equals(getType(), yConstant.getType());
+        return Objects.equals(getValue(), yConstant.getValue());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getValue(), getType());
+        return Objects.hash(super.hashCode(), getValue());
     }
 }

@@ -591,6 +591,7 @@ class C2YtreeConverterVisitor
      */
     @Override
     public YExpression visitLogicalOrExpression(C11Parser.LogicalOrExpressionContext ctx) {
+        //TODO: note that for integers, boolean operators have different meaning! (see http://retis.sssup.it/~lipari/courses/infbase2012/03.c_intro-handout.pdf slide 32/58)
         C11Parser.LogicalOrExpressionContext logicalOrExpressionContext = ctx.logicalOrExpression();
         C11Parser.LogicalAndExpressionContext logicalAndExpressionContext = ctx.logicalAndExpression();
         if (logicalAndExpressionContext != null) {

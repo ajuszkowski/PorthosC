@@ -2,7 +2,7 @@ package mousquetaires.languages.converters.toytree.c11;
 
 
 import mousquetaires.languages.common.citation.CodeCitationService;
-import mousquetaires.languages.converters.toytree.InputProgram2YtreeConverter;
+import mousquetaires.languages.converters.InputProgram2YtreeConverter;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import org.antlr.v4.runtime.ParserRuleContext;
 

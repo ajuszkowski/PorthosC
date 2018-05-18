@@ -1,7 +1,8 @@
 package mousquetaires.tests.unit.languages.converters.toytree;
 
-import mousquetaires.languages.ProgramExtensions;
-import mousquetaires.languages.ProgramLanguage;
+import mousquetaires.languages.InputExtensions;
+import mousquetaires.languages.InputLanguage;
+import mousquetaires.languages.converters.InputParserBase;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
@@ -21,8 +22,8 @@ public abstract class C2Ytree_UnitTestBase extends AbstractConverterUnitTest<YEn
     protected Iterator<? extends YEntity> parseTestFile(String testFile) {
         try {
             File file = new File(testFile);
-            ProgramLanguage language = ProgramExtensions.parseProgramLanguage(file.getName());
-            YtreeParser parser = new YtreeParser(file, language);
+            InputLanguage language = InputExtensions.parseProgramLanguage(file.getName());
+            InputParserBase parser = new YtreeParser(file, language);
             YSyntaxTree syntaxTree = parser.parseFile();
             return syntaxTree.getRoots().iterator();
         } catch (IOException e) {

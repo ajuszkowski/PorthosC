@@ -12,7 +12,6 @@ import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import org.apache.xpath.operations.Bool;
-import org.w3c.dom.ls.LSLoadEvent;
 
 import static mousquetaires.utils.StringUtils.wrap;
 

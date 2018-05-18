@@ -1,19 +1,21 @@
 package mousquetaires.languages.converters.toxgraph.interpretation;
 
 
-import mousquetaires.languages.common.Type;
+import com.sun.istack.internal.NotNull;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.events.computation.*;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XEntryEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XExitEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XNopEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XNopEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
 import mousquetaires.languages.syntax.xgraph.process.XCyclicProcessBuilder;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
+
+import javax.annotation.Nonnull;
 
 import static mousquetaires.utils.StringUtils.wrap;
 
@@ -52,6 +54,12 @@ abstract class XInterpreterBase implements XInterpreter {
     }
 
     @Override
+    @NotNull
+    public XMemoryManager getMemoryManager() {
+        return memoryManager;
+    }
+
+    @Override
     public XEntryEvent emitEntryEvent() {
         XEntryEvent entryEvent = new XEntryEvent(createEventInfo());
         graphBuilder.setSource(entryEvent);
@@ -65,50 +73,6 @@ abstract class XInterpreterBase implements XInterpreter {
         processNextEvent(exitEvent);
         graphBuilder.setSink(exitEvent);
         return exitEvent;
-    }
-
-    // --
-
-    @Override
-    public XLocation declareLocation(String name, Type type) {
-        //XLocation location = memoryManager.declareLocation(name, type);
-        //emitDeclarationEvent(location);
-        //return location;
-        return memoryManager.declareLocation(name, type);
-    }
-
-    @Override
-    public XRegister declareRegister(String name, Type type) {
-        //XRegister register = memoryManager.declareRegister(name, type);
-        //emitDeclarationEvent(register);
-        //return register;
-        return memoryManager.declareRegister(name, type);
-    }
-
-    @Override
-    public XRegister declareTempRegister(Type type) {
-        //XRegister register = memoryManager.newTempRegister(type);
-        //emitDeclarationEvent(register);
-        //return register;
-        return memoryManager.newTempRegister(type);
-    }
-
-    @Override
-    public XLvalueMemoryUnit declareUnresolvedUnit(String name, boolean isGlobal) {
-        //XLvalueMemoryUnit unit = memoryManager.declareUnresolvedUnit(name, isGlobal);
-        //emitDeclarationEvent(unit);
-        //return unit;
-        return memoryManager.declareUnresolvedUnit(name, isGlobal);
-    }
-
-    @Override
-    public XLvalueMemoryUnit getDeclaredUnitOrNull(String name) {
-        return memoryManager.getDeclaredUnitOrNull(name);
-    }
-
-    @Override
-    public XRegister getDeclaredRegister(String name, XProcessId processId) {
-        return memoryManager.getDeclaredRegister(name, processId);
     }
 
     //public XDeclarationEvent emitDeclarationEvent(XMemoryUnit memoryUnit) {
@@ -219,7 +183,7 @@ abstract class XInterpreterBase implements XInterpreter {
 
     @Override
     public XRegister copyToLocalMemory(XSharedMemoryUnit shared) {
-        XRegister tempLocal = memoryManager.newTempRegister(shared.getType());
+        XRegister tempLocal = memoryManager.declareTempRegister(shared.getType());
         emitMemoryEvent(tempLocal, shared);
         return tempLocal;
     }

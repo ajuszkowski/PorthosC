@@ -4,10 +4,11 @@ import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XAssertionEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XEntryEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XExitEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XMethodCallEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XNopEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XNopEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
@@ -35,14 +36,10 @@ public class XLocalMemoryUnitCollector implements XEventVisitor<Iterable<XLocalM
         return event.getAssertion().accept(this);
     }
 
-    //@Override
-    //public Iterable<XLocalMemoryUnit> visit(XDeclarationEvent event) {
-    //    XMemoryUnit unit = event.getUnit();
-    //    if (unit instanceof XLocalMemoryUnit) {
-    //        return Collections.singletonList((XLocalMemoryUnit) unit);
-    //    }
-    //    return Collections.emptyList();
-    //}
+    @Override
+    public Iterable<XLocalMemoryUnit> visit(XMethodCallEvent event) {
+        throw new NotImplementedException();
+    }
 
     @Override
     public Iterable<XLocalMemoryUnit> visit(XInitialWriteEvent event) {

@@ -6,8 +6,9 @@ import mousquetaires.utils.exceptions.NotImplementedException;
 class KernelInvocationHook implements InvocationHook {
 
     @Override
-    public InterceptionAction tryInterceptInvocation(String methodName) {
+    public XInvocationHookAction tryInterceptInvocation(String methodName) {
         switch (methodName) {
+            //todo: extern ...
             case "WRITE_ONCE":
                 throw new NotImplementedException();
             case "READ_ONCE":

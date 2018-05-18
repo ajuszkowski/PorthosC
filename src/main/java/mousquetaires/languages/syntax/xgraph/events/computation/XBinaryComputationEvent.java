@@ -8,7 +8,7 @@ import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 import java.util.Objects;
 
 
-public class XBinaryComputationEvent extends XComputationEventBase {
+public final class XBinaryComputationEvent extends XComputationEventBase {
 
     private final XLocalMemoryUnit firstOperand;
     private final XLocalMemoryUnit secondOperand;

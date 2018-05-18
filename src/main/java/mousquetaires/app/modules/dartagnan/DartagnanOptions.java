@@ -28,7 +28,7 @@ public class DartagnanOptions extends AppOptions {
             description = "Source weak memory model name",
             // uncomment when we'll be parsing .cat-files
             //converter = FileConverter.class,
-            //validateValueWith = {FileValidator.class, InputModelExtensionValidator.class})
+            //validateValueWith = {FileValidator.class, InputProgramExtensionValidator.class})
             converter = MemoryModelNameConverter.class,
             validateValueWith = MemoryModelNameValidator.class)
     public MemoryModel.Kind sourceModel;

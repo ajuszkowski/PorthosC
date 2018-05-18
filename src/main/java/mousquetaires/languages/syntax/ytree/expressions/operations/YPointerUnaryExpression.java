@@ -1,7 +1,7 @@
 //package mousquetaires.languages.syntax.ytree.expressions.unary;
 //
 //import mousquetaires.languages.syntax.ytree.expressions.YExpression;
-//import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
+//import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 //
 //// TODO: get rid of pointer arithmetics before constructing the Y-level!
 //public class YPointerUnaryExpression extends YUnaryExpression {

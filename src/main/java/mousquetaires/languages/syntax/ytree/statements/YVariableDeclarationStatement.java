@@ -3,7 +3,7 @@ package mousquetaires.languages.syntax.ytree.statements;
 import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
 import mousquetaires.languages.syntax.ytree.types.YType;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 import java.util.Objects;
 

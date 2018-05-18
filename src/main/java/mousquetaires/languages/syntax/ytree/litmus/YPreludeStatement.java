@@ -2,10 +2,10 @@ package mousquetaires.languages.syntax.ytree.litmus;
 
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.common.citation.CodeLocation;
-import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
+import mousquetaires.languages.syntax.ytree.definitions.YDefinition;
 import mousquetaires.languages.syntax.ytree.statements.YStatement;
 import mousquetaires.languages.syntax.ytree.statements.YUnlabeledStatement;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 
 public final class YPreludeStatement extends YUnlabeledStatement {

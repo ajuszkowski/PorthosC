@@ -1,6 +1,6 @@
 package mousquetaires.languages.converters.toxgraph.interpretation;
 
-import mousquetaires.languages.common.Type;
+import mousquetaires.languages.common.XType;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
@@ -34,57 +34,6 @@ public abstract class XLudeInterpreterBase extends XInterpreterBase {
         }
         postProcessEvent(nextEvent);
     }
-
-    // --
-
-    @Override
-    public XLocation declareLocation(String name, Type type) {
-        accessedLocalUnits.add(name);
-        return super.declareLocation(name, type);
-    }
-
-    @Override
-    public XRegister declareRegister(String name, Type type) {
-        accessedSharedUnits.add(name);
-        return super.declareRegister(name, type);
-    }
-
-    @Override
-    public XLvalueMemoryUnit declareUnresolvedUnit(String name, boolean isGlobal) {
-        if (isGlobal) {
-            accessedSharedUnits.add(name);
-        }
-        else {
-            accessedLocalUnits.add(name);
-        }
-        return super.declareUnresolvedUnit(name, isGlobal);
-    }
-
-    @Override
-    public XLvalueMemoryUnit getDeclaredUnitOrNull(String name) {
-        XLvalueMemoryUnit result = super.getDeclaredUnitOrNull(name);
-        if (result != null) {
-            if (result instanceof XLocalMemoryUnit) {
-                accessedLocalUnits.add(name);
-            }
-            else if (result instanceof XSharedMemoryUnit) {
-                accessedSharedUnits.add(name);
-            }
-            else {
-                throw new IllegalStateException("memory unit may be either local or shared, found: " + result.getClass().getSimpleName());
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public XRegister getDeclaredRegister(String name, XProcessId processId) {
-        return super.getDeclaredRegister(name, processId);
-    }
-
-    // --
-
-
 
     // --
 

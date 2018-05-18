@@ -3,7 +3,7 @@ package mousquetaires.languages.syntax.ytree.expressions.ternary;
 import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 import mousquetaires.utils.exceptions.NotSupportedException;
 
 public class YTernaryExpression extends YMultiExpression {

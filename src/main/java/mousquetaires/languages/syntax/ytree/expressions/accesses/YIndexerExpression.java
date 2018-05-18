@@ -4,7 +4,7 @@ import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YAtom;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 
 public class YIndexerExpression extends YMultiExpression implements YAtom {

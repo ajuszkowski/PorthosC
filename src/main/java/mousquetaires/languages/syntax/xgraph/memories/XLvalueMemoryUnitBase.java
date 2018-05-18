@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.xgraph.memories;
 
 
-import mousquetaires.languages.common.Type;
+import mousquetaires.languages.common.XType;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 
 import java.util.Objects;
@@ -15,7 +15,7 @@ abstract class XLvalueMemoryUnitBase extends XMemoryUnitBase implements XLvalueM
     private final String name;
     private final boolean isResolved; //TODO: this information should be stored as a map in MemoryManager!!!
 
-    XLvalueMemoryUnitBase(String name, Type type, boolean isResolved) {
+    XLvalueMemoryUnitBase(String name, XType type, boolean isResolved) {
         super(type);
         this.uniqueId = createId();
         this.name = name;

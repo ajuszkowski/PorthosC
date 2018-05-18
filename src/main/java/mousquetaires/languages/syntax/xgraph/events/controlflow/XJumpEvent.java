@@ -5,7 +5,7 @@ import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
-public final class XJumpEvent extends XEmptyEventBase {
+public final class XJumpEvent extends XEmptyEventBase implements XControlFlowEvent {
 
     public XJumpEvent(XEventInfo info) {
         this(NOT_UNROLLED_REF_ID, info);

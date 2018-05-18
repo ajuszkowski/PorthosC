@@ -1,17 +1,19 @@
 package mousquetaires.languages.syntax.xgraph.memories;
 
-import mousquetaires.languages.common.Type;
+import mousquetaires.languages.common.XType;
+import mousquetaires.languages.syntax.xgraph.XProcessLocalElement;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 
 import java.util.Objects;
 
 
+// Local + belongs to a process
 public final class XRegister extends XLvalueMemoryUnitBase implements XLocalLvalueMemoryUnit {
 
     private final XProcessId processId;
 
-    public XRegister(String name, Type type, XProcessId processId, boolean isResolved) {
+    public XRegister(String name, XType type, XProcessId processId, boolean isResolved) {
         super(name, type, isResolved);
         this.processId = processId;
     }

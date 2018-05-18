@@ -13,7 +13,8 @@ public class MemoryModelNameValidator implements IValueValidator<MemoryModel.Kin
     public void validate(String name, MemoryModel.Kind value) throws ParameterException {
         if (value == null) {
             throw new ParameterException("Invalid memory model name. Available options: " +
-                    Arrays.toString(MemoryModel.Kind.values()).toLowerCase());
+                                         Arrays.toString(MemoryModel.Kind.values()).toLowerCase() +
+                                         " or path to .cat-file");
         }
     }
 }

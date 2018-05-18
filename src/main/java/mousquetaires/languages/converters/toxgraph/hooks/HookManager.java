@@ -20,9 +20,9 @@ public class HookManager implements InvocationHook {
     }
 
     @Override
-    public InterceptionAction tryInterceptInvocation(String methodName) {
+    public XInvocationHookAction tryInterceptInvocation(String methodName) {
         for (InvocationHook hook : registeredHooks) {
-            InterceptionAction result = hook.tryInterceptInvocation(methodName);
+            XInvocationHookAction result = hook.tryInterceptInvocation(methodName);
             if (result != null) {
                 return result;
             }

@@ -9,7 +9,7 @@ public abstract class YStatement implements YEntity {  // TODO: implement all as
     private final String label;
 
     protected YStatement(CodeLocation location) {
-        this(location, "_");
+        this(location, newLabel());
     }
 
     protected YStatement(CodeLocation location, String label) {
@@ -26,6 +26,7 @@ public abstract class YStatement implements YEntity {  // TODO: implement all as
         return location;
     }
 
+    // the label in terms of C (like goto label)
     public abstract YStatement withLabel(String newLabel);
 
     private static int id = 1;

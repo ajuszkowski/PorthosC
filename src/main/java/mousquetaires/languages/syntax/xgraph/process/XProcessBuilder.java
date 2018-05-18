@@ -2,16 +2,13 @@ package mousquetaires.languages.syntax.xgraph.process;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.common.graph.FlowGraphNode;
 import mousquetaires.languages.common.graph.UnrolledFlowGraphBuilder;
-import mousquetaires.languages.converters.tozformula.XLocalMemoryUnitCollector;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XEntryEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XExitEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalLvalueMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.utils.CollectionUtils;
 
 import java.util.*;

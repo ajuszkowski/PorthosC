@@ -6,8 +6,8 @@ import mousquetaires.languages.syntax.xgraph.events.XEmptyEventBase;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
-public class XBarrierEvent extends XEmptyEventBase {
 
+public final class XBarrierEvent extends XEmptyEventBase implements XFenceEvent {
     public enum Kind {
         Mfence,
         Sync,

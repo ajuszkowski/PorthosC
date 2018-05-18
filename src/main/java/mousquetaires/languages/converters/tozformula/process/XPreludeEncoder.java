@@ -8,7 +8,7 @@ import mousquetaires.languages.converters.tozformula.XDataflowEncoder;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
 import mousquetaires.languages.syntax.zformula.ZFormulaBuilder;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 
 import java.util.Iterator;
 import java.util.Set;

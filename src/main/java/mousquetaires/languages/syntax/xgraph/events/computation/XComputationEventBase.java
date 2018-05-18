@@ -2,17 +2,16 @@ package mousquetaires.languages.syntax.xgraph.events.computation;
 
 import mousquetaires.languages.syntax.xgraph.events.XEventBase;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
-import mousquetaires.languages.common.Type;
-import mousquetaires.languages.syntax.xgraph.process.XProcessId;
+import mousquetaires.languages.common.XType;
 
 
 // TODO: remove nullary computation event, inherit the XLocalMemoryUnit from XEventBase and XComputationEvent (because it's read from registry)
 abstract class XComputationEventBase extends XEventBase implements XComputationEvent {
 
     private final XOperator operator;
-    private final Type type;
+    private final XType type;
 
-    XComputationEventBase(int refId, XEventInfo info, Type type, XOperator operator) {
+    XComputationEventBase(int refId, XEventInfo info, XType type, XOperator operator) {
         super(refId, info);
         this.type = type;
         this.operator = operator;
@@ -23,7 +22,7 @@ abstract class XComputationEventBase extends XEventBase implements XComputationE
     }
 
     @Override
-    public Type getType() {
+    public XType getType() {
         return type;
     }
 }

@@ -1,14 +1,14 @@
 package mousquetaires.languages.converters.toxgraph.interpretation;
 
-import mousquetaires.languages.common.Type;
+import mousquetaires.languages.common.XType;
 import mousquetaires.languages.converters.toxgraph.hooks.HookManager;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.*;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XEntryEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XExitEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XNopEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XNopEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLocalMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.memories.*;
@@ -41,6 +41,11 @@ public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements 
     }
 
     @Override
+    public XMemoryManager getMemoryManager() {
+        return memoryManager;
+    }
+
+    @Override
     public XCyclicProgram build() {
         assert currentProcess == null : "process " + currentProcess.getProcessId() + " is not finished yet";
         return programBuilder.build(); //preludeBuilder.build(), process.build(), postludeBuilder.build());
@@ -61,44 +66,14 @@ public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements 
         return currentProcess().getProcessId();
     }
 
-    @Override
-    public XLocation declareLocation(String name, Type type) {
-        return currentProcess().declareLocation(name, type);
-    }
-
-    @Override
-    public XRegister declareRegister(String name, Type type) {
-        return currentProcess().declareRegister(name, type);
-    }
-
-    @Override
-    public XRegister declareTempRegister(Type type) {
-        return currentProcess().declareTempRegister(type);
-    }
-
-    @Override
-    public XLvalueMemoryUnit declareUnresolvedUnit(String name, boolean isGlobal) {
-        return currentProcess().declareUnresolvedUnit(name, isGlobal);
-    }
-
-    @Override
-    public XLvalueMemoryUnit getDeclaredUnitOrNull(String name) {
-        return currentProcess().getDeclaredUnitOrNull(name);
-    }
-
-    @Override
-    public XRegister getDeclaredRegister(String name, XProcessId processId) {
-        return currentProcess().getDeclaredRegister(name, processId);
-    }
-
     public void startProcessDefinition(XProcessKind processKind, XProcessId processId) {
-        resetState(processId);
+        memoryManager.reset(processId);
         switch (processKind) {
             case Prelude:
                 setCurrentProcess(new XPreludeInterpreter(XProcessId.PreludeProcessId, memoryManager));
                 break;
             case ConcurrentProcess:
-                setCurrentProcess(new XThreadInterpreter(processId, memoryManager, new HookManager(this)));
+                setCurrentProcess(new XProcessInterpreter(processId, memoryManager, new HookManager(this)));
                 break;
             case Postlude:
                 setCurrentProcess(new XPostludeInterpreter(XProcessId.PostludeProcessId, memoryManager));
@@ -196,8 +171,8 @@ public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements 
     }
 
     @Override
-    public XAssertionEvent processAssertion(XBinaryComputationEvent assertion) {
-        return currentProcess().processAssertion(assertion);
+    public XAssertionEvent emitAssertionEvent(XBinaryComputationEvent assertion) {
+        return currentProcess().emitAssertionEvent(assertion);
     }
 
     // --
@@ -252,14 +227,5 @@ public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements 
     private void setCurrentProcess(XInterpreter process) {
         assert currentProcess == null || process == null : currentProcess;
         currentProcess = process;
-    }
-
-    private void resetState(XProcessId nextProcessId) {
-        if (currentProcess != null) {
-            throw new IllegalStateException("Attempt to start new process definition " + wrap(nextProcessId) +
-                                                    " while another process " + wrap(currentProcess.getProcessId()) +
-                                                    " is still under construction");
-        }
-        memoryManager.reset(nextProcessId);
     }
 }

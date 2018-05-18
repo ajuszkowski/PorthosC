@@ -1,7 +1,7 @@
 package mousquetaires.languages.converters.toxgraph;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.common.Type;
+import mousquetaires.languages.common.XType;
 import mousquetaires.languages.converters.toxgraph.interpretation.XInterpreter;
 import mousquetaires.languages.converters.toxgraph.interpretation.XProgramInterpreter;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
@@ -40,15 +40,13 @@ import mousquetaires.languages.syntax.ytree.statements.*;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
 import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
 import mousquetaires.languages.syntax.ytree.types.YType;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import mousquetaires.utils.exceptions.xgraph.XInterpreterUsageError;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static mousquetaires.utils.StringUtils.wrap;
 
@@ -91,12 +89,12 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         for (YParameter parameter : node.getSignature().getParameters()) {
             YVariableRef parameterVariable = parameter.getVariable();
             String name = parameterVariable.getName();
-            Type type = YType2TypeConverter.convert(parameter.getType());
+            XType type = YType2TypeHelper.convert(parameter.getType());
             if (parameterVariable.isGlobal()) {
-                program.declareLocation(name, type);
+                program.getMemoryManager().declareLocation(name, type);
             }
             else {
-                program.declareRegister(name, type);
+                program.getMemoryManager().declareRegister(name, type);
             }
         }
 
@@ -114,7 +112,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
             throw new XInterpreterUsageError("Could not convert assertion expression " +
                                                      wrap(expression) + " to a binary computation event");
         }
-        program.processAssertion((XBinaryComputationEvent) expression);
+        program.emitAssertionEvent((XBinaryComputationEvent) expression);
         program.finishProcessDefinition();
         return null; //statements return null
     }
@@ -214,7 +212,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         boolean isPostfixDecrement = (yOperator == YUnaryOperator.PostfixDecrement);
 
         if (isPostfixIncrement || isPostfixDecrement) {
-            XRegister tempReg = program.declareTempRegister(base.getType());
+            XRegister tempReg = program.getMemoryManager().declareTempRegister(base.getType());
             XConstant constantOne = XConstant.create(1, base.getType());
             XBinaryOperator operator = isPostfixIncrement ? XBinaryOperator.Addition : XBinaryOperator.Subtraction;
             XComputationEvent increment = program.createComputationEvent(operator, tempReg, constantOne);
@@ -425,13 +423,13 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     public XLvalueMemoryUnit visit(YVariableDeclarationStatement node) {
         YVariableRef variable = node.getVariable();
         String name = variable.getName();
-        Type type = YType2TypeConverter.convert(node.getType());
+        XType type = YType2TypeHelper.convert(node.getType());
         //TODO: should determine the type of variables during the preprocessing!
         if (variable.isGlobal() || program.getProcessId() == XProcessId.PreludeProcessId) {
-            return program.declareLocation(name, type);
+            return program.getMemoryManager().declareLocation(name, type);
         }
         else {
-            return program.declareRegister(name, type);
+            return program.getMemoryManager().declareRegister(name, type);
         }
     }
     //
@@ -449,19 +447,19 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     @Override
     public XLvalueMemoryUnit visit(YVariableRef variable) {
         String name = variable.getName();
-        XLvalueMemoryUnit result = program.getDeclaredUnitOrNull(name);
+        XLvalueMemoryUnit result = program.getMemoryManager().getDeclaredUnitOrNull(name);
         return (result == null)
-                ? program.declareUnresolvedUnit(name, variable.isGlobal())
+                ? program.getMemoryManager().declareUnresolvedUnit(name, variable.isGlobal())
                 : result;
     }
 
     public XLvalueMemoryUnit visit(YLabeledVariableRef variable) {
-        return program.getDeclaredRegister(variable.getName(), new XProcessId(variable.getLabel()));
+        return program.getMemoryManager().getDeclaredRegister(variable.getName(), new XProcessId(variable.getLabel()));
     }
 
     @Override
     public XLocalMemoryUnit visit(YConstant node) {
-        Type type = YType2TypeConverter.convert(node.getType());
+        XType type = YType2TypeHelper.determineType(node);
         return XConstant.create(node.getValue(), type);
     }
 

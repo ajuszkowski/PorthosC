@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 
 public class YMethodSignature implements YEntity {

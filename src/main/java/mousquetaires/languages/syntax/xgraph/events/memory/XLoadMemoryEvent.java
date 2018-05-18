@@ -12,11 +12,11 @@ import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
  * to local storage (registry, {@link XLocalMemoryUnit}) */
 public final class XLoadMemoryEvent extends XMemoryEventBase implements XSharedMemoryEvent {
 
-    public XLoadMemoryEvent(XEventInfo info, XLocalLvalueMemoryUnit destination, XSharedMemoryUnit source/*, XMemoryOrder memoryOrder*/) {
+    public XLoadMemoryEvent(XEventInfo info, XLocalLvalueMemoryUnit destination, XSharedMemoryUnit source) {
         this(NOT_UNROLLED_REF_ID, info, destination, source);
     }
 
-    private XLoadMemoryEvent(int refId, XEventInfo info, XLocalLvalueMemoryUnit destination, XSharedMemoryUnit source/*, XMemoryOrder memoryOrder*/) {
+    private XLoadMemoryEvent(int refId, XEventInfo info, XLocalLvalueMemoryUnit destination, XSharedMemoryUnit source) {
         super(refId, info, destination, source);
     }
 

@@ -1,12 +1,9 @@
 package mousquetaires.languages.syntax.ytree.temporaries;
 
 import mousquetaires.languages.syntax.ytree.YEntity;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
-import mousquetaires.utils.exceptions.NotImplementedException;
+import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 

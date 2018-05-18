@@ -4,10 +4,11 @@ import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XAssertionEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XEntryEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XExitEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XMethodCallEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XNopEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XNopEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
@@ -36,10 +37,10 @@ class XMemoryUnitCollector implements XEventVisitor<Iterable<XMemoryUnit>> {
         return event.getAssertion().accept(this);
     }
 
-    //@Override
-    //public Iterable<XMemoryUnit> visit(XDeclarationEvent event) {
-    //    return Collections.singletonList(event.getUnit());
-    //}
+    @Override
+    public Iterable<XMemoryUnit> visit(XMethodCallEvent event) {
+        throw new NotImplementedException(); //todo: after method call is completed, return arguments + return register
+    }
 
     @Override
     public Iterable<XMemoryUnit> visit(XInitialWriteEvent event) {

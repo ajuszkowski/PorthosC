@@ -1,5 +1,28 @@
+//parker
 {
-    x=3;
+    int cond = 0, parkCounter = 0;
+}
+
+void t0(int& cond, int& parkCounter) {
+    int c = cond.load(_rx);
+    while (c == 0) {
+      counter = parkCounter.load(_rx);
+      int a = 0;
+      parkCounter.store(_rx,a);
+      c = cond.load(_rx);
+    }
+}
+
+void t1(int& cond, int& parkCounter) {
+    int b = 1;
+    cond.store(_rx,b);
+    parkCounter.store(_rx,b);
+}
+
+exists	(cond == 0 && parkCounter == 1)
+
+/*{
+//    x=3;
 }
 
 void t0(int &x, int &y) {

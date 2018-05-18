@@ -3,13 +3,13 @@ package mousquetaires.languages.syntax.ytree.definitions;
 import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 import java.util.Objects;
 
 
-public class YFunctionDefinition implements YDefinition {
 
+public class YFunctionDefinition implements YDefinition {
     private final CodeLocation location;
     private final YMethodSignature signature;
     private final YCompoundStatement body;

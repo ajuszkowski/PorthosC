@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.ytree;
 
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.common.citation.CodeLocation;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 import java.util.Collection;
 
@@ -16,8 +16,8 @@ public class YSyntaxTree implements YEntity {
         this.roots = roots;
         this.location = location;
     }
-
     public YSyntaxTree(CodeLocation location, YEntity... statements) {
+
         this(location, ImmutableList.copyOf(statements));
     }
 

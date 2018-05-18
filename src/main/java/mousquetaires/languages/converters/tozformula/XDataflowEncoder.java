@@ -9,10 +9,11 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XAssertionEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XEntryEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XExitEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XMethodCallEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XNopEvent;
+import mousquetaires.languages.syntax.xgraph.events.fake.XNopEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
 import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
@@ -88,10 +89,10 @@ public class XDataflowEncoder implements XEventVisitor<BoolExpr> {
         return memoryUnitEncoder.encodeAssertion(event);
     }
 
-    //@Override
-    //public BoolExpr visit(XDeclarationEvent event) {
-    //    return null;
-    //}
+    @Override
+    public BoolExpr visit(XMethodCallEvent event) {
+        throw new NotImplementedException();
+    }
 
     @Override
     public BoolExpr visit(XEntryEvent event) {

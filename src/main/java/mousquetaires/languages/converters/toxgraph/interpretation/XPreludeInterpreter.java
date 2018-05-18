@@ -13,7 +13,7 @@ public class XPreludeInterpreter extends XLudeInterpreterBase {
     }
 
     @Override
-    public XAssertionEvent processAssertion(XBinaryComputationEvent assertion) {
+    public XAssertionEvent emitAssertionEvent(XBinaryComputationEvent assertion) {
         throw new XInterpretationError(getIllegalOperationMessage());
     }
 }

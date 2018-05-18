@@ -3,7 +3,7 @@ package mousquetaires.languages.syntax.ytree.expressions.accesses;
 import mousquetaires.languages.common.citation.CodeLocation;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YAtom;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 
 public class YMemberAccessExpression extends YMultiExpression implements YAtom {

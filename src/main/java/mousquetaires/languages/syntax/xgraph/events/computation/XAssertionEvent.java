@@ -2,13 +2,14 @@ package mousquetaires.languages.syntax.xgraph.events.computation;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
-import mousquetaires.languages.common.Type;
+import mousquetaires.languages.common.XType;
 import mousquetaires.languages.syntax.xgraph.events.XEventBase;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 
+// TODO: implement the Fake event
 
-public class XAssertionEvent extends XEventBase implements XComputationEvent {
+public final class XAssertionEvent extends XEventBase implements XComputationEvent {
 
     private final XBinaryComputationEvent assertion;
 
@@ -26,7 +27,7 @@ public class XAssertionEvent extends XEventBase implements XComputationEvent {
     }
 
     @Override
-    public Type getType() {
+    public XType getType() {
         return assertion.getType();
     }
 

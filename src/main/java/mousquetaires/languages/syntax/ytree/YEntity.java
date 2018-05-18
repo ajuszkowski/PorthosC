@@ -1,9 +1,8 @@
 package mousquetaires.languages.syntax.ytree;
 
 import mousquetaires.languages.common.citation.CodeLocation;
-import mousquetaires.languages.syntax.ytree.visitors.ytree.YtreeVisitor;
+import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
-import java.util.Iterator;
 
 public interface YEntity {
 
