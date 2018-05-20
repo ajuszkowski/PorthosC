@@ -1,7 +1,6 @@
 //C SB+onces
 
 { int x = 0; int y = 0;}
-//{}
 
 
 P0(volatile int* y, volatile int* x) {
@@ -16,5 +15,4 @@ P1(volatile int* y, volatile int* x) {
   r0 = READ_ONCE(*x);
 }
 
-//exists (0:r0=0 /\ 1:r0=0)
-exists (0:r0==0 && 1:r0==0)
+exists (P0:r0==0 && P1:r0==0)

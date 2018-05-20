@@ -18,7 +18,7 @@ import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 import dartagnan.program.Program;
 import mousquetaires.memorymodels.DomainOld;
 import mousquetaires.memorymodels.relations.old.Relation;
-import mousquetaires.memorymodels.wmm.old.Wmm;
+import mousquetaires.memorymodels.wmm.old.WmmOld;
 
 import java.util.logging.Logger;
 
@@ -53,7 +53,7 @@ public class Dartagnan {
         HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd;
         
-Wmm mcm;
+WmmOld mcm;
         try {
             cmd = parserCmd.parse(options, args);
         } catch (ParseException e) {
@@ -96,7 +96,7 @@ Wmm mcm;
             PorthosParser parser = new PorthosParser(tokens);
             p = parser.program(inputFilePath).p;
         }
-        mcm=Wmm.getWmm(target);
+        mcm=WmmOld.getWmm(target);
 
         if(cmd.hasOption("approx")) Relation.Approx=true;
         

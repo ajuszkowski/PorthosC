@@ -27,12 +27,11 @@ public abstract class C11ToXgraph_UnitTestBase extends AbstractConverterUnitTest
     @Override
     protected Iterator<? extends XCyclicProcess> parseTestFile(String testFile) {
         try {
-            DataModel dataModel = null; // TODO: consider data model also
             File file = new File(testFile);
             InputLanguage language = InputExtensions.parseProgramLanguage(file.getName());
             InputParserBase parser = new YtreeParser(file, language);
             YSyntaxTree internalRepr = parser.parseFile();
-            Ytree2XgraphConverter converter = new Ytree2XgraphConverter(language, memoryModel(), dataModel);
+            Ytree2XgraphConverter converter = new Ytree2XgraphConverter(memoryModel());
             XProgramBase program = converter.convert(internalRepr);
             return program.getProcesses().iterator(); //TODO: fix this Unchecked assignment!
         } catch (IOException e) {

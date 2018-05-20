@@ -63,13 +63,13 @@ public class XProgram2ZformulaEncoder {
             encoder.encodeProcessRFRelation(process, formulaBuilder);
         }
 
-        encodeProgramComputedRelations(program, formulaBuilder);
+        Domain_encode(program, formulaBuilder);
 
         //BoolExpr[] assertsArray = asserts.toArray(new BoolExpr[0]);
         //return ctx.mkAnd(assertsArray);
     }
 
-    private void encodeProgramComputedRelations(XProgram program, ZFormulaBuilder formulaBuilder) {
+    private void Domain_encode(XProgram program, ZFormulaBuilder formulaBuilder) {
         BoolExpr enc = ctx.mkTrue();
 
         ImmutableSet<XSharedMemoryEvent> mEvents = program.getSharedMemoryEvents();

@@ -2,13 +2,18 @@
 //    int x = 1, *y;
 //}
 
-void test(int &x, int &y, int &z) {
-    while (++x == 1) {
-        if (y > 2)
+void test(int &x, int &y) {
+    int r;
+    while ((5 + 4 / 2 * x) % 3 == 1) {
+        if (y > 6)
+            continue;
+        else if (++y > 7) {
+            r = r + 10;
             break;
-        z = 3;
+        }
+        r = 11;
     }
-    x = 4;
+    y = x + 1;
 }
 
 

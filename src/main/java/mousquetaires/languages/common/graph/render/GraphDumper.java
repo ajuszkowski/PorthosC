@@ -37,11 +37,11 @@ public class GraphDumper {
             for (Map.Entry<T, T> pair : graph.getEdges(b).entrySet()) {
 
                 T from = pair.getKey();
-                String fromName = from.toString()+ "\n{" + from.hashCode() + "}";  // TODO: node serializer
-                Node fromNode = node(fromName).with("fixedsize", "false");
+                String fromName = from.toString() + "\n{" + from.hashCode() + "}";  // TODO: node serializer
+                Node fromNode = node(fromName);
                 T to = pair.getValue();
                 String toName = to.toString()+ "\n{" + to.hashCode() + "}";  // TODO: node serializer
-                Node toNode = node(toName).with("fixedsize", "false");
+                Node toNode = node(toName);
 
 
                 if (from instanceof XEntryEvent) {
@@ -64,17 +64,20 @@ public class GraphDumper {
                 //    levels.put(fromRefId, set);
                 //}
 
-
                 Link edge = to(toNode).with( b ? Style.SOLID : Style.DASHED );
+
+                if (from instanceof XEntryEvent) {
+                    edge = edge.attrs().add("weight", 0);
+                }
 
                 vizGraph = vizGraph.with(fromNode.link(edge));
 
-                if (from instanceof XEntryEvent) {
-                    vizGraph = vizGraph.graphAttr().with(Rank.SOURCE).with(fromNode);
-                }
-                if (to instanceof XExitEvent) {
-                    vizGraph = vizGraph.graphAttr().with(Rank.SINK).with(toNode);
-                }
+                //if (from instanceof XEntryEvent) {
+                //    vizGraph = vizGraph.graphAttr().with(Rank.SOURCE).with(fromNode);
+                //}
+                //if (to instanceof XExitEvent) {
+                //    vizGraph = vizGraph.graphAttr().with(Rank.SINK).with(toNode);
+                //}
             }
         }
         //vizGraph = vizGraph.graphAttr().with(RankDir.TOP_TO_BOTTOM);

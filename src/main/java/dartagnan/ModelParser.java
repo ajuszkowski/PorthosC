@@ -6,7 +6,7 @@ import mousquetaires.memorymodels.axioms.old.Acyclic;
 import mousquetaires.memorymodels.axioms.old.Axiom;
 import mousquetaires.memorymodels.axioms.old.Irreflexive;
 import mousquetaires.memorymodels.relations.old.*;
-import mousquetaires.memorymodels.wmm.old.Wmm;
+import mousquetaires.memorymodels.wmm.old.WmmOld;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -98,7 +98,7 @@ public class ModelParser extends Parser {
         _interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
     }
     public static class McmContext extends ParserRuleContext {
-        public Wmm value;
+        public WmmOld value;
         public AxiomContext ax1;
         public ReldefContext r1;
         public List<AxiomContext> axiom() {
@@ -134,7 +134,7 @@ public class ModelParser extends Parser {
         try {
             enterOuterAlt(_localctx, 1);
             {
-            ((McmContext)_localctx).value =   new Wmm();
+            ((McmContext)_localctx).value =   new WmmOld();
             setState(17);
             _errHandler.sync(this);
             _la = _input.LA(1);

@@ -204,25 +204,25 @@ public class Program {
         BoolExpr enc = ctx.mkTrue();
         switch (mcm){
         case "sc":
-            enc = ctx.mkAnd(enc, SC.encode(this, ctx));
+            enc = ctx.mkAnd(enc, SCOld.encode(this, ctx));
             break;
         case "tso":
-            enc = ctx.mkAnd(enc, TSO.encode(this, ctx));
+            enc = ctx.mkAnd(enc, TSOOld.encode(this, ctx));
             break;
         case "pso":
-            enc = ctx.mkAnd(enc, PSO.encode(this, ctx));
+            enc = ctx.mkAnd(enc, PSOOld.encode(this, ctx));
             break;
         case "rmo":
-            enc = ctx.mkAnd(enc, RMO.encode(this, ctx));
+            enc = ctx.mkAnd(enc, RMOOld.encode(this, ctx));
             break;
         case "alpha":
-            enc = ctx.mkAnd(enc, Alpha.encode(this, ctx));
+            enc = ctx.mkAnd(enc, AlphaOld.encode(this, ctx));
             break;
         case "power":
-            enc = ctx.mkAnd(enc, Power.encode(this, ctx));
+            enc = ctx.mkAnd(enc, PowerOld.encode(this, ctx));
             break;
         case "arm":
-            enc = ctx.mkAnd(enc, ARM.encode(this, ctx));
+            enc = ctx.mkAnd(enc, ARMOld.encode(this, ctx));
             break;
         default:
             System.out.println("Check encodeConsistent!");
@@ -235,25 +235,25 @@ public class Program {
         BoolExpr enc = ctx.mkTrue();
         switch (mcm){
         case "sc":
-            enc = ctx.mkAnd(enc, SC.Consistent(this, ctx));
+            enc = ctx.mkAnd(enc, SCOld.Consistent(this, ctx));
             break;
         case "tso":
-            enc = ctx.mkAnd(enc, TSO.Consistent(this, ctx));
+            enc = ctx.mkAnd(enc, TSOOld.Consistent(this, ctx));
             break;
         case "pso":
-            enc = ctx.mkAnd(enc, PSO.Consistent(this, ctx));
+            enc = ctx.mkAnd(enc, PSOOld.Consistent(this, ctx));
             break;
         case "rmo":
-            enc = ctx.mkAnd(enc, RMO.Consistent(this, ctx));
+            enc = ctx.mkAnd(enc, RMOOld.Consistent(this, ctx));
             break;
         case "alpha":
-            enc = ctx.mkAnd(enc, Alpha.Consistent(this, ctx));
+            enc = ctx.mkAnd(enc, AlphaOld.Consistent(this, ctx));
             break;
         case "power":
-            enc = ctx.mkAnd(enc, Power.Consistent(this, ctx));
+            enc = ctx.mkAnd(enc, PowerOld.Consistent(this, ctx));
             break;
         case "arm":
-            enc = ctx.mkAnd(enc, ARM.Consistent(this, ctx));
+            enc = ctx.mkAnd(enc, ARMOld.Consistent(this, ctx));
             break;
         default:
             System.out.println("Check encodeConsistent!");
@@ -266,25 +266,25 @@ public class Program {
         BoolExpr enc = ctx.mkTrue();
         switch (mcm) {
         case "sc":
-            enc = ctx.mkAnd(enc, SC.Inconsistent(this, ctx));
+            enc = ctx.mkAnd(enc, SCOld.Inconsistent(this, ctx));
             break;
         case "tso":
-            enc = ctx.mkAnd(enc, TSO.Inconsistent(this, ctx));
+            enc = ctx.mkAnd(enc, TSOOld.Inconsistent(this, ctx));
             break;
         case "pso":
-            enc = ctx.mkAnd(enc, PSO.Inconsistent(this, ctx));
+            enc = ctx.mkAnd(enc, PSOOld.Inconsistent(this, ctx));
             break;
         case "rmo":
-            enc = ctx.mkAnd(enc, RMO.Inconsistent(this, ctx));
+            enc = ctx.mkAnd(enc, RMOOld.Inconsistent(this, ctx));
             break;
         case "alpha":
-            enc = ctx.mkAnd(enc, Alpha.Inconsistent(this, ctx));
+            enc = ctx.mkAnd(enc, AlphaOld.Inconsistent(this, ctx));
             break;
         case "power":
-            enc = ctx.mkAnd(enc, Power.Inconsistent(this, ctx));
+            enc = ctx.mkAnd(enc, PowerOld.Inconsistent(this, ctx));
             break;
         case "arm":
-            enc = ctx.mkAnd(enc, ARM.Inconsistent(this, ctx));
+            enc = ctx.mkAnd(enc, ARMOld.Inconsistent(this, ctx));
             break;
         default:
             System.out.println("Check encodeInconsistent!");

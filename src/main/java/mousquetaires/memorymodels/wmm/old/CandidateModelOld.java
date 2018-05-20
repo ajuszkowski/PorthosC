@@ -14,7 +14,7 @@ import mousquetaires.memorymodels.axioms.old.CandidateAxiom;
  *
  * @author Florian Furbach
  */
-public class CandidateModel extends Wmm {
+public class CandidateModelOld extends WmmOld {
     
     public int size(){
         return axioms.size();

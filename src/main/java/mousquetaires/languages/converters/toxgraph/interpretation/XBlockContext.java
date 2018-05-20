@@ -56,7 +56,7 @@ class XBlockContext {
     public void setConditionEvent(XComputationEvent conditionEvent) {
         assert conditionEvent != null;
         if (entryEvent == null) {
-            System.err.println("Warning: setting stack-entry event same as conditional event: " + conditionEvent);
+            //System.err.println("Warning: setting stack-entry event same as conditional event: " + conditionEvent);
             setEntryEvent(conditionEvent);
         }
         assert this.conditionEvent == null;

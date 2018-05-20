@@ -51,7 +51,7 @@ public class XMemoryManagerImpl implements XMemoryManager {
     @Override
     public XRegister getDeclaredRegister(String name, XProcessId processId) {
         if (!localUnitsMap.containsKey(processId)) {
-            throw new IllegalArgumentException("Unregistered process: " + wrap(processId));
+            throw new IllegalArgumentException("Unregistered process: " + wrap(processId) + ", registered only: " + localUnitsMap.keySet());
         }
         Map<String, XRegister> map = localUnitsMap.get(processId);
         if (!map.containsKey(name)) {
@@ -122,6 +122,6 @@ public class XMemoryManagerImpl implements XMemoryManager {
     }
 
     private static String getRegisterName(int count) {
-        return "temp_reg_" + count;
+        return "reg_tmp" + count;
     }
 }

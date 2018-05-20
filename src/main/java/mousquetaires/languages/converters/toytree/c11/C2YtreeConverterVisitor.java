@@ -648,7 +648,23 @@ class C2YtreeConverterVisitor
         }
         if (assignmentOperatorContext != null) {
             // TODO: process non-trivial assignments
-            //YEntity operator = visitAssignmentOperator(assignmentOperatorContext);
+            YAssignmentOperatorTemp operator = visitAssignmentOperator(assignmentOperatorContext);
+            switch (operator) {
+                case StarAssign:
+                case DivAssign:
+                case ModAssign:
+                case PlusAssign:
+                case MinusAssign:
+                case LeftShiftAssign:
+                case RightShiftAssign:
+                case AndAssign:
+                case XorAssign:
+                case OrAssign:
+                    throw new YParserNotImplementedException(ctx, "Only simple assignment '=' is supported so far");
+                    // Note: to support complex assignment, this method should return statement + all other visit-methods
+                    // that invoke current method should be ready to get a statement (and throw an exception if necessary)
+            }
+            assert operator == YAssignmentOperatorTemp.Assign : operator;
             if (unaryExpressionContext == null) {
                 throw new YParserException(ctx, "Missing assignee expression");
             }
@@ -663,19 +679,61 @@ class C2YtreeConverterVisitor
             YVariableRef assignee = (YVariableRef) assigneeEntity;
             YExpression recursive = visitAssignmentExpression(assignmentExpressionContext);
             return new YAssignmentExpression(location(ctx), assignee, recursive);
-
         }
         throw new YParserException(ctx);
     }
 
     /**
      * assignmentOperator
-     * :   '=' | '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '&=' | '^=' | '|='
-     * ;
+     *  :   Assign
+     *  |   StarAssign
+     *  |   DivAssign
+     *  |   ModAssign
+     *  |   PlusAssign
+     *  |   MinusAssign
+     *  |   LeftShiftAssign
+     *  |   RightShiftAssign
+     *  |   AndAssign
+     *  |   XorAssign
+     *  |   OrAssign
+     *  ;
      */
     @Override
-    public YEntity visitAssignmentOperator(C11Parser.AssignmentOperatorContext ctx) {
-        throw new YParserNotImplementedException(ctx);
+    public YAssignmentOperatorTemp visitAssignmentOperator(C11Parser.AssignmentOperatorContext ctx) {
+        if (ctx.Assign() != null) {
+            return YAssignmentOperatorTemp.Assign;
+        }
+        if (ctx.StarAssign() != null) {
+            return YAssignmentOperatorTemp.StarAssign;
+        }
+        if (ctx.DivAssign() != null) {
+            return YAssignmentOperatorTemp.DivAssign;
+        }
+        if (ctx.ModAssign() != null) {
+            return YAssignmentOperatorTemp.ModAssign;
+        }
+        if (ctx.PlusAssign() != null) {
+            return YAssignmentOperatorTemp.PlusAssign;
+        }
+        if (ctx.MinusAssign() != null) {
+            return YAssignmentOperatorTemp.MinusAssign;
+        }
+        if (ctx.LeftShiftAssign() != null) {
+            return YAssignmentOperatorTemp.LeftShiftAssign;
+        }
+        if (ctx.RightShiftAssign() != null) {
+            return YAssignmentOperatorTemp.RightShiftAssign;
+        }
+        if (ctx.AndAssign() != null) {
+            return YAssignmentOperatorTemp.AndAssign;
+        }
+        if (ctx.XorAssign() != null) {
+            return YAssignmentOperatorTemp.XorAssign;
+        }
+        if (ctx.OrAssign() != null) {
+            return YAssignmentOperatorTemp.OrAssign;
+        }
+        throw new YParserException(ctx, "Unrecognised assignment operator");
     }
 
     /**

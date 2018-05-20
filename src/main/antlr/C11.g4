@@ -162,7 +162,17 @@ assignmentExpression
     ;
 
 assignmentOperator
-    :   '=' | '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '&=' | '^=' | '|='
+    :   Assign
+    |   StarAssign
+    |   DivAssign
+    |   ModAssign
+    |   PlusAssign
+    |   MinusAssign
+    |   LeftShiftAssign
+    |   RightShiftAssign
+    |   AndAssign
+    |   XorAssign
+    |   OrAssign
     ;
 
 // (6.5.17)

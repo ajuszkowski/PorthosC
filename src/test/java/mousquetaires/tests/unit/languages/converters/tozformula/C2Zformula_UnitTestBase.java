@@ -33,13 +33,12 @@ public abstract class C2Zformula_UnitTestBase extends AbstractConverterUnitTest<
     @Override
     protected Iterator<? extends BoolExpr> parseTestFile(String testFile) {
         try {
-            DataModel dataModel = null; // TODO: consider data model also
             int unrollBound = 6; // TODO: PASS IT AS TEST PARAMETER (object testSettings)
             File file = new File(testFile);
             InputLanguage language = InputExtensions.parseProgramLanguage(file.getName());
             InputParserBase parser = new YtreeParser(file, language);
             YSyntaxTree internalRepr = parser.parseFile();
-            Ytree2XgraphConverter converter = new Ytree2XgraphConverter(language, memoryModel(), dataModel);
+            Ytree2XgraphConverter converter = new Ytree2XgraphConverter(memoryModel());
             XCyclicProgram program = converter.convert(internalRepr);
             XProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
             Context ctx = new Context();

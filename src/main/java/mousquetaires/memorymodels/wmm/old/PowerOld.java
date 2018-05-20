@@ -15,7 +15,7 @@ import mousquetaires.memorymodels.EncodingsOld;
 import mousquetaires.memorymodels.relations.old.Relation;
 import mousquetaires.utils.Utils;
 
-public class Power {
+public class PowerOld {
 
     public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
         Set<Event> events = program.getMemEvents();

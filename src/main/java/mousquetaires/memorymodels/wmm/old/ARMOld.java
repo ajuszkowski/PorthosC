@@ -14,7 +14,7 @@ import dartagnan.program.Program;
 import mousquetaires.memorymodels.EncodingsOld;
 import mousquetaires.utils.Utils;
 
-public class ARM {
+public class ARMOld {
 
     public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
         Set<Event> events = program.getMemEvents();

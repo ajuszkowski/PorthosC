@@ -3,10 +3,10 @@ package mousquetaires.memorymodels.wmm;
 import mousquetaires.memorymodels.axioms.old.Axiom;
 import mousquetaires.memorymodels.axioms.old.CandidateAxiom;
 import mousquetaires.memorymodels.axioms.old.Consistent;
-import mousquetaires.memorymodels.wmm.old.Wmm;
+import mousquetaires.memorymodels.wmm.old.WmmOld;
 
 
-public class CandidateModel extends Wmm {
+public class CandidateModel extends WmmOld {
     
     public int size(){
         return axioms.size();

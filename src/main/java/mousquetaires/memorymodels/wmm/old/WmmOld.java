@@ -24,10 +24,10 @@ import java.util.Vector;
  *
  * @author Florian Furbach
  */
-public class Wmm {
+public class WmmOld {
 
-    public static Wmm getWmm(String model) {
-        Wmm temp = new Wmm();
+    public static WmmOld getWmm(String model) {
+        WmmOld temp = new WmmOld();
         //basics:
         Relation co = new BasicRelation("co");
         Relation po = new BasicRelation("po");

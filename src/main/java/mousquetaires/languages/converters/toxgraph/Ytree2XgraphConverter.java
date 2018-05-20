@@ -13,15 +13,10 @@ import mousquetaires.memorymodels.wmm.MemoryModel;
 // Stateless
 public class Ytree2XgraphConverter {
 
-    private final InputLanguage language;
     private final MemoryModel.Kind memoryModel;
-    private final DataModel dataModel;
 
-    // TODO: Y->X interpreter must be memory-model agnostic!!! (now it's used incorrectly in invocation hooks)
-    public Ytree2XgraphConverter(InputLanguage language, MemoryModel.Kind memoryModelKind, DataModel dataModel) {
-        this.language = language;
+    public Ytree2XgraphConverter(MemoryModel.Kind memoryModelKind) {
         this.memoryModel = memoryModelKind;
-        this.dataModel = dataModel;
     }
 
     public XCyclicProgram convert(YSyntaxTree internalSyntaxTree) {

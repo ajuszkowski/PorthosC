@@ -8,7 +8,7 @@ import dartagnan.program.*;
 import mousquetaires.memorymodels.EncodingsOld;
 
 
-public class SC {
+public class SCOld {
 
     public static BoolExpr encode(Program program, Context ctx) throws Z3Exception {
         Set<Event> events = program.getMemEvents();

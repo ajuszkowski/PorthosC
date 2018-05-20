@@ -13,15 +13,14 @@ import static mousquetaires.utils.StringUtils.wrap;
 
 
 // TODO: rename to XPorthosInvocationHook
-class HardwareInvocationHook implements InvocationHook {
+class HardwareInvocationHook extends InvocationHookBase implements InvocationHook {
 
-    private final XProgramInterpreter program;
 
     // FOR DEBUG ONLY: THIS MUST BE A TYPE-CHECK! For now, the code is just a map from the old code.
     private final ImmutableList<String> valid_atomics = ImmutableList.of("_sc", "_rx", "_na", "_rel" );
 
     HardwareInvocationHook(XProgramInterpreter program) {
-        this.program = program;
+        super(program);
     }
 
     @Override

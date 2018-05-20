@@ -15,7 +15,7 @@ public class HookManager implements InvocationHook {
         this.registeredHooks = ImmutableSet.copyOf(
                 new HashSet<InvocationHook>() {{
                     add(new HardwareInvocationHook(program));
-                    add(new KernelInvocationHook());
+                    add(new KernelInvocationHook(program));
                 }});
     }
 

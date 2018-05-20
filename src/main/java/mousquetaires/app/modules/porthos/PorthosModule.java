@@ -1,10 +1,30 @@
 package mousquetaires.app.modules.porthos;
 
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Context;
+import com.microsoft.z3.Solver;
+import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 import mousquetaires.app.errors.AppError;
 import mousquetaires.app.errors.IOError;
 import mousquetaires.app.errors.UnrecognisedError;
 import mousquetaires.app.modules.AppModule;
+import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
+import mousquetaires.languages.InputExtensions;
+import mousquetaires.languages.InputLanguage;
+import mousquetaires.languages.common.citation.CodeCitationService;
+import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
+import mousquetaires.languages.converters.toytree.YtreeParser;
+import mousquetaires.languages.converters.tozformula.XProgram2ZformulaEncoder;
+import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
+import mousquetaires.languages.syntax.xgraph.datamodels.DataModelLP64;
+import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
+import mousquetaires.languages.syntax.xgraph.program.XProgram;
+import mousquetaires.languages.syntax.ytree.YSyntaxTree;
+import mousquetaires.languages.syntax.zformula.ZFormulaBuilder;
+import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
+import mousquetaires.memorymodels.wmm.MemoryModel;
 
+import java.io.File;
 import java.io.IOException;
 
 //import mousquetaires.program.Init;
@@ -26,46 +46,76 @@ public class PorthosModule extends AppModule {
         verdict.onStartExecution();
 
         try {
+//todo: solving timeout!
+            int unrollBound = 16; // TODO: get from options
 
-            //options.addOption("state", false, "PORTHOS performs state portability");
+            MemoryModel.Kind sourceModelKind = options.sourceModel;
+            MemoryModel sourceModel = sourceModelKind.createModel();
+            MemoryModel.Kind targetModelKind = options.targetModel;
+            MemoryModel targetModel = targetModelKind.createModel();
 
-            //options.addOption(Option.builder("draw")
-            //        .hasArg()
-            //        .desc("If a buf is found, it outputs a graph \\path_to_file.dot")
-            //        .build());
+            File inputProgramFile = options.inputProgramFile;
+            InputLanguage language = InputExtensions.parseProgramLanguage(inputProgramFile.getName());
+            YtreeParser parser = new YtreeParser(inputProgramFile, language);
+            YSyntaxTree yTree = parser.parseFile();
 
-            //options.addOption(Option.builder("rels")
-            //        .hasArgs()
-            //        .desc("Relations to be drawn in the graph")
-            //        .build());
+            Context ctx = new Context();
 
+            System.out.println("Encoding...");
 
-            //boolean statePortability = cmd.hasOption("state");
-            //String[] rels = new String[100];
-            //if(cmd.hasOption("rels")) {
-            //    rels = cmd.getOptionValues("rels");
-            //}
+            XProgram sourceCompiled = compile(yTree, sourceModelKind, unrollBound, ctx);
+            XProgram targetCompiled = compile(yTree, targetModelKind, unrollBound, ctx);
+
+            XProgram2ZformulaEncoder sourceEncoder = new XProgram2ZformulaEncoder(ctx, sourceCompiled);
+            XProgram2ZformulaEncoder targetEncoder = new XProgram2ZformulaEncoder(ctx, targetCompiled);
 
 
-            // MOCKS:
-            String source = options.sourceModel.name().toLowerCase();
-            String target = options.targetModel.name().toLowerCase();
-            boolean statePortability = options.mode == PorthosMode.StateInclusion;
-            String outputGraphFile = null;
-            String[] rels = null;
+            ZFormulaBuilder formulaBuilder = new ZFormulaBuilder(ctx);
 
-            //MemoryModel mcm = MemoryModelFactory.getMemoryModel(options.sourceModel);
+            sourceEncoder.encode(sourceCompiled, formulaBuilder);//encodeDF + encodeCF + encodeDF_RF + Domain.encode
+            //sourceModel.encode(sourceCompiled, ctx, formulaBuilder);//encodeMM
+            formulaBuilder.addAssert( sourceCompiled.encodeMM(ctx, sourceModelKind) );
+            formulaBuilder.addAssert( sourceCompiled.encodeConsistent(ctx, sourceModelKind) );
 
-            // todo: fix the code below
-            //YSyntaxTree internalRepr = YtreeParser.parse(options.inputProgramFile);
-            //DataModel dataModel = null; // TODO
-            //XProgram program = XProgramConverter.convert(internalRepr, dataModel);
+
+            BoolExpr formula = formulaBuilder.build();
+
+            Solver solverSource = ctx.mkSolver();
+            Solver solverTarget = ctx.mkSolver();
+
+            //solverSource.add(pTarget.encodeDF(ctx));
+            //solverSource.add(pTarget.encodeCF(ctx));
+            //solverSource.add(pTarget.encodeDF_RF(ctx));
+            //solverSource.add(Domain.encode(pTarget, ctx));
+            //solverSource.add(pTarget.encodeMM(ctx, target));
+            //solverSource.add(pTarget.encodeConsistent(ctx, target));
+            //solverSource.add(sourceDF);
+            //solverSource.add(sourceCF);
+            //solverSource.add(sourceDF_RF);
+            //solverSource.add(sourceDomain);
+            //solverSource.add(sourceMM);
+            //solverSource.add(pSource.encodeInconsistent(ctx, source));
+            //solverSource.add(Encodings.encodeCommonExecutions(pTarget, pSource, ctx));
+            //
+            //solverTarget.add(sourceDF);
+            //solverTarget.add(sourceCF);
+            //solverTarget.add(sourceDF_RF);
+            //solverTarget.add(sourceDomain);
+            //solverTarget.add(sourceMM);
+            //solverTarget.add(pSource.encodeConsistent(ctx, source));
+            //
+            //sourceSolver.add(formula);
+            //
+            //System.out.println("Solving...");
+            //ctx.setPrintMode(Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL);
+
+
 
 
         /*
         program.initialize();
-        XProgram pSource = program.clone();
-        XProgram pTarget = program.clone();
+        Program pSource = program.clone();
+        Program pTarget = program.clone();
 
         pSource.compile(source, false, true);
         Integer startEId = Collections.max(pSource.buildEvents().stream().filter(e -> e instanceof Init).map(e -> e.getEId()).collect(Collectors.toSet())) + 1;
@@ -161,5 +211,11 @@ public class PorthosModule extends AppModule {
         }
 
         return verdict;
+    }
+
+    private XProgram compile(YSyntaxTree yTree, MemoryModel.Kind memoryModelKind, int unrollBound, Context ctx) {
+        Ytree2XgraphConverter yConverter = new Ytree2XgraphConverter(memoryModelKind);
+        XCyclicProgram program = yConverter.convert(yTree);
+        return XProgramTransformer.unroll(program, unrollBound);
     }
 }

@@ -46,6 +46,6 @@ public final class XRegisterMemoryEvent extends XMemoryEventBase implements XLoc
 
     @Override
     public String toString() {
-        return wrapWithBracketsAndDepth(getDestination() + "<-" + getSource());
+        return wrapWithBracketsAndDepth(getDestination() + " <- " + getSource());
     }
 }

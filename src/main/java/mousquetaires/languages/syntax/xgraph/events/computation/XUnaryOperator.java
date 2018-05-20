@@ -11,7 +11,7 @@ public enum XUnaryOperator implements XOperator {
             case BitNegation:
                 return "!";
             case NoOperation:
-                return "_";
+                return "";
             default:
                 throw new IllegalStateException(this.name());
         }

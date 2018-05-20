@@ -27,6 +27,6 @@ public final class XJumpEvent extends XEmptyEventBase implements XControlFlowEve
 
     @Override
     public String toString() {
-        return "JUMP";
+        return wrapWithBracketsAndDepth("jump()");
     }
 }

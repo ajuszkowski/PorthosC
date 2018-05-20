@@ -31,9 +31,9 @@ import dartagnan.PorthosLexer;
 import dartagnan.PorthosParser;
 import dartagnan.program.Program;
 import mousquetaires.memorymodels.DomainOld;
-import mousquetaires.memorymodels.wmm.old.Wmm;
+import mousquetaires.memorymodels.wmm.old.WmmOld;
 import mousquetaires.memorymodels.axioms.old.CandidateAxiom;
-import mousquetaires.memorymodels.wmm.old.CandidateModel;
+import mousquetaires.memorymodels.wmm.old.CandidateModelOld;
 import mousquetaires.memorymodels.axioms.old.Consistent;
 import mousquetaires.memorymodels.relations.old.Relation;
 import java.util.ArrayList;
@@ -62,8 +62,8 @@ public class Aramis {
     static final HashMap<Program, Solver> solvers = new HashMap<>();
     protected static final Context ctx = new Context();
     private static int[] current;
-    private static Wmm ModelCandidate;
-    private static CandidateModel model = new CandidateModel();
+    private static WmmOld ModelCandidate;
+    private static CandidateModelOld model = new CandidateModelOld();
     //private static ArrayList<CandidateAxiom> currentAxioms;
     public static Solver solCEGIS;
     public static ArrayList<BoolExpr> negExprs;
@@ -347,7 +347,7 @@ public class Aramis {
      * @return
      */
     private static boolean checkCandidate(CandidateAxiom ax, Program p) {
-        Wmm tempmodel = new Wmm();
+        WmmOld tempmodel = new WmmOld();
         tempmodel.addAxiom(ax);
         Solver s = solvers.get(p);
         s.push();
@@ -365,7 +365,7 @@ public class Aramis {
      * @return
      */
     private static boolean checkStaticCurrent() {
-        ModelCandidate = new Wmm();
+        ModelCandidate = new WmmOld();
         for (int i : current) {
             ModelCandidate.addAxiom(candidates.get(i));
         }

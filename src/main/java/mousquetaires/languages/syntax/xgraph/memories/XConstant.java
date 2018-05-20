@@ -42,7 +42,7 @@ public final class XConstant extends XMemoryUnitBase implements XLocalMemoryUnit
 
     @Override
     public String toString() {
-        return "const_" + getValue();
+        return "" + getValue();
     }
 
     @Override

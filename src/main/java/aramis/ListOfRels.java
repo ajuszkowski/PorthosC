@@ -18,7 +18,7 @@ import mousquetaires.memorymodels.relations.old.RelInterSect;
 import mousquetaires.memorymodels.relations.old.RelUnion;
 import mousquetaires.memorymodels.relations.old.Relation;
 import mousquetaires.memorymodels.relations.old.TemplateRelation;
-import mousquetaires.memorymodels.wmm.old.Wmm;
+import mousquetaires.memorymodels.wmm.old.WmmOld;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -109,7 +109,7 @@ public class ListOfRels {
                     log.info("generated relation " + generatedRel.write());
                     //TODO: Try adding all of the generated relations.
                     //Try whether P- succeeds with the generated relation.
-                    Wmm tempmodel = new Wmm();
+                    WmmOld tempmodel = new WmmOld();
                     tempmodel.addAxiom(new CandidateAxiom(generatedRel));
                     Program p = Aramis.negPrograms.get(i);
                     Solver s = Aramis.solvers.get(p);
