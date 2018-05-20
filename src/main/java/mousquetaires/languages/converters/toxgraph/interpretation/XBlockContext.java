@@ -49,7 +49,7 @@ class XBlockContext {
 
     public void setEntryEvent(XEvent entryEvent) {
         assert entryEvent != null;
-        assert this.entryEvent == null;
+        assert this.entryEvent == null : entryEvent;
         this.entryEvent = entryEvent;
     }
 

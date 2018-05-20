@@ -202,7 +202,7 @@ public class MemoryModel {
             }
 
             // TODO: complete this method!
-            throw new NotImplementedException("Not defined in old logic. TODO: complete this method!");
+            throw new NotImplementedException("Not defined in old code. TODO: complete this method!");
         }
     }
 }

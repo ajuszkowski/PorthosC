@@ -1,0 +1,15 @@
+{ x, y }
+
+thread t0 {
+  temp <- 1;
+  x.store(_rx, temp);
+  r0 = x.load(_rx)
+}
+
+thread t1 {
+  temp <- 1;
+  y.store(_rx, temp);
+  r0 = y.load(_rx)
+}
+
+exists 0:r0=0, 1:r0=1,

@@ -1,15 +1,15 @@
 package mousquetaires;
 
-import mousquetaires.app.App;
+import mousquetaires.app.AppBase;
 import mousquetaires.app.modules.AppModule;
 import mousquetaires.app.modules.dartagnan.DartagnanModule;
 import mousquetaires.app.modules.dartagnan.DartagnanOptions;
 
 
-public class Dartagnan extends App {
+public class DartagnanApp extends AppBase {
 
     public static void main(String[] args) {
-        DartagnanOptions options = (DartagnanOptions) parseOptions(args, DartagnanOptions::new);
+        DartagnanOptions options = parseOptions(args, new DartagnanOptions());
         if (options == null) {
             System.exit(1);
         }

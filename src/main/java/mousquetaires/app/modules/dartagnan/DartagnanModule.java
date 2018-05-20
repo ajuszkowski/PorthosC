@@ -11,12 +11,15 @@ import mousquetaires.app.modules.AppModule;
 import mousquetaires.languages.InputExtensions;
 import mousquetaires.languages.InputLanguage;
 import mousquetaires.languages.common.citation.CodeCitationService;
+import mousquetaires.languages.common.graph.render.GraphDumper;
 import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
 import mousquetaires.languages.converters.InputParserBase;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.converters.tozformula.XProgram2ZformulaEncoder;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.datamodels.DataModelLP64;
+import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
+import mousquetaires.languages.syntax.xgraph.process.XProcess;
 import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
 import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
@@ -47,7 +50,7 @@ public class DartagnanModule extends AppModule {
 
         try {
             //todo: solving timeout!
-            int unrollBound = 20; // TODO: get from options
+            int unrollBound = 16; // TODO: get from options
             DataModel dataModel = new DataModelLP64(); // TODO: pass as cli-option
 
             MemoryModel.Kind memoryModelKind = options.sourceModel;
@@ -63,7 +66,17 @@ public class DartagnanModule extends AppModule {
             Ytree2XgraphConverter yConverter = new Ytree2XgraphConverter(language, memoryModelKind, dataModel);
             XCyclicProgram program = yConverter.convert(yTree);
 
+            for (XCyclicProcess process : program.getProcesses()) {
+                GraphDumper.tryDumpToFile(process, "build/graphs/paper", process.getId().getValue());
+            }
+
             XProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
+
+            for (XProcess process : unrolledProgram.getProcesses()) {
+                GraphDumper.tryDumpToFile(process, "build/graphs/paper", process.getId().getValue()+"_unrolled");
+            }
+
+            System.exit(1);
 
             Context ctx = new Context();
 

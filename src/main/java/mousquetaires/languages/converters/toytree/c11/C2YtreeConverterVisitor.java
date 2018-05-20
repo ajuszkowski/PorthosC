@@ -102,7 +102,8 @@ class C2YtreeConverterVisitor
                         "(expect it to have a semicolon separator): " + labelledVariable);
             }
             String processId = labelledVariable.substring(0, separatorIndex);
-            String variableName = labelledVariable.substring(separatorIndex);
+            // todo: log this label parsing result
+            String variableName = labelledVariable.substring(separatorIndex + 1);
             return new YLabeledVariableRef(location(ctx), processId, variableName);
         }
         TerminalNode constantNode = ctx.Constant();

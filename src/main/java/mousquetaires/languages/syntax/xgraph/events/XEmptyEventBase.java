@@ -25,6 +25,11 @@ public abstract class XEmptyEventBase extends XEventBase {
     }
 
     @Override
+    public String toString() {
+        return "e" + hashCode();
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), emptyEventId);
     }

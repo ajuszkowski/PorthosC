@@ -656,7 +656,7 @@ Identifier
     ;
 
 LitmusSpecificLabelledVariable
-    :   DigitSequence ':' Identifier
+    :   (DigitSequence|Identifier) ':' Identifier
     ;
 
 fragment

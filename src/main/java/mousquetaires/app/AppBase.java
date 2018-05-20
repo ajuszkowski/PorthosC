@@ -11,10 +11,9 @@ import mousquetaires.app.options.AppOptions;
 import java.util.function.Supplier;
 
 
-public abstract class App {
+public abstract class AppBase {
 
-    protected static AppOptions parseOptions(String[] args, Supplier<AppOptions> createOptionsAction) {
-        AppOptions options = createOptionsAction.get();
+    protected static <T extends AppOptions> T parseOptions(String[] args, T options) {
         try {
             options.parse(args);
             if (options.help) {

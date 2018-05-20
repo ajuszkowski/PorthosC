@@ -4,7 +4,7 @@ package mousquetaires.app.options;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import mousquetaires.app.App;
+import mousquetaires.app.AppBase;
 import mousquetaires.app.options.converters.LogLevelConverter;
 import mousquetaires.app.options.validators.LogLevelValidator;
 import mousquetaires.utils.logging.LogLevel;
@@ -37,7 +37,7 @@ public abstract class AppOptions {
 
     public String getUsageString() {
         JCommander jCommander = new JCommander(this);
-        jCommander.setProgramName(App.class.getName());
+        jCommander.setProgramName(AppBase.class.getName());
         StringBuilder builder = new StringBuilder();
         jCommander.usage(builder);
         return builder.toString();
