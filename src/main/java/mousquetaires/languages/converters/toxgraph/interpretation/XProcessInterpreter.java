@@ -16,9 +16,8 @@ import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import mousquetaires.utils.exceptions.xgraph.XInterpreterUsageError;
 
 import javax.annotation.Nullable;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Stack;
+import java.awt.image.LookupOp;
+import java.util.*;
 
 import static mousquetaires.utils.StringUtils.wrap;
 
@@ -86,7 +85,7 @@ class XProcessInterpreter extends XInterpreterBase {
                 case WaitingNextLinearEvent: {
                     if (!alreadySetEdgeToNextEvent) {
                         if (previousEvent != null) {
-                            graphBuilder.addEdge(true,previousEvent, nextEvent);
+                            graphBuilder.addEdge(true, previousEvent, nextEvent);
                         }
                         alreadySetEdgeToNextEvent = true;
                     }
@@ -103,10 +102,16 @@ class XProcessInterpreter extends XInterpreterBase {
                 }
                 //break;
 
-                //case WaitingFirstConditionEvent: {
-                //    context.setEntryEvent(nextEvent);//already initialised above
-                //}
-                //break;
+                case WaitingFirstConditionEvent: {
+                    context.setEntryEvent(nextEvent);//already initialised above
+                }
+                break;
+
+                case WaitingLastConditionEvent: {
+                    assert nextEvent instanceof XComputationEvent : nextEvent;
+                    context.setConditionEvent((XComputationEvent) nextEvent);
+                }
+                break;
 
                 case WaitingFirstSubBlockEvent: { //this case of stateStack should be on stack
                     assert nextEvent != context.conditionEvent;
@@ -124,10 +129,10 @@ class XProcessInterpreter extends XInterpreterBase {
                 }
                 break;
 
-                case Idle: {
-                    // do nothing
-                }
-                break;
+                //case Idle: {
+                //    // do nothing
+                //}
+                //break;
 
                 default:
                     throw new XInterpreterUsageError("Received new event while in invalid stateStack: " + context.state.name());
@@ -143,6 +148,23 @@ class XProcessInterpreter extends XInterpreterBase {
         if (!readyContexts.isEmpty()) {
 
             for (XBlockContext context : readyContexts) {
+
+                Set<XEvent> alreadySetEdgeFromLinearEvent = new HashSet<>();
+
+                if (context.kind == BlockKind.Loop) {
+                    if (context.hasBreakEvents()) {
+                        for (XJumpEvent breakingEvent : context.breakingEvents) {
+                            graphBuilder.addEdge(true, breakingEvent, nextEvent);
+                            alreadySetEdgeFromLinearEvent.add(breakingEvent);
+                        }
+                    }
+                    if (context.hasContinueEvents()) {
+                        for (XJumpEvent continueingEvent : context.continueingEvents) {
+                            graphBuilder.addEdge(true, continueingEvent, context.entryEvent);
+                            alreadySetEdgeFromLinearEvent.add(continueingEvent);
+                        }
+                    }
+                }
 
                 if (context.firstThenBranchEvent != null) {
                     switch (context.kind) {
@@ -176,11 +198,15 @@ class XProcessInterpreter extends XInterpreterBase {
                             assert false : "no then-events are allowed for linear statements";
                             break;
                         case Branching:
-                            graphBuilder.addEdge(true, context.lastThenBranchEvent, nextEvent);
+                            if (alreadySetEdgeFromLinearEvent.add(context.lastThenBranchEvent)) {
+                                graphBuilder.addEdge(true, context.lastThenBranchEvent, nextEvent);
+                            }
                             alreadySetEdgeToNextEvent = true;
                             break;
                         case Loop:
-                            graphBuilder.addEdge(true, context.lastThenBranchEvent, context.entryEvent);
+                            if (alreadySetEdgeFromLinearEvent.add(context.lastThenBranchEvent)) {
+                                graphBuilder.addEdge(true, context.lastThenBranchEvent, context.entryEvent);
+                            }
                             break;
                     }
                 }
@@ -194,7 +220,7 @@ class XProcessInterpreter extends XInterpreterBase {
                             graphBuilder.addEdge(false, context.conditionEvent, context.firstElseBranchEvent);
                             break;
                         case Loop:
-                            assert false : "no else-events are allowed for loop staements";
+                            assert false : "no else-events are allowed for loop statements";
                             break;
                     }
                 }
@@ -216,11 +242,13 @@ class XProcessInterpreter extends XInterpreterBase {
                             assert false : "no else-events are allowed for linear statements";
                             break;
                         case Branching:
-                            graphBuilder.addEdge(true, context.lastElseBranchEvent, nextEvent);
+                            if (alreadySetEdgeFromLinearEvent.add(context.lastElseBranchEvent)) {
+                                graphBuilder.addEdge(true, context.lastElseBranchEvent, nextEvent);
+                            }
                             alreadySetEdgeToNextEvent = true;
                             break;
                         case Loop:
-                            assert false : "no else-events are allowed for loop staements";
+                            assert false : "no else-events are allowed for loop statements";
                             break;
                     }
                 }
@@ -241,15 +269,15 @@ class XProcessInterpreter extends XInterpreterBase {
     public void startBlockConditionDefinition() {
         XBlockContext context = contextStack.peek();
         assert context.state == XBlockContext.State.WaitingAdditionalCommand : context.state.name();
-        context.setState(XBlockContext.State.Idle);
+        context.setState(XBlockContext.State.WaitingFirstConditionEvent);
     }
 
     @Override
     public void finishBlockConditionDefinition(XComputationEvent conditionEvent) {
         XBlockContext context = contextStack.peek();
         // TODO: send here Branching event! -- ? maybe we don't need them, as it's implemented now
+        context.setState(XBlockContext.State.WaitingLastConditionEvent);
         processNextEvent(conditionEvent);
-        context.setConditionEvent(conditionEvent);
         context.setState(XBlockContext.State.WaitingAdditionalCommand);
         previousEvent = null;
     }
@@ -307,7 +335,8 @@ class XProcessInterpreter extends XInterpreterBase {
     public void finishNonlinearBlockDefinition() {
         XBlockContext context = contextStack.pop();
         context.currentBranchKind = null;
-        context.setState(XBlockContext.State.Idle);
+        //context.setState(XBlockContext.State.Idle);
+        context.setState(XBlockContext.State.WaitingNextLinearEvent);
         almostReadyContexts.addFirst(context);
         previousEvent = null; //not to set too many linear jumps: e.g. `if (a) { while(b) do1(); } do2();`
 
@@ -324,7 +353,8 @@ class XProcessInterpreter extends XInterpreterBase {
         XJumpEvent jumpEvent = emitJumpEvent();
         XBlockContext context = currentNearestLoopContext(); //context should peeked after the jump event was emitted
         context.addJumpEvent(jumpKind, jumpEvent);
-        context.setState(XBlockContext.State.Idle);
+        //context.setState(XBlockContext.State.Idle);
+        context.setState(XBlockContext.State.WaitingNextLinearEvent);
     }
 
     @Override

@@ -1,13 +1,12 @@
 package mousquetaires.languages.converters.toxgraph.interpretation;
 
-import mousquetaires.languages.common.XType;
 import mousquetaires.languages.converters.toxgraph.hooks.HookManager;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.*;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XNopEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XLocalMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
@@ -21,8 +20,6 @@ import mousquetaires.memorymodels.wmm.MemoryModel;
 import mousquetaires.utils.patterns.BuilderBase;
 
 import javax.annotation.Nullable;
-
-import static mousquetaires.utils.StringUtils.wrap;
 
 
 public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements XInterpreter {

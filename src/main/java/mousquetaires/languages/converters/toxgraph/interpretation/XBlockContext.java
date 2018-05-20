@@ -11,10 +11,12 @@ import java.util.List;
 class XBlockContext {
 
     public enum State {
-        Idle,
+        //Idle,
         WaitingAdditionalCommand,
 
-        //WaitingFirstConditionEvent,
+        WaitingFirstConditionEvent,
+        WaitingLastConditionEvent, //branching event itself (computation)
+
         WaitingFirstSubBlockEvent,
         WaitingNextLinearEvent,
 
@@ -47,14 +49,17 @@ class XBlockContext {
 
     public void setEntryEvent(XEvent entryEvent) {
         assert entryEvent != null;
+        assert this.entryEvent == null;
         this.entryEvent = entryEvent;
     }
 
     public void setConditionEvent(XComputationEvent conditionEvent) {
         assert conditionEvent != null;
         if (entryEvent == null) {
+            System.err.println("Warning: setting stack-entry event same as conditional event: " + conditionEvent);
             setEntryEvent(conditionEvent);
         }
+        assert this.conditionEvent == null;
         this.conditionEvent = conditionEvent;
     }
 
