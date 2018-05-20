@@ -45,6 +45,7 @@ import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import mousquetaires.utils.exceptions.xgraph.XInterpreterUsageError;
 
+import javax.net.ssl.CertPathTrustManagerParameters;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -211,25 +212,66 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         boolean isPostfixIncrement = (yOperator == YUnaryOperator.PostfixIncrement);
         boolean isPostfixDecrement = (yOperator == YUnaryOperator.PostfixDecrement);
 
-        if (isPostfixIncrement || isPostfixDecrement) {
-            XRegister tempReg = program.getMemoryManager().declareTempRegister(base.getType());
+        boolean isPrefixIncrement = (yOperator == YUnaryOperator.PrefixIncrement);
+        boolean isPrefixDecrement = (yOperator == YUnaryOperator.PrefixDecrement);
+
+        if (isPrefixIncrement || isPrefixDecrement || isPostfixIncrement || isPostfixDecrement) {
             XConstant constantOne = XConstant.create(1, base.getType());
-            XBinaryOperator operator = isPostfixIncrement ? XBinaryOperator.Addition : XBinaryOperator.Subtraction;
-            XComputationEvent increment = program.createComputationEvent(operator, tempReg, constantOne);
-            if (base instanceof XLocalLvalueMemoryUnit) {
-                XLocalLvalueMemoryUnit baseLocal = (XLocalLvalueMemoryUnit) base;
-                program.emitMemoryEvent(tempReg, baseLocal);
-                program.emitMemoryEvent(baseLocal, increment);
-            }
-            else if (base instanceof XSharedLvalueMemoryUnit) {
-                XSharedLvalueMemoryUnit baseShared = (XSharedLvalueMemoryUnit) base;
-                program.emitMemoryEvent(tempReg, baseShared);
-                program.emitMemoryEvent(baseShared, increment);
+            XBinaryOperator operator = (isPrefixIncrement || isPostfixIncrement)
+                    ? XBinaryOperator.Addition
+                    : XBinaryOperator.Subtraction;
+
+
+            if (isPostfixIncrement || isPostfixDecrement) {
+                // Post-inc/decrement must be supported by Interpreter (one more stack)
+                throw new NotImplementedException();
+                /*
+                //dump old value to the temp register, modify value, return temp register
+                XRegister tempReg = program.getMemoryManager().declareTempRegister(base.getType());
+
+                if (base instanceof XLocalLvalueMemoryUnit) {
+                    // case: r++
+                    XLocalLvalueMemoryUnit baseLocal = (XLocalLvalueMemoryUnit) base;
+                    program.emitMemoryEvent(tempReg, baseLocal); // tmp := r
+                    XComputationEvent changedValueEvent = program.createComputationEvent(operator, tempReg, constantOne); // tmp+1
+                    program.emitMemoryEvent(baseLocal, changedValueEvent); //r := tmp+1 (tmp remains to be in expression)
+                }
+                else if (base instanceof XSharedLvalueMemoryUnit) {
+                    // case: l++
+                    XSharedLvalueMemoryUnit baseShared = (XSharedLvalueMemoryUnit) base;
+                    program.emitMemoryEvent(tempReg, baseShared); // tmp := l
+                    XComputationEvent changedValueEvent = program.createComputationEvent(operator, tempReg, constantOne); // tmp+1
+                    program.emitMemoryEvent(baseShared, changedValueEvent); // l := tmp+1 (tmp remains to be in expression)
+                }
+                else {
+                    throw new XInterpretationError("memory unit may be either local or shared l-value: " + wrap(base));
+                }
+                return tempReg;
+                */
             }
             else {
-                throw new XInterpretationError("memory unit may be either local or shared l-value: " + wrap(base));
+                // modify value, (if shared => copy to temp register, return temp register)
+                XRegister tempReg = program.getMemoryManager().declareTempRegister(base.getType());
+                if (base instanceof XLocalLvalueMemoryUnit) {
+                    // case: ++r
+                    XLocalLvalueMemoryUnit baseLocal = (XLocalLvalueMemoryUnit) base;
+                    XComputationEvent changedValueEvent = program.createComputationEvent(operator, baseLocal, constantOne); // r+1
+                    program.emitMemoryEvent(baseLocal, changedValueEvent); //r := r+1 (modified r remains to be in expression)
+                    return baseLocal;
+                }
+                else if (base instanceof XSharedLvalueMemoryUnit) {
+                    XSharedLvalueMemoryUnit baseShared = (XSharedLvalueMemoryUnit) base;
+                    program.emitMemoryEvent(tempReg, baseShared); // tmp := l
+                    XComputationEvent changedValueEvent = program.createComputationEvent(operator, tempReg, constantOne); // tmp+1
+                    program.emitMemoryEvent(tempReg, changedValueEvent); // tmp := tmp + 1
+                    program.emitMemoryEvent(baseShared, tempReg); // l := tmp (tmp remains in expression)
+                    return tempReg;
+
+                }
+                else {
+                    throw new XInterpretationError("memory unit may be either local or shared l-value: " + wrap(base));
+                }
             }
-            return tempReg;
         }
         else {
             XUnaryOperator resultOperator = (XUnaryOperator) yOperator.accept(this);
@@ -244,7 +286,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
             case PrefixDecrement:
             case PostfixIncrement:
             case PostfixDecrement:
-                throw new IllegalStateException("on x-level, it is a binary operation and it should be processed on the upper level");
+                throw new IllegalStateException("should be already converted before");
             case IntegerNegation:
                 throw new NotImplementedException();
             case BitwiseComplement:
