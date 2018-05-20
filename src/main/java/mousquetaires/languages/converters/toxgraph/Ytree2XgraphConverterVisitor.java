@@ -433,6 +433,11 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         node.getBody().accept(this);
         program.finishBlockBranchDefinition();
 
+        // every branch must have at least 1 node
+        program.startBlockBranchDefinition(XInterpreter.BranchKind.Else);
+        program.emitNopEvent();
+        program.finishBlockBranchDefinition();
+
         program.finishNonlinearBlockDefinition();
         return null; //statements return null
     }
