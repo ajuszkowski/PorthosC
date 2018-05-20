@@ -5,6 +5,7 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.IntExpr;
+import dartagnan.expression.BExpr;
 import mousquetaires.languages.converters.tozformula.process.XProcessEncoder;
 import mousquetaires.languages.converters.tozformula.process.XProcessEncoderFactory;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
@@ -39,7 +40,9 @@ public class XProgram2ZformulaEncoder {
         this.dataFlowEncoder = new XDataflowEncoder(ctx, ssaMap);
     }
 
-    public void encode(XProgram program, ZFormulaBuilder formulaBuilder) {
+    public BoolExpr encodeProgram(XProgram program) {
+        BoolExpr enc = ctx.mkTrue();
+
         XProcessEncoderFactory factory = new XProcessEncoderFactory(ctx, ssaMap, dataFlowEncoder);
         boolean postludeEncoded = false;
         for (XProcess process : program.getProcesses()) {
@@ -59,17 +62,16 @@ public class XProgram2ZformulaEncoder {
             //kostyl==
 
             XProcessEncoder encoder = factory.getEncoder(process);
-            encoder.encodeProcess(process, formulaBuilder);
-            encoder.encodeProcessRFRelation(process, formulaBuilder);
+            enc = ctx.mkAnd(enc, encoder.encodeProcess(process));
+            enc = ctx.mkAnd(enc, encoder.encodeProcessRFRelation(process));
         }
 
-        Domain_encode(program, formulaBuilder);
+        enc = ctx.mkAnd(enc, Domain_encode(program));
 
-        //BoolExpr[] assertsArray = asserts.toArray(new BoolExpr[0]);
-        //return ctx.mkAnd(assertsArray);
+        return enc;
     }
 
-    private void Domain_encode(XProgram program, ZFormulaBuilder formulaBuilder) {
+    private BoolExpr Domain_encode(XProgram program) {
         BoolExpr enc = ctx.mkTrue();
 
         ImmutableSet<XSharedMemoryEvent> mEvents = program.getSharedMemoryEvents();
@@ -534,7 +536,6 @@ public class XProgram2ZformulaEncoder {
                 enc = ctx.mkAnd(enc, ctx.mkImplies(e.executes(ctx), Encodings.encodeEO(rfPairs, ctx)));
             }
         }
-        // TODO: collect and return set of conjuncts!
-        formulaBuilder.addAssert(enc);
+        return enc;
     }
 }

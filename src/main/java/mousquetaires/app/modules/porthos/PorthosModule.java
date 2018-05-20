@@ -3,20 +3,15 @@ package mousquetaires.app.modules.porthos;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
-import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 import mousquetaires.app.errors.AppError;
 import mousquetaires.app.errors.IOError;
 import mousquetaires.app.errors.UnrecognisedError;
 import mousquetaires.app.modules.AppModule;
-import mousquetaires.app.modules.dartagnan.DartagnanVerdict;
 import mousquetaires.languages.InputExtensions;
 import mousquetaires.languages.InputLanguage;
-import mousquetaires.languages.common.citation.CodeCitationService;
 import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.converters.tozformula.XProgram2ZformulaEncoder;
-import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
-import mousquetaires.languages.syntax.xgraph.datamodels.DataModelLP64;
 import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
 import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
@@ -72,16 +67,16 @@ public class PorthosModule extends AppModule {
 
             ZFormulaBuilder formulaBuilder = new ZFormulaBuilder(ctx);
 
-            sourceEncoder.encode(sourceCompiled, formulaBuilder);//encodeDF + encodeCF + encodeDF_RF + Domain.encode
-            //sourceModel.encode(sourceCompiled, ctx, formulaBuilder);//encodeMM
-            formulaBuilder.addAssert( sourceCompiled.encodeMM(ctx, sourceModelKind) );
-            formulaBuilder.addAssert( sourceCompiled.encodeConsistent(ctx, sourceModelKind) );
-
-
-            BoolExpr formula = formulaBuilder.build();
-
-            Solver solverSource = ctx.mkSolver();
-            Solver solverTarget = ctx.mkSolver();
+            //sourceEncoder.encodeProgram(sourceCompiled);//encodeDF + encodeCF + encodeDF_RF + Domain.encode
+            ////sourceModel.encode(sourceCompiled, ctx, formulaBuilder);//encodeMM
+            //formulaBuilder.addAssert( sourceCompiled.encodeMM(ctx, sourceModelKind) );
+            //formulaBuilder.addAssert( sourceCompiled.encodeConsistent(ctx, sourceModelKind) );
+            //
+            //
+            //BoolExpr formula = formulaBuilder.build();
+            //
+            //Solver solverSource = ctx.mkSolver();
+            //Solver solverTarget = ctx.mkSolver();
 
             //solverSource.add(pTarget.encodeDF(ctx));
             //solverSource.add(pTarget.encodeCF(ctx));

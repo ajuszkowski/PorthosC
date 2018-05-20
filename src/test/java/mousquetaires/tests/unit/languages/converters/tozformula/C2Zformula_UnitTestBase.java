@@ -8,7 +8,6 @@ import mousquetaires.languages.converters.InputParserBase;
 import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.converters.tozformula.XProgram2ZformulaEncoder;
-import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
 import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
@@ -44,7 +43,7 @@ public abstract class C2Zformula_UnitTestBase extends AbstractConverterUnitTest<
             Context ctx = new Context();
             XProgram2ZformulaEncoder encoder = new XProgram2ZformulaEncoder(ctx, unrolledProgram);
             ZFormulaBuilder formulaBuilder = new ZFormulaBuilder(ctx);
-            encoder.encode(unrolledProgram, formulaBuilder);
+            encoder.encodeProgram(unrolledProgram, formulaBuilder);
 
             BoolExpr smtFormula = formulaBuilder.build();
             return CollectionUtils.createIteratorFrom(smtFormula);

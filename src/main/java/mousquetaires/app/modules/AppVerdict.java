@@ -14,11 +14,11 @@ public abstract class AppVerdict {
     private final List<AppError> errors = new ArrayList<>();
 
     public void onStartExecution() {
-        startTime = System.nanoTime();
+        startTime = System.currentTimeMillis();
     }
 
     public void onFinishExecution() {
-        elapsedTimeSec = (System.nanoTime() - startTime) / 10^9;
+        elapsedTimeSec = (System.currentTimeMillis() - startTime) * 1.0 / 1000;
     }
 
     public void addError(AppError error) {

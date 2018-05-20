@@ -3,6 +3,7 @@ package mousquetaires.languages.converters.tozformula.process;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
+import com.sun.xml.internal.messaging.saaj.packaging.mime.util.BEncoderStream;
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.converters.tozformula.StaticSingleAssignmentMap;
 import mousquetaires.languages.converters.tozformula.XDataflowEncoder;
@@ -34,10 +35,12 @@ public class XThreadEncoder implements XProcessEncoder {
 
     // encodeCF + encodeDF
     @Override
-    public void encodeProcess(XProcess process, ZFormulaBuilder formulaBuilder) {
+    public BoolExpr encodeProcess(XProcess process) {
+        BoolExpr enc = ctx.mkTrue();
+
         Iterator<XEvent> nodesIterator = process.linearisedNodesIterator();
         // execute the entry event indefinitely:
-        formulaBuilder.addAssert(process.source().executes(ctx));
+        enc = ctx.mkAnd(enc, process.source().executes(ctx));
 
         while (nodesIterator.hasNext()) {
             XEvent currentEvent = nodesIterator.next();
@@ -60,7 +63,7 @@ public class XThreadEncoder implements XProcessEncoder {
                 BoolExpr eitherParentAssert = (parentsVars.length == 1)
                         ? parentsVars[0]
                         : ctx.mkOr(parentsVars);
-                formulaBuilder.addAssert(ctx.mkImplies(currentVar, eitherParentAssert));
+                enc = ctx.mkAnd(enc, ctx.mkImplies(currentVar, eitherParentAssert));
             }
 
             // if not a sink node:
@@ -78,15 +81,15 @@ public class XThreadEncoder implements XProcessEncoder {
 
                     // not together children:
                     BoolExpr notBothChildrenAssert = ctx.mkNot(ctx.mkAnd(childVar, alternativeChildVar));
-                    formulaBuilder.addAssert(notBothChildrenAssert);
+                    enc = ctx.mkAnd(enc, notBothChildrenAssert);
 
                     // encode guard:
                     assert currentEvent instanceof XComputationEvent : "only XComputationEvent can be a branching point";
                     BoolExpr guard = dataFlowEncoder.encodeGuard((XComputationEvent) currentEvent);
                     BoolExpr thenBranchGuardAssert = ctx.mkImplies(childVar, guard);
                     BoolExpr elseBranchGuardAssert = ctx.mkImplies(alternativeChildVar, guard);
-                    formulaBuilder.addAssert(thenBranchGuardAssert);
-                    formulaBuilder.addAssert(elseBranchGuardAssert);
+                    enc = ctx.mkAnd(enc, thenBranchGuardAssert);
+                    enc = ctx.mkAnd(enc, elseBranchGuardAssert);
                 }
             }
             else {
@@ -97,14 +100,17 @@ public class XThreadEncoder implements XProcessEncoder {
             // encode event's inner data-flow:
             BoolExpr currentEventDataFlowAssert = currentEvent.accept(dataFlowEncoder);
             if (currentEventDataFlowAssert != null) {
-                formulaBuilder.addAssert(ctx.mkImplies(currentVar, currentEventDataFlowAssert));
+                enc = ctx.mkAnd(enc, ctx.mkImplies(currentVar, currentEventDataFlowAssert));
             }
         }
 
+        return enc;
     }
 
     @Override
-    public void encodeProcessRFRelation(XProcess process, ZFormulaBuilder formulaBuilder) {
+    public BoolExpr encodeProcessRFRelation(XProcess process) {
+        BoolExpr enc = ctx.mkTrue();
+
         for (XEvent loadEvent : process.getNodesExceptSource(e -> e instanceof XLoadMemoryEvent)) {
             XLoadMemoryEvent load = (XLoadMemoryEvent) loadEvent;
             XSharedLvalueMemoryUnit loadLoc = load.getSource();
@@ -115,10 +121,11 @@ public class XThreadEncoder implements XProcessEncoder {
                 Expr storeLocVar = dataFlowEncoder.encodeMemoryUnit(storeLoc, store);
                 if (loadLoc.equals(storeLoc)) {
                     BoolExpr rfRelationVar = Utils.edge("rf", store, load, ctx);
-                    formulaBuilder.addAssert(ctx.mkImplies(rfRelationVar, ctx.mkEq(storeLocVar, loadLocVar)));
+                    enc = ctx.mkAnd(enc, ctx.mkImplies(rfRelationVar, ctx.mkEq(storeLocVar, loadLocVar)));
                 }
             }
             // TODO: same for process.getInitEvents() ...
         }
+        return enc;
     }
 }

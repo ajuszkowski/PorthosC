@@ -10,22 +10,13 @@ import mousquetaires.app.errors.UnrecognisedError;
 import mousquetaires.app.modules.AppModule;
 import mousquetaires.languages.InputExtensions;
 import mousquetaires.languages.InputLanguage;
-import mousquetaires.languages.common.citation.CodeCitationService;
-import mousquetaires.languages.common.graph.render.GraphDumper;
 import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
-import mousquetaires.languages.converters.InputParserBase;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.converters.tozformula.XProgram2ZformulaEncoder;
-import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
-import mousquetaires.languages.syntax.xgraph.datamodels.DataModelLP64;
-import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
-import mousquetaires.languages.syntax.xgraph.process.XProcess;
 import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
 import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
-import mousquetaires.languages.syntax.zformula.ZFormulaBuilder;
 import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
-import mousquetaires.memorymodels.DomainOld;
 import mousquetaires.memorymodels.wmm.MemoryModel;
 
 import java.io.File;
@@ -76,38 +67,39 @@ public class DartagnanModule extends AppModule {
 
             //System.exit(1);
 
-            Context ctx = new Context();
-
-            XProgram2ZformulaEncoder encoder = new XProgram2ZformulaEncoder(ctx, unrolledProgram);
-
             //for (XProcess process : unrolledProgram.getProcesses()) {
             //    GraphDumper.tryDumpToFile(process, "build/graphs", process.getId().getValue());
             //}
             //System.exit(1);
 
             System.out.println("Encoding...");
-            ZFormulaBuilder formulaBuilder = new ZFormulaBuilder(ctx);
 
-            encoder.encode(unrolledProgram, formulaBuilder);
+            //s.add(p.encodeDF(ctx));
+            //s.add(p.getAss().encode(ctx));
+            //s.add(p.encodeCF(ctx));
+            //s.add(p.encodeDF_RF(ctx));
+            //s.add(Domain.encode(p, ctx));
+            //s.add(p.encodeMM(ctx, target));
+            //s.add(p.encodeConsistent(ctx, target));
 
-            formulaBuilder.addAssert( unrolledProgram.encodeMM(ctx, memoryModelKind) );
-            formulaBuilder.addAssert( unrolledProgram.encodeConsistent(ctx, memoryModelKind) );
-
-            formulaBuilder.addAssert(ctx.mkFalse());
-
+            Context ctx = new Context();
             Solver solver = ctx.mkSolver();
-            BoolExpr formula = formulaBuilder.build();
 
-            solver.add(formula);
+            XProgram2ZformulaEncoder encoder = new XProgram2ZformulaEncoder(ctx, unrolledProgram);
+
+            solver.add(encoder.encodeProgram(unrolledProgram));//encodeDF, getAss().encode(), encodeCF, encodeDF_RF, Domain.encode
+            solver.add(unrolledProgram.encodeMM(ctx, memoryModelKind));
+            solver.add(unrolledProgram.encodeConsistent(ctx, memoryModelKind));
+
 
             System.out.println("Solving...");
             ctx.setPrintMode(Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL);
 
             if (solver.check() == com.microsoft.z3.Status.SATISFIABLE) {
-                verdict.result = DartagnanVerdict.Status.NonReachable;
+                verdict.result = DartagnanVerdict.Status.Reachable;
             }
             else {
-                verdict.result = DartagnanVerdict.Status.Reachable;
+                verdict.result = DartagnanVerdict.Status.NonReachable;
             }
         }
         catch (IOException e) {

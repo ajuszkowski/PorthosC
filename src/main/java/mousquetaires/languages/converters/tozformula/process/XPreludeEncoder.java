@@ -2,6 +2,7 @@ package mousquetaires.languages.converters.tozformula.process;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
+import dartagnan.expression.BExpr;
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.converters.tozformula.StaticSingleAssignmentMap;
 import mousquetaires.languages.converters.tozformula.XDataflowEncoder;
@@ -27,10 +28,12 @@ public class XPreludeEncoder implements XProcessEncoder {
     }
 
     @Override
-    public void encodeProcess(XProcess process, ZFormulaBuilder formulaBuilder) {
+    public BoolExpr encodeProcess(XProcess process) {
+        BoolExpr enc = ctx.mkTrue();
+
         Iterator<XEvent> nodesIterator = process.linearisedNodesIterator();
         // execute the entry event indefinitely:
-        formulaBuilder.addAssert(process.source().executes(ctx));
+        enc = ctx.mkAnd(enc, process.source().executes(ctx));
 
         while (nodesIterator.hasNext()) {
             XEvent currentEvent = nodesIterator.next();
@@ -51,13 +54,15 @@ public class XPreludeEncoder implements XProcessEncoder {
             // encode event's inner data-flow:
             BoolExpr currentEventDataFlowAssert = currentEvent.accept(dataFlowEncoder);
             if (currentEventDataFlowAssert != null) {
-                formulaBuilder.addAssert(ctx.mkImplies(currentVar, currentEventDataFlowAssert));
+                enc = ctx.mkAnd(enc, ctx.mkImplies(currentVar, currentEventDataFlowAssert));
             }
         }
+        return enc;
     }
 
     @Override
-    public void encodeProcessRFRelation(XProcess process, ZFormulaBuilder formulaBuilder) {
+    public BoolExpr encodeProcessRFRelation(XProcess process) {
         //throw new NotImplementedException();
+        return ctx.mkTrue();
     }
 }
