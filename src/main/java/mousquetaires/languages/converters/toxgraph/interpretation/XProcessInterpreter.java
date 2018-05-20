@@ -103,13 +103,15 @@ class XProcessInterpreter extends XInterpreterBase {
                 //break;
 
                 case WaitingFirstConditionEvent: {
-                    context.setEntryEvent(nextEvent);//already initialised above
+                    context.setEntryEvent(nextEvent);
+                    context.setState(XBlockContext.State.WaitingNextLinearEvent);
                 }
                 break;
 
                 case WaitingLastConditionEvent: {
                     assert nextEvent instanceof XComputationEvent : nextEvent;
                     context.setConditionEvent((XComputationEvent) nextEvent);
+                    context.setState(XBlockContext.State.WaitingAdditionalCommand);
                 }
                 break;
 
@@ -217,10 +219,8 @@ class XProcessInterpreter extends XInterpreterBase {
                             assert false : "no else-events are allowed for linear statements";
                             break;
                         case Branching:
+                        case Loop: //loops also must have else-branch with single nop-event
                             graphBuilder.addEdge(false, context.conditionEvent, context.firstElseBranchEvent);
-                            break;
-                        case Loop:
-                            assert false : "no else-events are allowed for loop statements";
                             break;
                     }
                 }
@@ -230,9 +230,8 @@ class XProcessInterpreter extends XInterpreterBase {
                             assert false;
                             break;
                         case Branching:
-                            assert false : "every branching statement must have at least one then-event (NOP if none)";
-                            break;
                         case Loop:
+                            assert false : "every branching statement must have at least one then-event (NOP if none)";
                             break;
                     }
                 }
@@ -242,13 +241,11 @@ class XProcessInterpreter extends XInterpreterBase {
                             assert false : "no else-events are allowed for linear statements";
                             break;
                         case Branching:
+                        case Loop:
                             if (alreadySetEdgeFromLinearEvent.add(context.lastElseBranchEvent)) {
                                 graphBuilder.addEdge(true, context.lastElseBranchEvent, nextEvent);
                             }
                             alreadySetEdgeToNextEvent = true;
-                            break;
-                        case Loop:
-                            assert false : "no else-events are allowed for loop statements";
                             break;
                     }
                 }
