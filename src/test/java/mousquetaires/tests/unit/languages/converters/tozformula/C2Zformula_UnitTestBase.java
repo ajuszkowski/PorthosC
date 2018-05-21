@@ -42,11 +42,7 @@ public abstract class C2Zformula_UnitTestBase extends AbstractConverterUnitTest<
             XProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
             Context ctx = new Context();
             XProgram2ZformulaEncoder encoder = new XProgram2ZformulaEncoder(ctx, unrolledProgram);
-            ZFormulaBuilder formulaBuilder = new ZFormulaBuilder(ctx);
-            encoder.encodeProgram(unrolledProgram, formulaBuilder);
-
-            BoolExpr smtFormula = formulaBuilder.build();
-            return CollectionUtils.createIteratorFrom(smtFormula);
+            return CollectionUtils.createIteratorFrom(encoder.encodeProgram(unrolledProgram));
         } catch (IOException e) {
             e.printStackTrace();
             throw new TestFailedException(e);

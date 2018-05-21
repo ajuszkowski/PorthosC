@@ -116,9 +116,9 @@ public class XMemoryManagerImpl implements XMemoryManager {
         return result;
     }
 
-    private static int tempRegisterNamesCounter = 5;
+    private static int tempRegisterNamesCounter;
     private static String newTempRegisterName() {
-        return getRegisterName(tempRegisterNamesCounter--);
+        return getRegisterName(tempRegisterNamesCounter++);
     }
 
     private static String getRegisterName(int count) {

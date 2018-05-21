@@ -329,8 +329,8 @@ public class Utils {
 
     public static IntExpr ssaLoc(Location loc, Integer mainThread, Integer ssaIndex, Context ctx) throws Z3Exception {
         return ctx.mkIntConst(String.format("T%s_%s_%s", mainThread, loc.getName(), ssaIndex));
-    }public static IntExpr ssaLoc(XLocation loc, XProcessId processId, Integer ssaIndex, Context ctx) throws Z3Exception {
-        return ctx.mkIntConst(String.format("T%s_%s_%s", processId.getValue(), loc.getName(), ssaIndex));
+    }public static IntExpr ssaLoc(XLocation loc, Integer ssaIndex, Context ctx) throws Z3Exception {
+        return ctx.mkIntConst(String.format("T%s_%s", loc.getName(), ssaIndex));
     }
 
     public static IntExpr ssaReg(Register reg, Integer ssaIndex, Context ctx) throws Z3Exception {

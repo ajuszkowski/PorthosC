@@ -49,6 +49,8 @@ public class XPreludeEncoder implements XFlowGraphEncoder {
                 }
             }
 
+            // TODO: default init by 0 !
+
             // encode event's inner data-flow:
             BoolExpr currentEventDataFlowAssert = currentEvent.accept(dataFlowEncoder);
             if (currentEventDataFlowAssert != null) {

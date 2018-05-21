@@ -1,17 +1,20 @@
 package mousquetaires.languages.syntax.xgraph.events.computation;
 
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.Context;
 import mousquetaires.languages.common.XType;
 import mousquetaires.languages.syntax.xgraph.events.XEventBase;
+import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XRvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
+
+import java.util.Map;
 
 // TODO: implement the Fake event
 
 public final class XAssertionEvent extends XEventBase implements XComputationEvent {
 
     private final XBinaryComputationEvent assertion;
+    //private final Map<XLocalMemoryUnit, XRvalueMemoryUnit> values;
 
     public XAssertionEvent(XBinaryComputationEvent assertion) {
         this(assertion.getRefId(), assertion);
@@ -29,16 +32,6 @@ public final class XAssertionEvent extends XEventBase implements XComputationEve
     @Override
     public XType getType() {
         return assertion.getType();
-    }
-
-    @Override
-    public BoolExpr executes(Context ctx) {
-        throw new IllegalStateException();
-    }
-
-    @Override
-    public String repr() {
-        throw new IllegalStateException();
     }
 
     @Override

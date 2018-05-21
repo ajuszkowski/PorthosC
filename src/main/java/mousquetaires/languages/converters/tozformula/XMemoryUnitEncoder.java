@@ -27,7 +27,7 @@ class XMemoryUnitEncoder {
     }
 
     public BoolExpr encodeAssertion(XAssertionEvent assertion) {
-        XMemoryUnitEncoderVisitor visitor = getVisitor(assertion, true);
+        XMemoryUnitEncoderVisitor visitor = getVisitor(assertion);
         Expr result = assertion.accept(visitor);
         if (!(result instanceof BoolExpr)) {
             throw new XInterpretationError("non-boolean assertion: " + wrap(result));
@@ -36,7 +36,7 @@ class XMemoryUnitEncoder {
     }
 
     public Expr encodeVar(XMemoryUnit unit, XEvent accessingEvent) {
-        XMemoryUnitEncoderVisitor visitor = getVisitor(accessingEvent, false);
+        XMemoryUnitEncoderVisitor visitor = getVisitor(accessingEvent);
         return unit.accept(visitor);
     }
 
@@ -45,31 +45,28 @@ class XMemoryUnitEncoder {
         refsCollection.updateRef(unit);
         ssaMap.addLastModEvent(unit, event);
 
-        XMemoryUnitEncoderVisitor visitor = createVisitor(event.getProcessId(), refsCollection, false);
+        XMemoryUnitEncoderVisitor visitor = createVisitor(refsCollection);
         return unit.accept(visitor);
     }
 
-    private XMemoryUnitEncoderVisitor getVisitor(XEvent event, boolean isLastValue) {
-        return createVisitor(event.getProcessId(), ssaMap.getEventMap(event), isLastValue);
+    private XMemoryUnitEncoderVisitor getVisitor(XEvent event) {
+        return createVisitor(ssaMap.getEventMap(event));
     }
 
-    private XMemoryUnitEncoderVisitor createVisitor(XProcessId processId, VarRefCollection varRefCollection, boolean isLastValue) {
-        return new XMemoryUnitEncoderVisitor(processId, varRefCollection, isLastValue);
+    private XMemoryUnitEncoderVisitor createVisitor(VarRefCollection varRefCollection) {
+        return new XMemoryUnitEncoderVisitor(varRefCollection);
     }
 
     // --
 
     private final class XMemoryUnitEncoderVisitor implements XMemoryUnitVisitor<Expr> {
 
-        private final XProcessId processId;
         private final VarRefCollection varRefCollection;
 
-        private final boolean isLastValue;
+        private boolean isLastValue;
 
-        public XMemoryUnitEncoderVisitor(XProcessId processId, VarRefCollection varRefCollection, boolean isLastValue) {
-            this.processId = processId;
+        public XMemoryUnitEncoderVisitor(VarRefCollection varRefCollection) {
             this.varRefCollection = varRefCollection;
-            this.isLastValue = isLastValue;
         }
 
         @Override
@@ -167,7 +164,12 @@ class XMemoryUnitEncoder {
 
         @Override
         public Expr visit(XRegister register) {
-            return Utils.ssaReg(register, varRefCollection.getRefIndex(register), ctx);
+            if (isLastValue) {
+                return Utils.lastValueReg(register, ctx);
+            }
+            else {
+                return Utils.ssaReg(register, varRefCollection.getRefIndex(register), ctx);
+            }
         }
 
         @Override
@@ -176,12 +178,13 @@ class XMemoryUnitEncoder {
                 return Utils.lastValueLoc(location, ctx);
             }
             else {
-                return Utils.ssaLoc(location, processId, varRefCollection.getRefIndex(location), ctx);
+                return Utils.ssaLoc(location, varRefCollection.getRefIndex(location), ctx);
             }
         }
 
         @Override
         public Expr visit(XAssertionEvent entity) {
+            isLastValue = true;
             return entity.getAssertion().accept(this);
         }
 

@@ -17,7 +17,7 @@ class HardwareInvocationHook extends InvocationHookBase implements InvocationHoo
 
 
     // FOR DEBUG ONLY: THIS MUST BE A TYPE-CHECK! For now, the code is just a map from the old code.
-    private final ImmutableList<String> valid_atomics = ImmutableList.of("_sc", "_rx", "_na", "_rel" );
+    private final ImmutableList<String> valid_atomics = ImmutableList.of("_sc", "_rx", "memory_order_relaxed", "_na", "_rel" );
 
     HardwareInvocationHook(XProgramInterpreter program) {
         super(program);
@@ -77,7 +77,8 @@ class HardwareInvocationHook extends InvocationHookBase implements InvocationHoo
                                 return emitStore(receiverShared, argumentLocal);
                             }
                         }
-                        if(atomic.equals("_rx") || atomic.equals("_na")) {
+                        if(atomic.equals("_rx") || atomic.equals("memory_order_relaxed")
+                                || atomic.equals("_na")) {
                             return emitStore(receiverShared, argumentLocal);
                         }
                         if(atomic.equals("_rel")) {
@@ -94,7 +95,8 @@ class HardwareInvocationHook extends InvocationHookBase implements InvocationHoo
                             emitStore(receiverShared, argumentLocal);
                             return emitBarrier(XBarrierEvent.Kind.Ish);
                         }
-                        if(atomic.equals("_rx") || atomic.equals("_na")) {
+                        if(atomic.equals("_rx") || atomic.equals("memory_order_relaxed")
+                                || atomic.equals("_na")) {
                             //return st;
                             return emitStore(receiverShared, argumentLocal);
                         }
@@ -128,7 +130,7 @@ class HardwareInvocationHook extends InvocationHookBase implements InvocationHoo
                     if(!program.memoryModel.is(MemoryModel.Kind.Power) && !program.memoryModel.is(MemoryModel.Kind.ARM)) {
                         return emitLoad(receiverShared);
                     }
-                    if(atomic.equals("_rx") || atomic.equals("_na")) {
+                    if(atomic.equals("_rx") || atomic.equals("memory_order_relaxed") || atomic.equals("_na")) {
                         return emitLoad(receiverShared);
                     }
 

@@ -38,7 +38,6 @@ public class DartagnanModule extends AppModule {
     public DartagnanVerdict run() {
 
         DartagnanVerdict verdict = new DartagnanVerdict();
-        verdict.onStartExecution();
 
         try {
             //todo: solving timeout!
@@ -53,13 +52,18 @@ public class DartagnanModule extends AppModule {
             YSyntaxTree yTree = parser.parseFile();
 
             Ytree2XgraphConverter yConverter = new Ytree2XgraphConverter(memoryModelKind);
+
+            verdict.onStartInterpretation();
             XCyclicProgram program = yConverter.convert(yTree);
+            verdict.onFinishInterpretation();
 
             //for (XCyclicProcess process : program.getProcesses()) {
             //    GraphDumper.tryDumpToFile(process, "build/graphs/paper", process.getId().getValue());
             //}
 
+            verdict.onStartUnrolling();
             XProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
+            verdict.onFinishUnrolling();
 
             //for (XProcess process : unrolledProgram.getProcesses()) {
             //    GraphDumper.tryDumpToFile(process, "build/graphs/paper", process.getId().getValue()+"_unrolled");
@@ -72,37 +76,39 @@ public class DartagnanModule extends AppModule {
             //}
             //System.exit(1);
 
-            System.out.println("Encoding...");
-
-            //s.add(p.encodeDF(ctx));
-            //s.add(p.getAss().encode(ctx));
-            //s.add(p.encodeCF(ctx));
-            //s.add(p.encodeDF_RF(ctx));
-            //s.add(Domain.encode(p, ctx));
-            //s.add(p.encodeMM(ctx, target));
-            //s.add(p.encodeConsistent(ctx, target));
+            verdict.onStartProgramEncoding();
 
             Context ctx = new Context();
             Solver solver = ctx.mkSolver();
 
             XProgram2ZformulaEncoder encoder = new XProgram2ZformulaEncoder(ctx, unrolledProgram);
 
-            solver.add(encoder.encodeProgram(unrolledProgram));//encodeDF, getAss().encode(), encodeCF, encodeDF_RF
+            BoolExpr programFormula = encoder.encodeProgram(unrolledProgram);
+            solver.add(programFormula);//encodeDF, getAss().encode(), encodeCF, encodeDF_RF
+            //System.out.println(programFormula);
+
+            verdict.onFinishProgramEncoding();
+
+            verdict.onStartModelEncoding();
             //encoder.encodeProgram(unrolledProgram);//encodeDF, getAss().encode(), encodeCF, encodeDF_RF
             solver.add(encoder.Domain_encode(unrolledProgram));//Domain.encode
             solver.add(unrolledProgram.encodeMM(ctx, memoryModelKind));
             solver.add(unrolledProgram.encodeConsistent(ctx, memoryModelKind));
 
+            verdict.onFinishModelEncoding();
 
-            System.out.println("Solving...");
+
+            verdict.onStartSolving();
             ctx.setPrintMode(Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL);
-
             if (solver.check() == com.microsoft.z3.Status.SATISFIABLE) {
                 verdict.result = DartagnanVerdict.Status.Reachable;
             }
             else {
                 verdict.result = DartagnanVerdict.Status.NonReachable;
             }
+            verdict.onFinishSolving();
+
+            //Encodings.encodeReachedState(unrolledProgram, solver.getModel(), ctx);
         }
         catch (IOException e) {
             verdict.addError(new IOError(e));
@@ -111,7 +117,6 @@ public class DartagnanModule extends AppModule {
             verdict.addError(new UnrecognisedError(AppError.Severity.Critical, e));
         }
 
-        verdict.onFinishExecution();
 
         return verdict;
     }

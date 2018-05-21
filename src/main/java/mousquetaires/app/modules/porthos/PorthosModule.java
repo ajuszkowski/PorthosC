@@ -14,11 +14,9 @@ import mousquetaires.languages.converters.tozformula.XProgram2ZformulaEncoder;
 import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
 import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
-import mousquetaires.languages.syntax.zformula.ZFormulaBuilder;
 import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
 import mousquetaires.memorymodels.Encodings;
 import mousquetaires.memorymodels.wmm.MemoryModel;
-import mousquetaires.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +39,7 @@ public class PorthosModule extends AppModule {
     public PorthosVerdict run() {
 
         PorthosVerdict verdict = new PorthosVerdict();
-        verdict.onStartExecution();
+        verdict.onStartProgramEncoding();
 
         try {
 //todo: solving timeout!
@@ -57,7 +55,7 @@ public class PorthosModule extends AppModule {
 
             Context ctx = new Context();
 
-            System.out.println("Encoding...");
+            verdict.onStartProgramEncoding();
 
             XProgram pSource = compile(yTree, source, unrollBound, ctx);
             XProgram pTarget = compile(yTree, target, unrollBound, ctx);
@@ -88,6 +86,10 @@ public class PorthosModule extends AppModule {
             s2.add(sourceDomain);
             s2.add(sourceMM);
             s2.add(pSource.encodeConsistent(ctx, source));
+
+            verdict.onFinishProgramEncoding();
+
+            verdict.onStartSolving();
 
             if(options.mode == PorthosMode.ExecutionInslusion) {
                 if(s.check() == Status.SATISFIABLE) {
@@ -122,6 +124,7 @@ public class PorthosModule extends AppModule {
                         //System.out.println("The program is not state-portable");
                         verdict.iterations = iterations;
                         verdict.result = PorthosVerdict.Status.NonStatePortable;
+                        verdict.onFinishSolving();
                         return verdict;
                     }
                     else {
@@ -132,99 +135,12 @@ public class PorthosModule extends AppModule {
                 else {
                     verdict.iterations = iterations;
                     verdict.result = PorthosVerdict.Status.StatePortable;
+                    verdict.onFinishSolving();
                     return verdict;
                 }
             }
-        /*
-        program.initialize();
-        Program pSource = program.clone();
-        Program pTarget = program.clone();
 
-        pSource.compile(source, false, true);
-        Integer startEId = Collections.max(pSource.buildEvents().stream().filter(e -> e instanceof Init).map(e -> e.getEId()).collect(Collectors.toSet())) + 1;
-        pTarget.compile(target, false, true, startEId);
-
-
-
-        Context ctx = new Context();
-        ctx.setPrintMode(Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL);
-        Solver s = ctx.mkSolver();
-        Solver s2 = ctx.mkSolver();
-
-        BoolExpr sourceDF = pSource.encodeDF(ctx);
-        BoolExpr sourceCF = pSource.encodeCF(ctx);
-        BoolExpr sourceDF_RF = pSource.encodeDF_RF(ctx);
-        BoolExpr sourceDomain = Domain.encode(pSource, ctx);
-        BoolExpr sourceMM = pSource.encodeMM(ctx, source);
-
-        s.add(pTarget.encodeDF(ctx));
-        s.add(pTarget.encodeCF(ctx));
-        s.add(pTarget.encodeDF_RF(ctx));
-        s.add(Domain.encode(pTarget, ctx));
-        s.add(pTarget.encodeMM(ctx, target));
-        s.add(pTarget.encodeConsistent(ctx, target));
-        s.add(sourceDF);
-        s.add(sourceCF);
-        s.add(sourceDF_RF);
-        s.add(sourceDomain);
-        s.add(sourceMM);
-        s.add(pSource.encodeInconsistent(ctx, source));
-        s.add(Encodings.encodeCommonExecutions(pTarget, pSource, ctx));
-
-        s2.add(sourceDF);
-        s2.add(sourceCF);
-        s2.add(sourceDF_RF);
-        s2.add(sourceDomain);
-        s2.add(sourceMM);
-        s2.add(pSource.encodeConsistent(ctx, source));
-
-        if(!statePortability) {
-            if(s.check() == Status.SATISFIABLE) {
-                verdict.result = PorthosVerdict.Status.NonStatePortable;
-                if(outputGraphFile != null) {
-                    String outputPath = outputGraphFile;
-                    Utils.drawGraph(program, pSource, pTarget, ctx, s.getModel(), outputPath, rels);
-                }
-            }
-            else {
-                verdict.result = PorthosVerdict.Status.StatePortable;
-            }
-            return verdict;
-        }
-
-        int iterations = 0;
-        Status lastCheck = Status.SATISFIABLE;
-        Set<Expr> visited = new HashSet<>();
-
-        while(lastCheck == Status.SATISFIABLE) {
-
-            lastCheck = s.check();
-            if(lastCheck == Status.SATISFIABLE) {
-                iterations = iterations + 1;
-                Model model = s.getModel();
-                s2.push();
-                BoolExpr reachedState = Encodings.encodeReachedState(pTarget, model, ctx);
-                visited.add(reachedState);
-                assert(iterations == visited.size());
-                s2.add(reachedState);
-                if(s2.check() == Status.UNSATISFIABLE) {
-                    //System.out.println("The program is not state-portable");
-                    verdict.iterations = iterations;
-                    verdict.result = PorthosVerdict.Status.NonStatePortable;
-                    return verdict;
-                }
-                else {
-                    s2.pop();
-                    s.add(ctx.mkNot(reachedState));
-                }
-            }
-            else {
-                verdict.iterations = iterations;
-                verdict.result = PorthosVerdict.Status.StatePortable;
-                return verdict;
-            }
-        }
-        */
+            verdict.onFinishSolving();
 
         } catch (IOException e) {
             verdict.addError(new IOError(e));

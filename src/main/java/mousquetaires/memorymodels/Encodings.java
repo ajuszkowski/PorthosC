@@ -1,9 +1,7 @@
 package mousquetaires.memorymodels;
 
 import com.google.common.collect.ImmutableSet;
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.Context;
-import com.microsoft.z3.Model;
+import com.microsoft.z3.*;
 import dartagnan.program.Location;
 import dartagnan.program.Register;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
@@ -19,7 +17,9 @@ import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.memorymodels.relations.ZRelation;
 import mousquetaires.utils.Utils;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -397,14 +397,24 @@ public class Encodings {
     //}
 
     public static BoolExpr encodeReachedState(XProgram p, Model model, Context ctx) {
+        Map<String, String> resultDebug = new HashMap<>();
+
         Set<XSharedLvalueMemoryUnit> locs = p.getSharedMemoryEvents().stream().map(e -> e.getLoc()).collect(Collectors.toSet());
         BoolExpr reachedState = ctx.mkTrue();
         for(XSharedLvalueMemoryUnit loc : locs) {
-            reachedState = ctx.mkAnd(reachedState, ctx.mkEq(lastValueLoc(loc, ctx), model.getConstInterp(lastValueLoc(loc, ctx))));
+            IntExpr var = lastValueLoc(loc, ctx);
+            Expr value = model.getConstInterp(var);
+            reachedState = ctx.mkAnd(reachedState, ctx.mkEq(var, value));
+            resultDebug.put(var.toString(), value.toString());
         }
-        Set<XEvent> executedEvents = p.getAllEvents().stream().filter(e -> model.getConstInterp(e.executes(ctx)).isTrue()).collect(Collectors.toSet());
+        assert model != null;
+        //Set<XEvent> executedEvents = p.getAllEvents().stream().filter(e -> model.getConstInterp(e.executes(ctx)).isTrue()).collect(Collectors.toSet());
         Set<XLocalLvalueMemoryUnit> regs = new HashSet<>();
-        for (XEvent executedEvent : executedEvents) {
+        for (XEvent executedEvent : p.getAllEvents()) {
+            Expr interp = model.getConstInterp(executedEvent.executes(ctx));
+            if (interp == null || !interp.isTrue()) {
+                continue;
+            }
             if (executedEvent instanceof XLoadMemoryEvent) {
                 regs.add(((XLoadMemoryEvent) executedEvent).getReg());
             }
@@ -420,8 +430,16 @@ public class Encodings {
             }
         }
         for(XLocalLvalueMemoryUnit reg : regs) {
-            reachedState = ctx.mkAnd(reachedState, ctx.mkEq(lastValueReg(reg, ctx), model.getConstInterp(lastValueReg(reg, ctx))));
+            IntExpr var = lastValueReg(reg, ctx);
+            Expr value = model.getConstInterp(var);
+            reachedState = ctx.mkAnd(reachedState, ctx.mkEq(var, value));
+            resultDebug.put(var.toString(), value.toString());
         }
+
+        for (Map.Entry<String, String> entry : resultDebug.entrySet()) {
+            System.err.println(entry.getKey() + " = " + entry.getValue());
+        }
+
         return reachedState;
     }
 

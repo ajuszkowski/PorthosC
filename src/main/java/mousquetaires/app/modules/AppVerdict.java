@@ -8,18 +8,73 @@ import java.util.List;
 
 public abstract class AppVerdict {
 
-    private transient long startTime;
-    private double elapsedTimeSec;  // todo: in future, separate to time spent on encoding and on solving.
+    private final Timer interpretationTimer;
+    private final Timer unrollingTimer;
+    private final Timer programEncodingTimer;
+    private final Timer memoryModelEncodingTimer;
+    private final Timer solvingTimer;
 
-    private final List<AppError> errors = new ArrayList<>();
+    private final List<AppError> errors;
 
-    public void onStartExecution() {
-        startTime = System.currentTimeMillis();
+    public AppVerdict() {
+        this.interpretationTimer = new Timer();
+        this.unrollingTimer = new Timer();
+        this.programEncodingTimer = new Timer();
+        this.memoryModelEncodingTimer = new Timer();
+        this.solvingTimer = new Timer();
+        this.errors = new ArrayList<>();
     }
 
-    public void onFinishExecution() {
-        elapsedTimeSec = (System.currentTimeMillis() - startTime) * 1.0 / 1000;
+    public void onStartInterpretation() {
+        System.out.println("Interpreting...");
+        interpretationTimer.start();
     }
+
+    public void onFinishInterpretation() {
+        interpretationTimer.stop();
+    }
+
+
+    public void onStartUnrolling() {
+        System.out.println("Unrolling...");
+        unrollingTimer.start();
+    }
+
+    public void onFinishUnrolling() {
+        unrollingTimer.stop();
+    }
+
+
+    public void onStartProgramEncoding() {
+        System.out.println("Program encoding...");
+        programEncodingTimer.start();
+    }
+
+    public void onFinishProgramEncoding() {
+        programEncodingTimer.stop();
+    }
+
+
+
+    public void onStartModelEncoding() {
+        System.out.println("Memory model encoding...");
+        memoryModelEncodingTimer.start();
+    }
+
+    public void onFinishModelEncoding() {
+        memoryModelEncodingTimer.stop();
+    }
+
+
+    public void onStartSolving() {
+        System.out.println("Solving...");
+        solvingTimer.start();
+    }
+
+    public void onFinishSolving() {
+        solvingTimer.stop();
+    }
+
 
     public void addError(AppError error) {
         errors.add(error);
@@ -27,10 +82,6 @@ public abstract class AppVerdict {
 
     public boolean hasErrors() {
         return errors.size() > 0;
-    }
-
-    public double getElapsedTimeSec() {
-        return elapsedTimeSec;
     }
 
     public List<AppError> getErrors() {

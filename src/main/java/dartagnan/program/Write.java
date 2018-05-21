@@ -81,7 +81,8 @@ public class Write extends SharedMemEvent {
                     return new Seq(lwsync, new Seq(st, sync));
                 }
             }
-            if(atomic.equals("_rx") || atomic.equals("_na")) {
+            if(atomic.equals("_rx") || atomic.equals("memory_order_relaxed")
+                    || atomic.equals("_na")) {
                 return st;
             }
             if(atomic.equals("_rel")) {
@@ -93,7 +94,8 @@ public class Write extends SharedMemEvent {
             if(atomic.equals("_sc")) {
                 return new Seq(ish1, new Seq(st, ish2));
             }
-            if(atomic.equals("_rx") || atomic.equals("_na")) {
+            if(atomic.equals("_rx") || atomic.equals("memory_order_relaxed")
+                    || atomic.equals("_na")) {
                 return st;
             }
             if(atomic.equals("_rel")) {
@@ -123,7 +125,8 @@ public class Write extends SharedMemEvent {
                 return new Seq(lwsync, new Seq(st, sync));
             }
         }
-        if(atomic.equals("_rx") || atomic.equals("_na")) {
+        if(atomic.equals("_rx") || atomic.equals("memory_order_relaxed")
+                || atomic.equals("_na")) {
             return st;
         }
         if(atomic.equals("_rel")) {

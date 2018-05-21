@@ -5,23 +5,22 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.IntExpr;
-import dartagnan.expression.AConst;
 import mousquetaires.languages.converters.tozformula.process.XFlowGraphEncoder;
 import mousquetaires.languages.converters.tozformula.process.XProcessEncoderFactory;
-import mousquetaires.languages.syntax.xgraph.process.XProcessId;
-import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
-import mousquetaires.languages.syntax.xgraph.memories.XConstant;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalLvalueMemoryUnit;
-import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
+import mousquetaires.languages.syntax.xgraph.process.XProcessId;
+import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.memorymodels.Encodings;
 import mousquetaires.utils.Utils;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static mousquetaires.utils.Utils.*;
@@ -66,7 +65,7 @@ public class XProgram2ZformulaEncoder {
             enc = ctx.mkAnd(enc, encoder.encodeProcessRFRelation(process));
         }
 
-        enc = ctx.mkAnd(enc, Domain_encode(program));
+        //enc = ctx.mkAnd(enc, Domain_encode(program));
 
         return enc;
     }
@@ -74,9 +73,11 @@ public class XProgram2ZformulaEncoder {
     public BoolExpr Domain_encode(XProgram program) {
         BoolExpr enc = ctx.mkTrue();
 
-        List<XSharedMemoryEvent> mEvents = program.getSharedMemoryEvents().stream().sorted((o1, o2) -> o1.toString().compareTo(o2.toString())).collect(Collectors.toList());
-        List<XBarrierEvent> barriers = program.getBarrierEvents().stream().sorted((o1, o2) -> o1.toString().compareTo(o2.toString())).collect(Collectors.toList());
-        List<XMemoryEvent> eventsL = program.getMemoryEvents().stream().sorted((o1, o2) -> o1.toString().compareTo(o2.toString())).collect(Collectors.toList());
+        System.out.println("#=" + program.getMemoryEvents().size());
+
+        ImmutableSet<XSharedMemoryEvent> mEvents = program.getSharedMemoryEvents();
+        ImmutableSet<XBarrierEvent> barriers = program.getBarrierEvents();
+        ImmutableSet<XMemoryEvent> eventsL = program.getMemoryEvents(); //(o1, o2) -> o1.toString().compareTo(o2.toString())
 
         for(XMemoryEvent e : eventsL) {
             enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("ii", e, e, ctx)));
@@ -489,7 +490,10 @@ public class XProgram2ZformulaEncoder {
                     lastCoOrder = ctx.mkAnd(lastCoOrder, ctx.mkNot(Utils.edge("co", w1, w2, ctx)));
                 }
                 Expr w1ssaLoc = dataFlowEncoder.encodeMemoryUnit(w1.getLoc(), w1); // TODO: check that this is indeed equivalent to `w1.ssaLoc'
+
+                //lastCoOrder = w1.executes(ctx);
                 enc = ctx.mkAnd(enc, ctx.mkImplies(lastCoOrder, ctx.mkEq(lastValueLoc(w1.getLoc(), ctx), w1ssaLoc)));
+                enc = ctx.mkAnd(enc, ctx.mkEq(lastValueLoc(w1.getLoc(), ctx), w1ssaLoc));
             }
         }
 
