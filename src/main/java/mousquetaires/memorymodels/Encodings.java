@@ -1,8 +1,21 @@
 package mousquetaires.memorymodels;
 
+import com.google.common.collect.ImmutableSet;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
+import com.microsoft.z3.Model;
+import dartagnan.program.Location;
+import dartagnan.program.Register;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XLoadMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XLocalMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.memories.XLocalLvalueMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XSharedLvalueMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.memories.XSharedMemoryUnit;
+import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.memorymodels.relations.ZRelation;
 import mousquetaires.utils.Utils;
 
@@ -10,6 +23,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static mousquetaires.utils.Utils.lastValueLoc;
+import static mousquetaires.utils.Utils.lastValueReg;
 
 
 public class Encodings {
@@ -301,54 +317,60 @@ public class Encodings {
         return enc;
     }
 
-    //public static BoolExpr encodeCommonExecutions(Program p1, Program p2, Context ctx) {
-    //    BoolExpr enc = ctx.mkTrue();
-    //    Set<XEvent> lXEventsP1 = p1.getXEvents().stream().filter(e -> e instanceof SharedMemXEvent | e instanceof LocalXEvent).collect(Collectors.toSet());
-    //    Set<XEvent> lXEventsP2 = p2.getXEvents().stream().filter(e -> e instanceof SharedMemXEvent | e instanceof LocalXEvent).collect(Collectors.toSet());
-    //    Set<XEvent> rXEventsP1 = p1.getXEvents().stream().filter(e -> e instanceof LoadXEvent).collect(Collectors.toSet());
-    //    Set<XEvent> wXEventsP1 = p1.getXEvents().stream().filter(e -> e instanceof StoreXEvent || e instanceof InitXEvent).collect(Collectors.toSet());
-    //    Set<XEvent> rXEventsP2 = p2.getXEvents().stream().filter(e -> e instanceof LoadXEvent).collect(Collectors.toSet());
-    //    Set<XEvent> wXEventsP2 = p2.getXEvents().stream().filter(e -> e instanceof StoreXEvent || e instanceof InitXEvent).collect(Collectors.toSet());
-    //    for(XEvent e1 : lXEventsP1) {
-    //        for(XEvent e2 : lXEventsP2) {
-    //            if(e1.getHLId().equals(e2.getHLId())) {
-    //                enc = ctx.mkAnd(enc, ctx.mkEq(e1.executes(ctx), e2.executes(ctx)));
-    //            }
-    //        }
-    //    }
-    //    for(XEvent r1 : rXEventsP1) {
-    //        for(XEvent r2 : rXEventsP2) {
-    //            if(r1.getHLId().equals(r2.getHLId())) {
-    //                for(XEvent w1 : wXEventsP1) {
-    //                    for(XEvent w2 : wXEventsP2) {
-    //                        if(r1.getLoc() != w1.getLoc()) {continue;}
-    //                        if(r2.getLoc() != w2.getLoc()) {continue;}
-    //                        if(w1.getHLId().equals(w2.getHLId())) {
-    //                            enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("rf", w1, r1, ctx), Utils.edge("rf", w2, r2, ctx)));
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
-    //    for(XEvent w1P1 : wXEventsP1) {
-    //        for(XEvent w1P2 : wXEventsP2) {
-    //            if(w1P1.getHLId().equals(w1P2.getHLId())) {
-    //                for(XEvent w2P1 : wXEventsP1) {
-    //                    for(XEvent w2P2 : wXEventsP2) {
-    //                        if(w1P1.getLoc() != w2P1.getLoc()) {continue;}
-    //                        if(w1P1.getLoc() != w2P2.getLoc()) {continue;}
-    //                        if(w1P1 == w2P1 | w1P2 == w2P2) {continue;}
-    //                        if(w2P1.getHLId().equals(w2P2.getHLId())) {
-    //                            enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("co", w1P1, w2P1, ctx), Utils.edge("co", w1P2, w2P2, ctx)));
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
-    //    return enc;
-    //}
+    public static BoolExpr encodeCommonExecutions(XProgram p1, XProgram p2, Context ctx) {
+        BoolExpr enc = ctx.mkTrue();
+        ImmutableSet<XMemoryEvent>          lXEventsP1 = p1.getMemoryEvents();
+        ImmutableSet<XMemoryEvent>          lXEventsP2 = p2.getMemoryEvents();
+        ImmutableSet<XLoadMemoryEvent>      rXEventsP1 = p1.getLoadMemoryEvents();
+        ImmutableSet<XSharedMemoryEvent>    wXEventsP1 = p1.getStoreAndInitEvents();
+        ImmutableSet<XLoadMemoryEvent>      rXEventsP2 = p2.getLoadMemoryEvents();
+        ImmutableSet<XSharedMemoryEvent>    wXEventsP2 = p2.getStoreAndInitEvents();
+        for(XEvent e1 : lXEventsP1) {
+            for(XEvent e2 : lXEventsP2) {
+                if(e1.getInfo().getEventId() == e2.getInfo().getEventId()) {
+                    assert e1.equals(e2) : e1 + ", " + e2;
+                    enc = ctx.mkAnd(enc, ctx.mkEq(e1.executes(ctx), e2.executes(ctx)));
+                }
+            }
+        }
+        for(XLoadMemoryEvent r1 : rXEventsP1) {
+            for(XLoadMemoryEvent r2 : rXEventsP2) {
+                if(r1.getInfo().getEventId() == r2.getInfo().getEventId()) {
+                    assert r1.equals(r2) : r1 + ", " + r2;
+                    for(XSharedMemoryEvent w1 : wXEventsP1) {
+                        for(XSharedMemoryEvent w2 : wXEventsP2) {
+                            if(r1.getLoc() != w1.getLoc()) {continue;}
+                            if(r2.getLoc() != w2.getLoc()) {continue;}
+                            if(w1.getInfo().getEventId() == w2.getInfo().getEventId()) {
+                                assert w1.equals(w2) : w1 + ", " + w2;
+                                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("rf", w1, r1, ctx), Utils.edge("rf", w2, r2, ctx)));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for(XSharedMemoryEvent w1P1 : wXEventsP1) {
+            for(XSharedMemoryEvent w1P2 : wXEventsP2) {
+                if(w1P1.getInfo().getEventId() == w1P2.getInfo().getEventId()) {
+                    assert w1P1.equals(w1P2) : w1P1 + ", " + w1P2;
+
+                    for(XSharedMemoryEvent w2P1 : wXEventsP1) {
+                        for(XSharedMemoryEvent w2P2 : wXEventsP2) {
+                            if(w1P1.getLoc() != w2P1.getLoc()) {continue;}
+                            if(w1P1.getLoc() != w2P2.getLoc()) {continue;}
+                            if(w1P1 == w2P1 | w1P2 == w2P2) {continue;}
+                            if(w1P1.getInfo().getEventId() == w1P2.getInfo().getEventId()) {
+                                assert w1P1.equals(w1P2) : w1P1 + ", " + w1P2;
+                                enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("co", w1P1, w2P1, ctx), Utils.edge("co", w1P2, w2P2, ctx)));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return enc;
+    }
 
     //public static BoolExpr encodePreserveFences(Program p1, Program p2, Context ctx) {
     //    BoolExpr enc = ctx.mkTrue();
@@ -373,19 +395,34 @@ public class Encodings {
     //    }
     //    return enc;
     //}
-    //
-    //public static BoolExpr encodeReachedState(Program p, Model model, Context ctx) {
-    //    Set<Location> locs = p.getXEvents().stream().filter(e -> e instanceof SharedMemXEvent).map(e -> e.getLoc()).collect(Collectors.toSet());
-    //    BoolExpr reachedState = ctx.mkTrue();
-    //    for(Location loc : locs) {
-    //        reachedState = ctx.mkAnd(reachedState, ctx.mkEq(lastValueLoc(loc, ctx), model.getConstInterp(lastValueLoc(loc, ctx))));
-    //    }
-    //    Set<XEvent> executedXEvents = p.getXEvents().stream().filter(e -> model.getConstInterp(e.executes(ctx)).isTrue()).collect(Collectors.toSet());
-    //    Set<Register> regs = executedXEvents.stream().filter(e -> e instanceof LocalXEvent | e instanceof LoadXEvent).map(e -> e.getReg()).collect(Collectors.toSet());
-    //    for(Register reg : regs) {
-    //        reachedState = ctx.mkAnd(reachedState, ctx.mkEq(lastValueReg(reg, ctx), model.getConstInterp(lastValueReg(reg, ctx))));
-    //    }
-    //    return reachedState;
-    //}
+
+    public static BoolExpr encodeReachedState(XProgram p, Model model, Context ctx) {
+        Set<XSharedLvalueMemoryUnit> locs = p.getSharedMemoryEvents().stream().map(e -> e.getLoc()).collect(Collectors.toSet());
+        BoolExpr reachedState = ctx.mkTrue();
+        for(XSharedLvalueMemoryUnit loc : locs) {
+            reachedState = ctx.mkAnd(reachedState, ctx.mkEq(lastValueLoc(loc, ctx), model.getConstInterp(lastValueLoc(loc, ctx))));
+        }
+        Set<XEvent> executedEvents = p.getAllEvents().stream().filter(e -> model.getConstInterp(e.executes(ctx)).isTrue()).collect(Collectors.toSet());
+        Set<XLocalLvalueMemoryUnit> regs = new HashSet<>();
+        for (XEvent executedEvent : executedEvents) {
+            if (executedEvent instanceof XLoadMemoryEvent) {
+                regs.add(((XLoadMemoryEvent) executedEvent).getReg());
+            }
+            else if (executedEvent instanceof XLocalMemoryEvent) {
+                XMemoryUnit src = ((XLocalMemoryEvent) executedEvent).getSource();
+                if (src instanceof XLocalLvalueMemoryUnit) {
+                    regs.add((XLocalLvalueMemoryUnit) src);
+                }
+                XMemoryUnit dst = ((XLocalMemoryEvent) executedEvent).getDestination();
+                if (dst instanceof XLocalLvalueMemoryUnit) {
+                    regs.add((XLocalLvalueMemoryUnit) dst);
+                }
+            }
+        }
+        for(XLocalLvalueMemoryUnit reg : regs) {
+            reachedState = ctx.mkAnd(reachedState, ctx.mkEq(lastValueReg(reg, ctx), model.getConstInterp(lastValueReg(reg, ctx))));
+        }
+        return reachedState;
+    }
 
 }

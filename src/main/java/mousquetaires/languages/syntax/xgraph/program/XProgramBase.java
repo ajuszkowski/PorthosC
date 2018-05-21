@@ -9,6 +9,8 @@ import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
+import mousquetaires.languages.syntax.xgraph.process.XProcess;
+import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 
 
 public abstract class XProgramBase <P extends FlowGraph<XEvent>>
@@ -18,10 +20,11 @@ public abstract class XProgramBase <P extends FlowGraph<XEvent>>
     //private final XPostProcess postlude;
 
     // memoised subsets
+    private ImmutableSet<XEvent> allEvents;
     private ImmutableSet<XEntryEvent> entryEvents;
-    private ImmutableSet<XExitEvent> exitEvents;
     private ImmutableSet<XMemoryEvent> memoryEvents;
-        private ImmutableSet<XInitialWriteEvent> initEvents;
+        private ImmutableSet<XSharedMemoryEvent> storeAndInitEvents;
+        private ImmutableSet<XLocalMemoryEvent> localMemoryEvents;
         private ImmutableSet<XSharedMemoryEvent> sharedMemoryEvents;
             private ImmutableSet<XLoadMemoryEvent> loadMemoryEvents;
             private ImmutableSet<XStoreMemoryEvent> storeMemoryEvents;
@@ -54,11 +57,10 @@ public abstract class XProgramBase <P extends FlowGraph<XEvent>>
         return builder.build();
     }
 
-    public ImmutableSet<XExitEvent> getExitEvents() {
-        // TODO: just collect sink() events here
-        return exitEvents != null
-                ? exitEvents
-                : (exitEvents = getAllNodesExceptSource(XExitEvent.class));
+    public ImmutableSet<XEvent> getAllEvents() {
+        return allEvents != null
+                ? allEvents
+                : (allEvents = getAllNodesExceptSource(XEvent.class));
     }
 
     public ImmutableSet<XMemoryEvent> getMemoryEvents() {
@@ -67,16 +69,22 @@ public abstract class XProgramBase <P extends FlowGraph<XEvent>>
                 : (memoryEvents = getAllNodesExceptSource(XMemoryEvent.class));
     }
 
-    public ImmutableSet<XInitialWriteEvent> getInitEvents() {
-        return initEvents != null
-                ? initEvents
-                : (initEvents = getAllNodesExceptSource(XInitialWriteEvent.class));
+    public ImmutableSet<XSharedMemoryEvent> getStoreAndInitEvents() {
+        return storeAndInitEvents != null
+                ? storeAndInitEvents
+                : (storeAndInitEvents = buildStoreAndInitEvents());
     }
 
     public ImmutableSet<XSharedMemoryEvent> getSharedMemoryEvents() {
         return sharedMemoryEvents != null
                 ? sharedMemoryEvents
                 : (sharedMemoryEvents = getAllNodesExceptSource(XSharedMemoryEvent.class));
+    }
+
+    public ImmutableSet<XLocalMemoryEvent> getLocalMemoryEvents() {
+        return localMemoryEvents != null
+                ? localMemoryEvents
+                : (localMemoryEvents = getAllNodesExceptSource(XLocalMemoryEvent.class));
     }
 
     public ImmutableSet<XLoadMemoryEvent> getLoadMemoryEvents() {
@@ -111,6 +119,27 @@ public abstract class XProgramBase <P extends FlowGraph<XEvent>>
             for (XEvent event : process.getAllNodesExceptSource()) {
                 if (type.isInstance(event)) {
                     builder.add(type.cast(event));
+                }
+            }
+        }
+        return builder.build();
+    }
+
+    private ImmutableSet<XSharedMemoryEvent> buildStoreAndInitEvents() {
+        ImmutableSet.Builder<XSharedMemoryEvent> builder = new ImmutableSet.Builder<>();
+        for (P process : getProcesses()) {
+            if (((XProcess) process).getId() == XProcessId.PreludeProcessId) {
+                for (XEvent node : process.getAllNodesExceptSource()) {
+                    if (node instanceof XSharedMemoryEvent) {
+                        builder.add((XSharedMemoryEvent) node);
+                    }
+                }
+            }
+            else {
+                for (XEvent event : process.getAllNodesExceptSource()) {
+                    if (event instanceof XStoreMemoryEvent) {
+                        builder.add((XStoreMemoryEvent) event);
+                    }
                 }
             }
         }

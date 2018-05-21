@@ -7,6 +7,9 @@ public class PorthosVerdict extends AppVerdict {
     public enum Status {
         StatePortable,
         NonStatePortable,
+        ExecutionPortable,
+        NonExecutionPortable,
+        ;
     }
 
     public PorthosVerdict.Status result;

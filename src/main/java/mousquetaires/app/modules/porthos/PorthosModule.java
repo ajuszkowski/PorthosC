@@ -1,8 +1,7 @@
 package mousquetaires.app.modules.porthos;
 
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.Context;
-import com.microsoft.z3.Solver;
+import com.microsoft.z3.*;
+import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 import mousquetaires.app.errors.AppError;
 import mousquetaires.app.errors.IOError;
 import mousquetaires.app.errors.UnrecognisedError;
@@ -17,10 +16,14 @@ import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import mousquetaires.languages.syntax.zformula.ZFormulaBuilder;
 import mousquetaires.languages.transformers.xgraph.XProgramTransformer;
+import mousquetaires.memorymodels.Encodings;
 import mousquetaires.memorymodels.wmm.MemoryModel;
+import mousquetaires.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 //import mousquetaires.program.Init;
 
@@ -44,10 +47,8 @@ public class PorthosModule extends AppModule {
 //todo: solving timeout!
             int unrollBound = 16; // TODO: get from options
 
-            MemoryModel.Kind sourceModelKind = options.sourceModel;
-            MemoryModel sourceModel = sourceModelKind.createModel();
-            MemoryModel.Kind targetModelKind = options.targetModel;
-            MemoryModel targetModel = targetModelKind.createModel();
+            MemoryModel.Kind source = options.sourceModel;
+            MemoryModel.Kind target = options.targetModel;
 
             File inputProgramFile = options.inputProgramFile;
             InputLanguage language = InputExtensions.parseProgramLanguage(inputProgramFile.getName());
@@ -58,55 +59,82 @@ public class PorthosModule extends AppModule {
 
             System.out.println("Encoding...");
 
-            XProgram sourceCompiled = compile(yTree, sourceModelKind, unrollBound, ctx);
-            XProgram targetCompiled = compile(yTree, targetModelKind, unrollBound, ctx);
+            XProgram pSource = compile(yTree, source, unrollBound, ctx);
+            XProgram pTarget = compile(yTree, target, unrollBound, ctx);
 
-            XProgram2ZformulaEncoder sourceEncoder = new XProgram2ZformulaEncoder(ctx, sourceCompiled);
-            XProgram2ZformulaEncoder targetEncoder = new XProgram2ZformulaEncoder(ctx, targetCompiled);
-
-
-            ZFormulaBuilder formulaBuilder = new ZFormulaBuilder(ctx);
-
-            sourceEncoder.encodeProgram(sourceCompiled);//encodeDF + encodeCF + encodeDF_RF + Domain.encode
-            //sourceModel.encode(sourceCompiled, ctx, formulaBuilder);//encodeMM
-            formulaBuilder.addAssert( sourceCompiled.encodeMM(ctx, sourceModelKind) );
-            formulaBuilder.addAssert( sourceCompiled.encodeConsistent(ctx, sourceModelKind) );
+            XProgram2ZformulaEncoder sourceEncoder = new XProgram2ZformulaEncoder(ctx, pSource);
+            XProgram2ZformulaEncoder targetEncoder = new XProgram2ZformulaEncoder(ctx, pTarget);
 
 
-            BoolExpr formula = formulaBuilder.build();
+            ctx.setPrintMode(Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL);
+            Solver s = ctx.mkSolver();
+            Solver s2 = ctx.mkSolver();
 
-            Solver solverSource = ctx.mkSolver();
-            Solver solverTarget = ctx.mkSolver();
+            BoolExpr sourceEnc = sourceEncoder.encodeProgram(pSource);
+            BoolExpr sourceDomain = sourceEncoder.Domain_encode(pSource);
+            BoolExpr sourceMM = pSource.encodeMM(ctx, source);
 
-            //solverSource.add(pTarget.encodeDF(ctx));
-            //solverSource.add(pTarget.encodeCF(ctx));
-            //solverSource.add(pTarget.encodeDF_RF(ctx));
-            //solverSource.add(Domain.encode(pTarget, ctx));
-            //solverSource.add(pTarget.encodeMM(ctx, target));
-            //solverSource.add(pTarget.encodeConsistent(ctx, target));
-            //solverSource.add(sourceDF);
-            //solverSource.add(sourceCF);
-            //solverSource.add(sourceDF_RF);
-            //solverSource.add(sourceDomain);
-            //solverSource.add(sourceMM);
-            //solverSource.add(pSource.encodeInconsistent(ctx, source));
-            //solverSource.add(Encodings.encodeCommonExecutions(pTarget, pSource, ctx));
-            //
-            //solverTarget.add(sourceDF);
-            //solverTarget.add(sourceCF);
-            //solverTarget.add(sourceDF_RF);
-            //solverTarget.add(sourceDomain);
-            //solverTarget.add(sourceMM);
-            //solverTarget.add(pSource.encodeConsistent(ctx, source));
-            //
-            //sourceSolver.add(formula);
-            //
-            //System.out.println("Solving...");
-            //ctx.setPrintMode(Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL);
+            s.add(targetEncoder.encodeProgram(pTarget));
+            s.add(targetEncoder.Domain_encode(pTarget));
+            s.add(pTarget.encodeMM(ctx, target));
+            s.add(pTarget.encodeConsistent(ctx, target));
+            s.add(sourceEnc);
+            s.add(sourceDomain);
+            s.add(sourceMM);
+            s.add(Encodings.encodeCommonExecutions(pTarget, pSource, ctx));
+            s.add(pSource.encodeInconsistent(ctx, source));
 
+            s2.add(sourceEnc);
+            s2.add(sourceDomain);
+            s2.add(sourceMM);
+            s2.add(pSource.encodeConsistent(ctx, source));
 
+            if(options.mode == PorthosMode.ExecutionInslusion) {
+                if(s.check() == Status.SATISFIABLE) {
+                    verdict.result = PorthosVerdict.Status.NonExecutionPortable;
+                    //if(outputGraphFile != null) {
+                    //    String outputPath = outputGraphFile;
+                    //    Utils.drawGraph(program, pSource, pTarget, ctx, s.getModel(), outputPath, rels);
+                    //}
+                }
+                else {
+                    verdict.result = PorthosVerdict.Status.ExecutionPortable;
+                }
+                return verdict;
+            }
 
+            int iterations = 0;
+            Status lastCheck = Status.SATISFIABLE;
+            Set<Expr> visited = new HashSet<>();
 
+            while(lastCheck == Status.SATISFIABLE) {
+
+                lastCheck = s.check();
+                if(lastCheck == Status.SATISFIABLE) {
+                    iterations = iterations + 1;
+                    Model model = s.getModel();
+                    s2.push();
+                    BoolExpr reachedState = Encodings.encodeReachedState(pTarget, model, ctx);
+                    visited.add(reachedState);
+                    assert(iterations == visited.size());
+                    s2.add(reachedState);
+                    if(s2.check() == Status.UNSATISFIABLE) {
+                        //System.out.println("The program is not state-portable");
+                        verdict.iterations = iterations;
+                        verdict.result = PorthosVerdict.Status.NonStatePortable;
+                        return verdict;
+                    }
+                    else {
+                        s2.pop();
+                        s.add(ctx.mkNot(reachedState));
+                    }
+                }
+                else {
+                    verdict.iterations = iterations;
+                    verdict.result = PorthosVerdict.Status.StatePortable;
+                    return verdict;
+                }
+            }
         /*
         program.initialize();
         Program pSource = program.clone();
@@ -120,8 +148,8 @@ public class PorthosModule extends AppModule {
 
         Context ctx = new Context();
         ctx.setPrintMode(Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL);
-        Solver solverSource = ctx.mkSolver();
-        Solver solverTarget = ctx.mkSolver();
+        Solver s = ctx.mkSolver();
+        Solver s2 = ctx.mkSolver();
 
         BoolExpr sourceDF = pSource.encodeDF(ctx);
         BoolExpr sourceCF = pSource.encodeCF(ctx);
@@ -129,33 +157,33 @@ public class PorthosModule extends AppModule {
         BoolExpr sourceDomain = Domain.encode(pSource, ctx);
         BoolExpr sourceMM = pSource.encodeMM(ctx, source);
 
-        solverSource.add(pTarget.encodeDF(ctx));
-        solverSource.add(pTarget.encodeCF(ctx));
-        solverSource.add(pTarget.encodeDF_RF(ctx));
-        solverSource.add(Domain.encode(pTarget, ctx));
-        solverSource.add(pTarget.encodeMM(ctx, target));
-        solverSource.add(pTarget.encodeConsistent(ctx, target));
-        solverSource.add(sourceDF);
-        solverSource.add(sourceCF);
-        solverSource.add(sourceDF_RF);
-        solverSource.add(sourceDomain);
-        solverSource.add(sourceMM);
-        solverSource.add(pSource.encodeInconsistent(ctx, source));
-        solverSource.add(Encodings.encodeCommonExecutions(pTarget, pSource, ctx));
+        s.add(pTarget.encodeDF(ctx));
+        s.add(pTarget.encodeCF(ctx));
+        s.add(pTarget.encodeDF_RF(ctx));
+        s.add(Domain.encode(pTarget, ctx));
+        s.add(pTarget.encodeMM(ctx, target));
+        s.add(pTarget.encodeConsistent(ctx, target));
+        s.add(sourceDF);
+        s.add(sourceCF);
+        s.add(sourceDF_RF);
+        s.add(sourceDomain);
+        s.add(sourceMM);
+        s.add(pSource.encodeInconsistent(ctx, source));
+        s.add(Encodings.encodeCommonExecutions(pTarget, pSource, ctx));
 
-        solverTarget.add(sourceDF);
-        solverTarget.add(sourceCF);
-        solverTarget.add(sourceDF_RF);
-        solverTarget.add(sourceDomain);
-        solverTarget.add(sourceMM);
-        solverTarget.add(pSource.encodeConsistent(ctx, source));
+        s2.add(sourceDF);
+        s2.add(sourceCF);
+        s2.add(sourceDF_RF);
+        s2.add(sourceDomain);
+        s2.add(sourceMM);
+        s2.add(pSource.encodeConsistent(ctx, source));
 
         if(!statePortability) {
-            if(solverSource.check() == Status.SATISFIABLE) {
+            if(s.check() == Status.SATISFIABLE) {
                 verdict.result = PorthosVerdict.Status.NonStatePortable;
                 if(outputGraphFile != null) {
                     String outputPath = outputGraphFile;
-                    Utils.drawGraph(program, pSource, pTarget, ctx, solverSource.getModel(), outputPath, rels);
+                    Utils.drawGraph(program, pSource, pTarget, ctx, s.getModel(), outputPath, rels);
                 }
             }
             else {
@@ -170,24 +198,24 @@ public class PorthosModule extends AppModule {
 
         while(lastCheck == Status.SATISFIABLE) {
 
-            lastCheck = solverSource.check();
+            lastCheck = s.check();
             if(lastCheck == Status.SATISFIABLE) {
                 iterations = iterations + 1;
-                Model model = solverSource.getModel();
-                solverTarget.push();
+                Model model = s.getModel();
+                s2.push();
                 BoolExpr reachedState = Encodings.encodeReachedState(pTarget, model, ctx);
                 visited.add(reachedState);
                 assert(iterations == visited.size());
-                solverTarget.add(reachedState);
-                if(solverTarget.check() == Status.UNSATISFIABLE) {
+                s2.add(reachedState);
+                if(s2.check() == Status.UNSATISFIABLE) {
                     //System.out.println("The program is not state-portable");
                     verdict.iterations = iterations;
                     verdict.result = PorthosVerdict.Status.NonStatePortable;
                     return verdict;
                 }
                 else {
-                    solverTarget.pop();
-                    solverSource.add(ctx.mkNot(reachedState));
+                    s2.pop();
+                    s.add(ctx.mkNot(reachedState));
                 }
             }
             else {
@@ -198,7 +226,6 @@ public class PorthosModule extends AppModule {
         }
         */
 
-        throw new IOException();//just to make code compilable for a while
         } catch (IOException e) {
             verdict.addError(new IOError(e));
         } catch (Exception e) {

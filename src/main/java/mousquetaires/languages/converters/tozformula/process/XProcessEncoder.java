@@ -122,7 +122,7 @@ public class XProcessEncoder implements XFlowGraphEncoder {
                     enc = ctx.mkAnd(enc, ctx.mkImplies(rfRelationVar, ctx.mkEq(storeLocVar, loadLocVar)));
                 }
             }
-            // TODO: same for process.getInitEvents() ...
+            // TODO: same for process.getStoreAndInitEvents() ...
         }
         return enc;
     }
