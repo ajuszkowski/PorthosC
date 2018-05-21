@@ -3,12 +3,8 @@ package mousquetaires.languages.syntax.xgraph.events.memory;
 import mousquetaires.languages.syntax.xgraph.events.XEventInfo;
 import mousquetaires.languages.syntax.xgraph.memories.*;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
-import org.omg.PortableServer.THREAD_POLICY_ID;
 
 
-/**
- * Initial write event to any kind of memory location ({@link XMemoryUnit})
- */
 public final class XInitialWriteEvent extends XMemoryEventBase implements XSharedMemoryEvent {
     // implements XLocalMemoryEvent because it is not a subject for relaxations
     // TODO: rename XLocalMemoryEvent -> XNonRelaxableMemoryEvent/XStrongMemoryEvent, XSharedMemoryEvent -> XRelaxableMemoryEvent/XWeakMemoryEvent.

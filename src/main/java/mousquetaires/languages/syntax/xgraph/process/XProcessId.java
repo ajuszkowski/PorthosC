@@ -5,8 +5,8 @@ import java.util.Objects;
 
 public class XProcessId {
 
-    public static final XProcessId PreludeProcessId = new XProcessId("<>prelude<>");
-    public static final XProcessId PostludeProcessId = new XProcessId("<>postlude<>");
+    public static final XProcessId PreludeProcessId  = new XProcessId("_Prelude_");
+    public static final XProcessId PostludeProcessId = new XProcessId("_Postlude_");
 
     private final String value;
 

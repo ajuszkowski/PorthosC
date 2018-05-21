@@ -19,7 +19,7 @@ public class XProcessEncoderFactory {
         this.dataFlowEncoder = dataFlowEncoder;
     }
 
-    public XProcessEncoder getEncoder(XProcess process) {
+    public XFlowGraphEncoder getEncoder(XProcess process) {
         // TODO: switch not by process-id, by but type
         XProcessId processId = process.getId();
         if (processId == XProcessId.PreludeProcessId) {
@@ -28,6 +28,6 @@ public class XProcessEncoderFactory {
         if (processId == XProcessId.PostludeProcessId) {
             return new XPostludeEncoder(ctx, ssaMap, dataFlowEncoder);
         }
-        return new XThreadEncoder(ctx, ssaMap, dataFlowEncoder);
+        return new XProcessEncoder(ctx, ssaMap, dataFlowEncoder);
     }
 }

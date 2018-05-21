@@ -5,8 +5,8 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.IntExpr;
-import dartagnan.expression.BExpr;
-import mousquetaires.languages.converters.tozformula.process.XProcessEncoder;
+import dartagnan.expression.AConst;
+import mousquetaires.languages.converters.tozformula.process.XFlowGraphEncoder;
 import mousquetaires.languages.converters.tozformula.process.XProcessEncoderFactory;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.xgraph.program.XProgram;
@@ -18,7 +18,6 @@ import mousquetaires.languages.syntax.xgraph.memories.XLocalLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XLocalMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.memories.XSharedLvalueMemoryUnit;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
-import mousquetaires.languages.syntax.zformula.ZFormulaBuilder;
 import mousquetaires.memorymodels.Encodings;
 import mousquetaires.utils.Utils;
 
@@ -61,7 +60,8 @@ public class XProgram2ZformulaEncoder {
             }
             //kostyl==
 
-            XProcessEncoder encoder = factory.getEncoder(process);
+            XFlowGraphEncoder encoder = factory.getEncoder(process);
+
             enc = ctx.mkAnd(enc, encoder.encodeProcess(process));
             enc = ctx.mkAnd(enc, encoder.encodeProcessRFRelation(process));
         }
@@ -71,12 +71,12 @@ public class XProgram2ZformulaEncoder {
         return enc;
     }
 
-    private BoolExpr Domain_encode(XProgram program) {
+    public BoolExpr Domain_encode(XProgram program) {
         BoolExpr enc = ctx.mkTrue();
 
-        ImmutableSet<XSharedMemoryEvent> mEvents = program.getSharedMemoryEvents();
-        ImmutableSet<XBarrierEvent> barriers = program.getBarrierEvents();
-        ImmutableSet<XMemoryEvent> eventsL = program.getMemoryEvents();
+        List<XSharedMemoryEvent> mEvents = program.getSharedMemoryEvents().stream().sorted((o1, o2) -> o1.toString().compareTo(o2.toString())).collect(Collectors.toList());
+        List<XBarrierEvent> barriers = program.getBarrierEvents().stream().sorted((o1, o2) -> o1.toString().compareTo(o2.toString())).collect(Collectors.toList());
+        List<XMemoryEvent> eventsL = program.getMemoryEvents().stream().sorted((o1, o2) -> o1.toString().compareTo(o2.toString())).collect(Collectors.toList());
 
         for(XMemoryEvent e : eventsL) {
             enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("ii", e, e, ctx)));
@@ -90,7 +90,7 @@ public class XProgram2ZformulaEncoder {
                 enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.edge("rf", e1, e2, ctx), ctx.mkAnd(e1.executes(ctx), e2.executes(ctx))));
                 enc = ctx.mkAnd(enc, ctx.mkImplies(Utils.edge("co", e1, e2, ctx), ctx.mkAnd(e1.executes(ctx), e2.executes(ctx))));
 
-                if(!(e1 instanceof XInitialWriteEvent)) {
+                if(!(e1.isInit())) {
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("IM", e1, e2, ctx)));
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("IW", e1, e2, ctx)));
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("IR", e1, e2, ctx)));
@@ -99,7 +99,7 @@ public class XProgram2ZformulaEncoder {
                     enc = ctx.mkAnd(enc, Utils.edge("IM", e1, e2, ctx));
                 }
 
-                if(!(e2 instanceof XInitialWriteEvent)) {
+                if(!(e2.isInit())) {
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("MI", e1, e2, ctx)));
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("WI", e1, e2, ctx)));
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("RI", e1, e2, ctx)));
@@ -126,7 +126,7 @@ public class XProgram2ZformulaEncoder {
                     enc = ctx.mkAnd(enc, Utils.edge("MR", e1, e2, ctx));
                 }
 
-                if(!(e1 instanceof XStoreMemoryEvent || e1 instanceof XInitialWriteEvent)) {
+                if(!(e1 instanceof XStoreMemoryEvent || e1.isInit())) {
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("WM", e1, e2, ctx)));
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("WW", e1, e2, ctx)));
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("WR", e1, e2, ctx)));
@@ -135,7 +135,7 @@ public class XProgram2ZformulaEncoder {
                     enc = ctx.mkAnd(enc, Utils.edge("WM", e1, e2, ctx));
                 }
 
-                if(!(e2 instanceof XStoreMemoryEvent || e2 instanceof XInitialWriteEvent)) {
+                if(!(e2 instanceof XStoreMemoryEvent || e2.isInit())) {
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("MW", e1, e2, ctx)));
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("WW", e1, e2, ctx)));
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("RW", e1, e2, ctx)));
@@ -148,15 +148,15 @@ public class XProgram2ZformulaEncoder {
                     enc = ctx.mkAnd(enc, Utils.edge("RR", e1, e2, ctx));
                 }
 
-                if(e1 instanceof XLoadMemoryEvent && (e2 instanceof XInitialWriteEvent || e2 instanceof XStoreMemoryEvent)) {
+                if(e1 instanceof XLoadMemoryEvent && (e2.isInit() || e2 instanceof XStoreMemoryEvent)) {
                     enc = ctx.mkAnd(enc, Utils.edge("RW", e1, e2, ctx));
                 }
 
-                if((e1 instanceof XInitialWriteEvent || e1 instanceof XStoreMemoryEvent) && (e2 instanceof XInitialWriteEvent || e2 instanceof XStoreMemoryEvent)) {
+                if((e1.isInit() || e1 instanceof XStoreMemoryEvent) && (e2.isInit() || e2 instanceof XStoreMemoryEvent)) {
                     enc = ctx.mkAnd(enc, Utils.edge("WW", e1, e2, ctx));
                 }
 
-                if((e1 instanceof XInitialWriteEvent || e1 instanceof XStoreMemoryEvent) && e2 instanceof XLoadMemoryEvent) {
+                if((e1.isInit() || e1 instanceof XStoreMemoryEvent) && e2 instanceof XLoadMemoryEvent) {
                     enc = ctx.mkAnd(enc, Utils.edge("WR", e1, e2, ctx));
                 }
 
@@ -257,10 +257,10 @@ public class XProgram2ZformulaEncoder {
                 else {
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("loc", e1, e2, ctx)));
                 }
-                if(!((e1 instanceof XStoreMemoryEvent || e1 instanceof XInitialWriteEvent) && e2 instanceof XLoadMemoryEvent && e1.getLoc() == e2.getLoc())) {
+                if(!((e1 instanceof XStoreMemoryEvent || e1.isInit()) && e2 instanceof XLoadMemoryEvent && e1.getLoc() == e2.getLoc())) {
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("rf", e1, e2, ctx)));
                 }
-                if(!((e1 instanceof XStoreMemoryEvent || e1 instanceof XInitialWriteEvent) && (e2 instanceof XStoreMemoryEvent || e2 instanceof XInitialWriteEvent) && e1.getLoc() == e2.getLoc())) {
+                if(!((e1 instanceof XStoreMemoryEvent || e1.isInit()) && (e2 instanceof XStoreMemoryEvent || e2.isInit()) && e1.getLoc() == e2.getLoc())) {
                     enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("co", e1, e2, ctx)));
                 }
                 if(!(e1.getProcessId() == e2.getProcessId()
@@ -361,83 +361,83 @@ public class XProgram2ZformulaEncoder {
             }
         }
 
-        for (XMemoryEvent e1 : eventsL) {
-            for (XMemoryEvent e2 : eventsL) {
-                if(e1 == e2
-                        || e1.getProcessId() != e2.getProcessId()
-                        || program.compareTopologically(e2, e1) < 0) { //e2.getEId() < e1.getEId()
-                    enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("idd", e1, e2, ctx)));
-                    enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("data", e1, e2, ctx)));
-                }
-                VarRefCollection e2VarRefs = ssaMap.getEventMap(e2);
-                if(e2 instanceof XStoreMemoryEvent) {
-                    // TODO: Check here
-                    XStoreMemoryEvent e2store = (XStoreMemoryEvent) e2;
-                    if (! (ssaMap.getLastModEvents(e2store.getReg()).contains(e1)) ) { //if(!e2.getLastModMap().get(e2.getReg()).contains(e1)) {
-                        enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("idd", e1, e2, ctx)));
-                    }
-                }
-                if(e2 instanceof XLoadMemoryEvent) {
-                    // TODO: Check here
-                    XLoadMemoryEvent e2load = (XLoadMemoryEvent) e2;
-                    if(! (e2VarRefs.containsVarRef(e2load.getLoc())) ) {//if(!e2.getLastModMap().keySet().contains(e2.getLoc())) {
-                        enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("idd", e1, e2, ctx)));
-                    }
-                }
-                if(e2 instanceof XLocalMemoryEvent) {
-                    // TODO: Check here
-                    XLocalMemoryEvent e2local = (XLocalMemoryEvent) e2;
-                    if (e2local.getSource() instanceof XConstant) { //e2 instanceof Local && e2.getExpr() instanceof AConst) {
-                        enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("idd", e1, e2, ctx)));
-                    }
-                }
-            }
-        }
+        //for (XMemoryEvent e1 : eventsL) {
+        //    for (XMemoryEvent e2 : eventsL) {
+        //        if(e1 == e2
+        //                || e1.getProcessId() != e2.getProcessId()
+        //                || program.compareTopologically(e2, e1) < 0) { //e2.getEId() < e1.getEId()
+        //            enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("idd", e1, e2, ctx)));
+        //            enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("data", e1, e2, ctx)));
+        //        }
+        //        VarRefCollection e2VarRefs = ssaMap.getEventMap(e2);
+        //        if(e2 instanceof XStoreMemoryEvent) {
+        //            // TODO: Check here
+        //            XStoreMemoryEvent e2store = (XStoreMemoryEvent) e2;
+        //            if (! (ssaMap.getLastModEvents(e2store.getReg()).contains(e1)) ) { //if(!e2.getLastModMap().get(e2.getReg()).contains(e1)) {
+        //                enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("idd", e1, e2, ctx)));
+        //            }
+        //        }
+        //        if(e2 instanceof XLoadMemoryEvent) {
+        //            // TODO: Check here
+        //            XLoadMemoryEvent e2load = (XLoadMemoryEvent) e2;
+        //            if(! (e2VarRefs.containsVarRef(e2load.getLoc())) ) {//if(!e2.getLastModMap().keySet().contains(e2.getLoc())) {
+        //                enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("idd", e1, e2, ctx)));
+        //            }
+        //        }
+        //        if(e2 instanceof XLocalMemoryEvent && (e2.getSource() instanceof XConstant || e2.getDestination() instanceof XConstant)) {
+        //            // TODO: Check here
+        //            XLocalMemoryEvent e2local = (XLocalMemoryEvent) e2;
+        //            if (e2local.getSource() instanceof XConstant) { //e2 instanceof Local && e2.getExpr() instanceof AConst) {
+        //                enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("idd", e1, e2, ctx)));
+        //            }
+        //        }
+        //    }
+        //}
 
-        for(XMemoryEvent e : eventsL) {
-            if(e instanceof XStoreMemoryEvent) {
-                XStoreMemoryEvent eStore = (XStoreMemoryEvent) e;
-                BoolExpr orClause = ctx.mkFalse();
-                // TODO: Check here
-                for(XEvent x : ssaMap.getLastModEvents(eStore.getReg())) { //e.getLastModMap().get(e.getReg())) {
-                    orClause = ctx.mkOr(orClause, Utils.edge("idd", x, e, ctx));
-                }
-                enc = ctx.mkAnd(enc, orClause);
-            }
-            if(e instanceof XLoadMemoryEvent) {
-                XLoadMemoryEvent eLoad = (XLoadMemoryEvent) e;
-                // TODO: Check here. Is this a hack?
-                if (!ssaMap.getLastModEvents(eLoad.getLoc()).contains(e)) { //if(!e.getLastModMap().keySet().contains(e.getLoc())) {
-                    continue;
-                }
-                BoolExpr orClause = ctx.mkFalse();
-                // TODO: Check here
-                for(XEvent x : ssaMap.getLastModEvents(eLoad.getLoc())) {//e.getLastModMap().get(e.getLoc())) {
-                    orClause = ctx.mkOr(orClause, Utils.edge("idd", x, e, ctx));
-                }
-                enc = ctx.mkAnd(enc, orClause);
-            }
-            if(e instanceof XLocalMemoryEvent) {
-                // TODO: Check here
-                XLocalMemoryUnitCollector registerCollector = new XLocalMemoryUnitCollector();
-                for (XLocalMemoryUnit localMemoryUnit : e.accept(registerCollector)) {
-                    BoolExpr orClause = ctx.mkFalse();
-                    if (localMemoryUnit instanceof XLocalLvalueMemoryUnit) {
-                        for (XEvent x : ssaMap.getLastModEvents((XLocalLvalueMemoryUnit) localMemoryUnit)) {
-                            orClause = ctx.mkOr(orClause, Utils.edge("idd", x, e, ctx));
-                        }
-                    }
-                    enc = ctx.mkAnd(enc, orClause);
-                }
-                //for(Register reg : e.getExpr().getRegs()) {
-                //    BoolExpr orClause = ctx.mkFalse();
-                //    for(XEvent x : e.getLastModMap().get(reg)) {
-                //        orClause = ctx.mkOr(orClause, Utils.edge("idd", x, e, ctx));
-                //    }
-                //    enc = ctx.mkAnd(enc, orClause);
-                //}
-            }
-        }
+        //for(XMemoryEvent e : eventsL) {
+        //    if(e instanceof XStoreMemoryEvent) {
+        //        XStoreMemoryEvent eStore = (XStoreMemoryEvent) e;
+        //        BoolExpr orClause = ctx.mkFalse();
+        //        // TODO: Check here
+        //        for(XEvent x : ssaMap.getLastModEvents(eStore.getReg())) { //e.getLastModMap().get(e.getReg())) {
+        //            orClause = ctx.mkOr(orClause, Utils.edge("idd", x, e, ctx));
+        //        }
+        //        enc = ctx.mkAnd(enc, orClause);
+        //    }
+        //    if(e instanceof XLoadMemoryEvent) {
+        //        XLoadMemoryEvent eLoad = (XLoadMemoryEvent) e;
+        //        // TODO: Check here. Is this a hack?
+        //        if (!ssaMap.getLastModEvents(eLoad.getLoc()).contains(e)) { //if(!e.getLastModMap().keySet().contains(e.getLoc())) {
+        //            continue;
+        //        }
+        //        BoolExpr orClause = ctx.mkFalse();
+        //        // TODO: Check here
+        //        for(XEvent x : ssaMap.getLastModEvents(eLoad.getLoc())) {//e.getLastModMap().get(e.getLoc())) {
+        //            orClause = ctx.mkOr(orClause, Utils.edge("idd", x, e, ctx));
+        //        }
+        //        enc = ctx.mkAnd(enc, orClause);
+        //    }
+        //    if(e instanceof XLocalMemoryEvent) {
+        //        // TODO: Check here
+        //        XLocalMemoryUnitCollector registerCollector = new XLocalMemoryUnitCollector();
+        //        for (XLocalMemoryUnit localMemoryUnit : e.accept(registerCollector)) {
+        //            BoolExpr orClause = ctx.mkFalse();
+        //            if (localMemoryUnit instanceof XLocalLvalueMemoryUnit) {
+        //                for (XEvent x : ssaMap.getLastModEvents((XLocalLvalueMemoryUnit) localMemoryUnit)) {
+        //                    orClause = ctx.mkOr(orClause, Utils.edge("idd", x, e, ctx));
+        //                }
+        //            }
+        //            enc = ctx.mkAnd(enc, orClause);
+        //        }
+        //        //for(Register reg : e.getExpr().getRegs()) {
+        //        //    BoolExpr orClause = ctx.mkFalse();
+        //        //    for(XEvent x : e.getLastModMap().get(reg)) {
+        //        //        orClause = ctx.mkOr(orClause, Utils.edge("idd", x, e, ctx));
+        //        //    }
+        //        //    enc = ctx.mkAnd(enc, orClause);
+        //        //}
+        //    }
+        //}
 
         for(XSharedMemoryEvent e1 : mEvents) {
             for(XSharedMemoryEvent e2 : mEvents) {
@@ -453,13 +453,12 @@ public class XProgram2ZformulaEncoder {
         //for(Location loc : locs) {
         for (XEvent w1 : mEvents) {
             if (w1 instanceof XSharedMemoryEvent) {
-                XSharedMemoryEvent w1Shared = (XSharedMemoryEvent) w1;
-                XSharedLvalueMemoryUnit loc = w1Shared.getLoc();
-                //Set<XEvent> writesEventsLoc = mEvents.stream().filter(e -> (e instanceof XStoreMemoryEvent || e instanceof XInitialWriteEvent) && e.getLoc() == loc).collect(Collectors.toSet());
+                XSharedLvalueMemoryUnit w1Loc = ((XSharedMemoryEvent) w1).getLoc();
+                //Set<XEvent> writesEventsLoc = mEvents.stream().filter(e -> (e instanceof XStoreMemoryEvent || e.isInit()) && e.getLoc() == loc).collect(Collectors.toSet());
                 Set<XEvent> writesEventsLoc = new HashSet<>();
                 for (XSharedMemoryEvent e : mEvents) {
-                    if (e instanceof XStoreMemoryEvent || e instanceof XInitialWriteEvent) {
-                        if (e.getLoc() == w1Shared.getLoc()) {
+                    if (e instanceof XStoreMemoryEvent || e.isInit()) {
+                        if (e.getLoc() == w1Loc) {
                             writesEventsLoc.add(e);
                         }
                     }
@@ -469,17 +468,17 @@ public class XProgram2ZformulaEncoder {
         }
 
         for(XSharedMemoryEvent e : mEvents) {
-            if (e instanceof XInitialWriteEvent) {
+            if (e.isInit()) {
                 enc = ctx.mkAnd(enc, ctx.mkEq(Utils.intVar("co", e, ctx), ctx.mkInt(1)));
             }
         }
 
         // todo: merge this with pre-pre loop
         for(XSharedMemoryEvent w1 : mEvents) {
-            if (w1 instanceof XInitialWriteEvent || w1 instanceof XStoreMemoryEvent) {
+            if (w1.isInit() || w1 instanceof XStoreMemoryEvent) {
                 Set<XEvent> writesEventsLoc = new HashSet<>();
                 for (XSharedMemoryEvent e : mEvents) {
-                    if (e instanceof XStoreMemoryEvent || e instanceof XInitialWriteEvent) {
+                    if (e instanceof XStoreMemoryEvent || e.isInit()) {
                         if (e.getLoc() == w1.getLoc()) {
                             writesEventsLoc.add(e);
                         }
@@ -520,12 +519,12 @@ public class XProgram2ZformulaEncoder {
 
         for(XEvent e : mEvents) {
             if (e instanceof XLoadMemoryEvent) {
-                //Set<XEvent> storeEventsLoc = mEvents.stream().filter(x -> (x instanceof XStoreMemoryEvent || x instanceof XInitialWriteEvent) && e.getLoc() == x.getLoc()).collect(Collectors.toSet());
+                //Set<XEvent> storeEventsLoc = mEvents.stream().filter(x -> (x instanceof XStoreMemoryEvent || x.isInit()) && e.getLoc() == x.getLoc()).collect(Collectors.toSet());
                 XLoadMemoryEvent eLoad = (XLoadMemoryEvent) e;
                 XSharedLvalueMemoryUnit eLocation = eLoad.getLoc();
                 Set<XEvent> storeEventsLoc = new HashSet<>();
                 for (XSharedMemoryEvent x : mEvents) {
-                    if ((x instanceof XStoreMemoryEvent || x instanceof XInitialWriteEvent) && eLocation == x.getLoc()) {
+                    if ((x instanceof XStoreMemoryEvent || x.isInit()) && eLocation == x.getLoc()) {
                         storeEventsLoc.add(x);
                     }
                 }

@@ -42,7 +42,7 @@ public class DartagnanModule extends AppModule {
 
         try {
             //todo: solving timeout!
-            int unrollBound = 16; // TODO: get from options
+            int unrollBound = 32; // TODO: get from options
 
             MemoryModel.Kind memoryModelKind = options.sourceModel;
             //MemoryModel memoryModel = memoryModelKind.createModel();
@@ -87,7 +87,9 @@ public class DartagnanModule extends AppModule {
 
             XProgram2ZformulaEncoder encoder = new XProgram2ZformulaEncoder(ctx, unrolledProgram);
 
-            solver.add(encoder.encodeProgram(unrolledProgram));//encodeDF, getAss().encode(), encodeCF, encodeDF_RF, Domain.encode
+            solver.add(encoder.encodeProgram(unrolledProgram));//encodeDF, getAss().encode(), encodeCF, encodeDF_RF
+            //encoder.encodeProgram(unrolledProgram);//encodeDF, getAss().encode(), encodeCF, encodeDF_RF
+            solver.add(encoder.Domain_encode(unrolledProgram));//Domain.encode
             solver.add(unrolledProgram.encodeMM(ctx, memoryModelKind));
             solver.add(unrolledProgram.encodeConsistent(ctx, memoryModelKind));
 

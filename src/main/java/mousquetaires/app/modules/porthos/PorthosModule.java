@@ -67,16 +67,16 @@ public class PorthosModule extends AppModule {
 
             ZFormulaBuilder formulaBuilder = new ZFormulaBuilder(ctx);
 
-            //sourceEncoder.encodeProgram(sourceCompiled);//encodeDF + encodeCF + encodeDF_RF + Domain.encode
-            ////sourceModel.encode(sourceCompiled, ctx, formulaBuilder);//encodeMM
-            //formulaBuilder.addAssert( sourceCompiled.encodeMM(ctx, sourceModelKind) );
-            //formulaBuilder.addAssert( sourceCompiled.encodeConsistent(ctx, sourceModelKind) );
-            //
-            //
-            //BoolExpr formula = formulaBuilder.build();
-            //
-            //Solver solverSource = ctx.mkSolver();
-            //Solver solverTarget = ctx.mkSolver();
+            sourceEncoder.encodeProgram(sourceCompiled);//encodeDF + encodeCF + encodeDF_RF + Domain.encode
+            //sourceModel.encode(sourceCompiled, ctx, formulaBuilder);//encodeMM
+            formulaBuilder.addAssert( sourceCompiled.encodeMM(ctx, sourceModelKind) );
+            formulaBuilder.addAssert( sourceCompiled.encodeConsistent(ctx, sourceModelKind) );
+
+
+            BoolExpr formula = formulaBuilder.build();
+
+            Solver solverSource = ctx.mkSolver();
+            Solver solverTarget = ctx.mkSolver();
 
             //solverSource.add(pTarget.encodeDF(ctx));
             //solverSource.add(pTarget.encodeCF(ctx));

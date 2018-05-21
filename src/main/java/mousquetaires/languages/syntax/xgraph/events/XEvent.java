@@ -5,6 +5,7 @@ import com.microsoft.z3.Context;
 import mousquetaires.languages.common.graph.FlowGraphNode;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.XProcessLocalElement;
+import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.xgraph.visitors.XEventVisitor;
 
 
@@ -25,4 +26,8 @@ public interface XEvent extends FlowGraphNode, XProcessLocalElement, XEntity {
         return String.format("E%s", getInfo().getEventId());
     }
 
+
+    default boolean isInit() {
+        return getProcessId()==XProcessId.PreludeProcessId;
+    }
 }

@@ -2,20 +2,17 @@ package mousquetaires.languages.converters.tozformula.process;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
-import dartagnan.expression.BExpr;
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.converters.tozformula.StaticSingleAssignmentMap;
 import mousquetaires.languages.converters.tozformula.XDataflowEncoder;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
-import mousquetaires.languages.syntax.zformula.ZFormulaBuilder;
-import mousquetaires.utils.exceptions.NotImplementedException;
 
 import java.util.Iterator;
 import java.util.Set;
 
 
-public class XPostludeEncoder implements XProcessEncoder {
+public class XPostludeEncoder implements XFlowGraphEncoder {
 
     private final Context ctx;
     private final StaticSingleAssignmentMap ssaMap;
