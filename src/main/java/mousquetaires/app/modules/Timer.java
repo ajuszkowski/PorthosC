@@ -9,8 +9,12 @@ public class Timer {
         startTime = System.currentTimeMillis();
     }
 
-    public void stop() {
+    public void finish() {
         elapsedTimeSec = (System.currentTimeMillis() - startTime) * 1.0 / 1000;
+    }
+
+    public double getStartTime() {
+        return startTime;
     }
 
     public double getElapsedTimeSec() {

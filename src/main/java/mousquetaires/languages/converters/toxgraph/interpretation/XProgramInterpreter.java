@@ -1,6 +1,6 @@
 package mousquetaires.languages.converters.toxgraph.interpretation;
 
-import mousquetaires.languages.converters.toxgraph.hooks.HookManager;
+import mousquetaires.languages.converters.toxgraph.hooks.XHookManager;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.*;
@@ -70,7 +70,7 @@ public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements 
                 setCurrentProcess(new XPreludeInterpreter(XProcessId.PreludeProcessId, memoryManager));
                 break;
             case ConcurrentProcess:
-                setCurrentProcess(new XProcessInterpreter(processId, memoryManager, new HookManager(this)));
+                setCurrentProcess(new XProcessInterpreter(processId, memoryManager, new XHookManager(this)));
                 break;
             case Postlude:
                 setCurrentProcess(new XPostludeInterpreter(XProcessId.PostludeProcessId, memoryManager));

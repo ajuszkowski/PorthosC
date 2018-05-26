@@ -5,10 +5,12 @@ import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.engine.Renderer;
 import guru.nidi.graphviz.model.Graph;
+import guru.nidi.graphviz.model.Label;
 import guru.nidi.graphviz.model.Link;
 import guru.nidi.graphviz.model.Node;
 import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.common.graph.FlowGraphNode;
+import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.utils.StringUtils;
@@ -32,23 +34,60 @@ public class GraphDumper {
         Graph vizGraph = graph("graph").directed();
 
         //HashMap<Integer, Set<String>> levels = new HashMap<>();
+        Map<T, String> usedLabels=  new HashMap<>();
 
         for (boolean b : FlowGraph.edgeKinds()) {
             for (Map.Entry<T, T> pair : graph.getEdges(b).entrySet()) {
 
                 T from = pair.getKey();
-                String fromName = from.toString() + "\n{" + from.hashCode() + "}";  // TODO: node serializer
-                Node fromNode = node(fromName);
                 T to = pair.getValue();
-                String toName = to.toString()+ "\n{" + to.hashCode() + "}";  // TODO: node serializer
-                Node toNode = node(toName);
+
+                String fromName;
+                if (usedLabels.containsKey(from)) {
+                    fromName = usedLabels.get(from);
+                }
+                else {
+                    fromName = from.toString();
+                    boolean turn = false;
+                    while (usedLabels.containsValue(fromName)) {
+                        fromName = turn
+                                ? " " + fromName
+                                : fromName + " ";
+                        turn = !turn;
+                    }
+                    usedLabels.put(from, fromName);
+                }
+                String toName;
+                if (usedLabels.containsKey(to)) {
+                    toName = usedLabels.get(to);
+                }
+                else {
+                    toName = to.toString();
+                    boolean turn = false;
+                    while (usedLabels.containsValue(toName)) {
+                        toName = turn
+                                ? " " + toName
+                                : toName + " ";
+                        turn = !turn;
+                    }
+                    usedLabels.put(to, toName);
+                }
 
 
-                if (from instanceof XEntryEvent) {
-                    fromNode = fromNode.with(Shape.INV_TRIANGLE).with(Style.FILLED).with("fillcolor", "gray");
+                Node fromNode = node(Label.of(fromName));
+                Node toNode = node(Label.of(toName));
+
+
+
+
+                if (graph.hasChild(!b, from)) {
+                    fromNode = fromNode.with(Style.FILLED).with("fillcolor", "gray87");
+                }
+                else if (from instanceof XEntryEvent) {
+                    fromNode = fromNode.with(Shape.INV_TRIANGLE).with(Style.FILLED).with("fillcolor", "gray37");
                 }
                 if (to instanceof XExitEvent) {
-                    toNode = toNode.with(Shape.TRIANGLE).with(Style.FILLED).with("fillcolor", "gray");
+                    toNode = toNode.with(Shape.TRIANGLE).with(Style.FILLED).with("fillcolor", "gray37");
                 }
 
                 //int toRefId = to.getRefId();
@@ -66,9 +105,9 @@ public class GraphDumper {
 
                 Link edge = to(toNode).with( b ? Style.SOLID : Style.DASHED );
 
-                if (from instanceof XEntryEvent) {
-                    edge = edge.attrs().add("weight", 0);
-                }
+                //if (from instanceof XEntryEvent) {
+                //    edge = edge.attrs().add("weight", 0);
+                //}
 
                 vizGraph = vizGraph.with(fromNode.link(edge));
 

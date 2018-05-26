@@ -1,6 +1,6 @@
 package mousquetaires.languages.converters.toxgraph.interpretation;
 
-import mousquetaires.languages.converters.toxgraph.hooks.HookManager;
+import mousquetaires.languages.converters.toxgraph.hooks.XHookManager;
 import mousquetaires.languages.converters.toxgraph.hooks.XInvocationHookAction;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
@@ -16,7 +16,6 @@ import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import mousquetaires.utils.exceptions.xgraph.XInterpreterUsageError;
 
 import javax.annotation.Nullable;
-import java.awt.image.LookupOp;
 import java.util.*;
 
 import static mousquetaires.utils.StringUtils.wrap;
@@ -24,14 +23,14 @@ import static mousquetaires.utils.StringUtils.wrap;
 
 class XProcessInterpreter extends XInterpreterBase {
 
-    private final HookManager hookManager;
+    private final XHookManager hookManager;
 
     // todo: add add/put methods with non-null checks
     private final Stack<XBlockContext> contextStack;
     private final Deque<XBlockContext> almostReadyContexts;
     private final Deque<XBlockContext> readyContexts;
 
-    XProcessInterpreter(XProcessId processId, XMemoryManager memoryManager, HookManager hookManager) {
+    XProcessInterpreter(XProcessId processId, XMemoryManager memoryManager, XHookManager hookManager) {
         super(processId, memoryManager); //todo: non-uniqueness case
         contextStack = new Stack<>();
         readyContexts = new LinkedList<>();
@@ -149,24 +148,11 @@ class XProcessInterpreter extends XInterpreterBase {
         boolean alreadySetEdgeToNextEvent = false;
         if (!readyContexts.isEmpty()) {
 
+            XEvent nextLinearEvent = nextEvent;
+
             for (XBlockContext context : readyContexts) {
 
                 Set<XEvent> alreadySetEdgeFromLinearEvent = new HashSet<>();
-
-                if (context.kind == BlockKind.Loop) {
-                    if (context.hasBreakEvents()) {
-                        for (XJumpEvent breakingEvent : context.breakingEvents) {
-                            graphBuilder.addEdge(true, breakingEvent, nextEvent);
-                            alreadySetEdgeFromLinearEvent.add(breakingEvent);
-                        }
-                    }
-                    if (context.hasContinueEvents()) {
-                        for (XJumpEvent continueingEvent : context.continueingEvents) {
-                            graphBuilder.addEdge(true, continueingEvent, context.entryEvent);
-                            alreadySetEdgeFromLinearEvent.add(continueingEvent);
-                        }
-                    }
-                }
 
                 if (context.firstThenBranchEvent != null) {
                     switch (context.kind) {
@@ -178,7 +164,6 @@ class XProcessInterpreter extends XInterpreterBase {
                             break;
                         case Loop:
                             graphBuilder.addEdge(true, context.conditionEvent, context.firstThenBranchEvent);
-                            graphBuilder.addEdge(false, context.conditionEvent, nextEvent);
                             alreadySetEdgeToNextEvent = true;
                             break;
                     }
@@ -200,15 +185,24 @@ class XProcessInterpreter extends XInterpreterBase {
                             assert false : "no then-events are allowed for linear statements";
                             break;
                         case Branching:
-                            if (alreadySetEdgeFromLinearEvent.add(context.lastThenBranchEvent)) {
-                                graphBuilder.addEdge(true, context.lastThenBranchEvent, nextEvent);
+                            if (alreadySetEdgeFromLinearEvent.add(context.lastThenBranchEvent)
+                                    && !graphBuilder.hasEdgesFrom(context.lastThenBranchEvent)) {
+                                graphBuilder.addEdge(true, context.lastThenBranchEvent, nextLinearEvent);
                             }
-                            alreadySetEdgeToNextEvent = true;
                             break;
                         case Loop:
-                            if (alreadySetEdgeFromLinearEvent.add(context.lastThenBranchEvent)) {
+                            if (alreadySetEdgeFromLinearEvent.add(context.lastThenBranchEvent)
+                                    && !graphBuilder.hasEdgesFrom(context.lastThenBranchEvent)) {
                                 graphBuilder.addEdge(true, context.lastThenBranchEvent, context.entryEvent);
                             }
+                            break;
+                    }
+                }
+                else {
+                    switch (context.kind){
+                        case Sequential:
+                        case Branching:
+                        case Loop:
                             break;
                     }
                 }
@@ -227,11 +221,10 @@ class XProcessInterpreter extends XInterpreterBase {
                 else {
                     switch (context.kind) {
                         case Sequential:
-                            assert false;
                             break;
                         case Branching:
                         case Loop:
-                            assert false : "every branching statement must have at least one then-event (NOP if none)";
+                            assert false : "every non-linear statement must have at least one then-event (NOP if none)";
                             break;
                     }
                 }
@@ -242,12 +235,32 @@ class XProcessInterpreter extends XInterpreterBase {
                             break;
                         case Branching:
                         case Loop:
-                            if (alreadySetEdgeFromLinearEvent.add(context.lastElseBranchEvent)) {
-                                graphBuilder.addEdge(true, context.lastElseBranchEvent, nextEvent);
+                            if (alreadySetEdgeFromLinearEvent.add(context.lastElseBranchEvent)
+                                    && !graphBuilder.hasEdgesFrom(context.lastElseBranchEvent)) {
+                                graphBuilder.addEdge(true, context.lastElseBranchEvent, nextLinearEvent);
                             }
                             alreadySetEdgeToNextEvent = true;
                             break;
                     }
+                }
+
+                if (context.kind == BlockKind.Loop) {
+                    if (context.hasBreakEvents()) {
+                        for (XJumpEvent breakingEvent : context.breakingEvents) {
+                            graphBuilder.addEdge(true, breakingEvent, nextLinearEvent);
+                            alreadySetEdgeFromLinearEvent.add(breakingEvent);
+                        }
+                    }
+                    if (context.hasContinueEvents()) {
+                        for (XJumpEvent continueingEvent : context.continueingEvents) {
+                            graphBuilder.addEdge(true, continueingEvent, context.entryEvent);
+                            alreadySetEdgeFromLinearEvent.add(continueingEvent);
+                        }
+                    }
+                }
+
+                if (context.kind == BlockKind.Loop) {
+                    nextLinearEvent = context.entryEvent; //for this and others
                 }
             }
             readyContexts.clear();
@@ -276,7 +289,7 @@ class XProcessInterpreter extends XInterpreterBase {
         context.setState(XBlockContext.State.WaitingLastConditionEvent);
         processNextEvent(conditionEvent);
         context.setState(XBlockContext.State.WaitingAdditionalCommand);
-        previousEvent = null;
+        //previousEvent = null;
     }
 
     @Override
@@ -304,27 +317,31 @@ class XProcessInterpreter extends XInterpreterBase {
     public void finishBlockBranchDefinition() {
         XBlockContext context = contextStack.peek();
         assert context.currentBranchKind != null;
-        if (previousEvent != context.conditionEvent) {
+        assert previousEvent != context.conditionEvent : previousEvent;
+        if (previousEvent != null) {
             switch (context.currentBranchKind) {
                 case Then:
                     assert context.lastThenBranchEvent == null;
                     context.lastThenBranchEvent = previousEvent;
-                    if (context.firstThenBranchEvent == null) { //TODO: kostyl?
-                        context.firstThenBranchEvent = previousEvent;
-                    }
+                    //if (context.firstThenBranchEvent == null) {
+                    //    context.firstThenBranchEvent = previousEvent;
+                    //}
                     break;
                 case Else:
                     assert context.lastElseBranchEvent == null;
                     context.lastElseBranchEvent = previousEvent;
-                    if (context.firstElseBranchEvent == null) { //TODO: kostyl?
-                        context.firstElseBranchEvent = previousEvent;
-                    }
+                    //if (context.firstElseBranchEvent == null) {
+                    //    context.firstElseBranchEvent = previousEvent;
+                    //}
                     break;
             }
         }
+        else {
+            int a =2;
+        }
         context.currentBranchKind = null;
         context.setState(XBlockContext.State.WaitingAdditionalCommand);
-        previousEvent = null; //todo: check
+        //previousEvent = null;
     }
 
 
@@ -335,13 +352,12 @@ class XProcessInterpreter extends XInterpreterBase {
         //context.setState(XBlockContext.State.Idle);
         context.setState(XBlockContext.State.WaitingNextLinearEvent);
         almostReadyContexts.addFirst(context);
-        previousEvent = null; //not to set too many linear jumps: e.g. `if (a) { while(b) do1(); } do2();`
 
         if (!almostReadyContexts.isEmpty()) {
             readyContexts.addAll(almostReadyContexts);
             almostReadyContexts.clear();
         }
-        previousEvent = null;
+        //previousEvent = null; //not to set too many linear jumps: e.g. `if (a) { while(b) do1(); } do2();`
     }
 
     @Override

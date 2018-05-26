@@ -1,78 +1,70 @@
 package mousquetaires.app.modules;
 
+import com.google.common.collect.ImmutableMap;
 import mousquetaires.app.errors.AppError;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
 public abstract class AppVerdict {
 
-    private final Timer interpretationTimer;
-    private final Timer unrollingTimer;
-    private final Timer programEncodingTimer;
-    private final Timer memoryModelEncodingTimer;
-    private final Timer solvingTimer;
+    public enum ProgramStage {
+        Interpretation,
+        Unrolling,
+        ProgramEncoding,
+        ProgramDomainEncoding,
+        MemoryModelEncoding,
+        Solving,
+        ;
+
+        private String separatedByCapitals() {
+            String name = this.toString();
+            StringBuilder res = new StringBuilder();
+            res.append(name.charAt(0));
+            for(int i = 1; i < name.length(); i++) {
+                Character ch = name.charAt(i);
+                if(Character.isUpperCase(ch))
+                    res.append(" ").append(Character.toLowerCase(ch));
+                else
+                    res.append(ch);
+            }
+            return res.toString();
+        }
+    }
+
+    private final Timer mainTimer;
+    private final ImmutableMap<ProgramStage, Timer> timers;
 
     private final List<AppError> errors;
 
     public AppVerdict() {
-        this.interpretationTimer = new Timer();
-        this.unrollingTimer = new Timer();
-        this.programEncodingTimer = new Timer();
-        this.memoryModelEncodingTimer = new Timer();
-        this.solvingTimer = new Timer();
+        this.mainTimer = new Timer();
+        HashMap<ProgramStage, Timer> timersValues = new HashMap<>();
+        for (ProgramStage programStage : ProgramStage.values()) {
+            timersValues.put(programStage, new Timer());
+        }
+        this.timers = ImmutableMap.copyOf(timersValues);
         this.errors = new ArrayList<>();
     }
 
-    public void onStartInterpretation() {
-        System.out.println("Interpreting...");
-        interpretationTimer.start();
+    public void startAll() {
+        mainTimer.start();
     }
 
-    public void onFinishInterpretation() {
-        interpretationTimer.stop();
+    public void onStart(ProgramStage stage) {
+        String currentTime = String.format("%.3f: ", ((System.currentTimeMillis() - mainTimer.getStartTime()) / 1000));
+        System.out.println( currentTime + stage.separatedByCapitals() + "...");
+        timers.get(stage).start();
     }
 
-
-    public void onStartUnrolling() {
-        System.out.println("Unrolling...");
-        unrollingTimer.start();
+    public void onFinish(ProgramStage stage) {
+        timers.get(stage).finish();
     }
 
-    public void onFinishUnrolling() {
-        unrollingTimer.stop();
-    }
-
-
-    public void onStartProgramEncoding() {
-        System.out.println("Program encoding...");
-        programEncodingTimer.start();
-    }
-
-    public void onFinishProgramEncoding() {
-        programEncodingTimer.stop();
-    }
-
-
-
-    public void onStartModelEncoding() {
-        System.out.println("Memory model encoding...");
-        memoryModelEncodingTimer.start();
-    }
-
-    public void onFinishModelEncoding() {
-        memoryModelEncodingTimer.stop();
-    }
-
-
-    public void onStartSolving() {
-        System.out.println("Solving...");
-        solvingTimer.start();
-    }
-
-    public void onFinishSolving() {
-        solvingTimer.stop();
+    public void finishAll() {
+        mainTimer.finish();
     }
 
 
@@ -89,4 +81,5 @@ public abstract class AppVerdict {
     }
 
     // TODO: store original SMT formula here + num of iterations
+
 }

@@ -65,19 +65,19 @@ public class XProgram2ZformulaEncoder {
             enc = ctx.mkAnd(enc, encoder.encodeProcessRFRelation(process));
         }
 
-        //enc = ctx.mkAnd(enc, Domain_encode(program));
-
         return enc;
     }
 
     public BoolExpr Domain_encode(XProgram program) {
         BoolExpr enc = ctx.mkTrue();
 
-        System.out.println("#=" + program.getMemoryEvents().size());
+        //System.out.println(String.format("#=%d(%d)", program.getAllEvents().size(), program.getMemoryEvents().size()));
 
         ImmutableSet<XSharedMemoryEvent> mEvents = program.getSharedMemoryEvents();
         ImmutableSet<XBarrierEvent> barriers = program.getBarrierEvents();
         ImmutableSet<XMemoryEvent> eventsL = program.getMemoryEvents(); //(o1, o2) -> o1.toString().compareTo(o2.toString())
+
+        System.out.println(String.format("#=%d (%d)", eventsL.size(), mEvents.size()));
 
         for(XMemoryEvent e : eventsL) {
             enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("ii", e, e, ctx)));
@@ -521,6 +521,7 @@ public class XProgram2ZformulaEncoder {
             }
         }
 
+        // RF construction
         for(XEvent e : mEvents) {
             if (e instanceof XLoadMemoryEvent) {
                 //Set<XEvent> storeEventsLoc = mEvents.stream().filter(x -> (x instanceof XStoreMemoryEvent || x.isInit()) && e.getLoc() == x.getLoc()).collect(Collectors.toSet());

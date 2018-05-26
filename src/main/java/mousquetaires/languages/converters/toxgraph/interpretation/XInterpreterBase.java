@@ -190,6 +190,7 @@ abstract class XInterpreterBase implements XInterpreter {
 
     // --
 
+    // TODO: should be in visitor
     @Override
     public XComputationEvent tryEvaluateComputation(XEntity entity) {
         XLocalMemoryUnit localUnit = null;
@@ -202,6 +203,7 @@ abstract class XInterpreterBase implements XInterpreter {
         else if (entity instanceof XSharedMemoryUnit) {
             localUnit = tryConvertToLocalOrNull(entity);
         }
+
         if (localUnit == null) {
             throw new IllegalStateException("Could not convert x-entity to local memory unit: " + wrap(entity));
         }

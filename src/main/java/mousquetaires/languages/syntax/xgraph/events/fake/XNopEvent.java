@@ -27,6 +27,6 @@ public final class XNopEvent extends XEmptyEventBase implements XFakeEvent {
 
     @Override
     public String toString() {
-        return wrapWithBracketsAndDepth("nop");
+        return wrapWithBracketsAndDepth("nop"+getInfo().getEventId()+"()");
     }
 }

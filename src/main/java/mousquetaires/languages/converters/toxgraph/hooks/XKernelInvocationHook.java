@@ -8,9 +8,11 @@ import mousquetaires.utils.exceptions.xgraph.XMethodInvocationError;
 import static mousquetaires.utils.StringUtils.wrap;
 
 
-class KernelInvocationHook extends InvocationHookBase implements InvocationHook {
+class XKernelInvocationHook
+        extends XInvocationHookBase
+        implements XInvocationHook {
 
-    KernelInvocationHook(XProgramInterpreter program) {
+    XKernelInvocationHook(XProgramInterpreter program) {
         super(program);
     }
 

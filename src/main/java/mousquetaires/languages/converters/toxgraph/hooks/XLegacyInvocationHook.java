@@ -12,14 +12,13 @@ import mousquetaires.utils.exceptions.xgraph.XMethodInvocationError;
 import static mousquetaires.utils.StringUtils.wrap;
 
 
-// TODO: rename to XPorthosInvocationHook
-class HardwareInvocationHook extends InvocationHookBase implements InvocationHook {
+class XLegacyInvocationHook extends XInvocationHookBase implements XInvocationHook {
 
 
     // FOR DEBUG ONLY: THIS MUST BE A TYPE-CHECK! For now, the code is just a map from the old code.
     private final ImmutableList<String> valid_atomics = ImmutableList.of("_sc", "_rx", "memory_order_relaxed", "_na", "_rel" );
 
-    HardwareInvocationHook(XProgramInterpreter program) {
+    XLegacyInvocationHook(XProgramInterpreter program) {
         super(program);
     }
 

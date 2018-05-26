@@ -6,22 +6,22 @@ import mousquetaires.languages.converters.toxgraph.interpretation.XProgramInterp
 import java.util.HashSet;
 
 
-public class HookManager implements InvocationHook {
+public class XHookManager implements XInvocationHook {
 
-    private final ImmutableSet<InvocationHook> registeredHooks;
+    private final ImmutableSet<XInvocationHook> registeredHooks;
 
     // TODO: accept the settings structure as argument for DISABLING unnecessary type processors (without doing this, may be unwanted errors)
-    public HookManager(XProgramInterpreter program) {
+    public XHookManager(XProgramInterpreter program) {
         this.registeredHooks = ImmutableSet.copyOf(
-                new HashSet<InvocationHook>() {{
-                    add(new HardwareInvocationHook(program));
-                    add(new KernelInvocationHook(program));
+                new HashSet<XInvocationHook>() {{
+                    add(new XLegacyInvocationHook(program));
+                    add(new XKernelInvocationHook(program));
                 }});
     }
 
     @Override
     public XInvocationHookAction tryInterceptInvocation(String methodName) {
-        for (InvocationHook hook : registeredHooks) {
+        for (XInvocationHook hook : registeredHooks) {
             XInvocationHookAction result = hook.tryInterceptInvocation(methodName);
             if (result != null) {
                 return result;
