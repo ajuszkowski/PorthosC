@@ -51,11 +51,11 @@ import java.util.List;
 import static mousquetaires.utils.StringUtils.wrap;
 
 
-public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
+public class Y2XConverterVisitor implements YtreeVisitor<XEntity> {
 
     private final XProgramInterpreter program;
 
-    public Ytree2XgraphConverterVisitor(XProgramInterpreter program) {
+    public Y2XConverterVisitor(XProgramInterpreter program) {
         this.program = program;
     }
 

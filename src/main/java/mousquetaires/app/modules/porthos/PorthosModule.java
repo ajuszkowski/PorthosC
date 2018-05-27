@@ -9,7 +9,7 @@ import mousquetaires.app.modules.AppModule;
 import mousquetaires.app.modules.AppVerdict;
 import mousquetaires.languages.InputExtensions;
 import mousquetaires.languages.InputLanguage;
-import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
+import mousquetaires.languages.converters.toxgraph.Y2XConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.converters.tozformula.XProgram2ZformulaEncoder;
 import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
@@ -157,7 +157,7 @@ public class PorthosModule extends AppModule {
 
     private XProgram compile(YSyntaxTree yTree, MemoryModel.Kind memoryModelKind, int unrollBound, PorthosVerdict verdict) {
         verdict.onStart(AppVerdict.ProgramStage.Unrolling);
-        Ytree2XgraphConverter yConverter = new Ytree2XgraphConverter(memoryModelKind);
+        Y2XConverter yConverter = new Y2XConverter(memoryModelKind);
         XCyclicProgram program = yConverter.convert(yTree);
         XProgram result = XProgramTransformer.unroll(program, unrollBound);
         verdict.onFinish(AppVerdict.ProgramStage.Unrolling);

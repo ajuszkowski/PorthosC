@@ -3,9 +3,8 @@ package mousquetaires.tests.unit.languages.converters.toxgraph;
 import mousquetaires.languages.InputExtensions;
 import mousquetaires.languages.InputLanguage;
 import mousquetaires.languages.converters.InputParserBase;
-import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
+import mousquetaires.languages.converters.toxgraph.Y2XConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
-import mousquetaires.languages.syntax.xgraph.datamodels.DataModel;
 import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
 import mousquetaires.languages.syntax.xgraph.program.XProgramBase;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
@@ -31,7 +30,7 @@ public abstract class C11ToXgraph_UnitTestBase extends AbstractConverterUnitTest
             InputLanguage language = InputExtensions.parseProgramLanguage(file.getName());
             InputParserBase parser = new YtreeParser(file, language);
             YSyntaxTree internalRepr = parser.parseFile();
-            Ytree2XgraphConverter converter = new Ytree2XgraphConverter(memoryModel());
+            Y2XConverter converter = new Y2XConverter(memoryModel());
             XProgramBase program = converter.convert(internalRepr);
             return program.getProcesses().iterator(); //TODO: fix this Unchecked assignment!
         } catch (IOException e) {

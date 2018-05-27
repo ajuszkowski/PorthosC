@@ -10,12 +10,9 @@ import mousquetaires.app.modules.AppModule;
 import mousquetaires.app.modules.AppVerdict;
 import mousquetaires.languages.InputExtensions;
 import mousquetaires.languages.InputLanguage;
-import mousquetaires.languages.common.graph.render.GraphDumper;
-import mousquetaires.languages.converters.toxgraph.Ytree2XgraphConverter;
+import mousquetaires.languages.converters.toxgraph.Y2XConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.converters.tozformula.XProgram2ZformulaEncoder;
-import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
-import mousquetaires.languages.syntax.xgraph.process.XProcess;
 import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
 import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
@@ -55,7 +52,7 @@ public class DartagnanModule extends AppModule {
             YtreeParser parser = new YtreeParser(inputProgramFile, language);
             YSyntaxTree yTree = parser.parseFile();
 
-            Ytree2XgraphConverter yConverter = new Ytree2XgraphConverter(memoryModelKind);
+            Y2XConverter yConverter = new Y2XConverter(memoryModelKind);
 
             verdict.onStart(AppVerdict.ProgramStage.Interpretation);
             XCyclicProgram program = yConverter.convert(yTree);
