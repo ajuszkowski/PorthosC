@@ -1,14 +1,14 @@
 package mousquetaires.languages.syntax.wmodel.relations;
 
 import com.google.common.collect.ImmutableMap;
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.wmodel.visitors.WmodelVisitor;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 
 
 public class WRelationProgramOrder extends WRelationBase implements WRelationStatic {
 
-    public WRelationProgramOrder(CodeLocation origin, ImmutableMap<XEvent, XEvent> values) {
+    public WRelationProgramOrder(Origin origin, ImmutableMap<XEvent, XEvent> values) {
         super(origin, "po", false, values);
     }
 

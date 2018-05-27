@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.temporaries;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
@@ -13,7 +13,7 @@ public interface YTempEntity extends YEntity {
     }
 
     @Override
-    default CodeLocation codeLocation() {
+    default Origin codeLocation() {
         throw new UnsupportedOperationException();
     }
 }

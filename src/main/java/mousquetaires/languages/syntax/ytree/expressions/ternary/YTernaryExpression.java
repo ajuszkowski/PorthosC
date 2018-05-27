@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.expressions.ternary;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
@@ -8,7 +8,7 @@ import mousquetaires.utils.exceptions.NotSupportedException;
 
 public class YTernaryExpression extends YMultiExpression {
 
-    public YTernaryExpression(CodeLocation location,
+    public YTernaryExpression(Origin location,
                               YExpression condition,
                               YExpression trueExpression,
                               YExpression falseExpression) {

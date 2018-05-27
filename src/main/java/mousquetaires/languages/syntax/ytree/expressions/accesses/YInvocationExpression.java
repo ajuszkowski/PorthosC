@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.ytree.expressions.accesses;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
@@ -17,11 +17,11 @@ public class YInvocationExpression extends YMultiExpression  {
     //public YInvocationExpression(YExpression baseExpression, YExpression... arguments) {
     //    this(baseExpression, ImmutableList.copyOf(arguments));
     //}
-    public YInvocationExpression(CodeLocation location, YExpression baseExpression, ImmutableList<YExpression> arguments) {
+    public YInvocationExpression(Origin location, YExpression baseExpression, ImmutableList<YExpression> arguments) {
         this(location, baseExpression, arguments, 0);
     }
 
-    private YInvocationExpression(CodeLocation location, YExpression baseExpression, ImmutableList<YExpression> arguments, int pointerLevel) {
+    private YInvocationExpression(Origin location, YExpression baseExpression, ImmutableList<YExpression> arguments, int pointerLevel) {
         super(location, pointerLevel, ImmutableUtils.append(baseExpression, arguments));
         this.elementsCount = arguments.size() + 1;
     }

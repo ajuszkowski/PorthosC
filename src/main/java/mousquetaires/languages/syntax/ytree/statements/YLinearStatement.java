@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.statements;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
@@ -15,7 +15,7 @@ public class YLinearStatement extends YStatement {
         this(expression.codeLocation(), newLabel(), expression);
     }
 
-    private YLinearStatement(CodeLocation location, String label, YExpression expression) {
+    private YLinearStatement(Origin location, String label, YExpression expression) {
         super(location, label);
         assert expression != null;//TODO: add non-null asserts everywhere
         this.expression = expression;

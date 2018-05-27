@@ -1,14 +1,14 @@
 package mousquetaires.languages.syntax.wmodel;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 
 
 public abstract class WEntityBase implements WEntity {
 
-    private final CodeLocation origin;
+    private final Origin origin;
     private final boolean containsRecursion;
 
-    public WEntityBase(CodeLocation origin, boolean containsRecursion) {
+    public WEntityBase(Origin origin, boolean containsRecursion) {
         this.origin = origin;
         this.containsRecursion = containsRecursion;
     }
@@ -19,7 +19,7 @@ public abstract class WEntityBase implements WEntity {
     }
 
     @Override
-    public CodeLocation origin() {
+    public Origin origin() {
         return origin;
     }
 }

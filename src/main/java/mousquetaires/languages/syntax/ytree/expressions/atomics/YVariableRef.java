@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 import java.util.Objects;
@@ -11,15 +11,15 @@ public class YVariableRef extends YAtomBase {
 
     private final String name;
 
-    public YVariableRef(CodeLocation location, String name) {
+    public YVariableRef(Origin location, String name) {
         this(location, Kind.Local, name, 0);
     }
 
-    protected YVariableRef(CodeLocation location, String name, int pointerLevel) {
+    protected YVariableRef(Origin location, String name, int pointerLevel) {
         this(location, Kind.Local, name, pointerLevel);
     }
 
-    private YVariableRef(CodeLocation location, Kind kind, String name, int pointerLevel) {
+    private YVariableRef(Origin location, Kind kind, String name, int pointerLevel) {
         super(location, kind, pointerLevel);
         this.name = name;
     }

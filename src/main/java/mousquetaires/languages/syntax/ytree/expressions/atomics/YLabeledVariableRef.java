@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 import mousquetaires.utils.exceptions.NotSupportedException;
 
@@ -11,11 +11,11 @@ public class YLabeledVariableRef extends YVariableRef {
 
     private final String label;
 
-    public YLabeledVariableRef(CodeLocation location, String label, String name) {
+    public YLabeledVariableRef(Origin location, String label, String name) {
         this(location, label, name, 0);
     }
 
-    private YLabeledVariableRef(CodeLocation location, String label, String name, int pointerLevel) {
+    private YLabeledVariableRef(Origin location, String label, String name, int pointerLevel) {
         super(location, name, pointerLevel);
         this.label = label;
     }

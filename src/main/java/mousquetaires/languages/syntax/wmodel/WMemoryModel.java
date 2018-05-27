@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.wmodel;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.wmodel.visitors.WmodelVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
@@ -18,7 +18,7 @@ public class WMemoryModel implements WEntity {
     }
 
     @Override
-    public CodeLocation origin() {
+    public Origin origin() {
         throw new NotImplementedException();
     }
 }

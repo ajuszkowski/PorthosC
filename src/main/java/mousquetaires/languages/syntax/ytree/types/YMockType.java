@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.types;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
@@ -23,8 +23,8 @@ public class YMockType implements YType {
     }
 
     @Override
-    public CodeLocation codeLocation() {
-        return CodeLocation.empty;
+    public Origin codeLocation() {
+        return Origin.empty;
     }
 
     @Override

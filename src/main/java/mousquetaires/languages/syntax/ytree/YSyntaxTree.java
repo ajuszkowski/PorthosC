@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.ytree;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 import java.util.Collection;
@@ -9,19 +9,19 @@ import java.util.Collection;
 
 public class YSyntaxTree implements YEntity {
 
-    private final CodeLocation location;
+    private final Origin location;
     private final ImmutableList<YEntity> roots;
 
-    public YSyntaxTree(CodeLocation location, ImmutableList<YEntity> roots) {
+    public YSyntaxTree(Origin location, ImmutableList<YEntity> roots) {
         this.roots = roots;
         this.location = location;
     }
-    public YSyntaxTree(CodeLocation location, YEntity... statements) {
+    public YSyntaxTree(Origin location, YEntity... statements) {
 
         this(location, ImmutableList.copyOf(statements));
     }
 
-    public YSyntaxTree(CodeLocation location, Collection<YEntity> statements) {
+    public YSyntaxTree(Origin location, Collection<YEntity> statements) {
         this(location, ImmutableList.copyOf(statements));
     }
 
@@ -30,7 +30,7 @@ public class YSyntaxTree implements YEntity {
     }
 
     @Override
-    public CodeLocation codeLocation() {
+    public Origin codeLocation() {
         return location;
     }
 

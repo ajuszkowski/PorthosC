@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 import mousquetaires.utils.exceptions.ArgumentNullException;
 import mousquetaires.utils.exceptions.NotSupportedException;
@@ -12,7 +12,7 @@ public class YConstant extends YAtomBase {
 
     private final Object value;
 
-    private YConstant(CodeLocation location, Object value) {
+    private YConstant(Origin location, Object value) {
         super(location, Kind.Global);
         this.value = value;
     }
@@ -40,15 +40,15 @@ public class YConstant extends YAtomBase {
 
 
     public static YConstant fromValue(int value) {
-        return new YConstant(CodeLocation.empty, value); //YTypeFactory.getPrimitiveType(YTypeName.Int));
+        return new YConstant(Origin.empty, value); //YTypeFactory.getPrimitiveType(YTypeName.Int));
     }
 
     public static YConstant fromValue(boolean value) {
-        return new YConstant(CodeLocation.empty, value); //YTypeFactory.getPrimitiveType(YTypeName.Bool));
+        return new YConstant(Origin.empty, value); //YTypeFactory.getPrimitiveType(YTypeName.Bool));
     }
 
     public static YConstant fromValue(float value) {
-        return new YConstant(CodeLocation.empty, value); //YTypeFactory.getPrimitiveType(YTypeName.Float));
+        return new YConstant(Origin.empty, value); //YTypeFactory.getPrimitiveType(YTypeName.Float));
     }
 
     public static YConstant tryParse(String text) {

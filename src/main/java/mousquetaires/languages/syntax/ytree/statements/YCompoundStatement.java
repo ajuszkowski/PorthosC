@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.ytree.statements;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 import java.util.Objects;
@@ -13,19 +13,19 @@ public class YCompoundStatement extends YStatement {
     private final boolean hasBraces; // defines whether sequence of statements has surrounding braces '{' '}'
     private final ImmutableList<YStatement> statements; // <- recursive
 
-    public YCompoundStatement(CodeLocation location, YStatement... statements) {
+    public YCompoundStatement(Origin location, YStatement... statements) {
         this(location, true, statements);
     }
 
-    public YCompoundStatement(CodeLocation location, boolean hasBraces, YStatement... statements) {
+    public YCompoundStatement(Origin location, boolean hasBraces, YStatement... statements) {
         this(location, hasBraces, ImmutableList.copyOf(statements));
     }
 
-    public YCompoundStatement(CodeLocation location, boolean hasBraces, ImmutableList<YStatement> statements) {
+    public YCompoundStatement(Origin location, boolean hasBraces, ImmutableList<YStatement> statements) {
         this(location, "", hasBraces, statements);
     }
 
-    private YCompoundStatement(CodeLocation location, String label, boolean hasBraces, ImmutableList<YStatement> statements) {
+    private YCompoundStatement(Origin location, String label, boolean hasBraces, ImmutableList<YStatement> statements) {
         super(location, label);
         this.statements = statements;
         this.hasBraces = hasBraces;

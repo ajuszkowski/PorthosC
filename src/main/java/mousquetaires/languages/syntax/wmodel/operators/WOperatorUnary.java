@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.wmodel.operators;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.wmodel.WEntity;
 import mousquetaires.languages.syntax.wmodel.WOperator;
 import mousquetaires.languages.syntax.wmodel.visitors.WmodelVisitor;
@@ -10,7 +10,7 @@ public class WOperatorUnary extends WOperatorBase {
 
     private final WEntity operand;
 
-    private WOperatorUnary(CodeLocation origin,
+    private WOperatorUnary(Origin origin,
                            WOperatorUnary.Kind kind,
                            WEntity operand) {
         super(origin, operand.containsRecursion(), kind);
@@ -55,7 +55,7 @@ public class WOperatorUnary extends WOperatorBase {
             }
         }
 
-        public WOperator create(CodeLocation origin, WEntity operand) {
+        public WOperator create(Origin origin, WEntity operand) {
             return new WOperatorUnary(origin, this, operand);
         }
     }

@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.statements;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
@@ -14,14 +14,14 @@ public class YBranchingStatement extends YStatement {  // TODO: inherit from YJu
     private final YStatement thenBranch;
     @Nullable private final YStatement elseBranch;
 
-    public YBranchingStatement(CodeLocation location,
+    public YBranchingStatement(Origin location,
                                YExpression condition,
                                YStatement thenBranch,
                                YStatement elseBranch) {
         this(location, newLabel(), condition, thenBranch, elseBranch);
     }
 
-    private YBranchingStatement(CodeLocation location,
+    private YBranchingStatement(Origin location,
                                 String label,
                                 YExpression condition,
                                 YStatement thenBranch,

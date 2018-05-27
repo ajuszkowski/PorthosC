@@ -2,7 +2,7 @@ package mousquetaires.languages.converters.toytree.c11;
 
 import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.common.citation.CodeCitationService;
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.parsers.C11Parser;
 import mousquetaires.languages.parsers.C11Visitor;
 import mousquetaires.languages.syntax.ytree.YEntity;
@@ -34,7 +34,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static mousquetaires.utils.StringUtils.wrap;
@@ -797,7 +796,7 @@ class C2YtreeConverterVisitor
                     YAtom assignee = assignment.getAssignee();
                     if (assignee instanceof YVariableRef) {
                         YVariableRef variable = (YVariableRef) assignee;
-                        CodeLocation declarationLocation = location(initDeclaratorListContext);
+                        Origin declarationLocation = location(initDeclaratorListContext);
                         statements.add(new YVariableDeclarationStatement(declarationLocation, type, variable));
                         statements.add(new YLinearStatement(new YAssignmentExpression(assignment.codeLocation(), variable, value)));
                     }
@@ -1909,7 +1908,7 @@ class C2YtreeConverterVisitor
     }
 
 
-    private CodeLocation location(ParserRuleContext ctx) {
+    private Origin location(ParserRuleContext ctx) {
         return citationService.getLocation(ctx);
     }
 }

@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.wmodel.operators;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.wmodel.WEntity;
 import mousquetaires.languages.syntax.wmodel.WOperator;
 import mousquetaires.languages.syntax.wmodel.visitors.WmodelVisitor;
@@ -12,7 +12,7 @@ public class WOperatorBinary extends WOperatorBase {
 
     private final WEntity operandRight;
 
-    private WOperatorBinary(CodeLocation origin,
+    private WOperatorBinary(Origin origin,
                             WOperatorBinary.Kind kind,
                             WEntity operandLeft,
                             WEntity operandRight) {
@@ -62,7 +62,7 @@ public class WOperatorBinary extends WOperatorBase {
             }
         }
 
-        public WOperator create(CodeLocation origin, WEntity operandLeft, WEntity operandRight) {
+        public WOperator create(Origin origin, WEntity operandLeft, WEntity operandRight) {
             return new WOperatorBinary(origin, this, operandLeft, operandRight);
         }
     }

@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.ytree.types;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
@@ -36,8 +36,8 @@ public class YMethodSignature implements YEntity {
     }
 
     @Override
-    public CodeLocation codeLocation() {
-        return CodeLocation.empty; //TODO: method signature must not be a YEntity! this is a common class used by all representations!
+    public Origin codeLocation() {
+        return Origin.empty; //TODO: method signature must not be a YEntity! this is a common class used by all representations!
     }
 
     @Override

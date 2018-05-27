@@ -1,6 +1,6 @@
 package mousquetaires.tests.unit.languages.converters.toytree.c11.statements;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
 import mousquetaires.languages.syntax.ytree.types.YMockType;
@@ -9,7 +9,7 @@ import mousquetaires.tests.unit.languages.converters.toytree.C2Ytree_UnitTestBas
 
 
 public abstract class C2Ytree_Statement_UnitTest extends C2Ytree_UnitTestBase {
-    protected final CodeLocation location = CodeLocation.empty;
+    protected final Origin location = Origin.empty;
 
     // shortcuts necessary for tests
     protected YVariableRef variableX = createVariable("x");

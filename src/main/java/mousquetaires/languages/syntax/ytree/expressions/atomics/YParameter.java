@@ -1,17 +1,17 @@
 package mousquetaires.languages.syntax.ytree.expressions.atomics;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 
 public class YParameter implements YAtom {
 
-    private final CodeLocation location;
+    private final Origin location;
     private final YType type;
     private final YVariableRef variable;
 
-    public YParameter(CodeLocation location, YType type, YVariableRef variable) {
+    public YParameter(Origin location, YType type, YVariableRef variable) {
         this.location = location;
         this.variable = variable.asGlobal();
         this.type = type;
@@ -41,7 +41,7 @@ public class YParameter implements YAtom {
     }
 
     @Override
-    public CodeLocation codeLocation() {
+    public Origin codeLocation() {
         return location;
     }
 

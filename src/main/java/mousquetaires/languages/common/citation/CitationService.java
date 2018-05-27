@@ -15,14 +15,14 @@ public class CodeCitationService {
         this.input = input;
     }
 
-    public CodeLocation getLocation(ParserRuleContext ctx) {
+    public Origin getLocation(ParserRuleContext ctx) {
         int start = ctx.getStart().getTokenIndex();
         int stop = ctx.stop.getTokenIndex();
-        return new CodeLocation(file, start, stop);
+        return new Origin(file, start, stop);
     }
 
-    public String getCitation(CodeLocation codeLocation) {
-        Interval interval = new Interval(codeLocation.start(), codeLocation.end());
+    public String getCitation(Origin origin) {
+        Interval interval = new Interval(origin.start(), origin.end());
         return input.getText(interval);
     }
 }

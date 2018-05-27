@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.statements;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
@@ -13,11 +13,11 @@ public class YWhileLoopStatement extends YStatement {
     private final YStatement body;
 
 
-    public YWhileLoopStatement(CodeLocation location, YExpression condition, YStatement body) {
+    public YWhileLoopStatement(Origin location, YExpression condition, YStatement body) {
         this(location, newLabel(), condition, body);
     }
 
-    private YWhileLoopStatement(CodeLocation location, String label, YExpression condition, YStatement body) {
+    private YWhileLoopStatement(Origin location, String label, YExpression condition, YStatement body) {
         super(location, label);
         this.condition = condition;
         this.body = body;

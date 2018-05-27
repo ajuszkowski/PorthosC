@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.temporaries;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YStatement;
 import mousquetaires.utils.patterns.Builder;
@@ -10,10 +10,10 @@ public class YBlockFILOTemp
         extends YQueueFILOTemp<YStatement>
         implements Builder<YCompoundStatement>, YTempEntity {
 
-    private final CodeLocation blockLocation;
+    private final Origin blockLocation;
     private boolean hasBraces;
 
-    public YBlockFILOTemp(CodeLocation blockLocation) {
+    public YBlockFILOTemp(Origin blockLocation) {
         this.blockLocation = blockLocation;
     }
 

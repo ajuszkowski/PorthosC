@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.statements;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YVariableRef;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
@@ -13,11 +13,11 @@ public class YVariableDeclarationStatement extends YStatement {
     private final YType type;
     private final YVariableRef variable;
 
-    public YVariableDeclarationStatement(CodeLocation location, YType type, YVariableRef variable) {
+    public YVariableDeclarationStatement(Origin location, YType type, YVariableRef variable) {
         this(location, newLabel(), type, variable);
     }
 
-    private YVariableDeclarationStatement(CodeLocation location, String label, YType type, YVariableRef variable) {
+    private YVariableDeclarationStatement(Origin location, String label, YType type, YVariableRef variable) {
         super(location, label);
         this.type = type;
         this.variable = variable;

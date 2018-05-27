@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.definitions;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
@@ -10,11 +10,11 @@ import java.util.Objects;
 
 
 public class YFunctionDefinition implements YDefinition {
-    private final CodeLocation location;
+    private final Origin location;
     private final YMethodSignature signature;
     private final YCompoundStatement body;
 
-    public YFunctionDefinition(CodeLocation location, YMethodSignature signature, YCompoundStatement body) {
+    public YFunctionDefinition(Origin location, YMethodSignature signature, YCompoundStatement body) {
         this.location = location;
         this.signature = signature;
         this.body = body;
@@ -29,7 +29,7 @@ public class YFunctionDefinition implements YDefinition {
     }
 
     @Override
-    public CodeLocation codeLocation() {
+    public Origin codeLocation() {
         return location;
     }
 

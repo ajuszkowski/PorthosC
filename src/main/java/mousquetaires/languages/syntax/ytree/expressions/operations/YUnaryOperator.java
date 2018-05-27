@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.expressions.operations;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YOperator;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
@@ -37,7 +37,7 @@ public enum YUnaryOperator implements YOperator {
         return visitor.visit(this);
     }
 
-    public YUnaryExpression createExpression(CodeLocation location, YExpression baseExpression) {
+    public YUnaryExpression createExpression(Origin location, YExpression baseExpression) {
         return new YUnaryExpression(location, this, baseExpression);
     }
 

@@ -1,12 +1,12 @@
 package mousquetaires.languages.common.citation;
 
-public class CodeLocation {
+public class Origin {
 
     private final String file;
     private final int startIndex;
     private final int endIndex;
 
-    public CodeLocation(String file, int startIndex, int endIndex) {
+    public Origin(String file, int startIndex, int endIndex) {
         this.file = file;
         this.startIndex = startIndex;
         this.endIndex = endIndex;
@@ -20,5 +20,5 @@ public class CodeLocation {
         return endIndex;
     }
 
-    public static final CodeLocation empty = new CodeLocation("", -1, -1);
+    public static final Origin empty = new Origin("", -1, -1);
 }

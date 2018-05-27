@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.wmodel.relations;
 
 import com.google.common.collect.ImmutableMap;
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.wmodel.WElementBase;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 
@@ -10,7 +10,7 @@ public abstract class WRelationBase extends WElementBase {
 
     private final ImmutableMap<XEvent, XEvent> values;
 
-    WRelationBase(CodeLocation origin,
+    WRelationBase(Origin origin,
                   String name,
                   boolean containsRecursion,
                   ImmutableMap<XEvent, XEvent> values) {

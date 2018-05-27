@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.wmodel;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.wmodel.visitors.WmodelVisitor;
 
 
@@ -10,5 +10,5 @@ public interface WEntity {
 
     <T> T accept(WmodelVisitor<T> visitor);
 
-    CodeLocation origin();
+    Origin origin();
 }

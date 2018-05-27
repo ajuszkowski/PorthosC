@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.wmodel.sets;
 
 import com.google.common.collect.ImmutableSet;
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.wmodel.WElementBase;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 
@@ -10,7 +10,7 @@ public abstract class WSetBase<T extends XEvent> extends WElementBase implements
 
     private final ImmutableSet<T> values;
 
-    WSetBase(CodeLocation origin, ImmutableSet<T> values) {
+    WSetBase(Origin origin, ImmutableSet<T> values) {
         super(origin, false);
         this.values = values;
     }

@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.statements.jumps;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.statements.YStatement;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
@@ -16,11 +16,11 @@ public class YJumpStatement extends YStatement {
         Continue,
         ;
 
-        public YJumpStatement createJumpStatement(CodeLocation location) {
+        public YJumpStatement createJumpStatement(Origin location) {
             return new YJumpStatement(location, this, new YJumpLabel(this.toString()));
         }
 
-        public YJumpStatement createJumpStatement(CodeLocation location, YJumpLabel jumpLabel) {
+        public YJumpStatement createJumpStatement(Origin location, YJumpLabel jumpLabel) {
             return new YJumpStatement(location, this, jumpLabel);
         }
 
@@ -33,11 +33,11 @@ public class YJumpStatement extends YStatement {
     private final Kind kind;
     private final YJumpLabel jumpLabel; // label of statement to which we jump
 
-    private YJumpStatement(CodeLocation location, Kind kind, YJumpLabel jumpLabel) {
+    private YJumpStatement(Origin location, Kind kind, YJumpLabel jumpLabel) {
         this(location, newLabel(), kind, jumpLabel);
     }
 
-    private YJumpStatement(CodeLocation location, String selfLabel, Kind kind, YJumpLabel jumpLabel) {
+    private YJumpStatement(Origin location, String selfLabel, Kind kind, YJumpLabel jumpLabel) {
         super(location, selfLabel);
         this.kind = kind;
         this.jumpLabel = jumpLabel;

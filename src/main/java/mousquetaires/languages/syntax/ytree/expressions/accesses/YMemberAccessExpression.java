@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.expressions.accesses;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YAtom;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
@@ -10,11 +10,11 @@ public class YMemberAccessExpression extends YMultiExpression implements YAtom {
 
     private final String memberName;
 
-    public YMemberAccessExpression(CodeLocation location, YAtom baseExpression, String memberName) {
+    public YMemberAccessExpression(Origin location, YAtom baseExpression, String memberName) {
         this(location, baseExpression, memberName, baseExpression.getPointerLevel());
     }
 
-    private YMemberAccessExpression(CodeLocation location, YAtom baseExpression, String memberName, int pointerLevel) {
+    private YMemberAccessExpression(Origin location, YAtom baseExpression, String memberName, int pointerLevel) {
         super(location, pointerLevel, baseExpression);
         this.memberName = memberName;
     }

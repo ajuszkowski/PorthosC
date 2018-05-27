@@ -1,7 +1,7 @@
 package mousquetaires.languages.syntax.ytree.expressions.assignments;
 
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YAtom;
@@ -11,7 +11,7 @@ import mousquetaires.utils.exceptions.NotSupportedException;
 
 public class YAssignmentExpression extends YMultiExpression {
 
-    public YAssignmentExpression(CodeLocation location, YAtom assignee, YExpression expression) {
+    public YAssignmentExpression(Origin location, YAtom assignee, YExpression expression) {
         super(location, assignee, expression);
     }
 

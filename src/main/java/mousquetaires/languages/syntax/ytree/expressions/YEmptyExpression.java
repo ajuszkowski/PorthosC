@@ -1,16 +1,16 @@
 package mousquetaires.languages.syntax.ytree.expressions;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 import mousquetaires.utils.exceptions.NotSupportedException;
 
 
 public class YEmptyExpression implements YExpression {
 
-    private final CodeLocation codeLocation;
+    private final Origin origin;
 
-    public YEmptyExpression(CodeLocation codeLocation) {
-        this.codeLocation = codeLocation;
+    public YEmptyExpression(Origin origin) {
+        this.origin = origin;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class YEmptyExpression implements YExpression {
     }
 
     @Override
-    public CodeLocation codeLocation() {
-        return codeLocation;
+    public Origin codeLocation() {
+        return origin;
     }
 }

@@ -1,18 +1,18 @@
 package mousquetaires.languages.syntax.ytree.statements;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.YEntity;
 
 
 public abstract class YStatement implements YEntity {  // TODO: implement all as YJumpStatement
-    private final CodeLocation location;
+    private final Origin location;
     private final String label;
 
-    protected YStatement(CodeLocation location) {
+    protected YStatement(Origin location) {
         this(location, newLabel());
     }
 
-    protected YStatement(CodeLocation location, String label) {
+    protected YStatement(Origin location, String label) {
         this.location = location;
         this.label = label;
     }
@@ -22,7 +22,7 @@ public abstract class YStatement implements YEntity {  // TODO: implement all as
     }
 
     @Override
-    public CodeLocation codeLocation() {
+    public Origin codeLocation() {
         return location;
     }
 

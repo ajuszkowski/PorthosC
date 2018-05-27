@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.expressions.accesses;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.expressions.YExpression;
 import mousquetaires.languages.syntax.ytree.expressions.YMultiExpression;
 import mousquetaires.languages.syntax.ytree.expressions.atomics.YAtom;
@@ -9,11 +9,11 @@ import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 public class YIndexerExpression extends YMultiExpression implements YAtom {
 
-    public YIndexerExpression(CodeLocation location, YAtom baseExpression, YExpression indexExpression) {
+    public YIndexerExpression(Origin location, YAtom baseExpression, YExpression indexExpression) {
         this(location, baseExpression, indexExpression, baseExpression.getPointerLevel() - 1);
     }
 
-    public YIndexerExpression(CodeLocation location, YAtom baseExpression, YExpression indexExpression, int pointerLevel) {
+    public YIndexerExpression(Origin location, YAtom baseExpression, YExpression indexExpression, int pointerLevel) {
         super(location, pointerLevel, baseExpression, indexExpression);
     }
 

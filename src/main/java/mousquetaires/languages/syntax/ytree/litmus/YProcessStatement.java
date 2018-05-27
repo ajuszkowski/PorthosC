@@ -1,6 +1,6 @@
 package mousquetaires.languages.syntax.ytree.litmus;
 
-import mousquetaires.languages.common.citation.CodeLocation;
+import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
@@ -15,7 +15,7 @@ public final class YProcessStatement extends YFunctionDefinition {
 
     private final XProcessId processId;
 
-    public YProcessStatement(CodeLocation location, YMethodSignature signature, YCompoundStatement body) {
+    public YProcessStatement(Origin location, YMethodSignature signature, YCompoundStatement body) {
         super(location, signature, body);
         this.processId = new XProcessId(signature.getName());
     }
