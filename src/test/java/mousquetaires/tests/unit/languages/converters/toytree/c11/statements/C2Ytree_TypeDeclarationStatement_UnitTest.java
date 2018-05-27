@@ -6,7 +6,7 @@ import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentE
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.statements.YVariableDeclarationStatement;
-import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
+import mousquetaires.languages.syntax.ytree.types.YFunctionSignature;
 import mousquetaires.languages.syntax.ytree.types.YMockType;
 import mousquetaires.tests.unit.UnitTestPaths;
 import org.junit.Ignore;
@@ -22,7 +22,7 @@ public class C2Ytree_TypeDeclarationStatement_UnitTest extends C2Ytree_Statement
     @Ignore("Yet initializers are not implemented")
     public void test_primitiveTypeDeclaration_initialisation() {
         Iterator<? extends YEntity> expected = getIterator(
-                new YFunctionDefinition(origin, new YMethodSignature("?", new YMockType()),// TODO: replace this mock signature with real
+                new YFunctionDefinition(origin, new YFunctionSignature("?", new YMockType()),// TODO: replace this mock signature with real
                                         new YCompoundStatement(origin, true,
                                                                new YVariableDeclarationStatement(origin, typeInt, variableA),// 'int a'
                                                                new YLinearStatement(new YAssignmentExpression(origin, variableA, constant1)),// 'a = 1;'
@@ -44,7 +44,7 @@ public class C2Ytree_TypeDeclarationStatement_UnitTest extends C2Ytree_Statement
     @Test
     public void test_primitiveTypeDeclaration() {
         Iterator<? extends YEntity> expected = getIterator(
-                new YFunctionDefinition(origin, new YMethodSignature("?", new YMockType()),// TODO: replace this mock signature with real
+                new YFunctionDefinition(origin, new YFunctionSignature("?", new YMockType()),// TODO: replace this mock signature with real
                                         new YCompoundStatement(origin, new YVariableDeclarationStatement(origin, typeInt, variableX),
                                                                //new YVariableDeclarationStatement(typeInt.withPointerLevel(1), variableX),
                                                                //new YVariableDeclarationStatement(typeInt.withPointerLevel(2), variableX),

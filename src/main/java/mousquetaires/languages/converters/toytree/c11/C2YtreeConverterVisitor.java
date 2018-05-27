@@ -23,7 +23,7 @@ import mousquetaires.languages.syntax.ytree.statements.*;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpLabel;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
 import mousquetaires.languages.syntax.ytree.temporaries.*;
-import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
+import mousquetaires.languages.syntax.ytree.types.YFunctionSignature;
 import mousquetaires.languages.syntax.ytree.types.YMockType;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.utils.exceptions.NotImplementedException;
@@ -1147,11 +1147,11 @@ class C2YtreeConverterVisitor
         C11Parser.DirectDeclaratorContext directDeclaratorContext = ctx.directDeclarator();
         if (directDeclaratorContext != null) {
             YEntity declarator = visitDirectDeclarator(directDeclaratorContext);
-            if (declarator instanceof YMethodSignature) {
+            if (declarator instanceof YFunctionSignature) {
                 if (pointerOperatorList != null) {
                     throw new NotSupportedException("pointers to functions");
                 }
-                return (YMethodSignature) declarator;
+                return (YFunctionSignature) declarator;
             }
 
             if (declarator instanceof YExpression) {
@@ -1227,7 +1227,7 @@ class C2YtreeConverterVisitor
                 if (recursive instanceof YVariableRef) {
                     YVariableRef methodVariable = (YVariableRef) recursive;
                     // todo: parse return type
-                    return new YMethodSignature(methodVariable.getName(), new YMockType(), parameters);
+                    return new YFunctionSignature(methodVariable.getName(), new YMockType(), parameters);
                 }
                 throw new YParserException(ctx, "For now, only simple name-based method definitions are supported");
             }
@@ -1850,12 +1850,12 @@ class C2YtreeConverterVisitor
             // TODO: parse NAME! and set signature
             // TODO: for now, we interpret every defined method as a separate process. It is incorrect for kernel!
             YEntity declarator = visitDeclarator(declaratorContext);
-            if (!(declarator instanceof YMethodSignature)) {
+            if (!(declarator instanceof YFunctionSignature)) {
                 throw new YParserException(ctx, "Could not parse function signature" +
                         ", found: " + declarator +
                         " of type: " + declarator.getClass().getSimpleName());
             }
-            YMethodSignature signature = (YMethodSignature) declarator;
+            YFunctionSignature signature = (YFunctionSignature) declarator;
             YCompoundStatement body = visitCompoundStatement(compoundStatementContext);
             return new YProcessStatement(origin(ctx), signature, body);
         }

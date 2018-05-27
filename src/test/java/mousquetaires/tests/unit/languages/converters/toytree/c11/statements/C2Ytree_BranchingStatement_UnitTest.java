@@ -8,7 +8,7 @@ import mousquetaires.languages.syntax.ytree.statements.YBranchingStatement;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.types.YMockType;
-import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
+import mousquetaires.languages.syntax.ytree.types.YFunctionSignature;
 import mousquetaires.tests.unit.UnitTestPaths;
 import org.junit.Test;
 
@@ -20,7 +20,7 @@ public class C2Ytree_BranchingStatement_UnitTest extends C2Ytree_Statement_UnitT
     @Test
     public void test() {
         Iterator<? extends YEntity> expected = getIterator(new YFunctionDefinition(origin,
-                                                                                   new YMethodSignature("?", new YMockType()),// TODO: replace this mock signature with real
+                                                                                   new YFunctionSignature("?", new YMockType()),// TODO: replace this mock signature with real
                                                                                    new YCompoundStatement(origin, true,
                                                                                                           new YBranchingStatement(
                                                                                                                   origin, YBinaryOperator.Equals.createExpression(

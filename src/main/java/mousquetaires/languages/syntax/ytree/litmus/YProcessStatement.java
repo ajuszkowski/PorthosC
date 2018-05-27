@@ -4,7 +4,7 @@ import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 import mousquetaires.languages.syntax.ytree.definitions.YFunctionDefinition;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
-import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
+import mousquetaires.languages.syntax.ytree.types.YFunctionSignature;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 
@@ -15,7 +15,7 @@ public final class YProcessStatement extends YFunctionDefinition {
 
     private final XProcessId processId;
 
-    public YProcessStatement(Origin origin, YMethodSignature signature, YCompoundStatement body) {
+    public YProcessStatement(Origin origin, YFunctionSignature signature, YCompoundStatement body) {
         super(origin, signature, body);
         this.processId = new XProcessId(signature.getName());
     }

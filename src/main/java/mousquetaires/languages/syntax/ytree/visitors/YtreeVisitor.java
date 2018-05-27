@@ -21,7 +21,7 @@ import mousquetaires.languages.syntax.ytree.litmus.YPreludeStatement;
 import mousquetaires.languages.syntax.ytree.litmus.YProcessStatement;
 import mousquetaires.languages.syntax.ytree.statements.*;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
-import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
+import mousquetaires.languages.syntax.ytree.types.YFunctionSignature;
 import mousquetaires.languages.syntax.ytree.types.YType;
 
 
@@ -66,6 +66,6 @@ public interface YtreeVisitor<T> {
     T visit(YVariableDeclarationStatement node);
     T visit(YJumpStatement node);
 
-    T visit(YMethodSignature node);
+    T visit(YFunctionSignature node);
     T visit(YParameter node);
 }

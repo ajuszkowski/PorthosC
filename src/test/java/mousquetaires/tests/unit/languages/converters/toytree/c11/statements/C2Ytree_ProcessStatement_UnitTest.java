@@ -8,7 +8,7 @@ import mousquetaires.languages.syntax.ytree.litmus.YProcessStatement;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.statements.YVariableDeclarationStatement;
-import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
+import mousquetaires.languages.syntax.ytree.types.YFunctionSignature;
 import mousquetaires.languages.syntax.ytree.types.YMockType;
 import mousquetaires.tests.unit.UnitTestPaths;
 import org.junit.Ignore;
@@ -24,7 +24,7 @@ public class C2Ytree_ProcessStatement_UnitTest extends C2Ytree_Statement_UnitTes
     public void test() {
         Iterator<? extends YEntity> expected = getIterator(
                 new YProcessStatement(origin,
-                                      new YMethodSignature("?", new YMockType()),// TODO: replace this mock signature with real
+                                      new YFunctionSignature("?", new YMockType()),// TODO: replace this mock signature with real
                                       new YCompoundStatement(origin,
                                                              true,
                                                              new YVariableDeclarationStatement(origin, typeInt, variableA),

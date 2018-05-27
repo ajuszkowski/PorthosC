@@ -7,17 +7,17 @@ import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 
-public class YMethodSignature implements YEntity {
+public class YFunctionSignature implements YEntity {
 
     private final String name;
     private final YType returnType;
     private final ImmutableList<YParameter> parameters;
 
-    public YMethodSignature(String name, YType returnType) {
+    public YFunctionSignature(String name, YType returnType) {
         this(name, returnType, ImmutableList.of());
     }
 
-    public YMethodSignature(String name, YType returnType, ImmutableList<YParameter> parameters) {
+    public YFunctionSignature(String name, YType returnType, ImmutableList<YParameter> parameters) {
         this.name = name;
         this.returnType = returnType;
         this.parameters = parameters;

@@ -2,7 +2,7 @@ package mousquetaires.languages.syntax.ytree.definitions;
 
 import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
-import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
+import mousquetaires.languages.syntax.ytree.types.YFunctionSignature;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 import java.util.Objects;
@@ -11,16 +11,16 @@ import java.util.Objects;
 
 public class YFunctionDefinition implements YDefinition {
     private final Origin origin;
-    private final YMethodSignature signature;
+    private final YFunctionSignature signature;
     private final YCompoundStatement body;
 
-    public YFunctionDefinition(Origin origin, YMethodSignature signature, YCompoundStatement body) {
+    public YFunctionDefinition(Origin origin, YFunctionSignature signature, YCompoundStatement body) {
         this.origin = origin;
         this.signature = signature;
         this.body = body;
     }
 
-    public YMethodSignature getSignature() {
+    public YFunctionSignature getSignature() {
         return signature;
     }
 

@@ -38,7 +38,7 @@ import mousquetaires.languages.syntax.ytree.litmus.YPreludeStatement;
 import mousquetaires.languages.syntax.ytree.litmus.YProcessStatement;
 import mousquetaires.languages.syntax.ytree.statements.*;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
-import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
+import mousquetaires.languages.syntax.ytree.types.YFunctionSignature;
 import mousquetaires.languages.syntax.ytree.types.YType;
 import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
@@ -128,7 +128,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     }
 
     @Override
-    public XEvent visit(YMethodSignature node) {
+    public XEvent visit(YFunctionSignature node) {
         throw new NotImplementedException();
     }
 
