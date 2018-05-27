@@ -89,7 +89,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
         for (YParameter parameter : node.getSignature().getParameters()) {
             YVariableRef parameterVariable = parameter.getVariable();
             String name = parameterVariable.getName();
-            XType type = YType2TypeHelper.convert(parameter.getType());
+            XType type = Y2XTypeConverter.convert(parameter.getType());
             if (parameterVariable.isGlobal()) {
                 program.getMemoryManager().declareLocation(name, type);
             }
@@ -469,7 +469,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     public XLvalueMemoryUnit visit(YVariableDeclarationStatement node) {
         YVariableRef variable = node.getVariable();
         String name = variable.getName();
-        XType type = YType2TypeHelper.convert(node.getType());
+        XType type = Y2XTypeConverter.convert(node.getType());
         //TODO: should determine the type of variables during the preprocessing!
         if (variable.isGlobal() || program.getProcessId() == XProcessId.PreludeProcessId) {
             return program.getMemoryManager().declareLocation(name, type);
@@ -505,7 +505,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XLocalMemoryUnit visit(YConstant node) {
-        XType type = YType2TypeHelper.determineType(node);
+        XType type = Y2XTypeConverter.determineType(node);
         return XConstant.create(node.getValue(), type);
     }
 

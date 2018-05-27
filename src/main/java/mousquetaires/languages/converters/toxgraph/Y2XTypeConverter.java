@@ -5,7 +5,7 @@ import mousquetaires.languages.syntax.ytree.expressions.atomics.YConstant;
 import mousquetaires.languages.syntax.ytree.types.YType;
 
 
-public class YType2TypeHelper {
+public class Y2XTypeConverter {
 
     public static XType determineType(YConstant constant) {
         //assert constant.getValue() instanceof Integer : "for now, only ints are supported; found constant of type: "
