@@ -5,16 +5,16 @@ import mousquetaires.languages.common.citation.Origin;
 
 public abstract class YAtomBase implements YAtom {
 
-    private final Origin location;
+    private final Origin origin;
     private final Kind kind;
     private final int pointerLevel;
 
-    YAtomBase(Origin location, Kind kind) {
-        this(location, kind, 0);
+    YAtomBase(Origin origin, Kind kind) {
+        this(origin, kind, 0);
     }
 
-    YAtomBase(Origin location, Kind kind, int pointerLevel) {
-        this.location = location;
+    YAtomBase(Origin origin, Kind kind, int pointerLevel) {
+        this.origin = origin;
         this.kind = kind;
         this.pointerLevel = pointerLevel;
     }
@@ -25,8 +25,8 @@ public abstract class YAtomBase implements YAtom {
     }
 
     @Override
-    public Origin codeLocation() {
-        return location;
+    public Origin origin() {
+        return origin;
     }
 
     public boolean isGlobal() {

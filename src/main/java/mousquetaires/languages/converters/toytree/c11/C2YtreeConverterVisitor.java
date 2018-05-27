@@ -62,7 +62,7 @@ class C2YtreeConverterVisitor
         if (compilationUnitContext != null) {
             ImmutableList<YEntity> rootStatements = visitCompilationUnit(compilationUnitContext).buildValues();
             roots.addAll(rootStatements);
-            return new YSyntaxTree(location(ctx), roots.build());
+            return new YSyntaxTree(origin(ctx), roots.build());
         }
         throw new YParserException(ctx, "Missing compilation unit");
     }
@@ -89,7 +89,7 @@ class C2YtreeConverterVisitor
              return constant;
              }
              // if could not parse as a constant, consider as a variable (which also is an identifier)
-             return new YVariableRef(location(ctx), identifierText);
+             return new YVariableRef(origin(ctx), identifierText);
         }
         TerminalNode processIdentifierContext = ctx.LitmusSpecificLabelledVariable();
         if (processIdentifierContext != null) {
@@ -103,7 +103,7 @@ class C2YtreeConverterVisitor
             String processId = labelledVariable.substring(0, separatorIndex);
             // todo: log this label parsing result
             String variableName = labelledVariable.substring(separatorIndex + 1);
-            return new YLabeledVariableRef(location(ctx), processId, variableName);
+            return new YLabeledVariableRef(origin(ctx), processId, variableName);
         }
         TerminalNode constantNode = ctx.Constant();
         if (constantNode != null) {
@@ -185,7 +185,7 @@ class C2YtreeConverterVisitor
                             ", found: " + wrap(baseExpression) +
                             " of type: " + wrap(baseExpression.getClass().getSimpleName()));
                 }
-                return new YIndexerExpression(location(ctx), (YAtom) baseExpression, indexerExpression);
+                return new YIndexerExpression(origin(ctx), (YAtom) baseExpression, indexerExpression);
             }
             // case (invocation expression):
             if (ctx.getTokens(C11Parser.LeftParen).size() > 0 && ctx.getTokens(C11Parser.RightParen).size() > 0) {
@@ -193,7 +193,7 @@ class C2YtreeConverterVisitor
                 ImmutableList<YExpression> arguments = (argumentExpressionListContextList != null)
                         ? visitArgumentExpressionList(argumentExpressionListContextList).buildValues()
                         : ImmutableList.of();
-                return new YInvocationExpression(location(ctx), baseExpression, arguments);
+                return new YInvocationExpression(origin(ctx), baseExpression, arguments);
             }
             // case (member access expression):
             boolean isArrowAccess = ctx.getTokens(C11Parser.Arrow).size() > 0;
@@ -211,15 +211,15 @@ class C2YtreeConverterVisitor
                             ", found: " + wrap(baseExpression) +
                             " of type: " + wrap(baseExpression.getClass().getSimpleName()));
                 }
-                return new YMemberAccessExpression(location(ctx), (YAtom) baseExpression, identifierNode.getText());
+                return new YMemberAccessExpression(origin(ctx), (YAtom) baseExpression, identifierNode.getText());
             }
             // case (increment):
             if (ctx.getTokens(C11Parser.PlusPlus).size() > 0) {
-                return YUnaryOperator.PrefixIncrement.createExpression(location(ctx), baseExpression);
+                return YUnaryOperator.PrefixIncrement.createExpression(origin(ctx), baseExpression);
             }
             // case (decrement):
             if (ctx.getTokens(C11Parser.MinusMinus).size() > 0) {
-                return YUnaryOperator.PrefixDecrement.createExpression(location(ctx), baseExpression);
+                return YUnaryOperator.PrefixDecrement.createExpression(origin(ctx), baseExpression);
             }
         }
         throw new YParserNotImplementedException(ctx);
@@ -271,11 +271,11 @@ class C2YtreeConverterVisitor
             YExpression baseExpression = visitUnaryExpression(unaryExpressionContext);
             // '++' unaryExpression:
             if (C11ParserHelper.hasToken(ctx, C11Parser.PlusPlus)) {
-                return YUnaryOperator.PrefixIncrement.createExpression(location(ctx), baseExpression);
+                return YUnaryOperator.PrefixIncrement.createExpression(origin(ctx), baseExpression);
             }
             // '--' unaryExpression:
             if (C11ParserHelper.hasToken(ctx, C11Parser.MinusMinus)) {
-                return YUnaryOperator.PrefixDecrement.createExpression(location(ctx), baseExpression);
+                return YUnaryOperator.PrefixDecrement.createExpression(origin(ctx), baseExpression);
             }
             // 'sizeof' unaryExpression:
             if (C11ParserHelper.hasToken(ctx, C11Parser.Sizeof)) {
@@ -298,11 +298,11 @@ class C2YtreeConverterVisitor
                 case Plus:
                     return operand; // '+1' is same as '1'
                 case Minus:
-                    return YUnaryOperator.IntegerNegation.createExpression(location(ctx), operand);
+                    return YUnaryOperator.IntegerNegation.createExpression(origin(ctx), operand);
                 case Tilde:
-                    return YUnaryOperator.BitwiseComplement.createExpression(location(ctx), operand);
+                    return YUnaryOperator.BitwiseComplement.createExpression(origin(ctx), operand);
                 case Exclamation:
-                    return YUnaryOperator.Negation.createExpression(location(ctx), operand);
+                    return YUnaryOperator.Negation.createExpression(origin(ctx), operand);
                 default:
                     throw new YParserNotImplementedException(ctx, "Unsupported unary operator: " + operator.name());
             }
@@ -373,7 +373,7 @@ class C2YtreeConverterVisitor
                 else {
                     throw new YParserException(ctx);
                 }
-                return operator.createExpression(location(ctx), left, right);
+                return operator.createExpression(origin(ctx), left, right);
             }
             return right;
         }
@@ -409,7 +409,7 @@ class C2YtreeConverterVisitor
                 throw new YParserException(ctx, "Could not parse binary additive operator");
             }
 
-            return operator.createExpression(location(ctx), additiveExpression, multiplicativeExpression);
+            return operator.createExpression(origin(ctx), additiveExpression, multiplicativeExpression);
         }
         throw new YParserException(ctx);
     }
@@ -465,7 +465,7 @@ class C2YtreeConverterVisitor
                             (isLessEqual ? YBinaryOperator.LessOrEquals :
                                     (isGreater ? YBinaryOperator.Greater :
                                             YBinaryOperator.GreaterOrEquals));
-            return operator.createExpression(location(ctx), leftPart, rightPart);
+            return operator.createExpression(origin(ctx), leftPart, rightPart);
         }
         if (shiftExpressionContext != null) {
             return visitShiftExpression(shiftExpressionContext);
@@ -498,7 +498,7 @@ class C2YtreeConverterVisitor
             YBinaryOperator operator = isEquality
                     ? YBinaryOperator.Equals
                     : YBinaryOperator.NotEquals;
-            return operator.createExpression(location(ctx), left, right);
+            return operator.createExpression(origin(ctx), left, right);
         }
         if (relationalExpressionContext != null) {
             return visitRelationalExpression(relationalExpressionContext);
@@ -577,7 +577,7 @@ class C2YtreeConverterVisitor
             YExpression right = visitInclusiveOrExpression(inclusiveOrExpressionContext);
             if (logicalAndExpressionContext != null) {
                 YExpression left = visitLogicalAndExpression(logicalAndExpressionContext);
-                return YBinaryOperator.Conjunction.createExpression(location(ctx), left, right);
+                return YBinaryOperator.Conjunction.createExpression(origin(ctx), left, right);
             }
             return right;
         }
@@ -599,7 +599,7 @@ class C2YtreeConverterVisitor
             YExpression right = visitLogicalAndExpression(logicalAndExpressionContext);
             if (logicalOrExpressionContext != null) {
                 YExpression left = visitLogicalOrExpression(logicalOrExpressionContext);
-                return YBinaryOperator.Disjunction.createExpression(location(ctx), left, right);
+                return YBinaryOperator.Disjunction.createExpression(origin(ctx), left, right);
             }
             return right;
         }
@@ -677,7 +677,7 @@ class C2YtreeConverterVisitor
             }
             YVariableRef assignee = (YVariableRef) assigneeEntity;
             YExpression recursive = visitAssignmentExpression(assignmentExpressionContext);
-            return new YAssignmentExpression(location(ctx), assignee, recursive);
+            return new YAssignmentExpression(origin(ctx), assignee, recursive);
         }
         throw new YParserException(ctx);
     }
@@ -788,7 +788,7 @@ class C2YtreeConverterVisitor
             for (YExpression declarationExpression : declarationList) {
                 if (declarationExpression instanceof YVariableRef) {
                     YVariableRef variable = (YVariableRef) declarationExpression;
-                    statements.add(new YVariableDeclarationStatement(location(ctx), type, variable));
+                    statements.add(new YVariableDeclarationStatement(origin(ctx), type, variable));
                 }
                 else if (declarationExpression instanceof YAssignmentExpression) {
                     YAssignmentExpression assignment = (YAssignmentExpression) declarationExpression;
@@ -796,9 +796,9 @@ class C2YtreeConverterVisitor
                     YAtom assignee = assignment.getAssignee();
                     if (assignee instanceof YVariableRef) {
                         YVariableRef variable = (YVariableRef) assignee;
-                        Origin declarationLocation = location(initDeclaratorListContext);
+                        Origin declarationLocation = origin(initDeclaratorListContext);
                         statements.add(new YVariableDeclarationStatement(declarationLocation, type, variable));
-                        statements.add(new YLinearStatement(new YAssignmentExpression(assignment.codeLocation(), variable, value)));
+                        statements.add(new YLinearStatement(new YAssignmentExpression(assignment.origin(), variable, value)));
                     }
                     else {
                         throw new YParserException(ctx, "Declaration of non-variable instance: " + wrap(assignee) +
@@ -897,7 +897,7 @@ class C2YtreeConverterVisitor
             }
             YExpression initializer = visitInitializer(initializerContext);
             if (declarator instanceof YVariableRef) {
-                return new YAssignmentExpression(location(ctx), (YVariableRef) declarator, initializer);
+                return new YAssignmentExpression(origin(ctx), (YVariableRef) declarator, initializer);
             }
             //if (declarator instanceof ...)
             throw new YParserNotImplementedException(ctx);
@@ -1207,7 +1207,7 @@ class C2YtreeConverterVisitor
         C11Parser.IdentifierListContext identifierListContext;
 
         if ((identifier = ctx.Identifier()) != null) {
-            return new YVariableRef(location(ctx), identifier.getText());
+            return new YVariableRef(origin(ctx), identifier.getText());
         }
         boolean hasParentheses = C11ParserHelper.hasParentheses(ctx);
         if (hasParentheses) {
@@ -1335,7 +1335,7 @@ class C2YtreeConverterVisitor
                             ", found: " + declarator.getClass().getSimpleName());
                 }
                 YVariableRef variable = (YVariableRef) declarator;
-                return new YParameter(location(ctx), type, variable);
+                return new YParameter(origin(ctx), type, variable);
             }
             throw new YParserException(ctx, "Could not find parameter type specifiers");
         }
@@ -1544,7 +1544,7 @@ class C2YtreeConverterVisitor
             builder.markHasBraces();
             return builder.build();
         }
-        return new YCompoundStatement(location(ctx), true);
+        return new YCompoundStatement(origin(ctx), true);
     }
 
     /**
@@ -1555,7 +1555,7 @@ class C2YtreeConverterVisitor
      */
     @Override
     public YBlockFILOTemp visitBlockItemList(C11Parser.BlockItemListContext ctx) {
-        YBlockFILOTemp builder = new YBlockFILOTemp(location(ctx));
+        YBlockFILOTemp builder = new YBlockFILOTemp(origin(ctx));
         C11Parser.BlockItemListContext blockItemListContext = ctx.blockItemList();
         if (blockItemListContext != null) {
             List<YStatement> recursive = visitBlockItemList(blockItemListContext).getValues();
@@ -1598,7 +1598,7 @@ class C2YtreeConverterVisitor
         C11Parser.DeclarationContext declarationContext = ctx.declaration();
         if (declarationContext != null) {
             //ImmutableList<YStatement> statements = visitDeclaration(declarationContext).buildValues();
-            //return new YCompoundStatement(location(ctx), true, statements);
+            //return new YCompoundStatement(origin(ctx), true, statements);
             return visitDeclaration(declarationContext);
         }
         C11Parser.StatementContext statementContext = ctx.statement();
@@ -1618,7 +1618,7 @@ class C2YtreeConverterVisitor
         C11Parser.ExpressionContext expressionContext = ctx.expression();
         return expressionContext != null
                 ? new YLinearStatement(visitExpression(expressionContext))
-                : new YLinearStatement(new YEmptyExpression(location(ctx)));
+                : new YLinearStatement(new YEmptyExpression(origin(ctx)));
     }
 
     /**
@@ -1646,7 +1646,7 @@ class C2YtreeConverterVisitor
                         }
                         statement2 = visitStatement(statement2Context);
                     }
-                    return new YBranchingStatement(location(ctx), expression, statement1, statement2);
+                    return new YBranchingStatement(origin(ctx), expression, statement1, statement2);
                 }
                 if (C11ParserHelper.hasToken(ctx, C11Parser.Switch)) {
                     throw new YParserNotImplementedException(ctx, "Switch is not implemented yet");
@@ -1671,7 +1671,7 @@ class C2YtreeConverterVisitor
 
         YStatement statement = statementContext != null
                 ? visitStatement(statementContext)
-                : new YLinearStatement(new YEmptyExpression(location(ctx))); //todo: wrong location here
+                : new YLinearStatement(new YEmptyExpression(origin(ctx))); //todo: wrong origin here
 
         boolean isDoWhile = C11ParserHelper.hasToken(ctx, C11Parser.Do);
         boolean isWhile = !isDoWhile && C11ParserHelper.hasToken(ctx, C11Parser.While);
@@ -1682,9 +1682,9 @@ class C2YtreeConverterVisitor
                 throw new YParserException(ctx, "Missing loop expression");
             }
             YExpression expression = visitExpression(expressionContext);
-            YStatement loopStatement = new YWhileLoopStatement(location(ctx), expression, statement);
+            YStatement loopStatement = new YWhileLoopStatement(origin(ctx), expression, statement);
             if (isDoWhile) {
-                YBlockFILOTemp builder = new YBlockFILOTemp(location(ctx));
+                YBlockFILOTemp builder = new YBlockFILOTemp(origin(ctx));
                 builder.add(statement); //first iteration
                 builder.add(loopStatement);
                 return builder.build();
@@ -1747,13 +1747,13 @@ class C2YtreeConverterVisitor
                 throw new YParserException(ctx, "Missing goto label in jump statement");
             }
             YJumpLabel gotoLabel = new YJumpLabel(identifier.getText());
-            return YJumpStatement.Kind.Goto.createJumpStatement(location(ctx), gotoLabel);
+            return YJumpStatement.Kind.Goto.createJumpStatement(origin(ctx), gotoLabel);
         }
         if (C11ParserHelper.hasToken(ctx, C11Parser.Continue)) {
-            return YJumpStatement.Kind.Continue.createJumpStatement(location(ctx));
+            return YJumpStatement.Kind.Continue.createJumpStatement(origin(ctx));
         }
         if (C11ParserHelper.hasToken(ctx, C11Parser.Break)) {
-            return YJumpStatement.Kind.Break.createJumpStatement(location(ctx));
+            return YJumpStatement.Kind.Break.createJumpStatement(origin(ctx));
         }
         if (C11ParserHelper.hasToken(ctx, C11Parser.Return)) {
             C11Parser.ExpressionContext expressionContext = ctx.expression();
@@ -1761,7 +1761,7 @@ class C2YtreeConverterVisitor
                 // TODO: process return value
                 throw new NotImplementedException("For now, return values are not supported");
             }
-            return YJumpStatement.Kind.Return.createJumpStatement(location(ctx));
+            return YJumpStatement.Kind.Return.createJumpStatement(origin(ctx));
         }
         throw new YParserNotImplementedException(ctx);
     }
@@ -1857,7 +1857,7 @@ class C2YtreeConverterVisitor
             }
             YMethodSignature signature = (YMethodSignature) declarator;
             YCompoundStatement body = visitCompoundStatement(compoundStatementContext);
-            return new YProcessStatement(location(ctx), signature, body);
+            return new YProcessStatement(origin(ctx), signature, body);
         }
         throw new YParserException(ctx);
     }
@@ -1883,7 +1883,7 @@ class C2YtreeConverterVisitor
         C11Parser.LogicalOrExpressionContext logicalOrExpressionContext = ctx.logicalOrExpression();
         if (logicalOrExpressionContext != null) {
             YExpression assertion = visitLogicalOrExpression(logicalOrExpressionContext);
-            return new YPostludeStatement(location(ctx), assertion);
+            return new YPostludeStatement(origin(ctx), assertion);
         }
         throw new YParserException(ctx);
     }
@@ -1902,13 +1902,13 @@ class C2YtreeConverterVisitor
                 List<YStatement> declarations = visitDeclaration(declarationContext).getValues();
                 statements.addAll(declarations);
             }
-            return new YPreludeStatement(location(ctx), statements.buildValues());
+            return new YPreludeStatement(origin(ctx), statements.buildValues());
         }
         throw new YParserException(ctx);
     }
 
 
-    private Origin location(ParserRuleContext ctx) {
+    private Origin origin(ParserRuleContext ctx) {
         return citationService.getLocation(ctx);
     }
 }

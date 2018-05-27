@@ -29,7 +29,7 @@ public class YEmptyExpression implements YExpression {
     }
 
     @Override
-    public Origin codeLocation() {
+    public Origin origin() {
         return origin;
     }
 }

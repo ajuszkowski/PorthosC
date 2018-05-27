@@ -8,11 +8,11 @@ import mousquetaires.utils.exceptions.NotSupportedException;
 
 public class YTernaryExpression extends YMultiExpression {
 
-    public YTernaryExpression(Origin location,
+    public YTernaryExpression(Origin origin,
                               YExpression condition,
                               YExpression trueExpression,
                               YExpression falseExpression) {
-        super(location, condition, trueExpression, falseExpression);
+        super(origin, condition, trueExpression, falseExpression);
     }
 
     public YExpression getCondition() {

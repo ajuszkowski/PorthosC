@@ -16,12 +16,12 @@ public class YJumpStatement extends YStatement {
         Continue,
         ;
 
-        public YJumpStatement createJumpStatement(Origin location) {
-            return new YJumpStatement(location, this, new YJumpLabel(this.toString()));
+        public YJumpStatement createJumpStatement(Origin origin) {
+            return new YJumpStatement(origin, this, new YJumpLabel(this.toString()));
         }
 
-        public YJumpStatement createJumpStatement(Origin location, YJumpLabel jumpLabel) {
-            return new YJumpStatement(location, this, jumpLabel);
+        public YJumpStatement createJumpStatement(Origin origin, YJumpLabel jumpLabel) {
+            return new YJumpStatement(origin, this, jumpLabel);
         }
 
         @Override
@@ -33,12 +33,12 @@ public class YJumpStatement extends YStatement {
     private final Kind kind;
     private final YJumpLabel jumpLabel; // label of statement to which we jump
 
-    private YJumpStatement(Origin location, Kind kind, YJumpLabel jumpLabel) {
-        this(location, newLabel(), kind, jumpLabel);
+    private YJumpStatement(Origin origin, Kind kind, YJumpLabel jumpLabel) {
+        this(origin, newLabel(), kind, jumpLabel);
     }
 
-    private YJumpStatement(Origin location, String selfLabel, Kind kind, YJumpLabel jumpLabel) {
-        super(location, selfLabel);
+    private YJumpStatement(Origin origin, String selfLabel, Kind kind, YJumpLabel jumpLabel) {
+        super(origin, selfLabel);
         this.kind = kind;
         this.jumpLabel = jumpLabel;
     }
@@ -57,7 +57,7 @@ public class YJumpStatement extends YStatement {
      */
     @Override
     public YStatement withLabel(String newLabel) {
-        return new YJumpStatement(codeLocation(), newLabel, getKind(), getJumpLabel());
+        return new YJumpStatement(origin(), newLabel, getKind(), getJumpLabel());
     }
 
     @Override

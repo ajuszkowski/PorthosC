@@ -13,8 +13,8 @@ public class YBinaryExpression extends YMultiExpression {
 
     private final YBinaryOperator operator;
 
-    YBinaryExpression(Origin location, YBinaryOperator operator, YExpression leftExpression, YExpression rightExpression) {
-        super(location, leftExpression, rightExpression);
+    YBinaryExpression(Origin origin, YBinaryOperator operator, YExpression leftExpression, YExpression rightExpression) {
+        super(origin, leftExpression, rightExpression);
         this.operator = operator;
     }
 

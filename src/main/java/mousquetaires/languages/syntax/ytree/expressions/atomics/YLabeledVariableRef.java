@@ -11,12 +11,12 @@ public class YLabeledVariableRef extends YVariableRef {
 
     private final String label;
 
-    public YLabeledVariableRef(Origin location, String label, String name) {
-        this(location, label, name, 0);
+    public YLabeledVariableRef(Origin origin, String label, String name) {
+        this(origin, label, name, 0);
     }
 
-    private YLabeledVariableRef(Origin location, String label, String name, int pointerLevel) {
-        super(location, name, pointerLevel);
+    private YLabeledVariableRef(Origin origin, String label, String name, int pointerLevel) {
+        super(origin, name, pointerLevel);
         this.label = label;
     }
 
@@ -31,7 +31,7 @@ public class YLabeledVariableRef extends YVariableRef {
 
     @Override
     public YLabeledVariableRef withPointerLevel(int level) {
-        return new YLabeledVariableRef(codeLocation(), getLabel(), getName(), level);
+        return new YLabeledVariableRef(origin(), getLabel(), getName(), level);
     }
 
     @Override

@@ -11,8 +11,8 @@ public final class YPreludeStatement extends YUnlabeledStatement {
 
     private final ImmutableList<YStatement> initialWrites;
 
-    public YPreludeStatement(Origin location, ImmutableList<YStatement> initialWrites) {
-        super(location);
+    public YPreludeStatement(Origin origin, ImmutableList<YStatement> initialWrites) {
+        super(origin);
         this.initialWrites = initialWrites;
     }
 

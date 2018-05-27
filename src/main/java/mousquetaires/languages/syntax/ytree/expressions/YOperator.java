@@ -7,7 +7,7 @@ import mousquetaires.languages.syntax.ytree.YEntity;
 public interface YOperator extends YEntity {
 
     @Override
-    default Origin codeLocation() {
+    default Origin origin() {
         return Origin.empty;
     }
 }

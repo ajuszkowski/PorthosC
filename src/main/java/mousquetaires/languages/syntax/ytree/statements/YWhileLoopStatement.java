@@ -13,12 +13,12 @@ public class YWhileLoopStatement extends YStatement {
     private final YStatement body;
 
 
-    public YWhileLoopStatement(Origin location, YExpression condition, YStatement body) {
-        this(location, newLabel(), condition, body);
+    public YWhileLoopStatement(Origin origin, YExpression condition, YStatement body) {
+        this(origin, newLabel(), condition, body);
     }
 
-    private YWhileLoopStatement(Origin location, String label, YExpression condition, YStatement body) {
-        super(location, label);
+    private YWhileLoopStatement(Origin origin, String label, YExpression condition, YStatement body) {
+        super(origin, label);
         this.condition = condition;
         this.body = body;
     }
@@ -33,7 +33,7 @@ public class YWhileLoopStatement extends YStatement {
 
     @Override
     public YWhileLoopStatement withLabel(String newLabel) {
-        return new YWhileLoopStatement(codeLocation(), newLabel, getCondition(), getBody());
+        return new YWhileLoopStatement(origin(), newLabel, getCondition(), getBody());
     }
 
     @Override

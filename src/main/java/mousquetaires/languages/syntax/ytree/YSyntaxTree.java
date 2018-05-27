@@ -9,20 +9,20 @@ import java.util.Collection;
 
 public class YSyntaxTree implements YEntity {
 
-    private final Origin location;
+    private final Origin origin;
     private final ImmutableList<YEntity> roots;
 
-    public YSyntaxTree(Origin location, ImmutableList<YEntity> roots) {
+    public YSyntaxTree(Origin origin, ImmutableList<YEntity> roots) {
         this.roots = roots;
-        this.location = location;
-    }
-    public YSyntaxTree(Origin location, YEntity... statements) {
-
-        this(location, ImmutableList.copyOf(statements));
+        this.origin = origin;
     }
 
-    public YSyntaxTree(Origin location, Collection<YEntity> statements) {
-        this(location, ImmutableList.copyOf(statements));
+    public YSyntaxTree(Origin origin, YEntity... statements) {
+        this(origin, ImmutableList.copyOf(statements));
+    }
+
+    public YSyntaxTree(Origin origin, Collection<YEntity> statements) {
+        this(origin, ImmutableList.copyOf(statements));
     }
 
     public ImmutableList<YEntity> getRoots() {
@@ -30,8 +30,8 @@ public class YSyntaxTree implements YEntity {
     }
 
     @Override
-    public Origin codeLocation() {
-        return location;
+    public Origin origin() {
+        return origin;
     }
 
     @Override

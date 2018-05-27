@@ -14,19 +14,19 @@ public class YBranchingStatement extends YStatement {  // TODO: inherit from YJu
     private final YStatement thenBranch;
     @Nullable private final YStatement elseBranch;
 
-    public YBranchingStatement(Origin location,
+    public YBranchingStatement(Origin origin,
                                YExpression condition,
                                YStatement thenBranch,
                                YStatement elseBranch) {
-        this(location, newLabel(), condition, thenBranch, elseBranch);
+        this(origin, newLabel(), condition, thenBranch, elseBranch);
     }
 
-    private YBranchingStatement(Origin location,
+    private YBranchingStatement(Origin origin,
                                 String label,
                                 YExpression condition,
                                 YStatement thenBranch,
                                 YStatement elseBranch) {
-        super(location, label);
+        super(origin, label);
         this.condition = condition;
         this.thenBranch = thenBranch;
         this.elseBranch = elseBranch;
@@ -47,7 +47,7 @@ public class YBranchingStatement extends YStatement {  // TODO: inherit from YJu
 
     @Override
     public YBranchingStatement withLabel(String newLabel) {
-        return new YBranchingStatement(codeLocation(), newLabel, getCondition(), getThenBranch(), getElseBranch());
+        return new YBranchingStatement(origin(), newLabel, getCondition(), getThenBranch(), getElseBranch());
     }
 
     @Override

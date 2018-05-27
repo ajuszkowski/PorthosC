@@ -9,7 +9,6 @@ import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.types.YMockType;
 import mousquetaires.languages.syntax.ytree.types.YMethodSignature;
-import mousquetaires.languages.syntax.ytree.expressions.atomics.YParameter;
 import mousquetaires.tests.unit.UnitTestPaths;
 import org.junit.Test;
 
@@ -20,17 +19,28 @@ public class C2Ytree_BranchingStatement_UnitTest extends C2Ytree_Statement_UnitT
 
     @Test
     public void test() {
-        Iterator<? extends YEntity> expected = getIterator(new YFunctionDefinition(location,
-                new YMethodSignature("?", new YMockType()),// TODO: replace this mock signature with real
-                new YCompoundStatement(location, true,
-                        new YBranchingStatement(location, YBinaryOperator.Equals.createExpression(location, variableX, constant1),
-                                new YCompoundStatement(location, true,
-                                    new YLinearStatement(new YAssignmentExpression(location, variableY, constant2)),
-                                    new YLinearStatement(new YAssignmentExpression(location, variableX, variableY))                            ),
-                                new YBranchingStatement(location, YBinaryOperator.Greater.createExpression(location, variableX, constant2),
-                                    new YCompoundStatement(location, true, new YLinearStatement(new YAssignmentExpression(location, variableY, constant3))),
-                                    new YCompoundStatement(location, true))),
-                        new YLinearStatement(new YAssignmentExpression(location, variableX, constant4)))));
+        Iterator<? extends YEntity> expected = getIterator(new YFunctionDefinition(origin,
+                                                                                   new YMethodSignature("?", new YMockType()),// TODO: replace this mock signature with real
+                                                                                   new YCompoundStatement(origin, true,
+                                                                                                          new YBranchingStatement(
+                                                                                                                  origin, YBinaryOperator.Equals.createExpression(
+                                                                                                                  origin, variableX, constant1),
+                                                                                                                  new YCompoundStatement(
+                                                                                                                          origin, true,
+                                                                                                                          new YLinearStatement(new YAssignmentExpression(
+                                                                                                                                  origin, variableY, constant2)),
+                                                                                                                          new YLinearStatement(new YAssignmentExpression(
+                                                                                                                                  origin, variableX, variableY))                            ),
+                                                                                                                  new YBranchingStatement(
+                                                                                                                          origin, YBinaryOperator.Greater.createExpression(
+                                                                                                                          origin, variableX, constant2),
+                                                                                                                          new YCompoundStatement(
+                                                                                                                                  origin, true, new YLinearStatement(new YAssignmentExpression(
+                                                                                                                                  origin, variableY, constant3))),
+                                                                                                                          new YCompoundStatement(
+                                                                                                                                  origin, true))),
+                                                                                                          new YLinearStatement(new YAssignmentExpression(
+                                                                                                                  origin, variableX, constant4)))));
         run(UnitTestPaths.c11StatementsDirectory + "branchingStatement.c", expected);
     }
 }

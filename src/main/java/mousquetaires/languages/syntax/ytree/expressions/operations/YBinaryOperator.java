@@ -30,8 +30,8 @@ public enum YBinaryOperator implements YOperator {
     LessOrEquals,
     ;
 
-    public YBinaryExpression createExpression(Origin location, YExpression leftExpression, YExpression rightExpression) {
-        return new YBinaryExpression(location, this, leftExpression, rightExpression);
+    public YBinaryExpression createExpression(Origin origin, YExpression leftExpression, YExpression rightExpression) {
+        return new YBinaryExpression(origin, this, leftExpression, rightExpression);
     }
 
     @Override

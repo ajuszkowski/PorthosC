@@ -37,8 +37,8 @@ public enum YUnaryOperator implements YOperator {
         return visitor.visit(this);
     }
 
-    public YUnaryExpression createExpression(Origin location, YExpression baseExpression) {
-        return new YUnaryExpression(location, this, baseExpression);
+    public YUnaryExpression createExpression(Origin origin, YExpression baseExpression) {
+        return new YUnaryExpression(origin, this, baseExpression);
     }
 
     @Override

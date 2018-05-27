@@ -36,7 +36,7 @@ public class YMethodSignature implements YEntity {
     }
 
     @Override
-    public Origin codeLocation() {
+    public Origin origin() {
         return Origin.empty; //TODO: method signature must not be a YEntity! this is a common class used by all representations!
     }
 

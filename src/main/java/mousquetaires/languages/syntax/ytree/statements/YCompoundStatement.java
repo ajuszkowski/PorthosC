@@ -13,20 +13,20 @@ public class YCompoundStatement extends YStatement {
     private final boolean hasBraces; // defines whether sequence of statements has surrounding braces '{' '}'
     private final ImmutableList<YStatement> statements; // <- recursive
 
-    public YCompoundStatement(Origin location, YStatement... statements) {
-        this(location, true, statements);
+    public YCompoundStatement(Origin origin, YStatement... statements) {
+        this(origin, true, statements);
     }
 
-    public YCompoundStatement(Origin location, boolean hasBraces, YStatement... statements) {
-        this(location, hasBraces, ImmutableList.copyOf(statements));
+    public YCompoundStatement(Origin origin, boolean hasBraces, YStatement... statements) {
+        this(origin, hasBraces, ImmutableList.copyOf(statements));
     }
 
-    public YCompoundStatement(Origin location, boolean hasBraces, ImmutableList<YStatement> statements) {
-        this(location, "", hasBraces, statements);
+    public YCompoundStatement(Origin origin, boolean hasBraces, ImmutableList<YStatement> statements) {
+        this(origin, "", hasBraces, statements);
     }
 
-    private YCompoundStatement(Origin location, String label, boolean hasBraces, ImmutableList<YStatement> statements) {
-        super(location, label);
+    private YCompoundStatement(Origin origin, String label, boolean hasBraces, ImmutableList<YStatement> statements) {
+        super(origin, label);
         this.statements = statements;
         this.hasBraces = hasBraces;
     }
@@ -41,7 +41,7 @@ public class YCompoundStatement extends YStatement {
 
     @Override
     public YCompoundStatement withLabel(String newLabel) {
-        return new YCompoundStatement(codeLocation(), newLabel, hasBraces, statements);
+        return new YCompoundStatement(origin(), newLabel, hasBraces, statements);
     }
 
     @Override

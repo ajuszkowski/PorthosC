@@ -13,8 +13,8 @@ public class YUnaryExpression extends YMultiExpression {
 
     private final YUnaryOperator operator;
 
-    YUnaryExpression(Origin location, YUnaryOperator operator, YExpression baseExpression) {
-        super(location, baseExpression);
+    YUnaryExpression(Origin origin, YUnaryOperator operator, YExpression baseExpression) {
+        super(origin, baseExpression);
         this.operator = operator;
     }
 

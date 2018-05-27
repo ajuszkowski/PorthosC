@@ -15,8 +15,8 @@ public final class YProcessStatement extends YFunctionDefinition {
 
     private final XProcessId processId;
 
-    public YProcessStatement(Origin location, YMethodSignature signature, YCompoundStatement body) {
-        super(location, signature, body);
+    public YProcessStatement(Origin origin, YMethodSignature signature, YCompoundStatement body) {
+        super(origin, signature, body);
         this.processId = new XProcessId(signature.getName());
     }
 

@@ -11,16 +11,16 @@ public class YVariableRef extends YAtomBase {
 
     private final String name;
 
-    public YVariableRef(Origin location, String name) {
-        this(location, Kind.Local, name, 0);
+    public YVariableRef(Origin origin, String name) {
+        this(origin, Kind.Local, name, 0);
     }
 
-    protected YVariableRef(Origin location, String name, int pointerLevel) {
-        this(location, Kind.Local, name, pointerLevel);
+    protected YVariableRef(Origin origin, String name, int pointerLevel) {
+        this(origin, Kind.Local, name, pointerLevel);
     }
 
-    private YVariableRef(Origin location, Kind kind, String name, int pointerLevel) {
-        super(location, kind, pointerLevel);
+    private YVariableRef(Origin origin, Kind kind, String name, int pointerLevel) {
+        super(origin, kind, pointerLevel);
         this.name = name;
     }
 
@@ -29,12 +29,12 @@ public class YVariableRef extends YAtomBase {
     }
 
     public YVariableRef asGlobal() {
-        return new YVariableRef(codeLocation(), Kind.Global, getName(), getPointerLevel());
+        return new YVariableRef(origin(), Kind.Global, getName(), getPointerLevel());
     }
 
     @Override
     public YVariableRef withPointerLevel(int level) {
-        return new YVariableRef(codeLocation(), getKind(), getName(), level);
+        return new YVariableRef(origin(), getKind(), getName(), level);
     }
 
     @Override

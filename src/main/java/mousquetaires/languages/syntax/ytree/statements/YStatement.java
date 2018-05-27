@@ -5,15 +5,15 @@ import mousquetaires.languages.syntax.ytree.YEntity;
 
 
 public abstract class YStatement implements YEntity {  // TODO: implement all as YJumpStatement
-    private final Origin location;
+    private final Origin origin;
     private final String label;
 
-    protected YStatement(Origin location) {
-        this(location, newLabel());
+    protected YStatement(Origin origin) {
+        this(origin, newLabel());
     }
 
-    protected YStatement(Origin location, String label) {
-        this.location = location;
+    protected YStatement(Origin origin, String label) {
+        this.origin = origin;
         this.label = label;
     }
 
@@ -22,8 +22,8 @@ public abstract class YStatement implements YEntity {  // TODO: implement all as
     }
 
     @Override
-    public Origin codeLocation() {
-        return location;
+    public Origin origin() {
+        return origin;
     }
 
     // the label in terms of C (like goto label)

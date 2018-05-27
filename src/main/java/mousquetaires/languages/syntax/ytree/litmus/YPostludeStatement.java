@@ -10,8 +10,8 @@ public final class YPostludeStatement extends YUnlabeledStatement {
 
     private final YExpression expression; //a recursive boolean expression-tree
 
-    public YPostludeStatement(Origin location, YExpression expression) {
-        super(location);
+    public YPostludeStatement(Origin origin, YExpression expression) {
+        super(origin);
         this.expression = expression;
     }
 

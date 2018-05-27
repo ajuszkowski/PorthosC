@@ -13,7 +13,7 @@ public interface YTempEntity extends YEntity {
     }
 
     @Override
-    default Origin codeLocation() {
+    default Origin origin() {
         throw new UnsupportedOperationException();
     }
 }

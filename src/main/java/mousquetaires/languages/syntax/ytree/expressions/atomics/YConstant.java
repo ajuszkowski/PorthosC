@@ -12,8 +12,8 @@ public class YConstant extends YAtomBase {
 
     private final Object value;
 
-    private YConstant(Origin location, Object value) {
-        super(location, Kind.Global);
+    private YConstant(Origin origin, Object value) {
+        super(origin, Kind.Global);
         this.value = value;
     }
 

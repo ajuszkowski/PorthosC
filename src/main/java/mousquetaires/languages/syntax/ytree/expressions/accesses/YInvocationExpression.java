@@ -17,12 +17,12 @@ public class YInvocationExpression extends YMultiExpression  {
     //public YInvocationExpression(YExpression baseExpression, YExpression... arguments) {
     //    this(baseExpression, ImmutableList.copyOf(arguments));
     //}
-    public YInvocationExpression(Origin location, YExpression baseExpression, ImmutableList<YExpression> arguments) {
-        this(location, baseExpression, arguments, 0);
+    public YInvocationExpression(Origin origin, YExpression baseExpression, ImmutableList<YExpression> arguments) {
+        this(origin, baseExpression, arguments, 0);
     }
 
-    private YInvocationExpression(Origin location, YExpression baseExpression, ImmutableList<YExpression> arguments, int pointerLevel) {
-        super(location, pointerLevel, ImmutableUtils.append(baseExpression, arguments));
+    private YInvocationExpression(Origin origin, YExpression baseExpression, ImmutableList<YExpression> arguments, int pointerLevel) {
+        super(origin, pointerLevel, ImmutableUtils.append(baseExpression, arguments));
         this.elementsCount = arguments.size() + 1;
     }
 
@@ -36,7 +36,7 @@ public class YInvocationExpression extends YMultiExpression  {
 
     @Override
     public YInvocationExpression withPointerLevel(int level) {
-        return new YInvocationExpression(codeLocation(), getBaseExpression(), getArguments(), level);
+        return new YInvocationExpression(origin(), getBaseExpression(), getArguments(), level);
     }
 
     @Override

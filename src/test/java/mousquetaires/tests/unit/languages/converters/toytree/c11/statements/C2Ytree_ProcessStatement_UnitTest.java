@@ -23,13 +23,13 @@ public class C2Ytree_ProcessStatement_UnitTest extends C2Ytree_Statement_UnitTes
     @Ignore("process statements syntax is temporarily not supported")
     public void test() {
         Iterator<? extends YEntity> expected = getIterator(
-                new YProcessStatement(location,
+                new YProcessStatement(origin,
                                       new YMethodSignature("?", new YMockType()),// TODO: replace this mock signature with real
-                                      new YCompoundStatement(location,
+                                      new YCompoundStatement(origin,
                                                              true,
-                                                             new YVariableDeclarationStatement(location, typeInt, variableA),
-                                                             new YLinearStatement(new YAssignmentExpression(location, variableA, constant1)))),
-                new YPostludeStatement(location, YBinaryOperator.Equals.createExpression(location, variableA, constant2)));
+                                                             new YVariableDeclarationStatement(origin, typeInt, variableA),
+                                                             new YLinearStatement(new YAssignmentExpression(origin, variableA, constant1)))),
+                new YPostludeStatement(origin, YBinaryOperator.Equals.createExpression(origin, variableA, constant2)));
 
         run(UnitTestPaths.c11StatementsDirectory + "processStatement.c", expected);
     }

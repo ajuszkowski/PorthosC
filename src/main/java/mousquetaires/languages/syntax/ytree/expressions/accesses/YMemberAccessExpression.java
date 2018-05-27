@@ -10,12 +10,12 @@ public class YMemberAccessExpression extends YMultiExpression implements YAtom {
 
     private final String memberName;
 
-    public YMemberAccessExpression(Origin location, YAtom baseExpression, String memberName) {
-        this(location, baseExpression, memberName, baseExpression.getPointerLevel());
+    public YMemberAccessExpression(Origin origin, YAtom baseExpression, String memberName) {
+        this(origin, baseExpression, memberName, baseExpression.getPointerLevel());
     }
 
-    private YMemberAccessExpression(Origin location, YAtom baseExpression, String memberName, int pointerLevel) {
-        super(location, pointerLevel, baseExpression);
+    private YMemberAccessExpression(Origin origin, YAtom baseExpression, String memberName, int pointerLevel) {
+        super(origin, pointerLevel, baseExpression);
         this.memberName = memberName;
     }
 
@@ -34,7 +34,7 @@ public class YMemberAccessExpression extends YMultiExpression implements YAtom {
 
     @Override
     public YMemberAccessExpression withPointerLevel(int level) {
-        return new YMemberAccessExpression(codeLocation(), getBaseExpression(), getMemberName(), level);
+        return new YMemberAccessExpression(origin(), getBaseExpression(), getMemberName(), level);
     }
 
     @Override

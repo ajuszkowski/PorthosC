@@ -8,22 +8,22 @@ import java.util.Objects;
 
 public abstract class YMultiExpression implements YExpression {
 
-    private final Origin location;
+    private final Origin origin;
     private final int pointerLevel;
     private final ImmutableList<YExpression> elements;
 
-    protected YMultiExpression(Origin location, YExpression... elements) {
-        this(location, 0, elements);
+    protected YMultiExpression(Origin origin, YExpression... elements) {
+        this(origin, 0, elements);
     }
 
-    protected YMultiExpression(Origin location, int pointerLevel, YExpression... elements) {
-        this(location, pointerLevel, ImmutableList.copyOf(elements));
+    protected YMultiExpression(Origin origin, int pointerLevel, YExpression... elements) {
+        this(origin, pointerLevel, ImmutableList.copyOf(elements));
     }
 
-    protected YMultiExpression(Origin location, int pointerLevel, ImmutableList<YExpression> elements) {
+    protected YMultiExpression(Origin origin, int pointerLevel, ImmutableList<YExpression> elements) {
         this.pointerLevel = pointerLevel;
         this.elements = elements;
-        this.location = location;
+        this.origin = origin;
     }
 
     protected ImmutableList<YExpression> getElements() {
@@ -36,8 +36,8 @@ public abstract class YMultiExpression implements YExpression {
     }
 
     @Override
-    public Origin codeLocation() {
-        return location;
+    public Origin origin() {
+        return origin;
     }
 
     @Override

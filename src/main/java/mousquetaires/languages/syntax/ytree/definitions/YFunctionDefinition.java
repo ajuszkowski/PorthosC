@@ -10,12 +10,12 @@ import java.util.Objects;
 
 
 public class YFunctionDefinition implements YDefinition {
-    private final Origin location;
+    private final Origin origin;
     private final YMethodSignature signature;
     private final YCompoundStatement body;
 
-    public YFunctionDefinition(Origin location, YMethodSignature signature, YCompoundStatement body) {
-        this.location = location;
+    public YFunctionDefinition(Origin origin, YMethodSignature signature, YCompoundStatement body) {
+        this.origin = origin;
         this.signature = signature;
         this.body = body;
     }
@@ -29,8 +29,8 @@ public class YFunctionDefinition implements YDefinition {
     }
 
     @Override
-    public Origin codeLocation() {
-        return location;
+    public Origin origin() {
+        return origin;
     }
 
     @Override

@@ -23,7 +23,7 @@ public class YMockType implements YType {
     }
 
     @Override
-    public Origin codeLocation() {
+    public Origin origin() {
         return Origin.empty;
     }
 

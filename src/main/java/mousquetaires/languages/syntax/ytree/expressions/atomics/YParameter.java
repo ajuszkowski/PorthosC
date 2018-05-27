@@ -7,12 +7,12 @@ import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 
 public class YParameter implements YAtom {
 
-    private final Origin location;
+    private final Origin origin;
     private final YType type;
     private final YVariableRef variable;
 
-    public YParameter(Origin location, YType type, YVariableRef variable) {
-        this.location = location;
+    public YParameter(Origin origin, YType type, YVariableRef variable) {
+        this.origin = origin;
         this.variable = variable.asGlobal();
         this.type = type;
     }
@@ -37,12 +37,12 @@ public class YParameter implements YAtom {
 
     @Override
     public YParameter withPointerLevel(int level) {
-        return new YParameter(codeLocation(), getType(), getVariable().withPointerLevel(level));
+        return new YParameter(origin(), getType(), getVariable().withPointerLevel(level));
     }
 
     @Override
-    public Origin codeLocation() {
-        return location;
+    public Origin origin() {
+        return origin;
     }
 
     @Override

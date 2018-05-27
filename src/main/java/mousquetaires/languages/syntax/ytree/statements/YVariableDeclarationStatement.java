@@ -13,12 +13,12 @@ public class YVariableDeclarationStatement extends YStatement {
     private final YType type;
     private final YVariableRef variable;
 
-    public YVariableDeclarationStatement(Origin location, YType type, YVariableRef variable) {
-        this(location, newLabel(), type, variable);
+    public YVariableDeclarationStatement(Origin origin, YType type, YVariableRef variable) {
+        this(origin, newLabel(), type, variable);
     }
 
-    private YVariableDeclarationStatement(Origin location, String label, YType type, YVariableRef variable) {
-        super(location, label);
+    private YVariableDeclarationStatement(Origin origin, String label, YType type, YVariableRef variable) {
+        super(origin, label);
         this.type = type;
         this.variable = variable;
     }
@@ -33,7 +33,7 @@ public class YVariableDeclarationStatement extends YStatement {
 
     @Override
     public YVariableDeclarationStatement withLabel(String newLabel) {
-        return new YVariableDeclarationStatement(codeLocation(), newLabel, getType(), getVariable());
+        return new YVariableDeclarationStatement(origin(), newLabel, getType(), getVariable());
     }
 
     @Override

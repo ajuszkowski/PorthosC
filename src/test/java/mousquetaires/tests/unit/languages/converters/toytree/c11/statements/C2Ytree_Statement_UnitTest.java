@@ -9,7 +9,7 @@ import mousquetaires.tests.unit.languages.converters.toytree.C2Ytree_UnitTestBas
 
 
 public abstract class C2Ytree_Statement_UnitTest extends C2Ytree_UnitTestBase {
-    protected final Origin location = Origin.empty;
+    protected final Origin origin = Origin.empty;
 
     // shortcuts necessary for tests
     protected YVariableRef variableX = createVariable("x");
@@ -32,6 +32,6 @@ public abstract class C2Ytree_Statement_UnitTest extends C2Ytree_UnitTestBase {
     protected YType typeVoidPointer = new YMockType();  //YPrimitiveTypeFactory.getPrimitiveType(YTypeName.Void, 1);
 
     private YVariableRef createVariable(String name) {
-        return new YVariableRef(location, name);
+        return new YVariableRef(origin, name);
     }
 }

@@ -11,8 +11,8 @@ import mousquetaires.utils.exceptions.NotSupportedException;
 
 public class YAssignmentExpression extends YMultiExpression {
 
-    public YAssignmentExpression(Origin location, YAtom assignee, YExpression expression) {
-        super(location, assignee, expression);
+    public YAssignmentExpression(Origin origin, YAtom assignee, YExpression expression) {
+        super(origin, assignee, expression);
     }
 
     public YAtom getAssignee() {

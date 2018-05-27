@@ -8,5 +8,5 @@ public interface YEntity {
 
     <T> T accept(YtreeVisitor<T> visitor);
 
-    Origin codeLocation();
+    Origin origin();
 }

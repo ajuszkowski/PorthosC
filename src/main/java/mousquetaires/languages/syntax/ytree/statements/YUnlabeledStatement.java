@@ -5,8 +5,8 @@ import mousquetaires.languages.common.citation.Origin;
 // TODO: according the C standard , not all statements can have label (if-then-else? while?)
 public abstract class YUnlabeledStatement extends YStatement {
 
-    public YUnlabeledStatement(Origin location) {
-        super(location);
+    public YUnlabeledStatement(Origin origin) {
+        super(origin);
     }
 
     @Override
