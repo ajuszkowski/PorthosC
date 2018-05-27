@@ -18,7 +18,7 @@ public class YBranchingStatement extends YStatement {  // TODO: inherit from YJu
                                YExpression condition,
                                YStatement thenBranch,
                                YStatement elseBranch) {
-        this(origin, newLabel(), condition, thenBranch, elseBranch);
+        this(origin, null, condition, thenBranch, elseBranch);
     }
 
     private YBranchingStatement(Origin origin,

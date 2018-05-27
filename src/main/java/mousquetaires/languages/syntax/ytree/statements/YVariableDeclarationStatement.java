@@ -14,7 +14,7 @@ public class YVariableDeclarationStatement extends YStatement {
     private final YVariableRef variable;
 
     public YVariableDeclarationStatement(Origin origin, YType type, YVariableRef variable) {
-        this(origin, newLabel(), type, variable);
+        this(origin, null, type, variable);
     }
 
     private YVariableDeclarationStatement(Origin origin, String label, YType type, YVariableRef variable) {

@@ -12,7 +12,7 @@ public class YLinearStatement extends YStatement {
     private final YExpression expression;
 
     public YLinearStatement(YExpression expression) {
-        this(expression.origin(), newLabel(), expression);
+        this(expression.origin(), null, expression);
     }
 
     private YLinearStatement(Origin origin, String label, YExpression expression) {

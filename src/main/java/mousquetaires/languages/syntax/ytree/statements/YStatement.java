@@ -3,13 +3,16 @@ package mousquetaires.languages.syntax.ytree.statements;
 import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.syntax.ytree.YEntity;
 
+import javax.annotation.Nullable;
+
 
 public abstract class YStatement implements YEntity {  // TODO: implement all as YJumpStatement
+
     private final Origin origin;
     private final String label;
 
     protected YStatement(Origin origin) {
-        this(origin, newLabel());
+        this(origin, null);
     }
 
     protected YStatement(Origin origin, String label) {
@@ -17,6 +20,7 @@ public abstract class YStatement implements YEntity {  // TODO: implement all as
         this.label = label;
     }
 
+    @Nullable
     public String getLabel() {
         return label;
     }
@@ -29,8 +33,8 @@ public abstract class YStatement implements YEntity {  // TODO: implement all as
     // the label in terms of C (like goto label)
     public abstract YStatement withLabel(String newLabel);
 
-    private static int id = 1;
-    protected static String newLabel() {
-        return "__stmt" + id++;
-    }
+    //private static int id = 1;
+    //protected static String null {
+    //    return "__stmt" + id++;
+    //}
 }

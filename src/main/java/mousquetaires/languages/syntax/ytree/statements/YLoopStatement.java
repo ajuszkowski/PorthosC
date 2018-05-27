@@ -15,7 +15,7 @@ public class YLoopStatement extends YStatement {
 
 
     public YLoopStatement(Origin origin, YExpression condition, YStatement body) {
-        this(origin, newLabel(), condition, body);
+        this(origin, null, condition, body);
     }
 
     private YLoopStatement(Origin origin, String label, YExpression condition, YStatement body) {

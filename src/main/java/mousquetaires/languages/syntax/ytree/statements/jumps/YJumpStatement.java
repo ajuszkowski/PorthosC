@@ -34,7 +34,7 @@ public class YJumpStatement extends YStatement {
     private final YJumpLabel jumpLabel; // label of statement to which we jump
 
     private YJumpStatement(Origin origin, Kind kind, YJumpLabel jumpLabel) {
-        this(origin, newLabel(), kind, jumpLabel);
+        this(origin, null, kind, jumpLabel);
     }
 
     private YJumpStatement(Origin origin, String selfLabel, Kind kind, YJumpLabel jumpLabel) {
