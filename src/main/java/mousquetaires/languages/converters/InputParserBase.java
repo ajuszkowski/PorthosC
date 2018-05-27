@@ -1,7 +1,7 @@
 package mousquetaires.languages.converters;
 
 import mousquetaires.languages.InputLanguage;
-import mousquetaires.languages.common.citation.CodeCitationService;
+import mousquetaires.languages.common.citation.CitationService;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -15,7 +15,7 @@ public abstract class InputParserBase {
     private final File inputFile;
     private final InputLanguage language;
 
-    private CodeCitationService citationService;
+    private CitationService citationService;
     private YSyntaxTree result;
 
     public InputParserBase(File inputFile, InputLanguage language) {
@@ -26,7 +26,7 @@ public abstract class InputParserBase {
     public YSyntaxTree parseFile() throws IOException {
         if (result == null) {
             CommonTokenStream tokenStream = InputParserFactory.getTokenStream(inputFile, language);
-            citationService = new CodeCitationService(inputFile.getAbsolutePath(), tokenStream);
+            citationService = new CitationService(inputFile.getAbsolutePath(), tokenStream);
             ParserRuleContext parserEntryPoint = InputParserFactory.getParser(tokenStream, language);
 
             InputProgramConvertersFactory convertersFactory = new InputProgramConvertersFactory(citationService);
@@ -36,7 +36,7 @@ public abstract class InputParserBase {
         return result;
     }
 
-    public CodeCitationService getCitationService() {
+    public CitationService getCitationService() {
         assert result != null : "'parseFile()' must been already called";
         assert citationService != null;
         return citationService;

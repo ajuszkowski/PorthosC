@@ -1,7 +1,7 @@
 package mousquetaires.languages.converters.toytree.c11;
 
 import com.google.common.collect.ImmutableList;
-import mousquetaires.languages.common.citation.CodeCitationService;
+import mousquetaires.languages.common.citation.CitationService;
 import mousquetaires.languages.common.citation.Origin;
 import mousquetaires.languages.parsers.C11Parser;
 import mousquetaires.languages.parsers.C11Visitor;
@@ -43,9 +43,9 @@ class C2YtreeConverterVisitor
         extends AbstractParseTreeVisitor<YEntity>
         implements C11Visitor<YEntity> {
 
-    private final CodeCitationService citationService;
+    private final CitationService citationService;
 
-    C2YtreeConverterVisitor(CodeCitationService citationService) {
+    C2YtreeConverterVisitor(CitationService citationService) {
         this.citationService = citationService;
     }
 

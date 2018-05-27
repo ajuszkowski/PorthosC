@@ -1,7 +1,7 @@
 package mousquetaires.languages.converters.towmodel;
 
 
-import mousquetaires.languages.common.citation.CodeCitationService;
+import mousquetaires.languages.common.citation.CitationService;
 import mousquetaires.languages.parsers.CatParser;
 import mousquetaires.languages.parsers.CatVisitor;
 import mousquetaires.languages.syntax.wmodel.WEntity;
@@ -13,9 +13,9 @@ public final class Cat2WmodelConverterVisitor
         extends AbstractParseTreeVisitor<WEntity>
         implements CatVisitor<WEntity> {
 
-    private final CodeCitationService citationService;
+    private final CitationService citationService;
 
-    public Cat2WmodelConverterVisitor(CodeCitationService citationService) {
+    public Cat2WmodelConverterVisitor(CitationService citationService) {
         this.citationService = citationService;
     }
 

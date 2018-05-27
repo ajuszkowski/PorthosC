@@ -5,12 +5,12 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 
 
-public class CodeCitationService {
+public class CitationService {
 
     private final String file;
     private final CommonTokenStream input;
 
-    public CodeCitationService(String file, CommonTokenStream input) {
+    public CitationService(String file, CommonTokenStream input) {
         this.file = file;
         this.input = input;
     }

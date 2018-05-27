@@ -1,7 +1,7 @@
 package mousquetaires.languages.converters.toytree.c11;
 
 
-import mousquetaires.languages.common.citation.CodeCitationService;
+import mousquetaires.languages.common.citation.CitationService;
 import mousquetaires.languages.converters.InputProgram2YtreeConverter;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -9,9 +9,9 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 public final class C2YtreeConverter implements InputProgram2YtreeConverter {
 
-    private final CodeCitationService citationService;
+    private final CitationService citationService;
 
-    public C2YtreeConverter(CodeCitationService citationService) {
+    public C2YtreeConverter(CitationService citationService) {
         this.citationService = citationService;
     }
 

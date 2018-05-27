@@ -1,15 +1,15 @@
 package mousquetaires.languages.converters;
 
 import mousquetaires.languages.InputLanguage;
-import mousquetaires.languages.common.citation.CodeCitationService;
+import mousquetaires.languages.common.citation.CitationService;
 import mousquetaires.languages.converters.toytree.c11.C2YtreeConverter;
 
 
 public class InputProgramConvertersFactory {
 
-    private final CodeCitationService citationService;
+    private final CitationService citationService;
 
-    public InputProgramConvertersFactory(CodeCitationService citationService) {
+    public InputProgramConvertersFactory(CitationService citationService) {
         this.citationService = citationService;
     }
 
