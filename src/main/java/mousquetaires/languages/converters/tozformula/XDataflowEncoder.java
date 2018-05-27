@@ -9,7 +9,7 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XAssertionEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XMethodCallEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XFunctionCallEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
@@ -90,7 +90,7 @@ public class XDataflowEncoder implements XEventVisitor<BoolExpr> {
     }
 
     @Override
-    public BoolExpr visit(XMethodCallEvent event) {
+    public BoolExpr visit(XFunctionCallEvent event) {
         throw new NotImplementedException();
     }
 

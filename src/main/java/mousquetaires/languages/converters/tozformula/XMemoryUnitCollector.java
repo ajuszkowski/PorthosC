@@ -4,7 +4,7 @@ import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XAssertionEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XMethodCallEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XFunctionCallEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
@@ -38,7 +38,7 @@ class XMemoryUnitCollector implements XEventVisitor<Iterable<XMemoryUnit>> {
     }
 
     @Override
-    public Iterable<XMemoryUnit> visit(XMethodCallEvent event) {
+    public Iterable<XMemoryUnit> visit(XFunctionCallEvent event) {
         throw new NotImplementedException(); //todo: after method call is completed, return arguments + return register
     }
 

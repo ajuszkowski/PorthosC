@@ -4,7 +4,7 @@ import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XAssertionEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XUnaryComputationEvent;
-import mousquetaires.languages.syntax.xgraph.events.controlflow.XMethodCallEvent;
+import mousquetaires.languages.syntax.xgraph.events.controlflow.XFunctionCallEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
@@ -37,7 +37,7 @@ public class XLocalMemoryUnitCollector implements XEventVisitor<Iterable<XLocalM
     }
 
     @Override
-    public Iterable<XLocalMemoryUnit> visit(XMethodCallEvent event) {
+    public Iterable<XLocalMemoryUnit> visit(XFunctionCallEvent event) {
         throw new NotImplementedException();
     }
 

@@ -11,13 +11,13 @@ import mousquetaires.languages.syntax.xgraph.visitors.XMemoryUnitVisitor;
 import mousquetaires.utils.exceptions.NotImplementedException;
 
 
-public class XMethodCallEvent extends XEventBase implements XControlFlowEvent, XLocalMemoryUnit {
+public class XFunctionCallEvent extends XEventBase implements XControlFlowEvent, XLocalMemoryUnit {
 
     private final XLocalLvalueMemoryUnit result = null;
     private final XType type = null;
 
     //TODO: this is a mock
-    public XMethodCallEvent(int refId, XEventInfo info) {
+    public XFunctionCallEvent(int refId, XEventInfo info) {
         super(refId, info);
     }
 
