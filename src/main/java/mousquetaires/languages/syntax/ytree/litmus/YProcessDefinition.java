@@ -11,11 +11,11 @@ import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 /**
  * Temporary class representing explicitly defined processName in c-like code.
  */
-public final class YProcessStatement extends YFunctionDefinition {
+public final class YProcessDefinition extends YFunctionDefinition {
 
     private final XProcessId processId;
 
-    public YProcessStatement(Origin origin, YFunctionSignature signature, YCompoundStatement body) {
+    public YProcessDefinition(Origin origin, YFunctionSignature signature, YCompoundStatement body) {
         super(origin, signature, body);
         this.processId = new XProcessId(signature.getName());
     }

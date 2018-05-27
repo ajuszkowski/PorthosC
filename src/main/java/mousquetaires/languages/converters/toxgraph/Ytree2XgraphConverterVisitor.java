@@ -35,7 +35,7 @@ import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryOperato
 import mousquetaires.languages.syntax.ytree.expressions.ternary.YTernaryExpression;
 import mousquetaires.languages.syntax.ytree.litmus.YPostludeStatement;
 import mousquetaires.languages.syntax.ytree.litmus.YPreludeStatement;
-import mousquetaires.languages.syntax.ytree.litmus.YProcessStatement;
+import mousquetaires.languages.syntax.ytree.litmus.YProcessDefinition;
 import mousquetaires.languages.syntax.ytree.statements.*;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
 import mousquetaires.languages.syntax.ytree.types.YFunctionSignature;
@@ -84,7 +84,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     }
 
     @Override
-    public XEvent visit(YProcessStatement node) {
+    public XEvent visit(YProcessDefinition node) {
         program.startProcessDefinition(XProcessKind.ConcurrentProcess, node.getProcessId());
         for (YParameter parameter : node.getSignature().getParameters()) {
             YVariableRef parameterVariable = parameter.getVariable();

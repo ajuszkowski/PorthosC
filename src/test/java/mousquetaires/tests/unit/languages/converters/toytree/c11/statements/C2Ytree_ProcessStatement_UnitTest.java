@@ -4,7 +4,7 @@ import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryOperator;
 import mousquetaires.languages.syntax.ytree.litmus.YPostludeStatement;
-import mousquetaires.languages.syntax.ytree.litmus.YProcessStatement;
+import mousquetaires.languages.syntax.ytree.litmus.YProcessDefinition;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
 import mousquetaires.languages.syntax.ytree.statements.YVariableDeclarationStatement;
@@ -23,9 +23,9 @@ public class C2Ytree_ProcessStatement_UnitTest extends C2Ytree_Statement_UnitTes
     @Ignore("process statements syntax is temporarily not supported")
     public void test() {
         Iterator<? extends YEntity> expected = getIterator(
-                new YProcessStatement(origin,
-                                      new YFunctionSignature("?", new YMockType()),// TODO: replace this mock signature with real
-                                      new YCompoundStatement(origin,
+                new YProcessDefinition(origin,
+                                       new YFunctionSignature("?", new YMockType()),// TODO: replace this mock signature with real
+                                       new YCompoundStatement(origin,
                                                              true,
                                                              new YVariableDeclarationStatement(origin, typeInt, variableA),
                                                              new YLinearStatement(new YAssignmentExpression(origin, variableA, constant1)))),

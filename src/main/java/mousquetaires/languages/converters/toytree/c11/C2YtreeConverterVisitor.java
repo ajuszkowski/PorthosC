@@ -18,7 +18,7 @@ import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryOperat
 import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryOperator;
 import mousquetaires.languages.syntax.ytree.litmus.YPostludeStatement;
 import mousquetaires.languages.syntax.ytree.litmus.YPreludeStatement;
-import mousquetaires.languages.syntax.ytree.litmus.YProcessStatement;
+import mousquetaires.languages.syntax.ytree.litmus.YProcessDefinition;
 import mousquetaires.languages.syntax.ytree.statements.*;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpLabel;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
@@ -1838,7 +1838,7 @@ class C2YtreeConverterVisitor
      * ;
      */
     @Override
-    public YProcessStatement visitFunctionDefinition(C11Parser.FunctionDefinitionContext ctx) {
+    public YProcessDefinition visitFunctionDefinition(C11Parser.FunctionDefinitionContext ctx) {
         // TODO: process declaration specifiers
         // TODO: process declarator
         // TODO: process declarationList
@@ -1857,7 +1857,7 @@ class C2YtreeConverterVisitor
             }
             YFunctionSignature signature = (YFunctionSignature) declarator;
             YCompoundStatement body = visitCompoundStatement(compoundStatementContext);
-            return new YProcessStatement(origin(ctx), signature, body);
+            return new YProcessDefinition(origin(ctx), signature, body);
         }
         throw new YParserException(ctx);
     }
