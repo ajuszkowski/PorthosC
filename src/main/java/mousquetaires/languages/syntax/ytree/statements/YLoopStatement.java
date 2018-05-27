@@ -7,17 +7,18 @@ import mousquetaires.languages.syntax.ytree.visitors.YtreeVisitor;
 import java.util.Objects;
 
 
-public class YWhileLoopStatement extends YStatement {
+// while + for loops
+public class YLoopStatement extends YStatement {
 
     private final YExpression condition;
     private final YStatement body;
 
 
-    public YWhileLoopStatement(Origin origin, YExpression condition, YStatement body) {
+    public YLoopStatement(Origin origin, YExpression condition, YStatement body) {
         this(origin, newLabel(), condition, body);
     }
 
-    private YWhileLoopStatement(Origin origin, String label, YExpression condition, YStatement body) {
+    private YLoopStatement(Origin origin, String label, YExpression condition, YStatement body) {
         super(origin, label);
         this.condition = condition;
         this.body = body;
@@ -32,8 +33,8 @@ public class YWhileLoopStatement extends YStatement {
     }
 
     @Override
-    public YWhileLoopStatement withLabel(String newLabel) {
-        return new YWhileLoopStatement(origin(), newLabel, getCondition(), getBody());
+    public YLoopStatement withLabel(String newLabel) {
+        return new YLoopStatement(origin(), newLabel, getCondition(), getBody());
     }
 
     @Override
@@ -49,8 +50,8 @@ public class YWhileLoopStatement extends YStatement {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof YWhileLoopStatement)) return false;
-        YWhileLoopStatement that = (YWhileLoopStatement) o;
+        if (!(o instanceof YLoopStatement)) return false;
+        YLoopStatement that = (YLoopStatement) o;
         return Objects.equals(getCondition(), that.getCondition()) &&
                 Objects.equals(getBody(), that.getBody());
     }

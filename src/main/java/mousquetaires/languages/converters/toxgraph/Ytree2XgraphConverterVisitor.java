@@ -45,7 +45,6 @@ import mousquetaires.utils.exceptions.NotImplementedException;
 import mousquetaires.utils.exceptions.xgraph.XInterpretationError;
 import mousquetaires.utils.exceptions.xgraph.XInterpreterUsageError;
 
-import javax.net.ssl.CertPathTrustManagerParameters;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -422,7 +421,7 @@ public class Ytree2XgraphConverterVisitor implements YtreeVisitor<XEntity> {
     }
 
     @Override
-    public XEvent visit(YWhileLoopStatement node) {
+    public XEvent visit(YLoopStatement node) {
         program.startBlockDefinition(XInterpreter.BlockKind.Loop);
 
         program.startBlockConditionDefinition();

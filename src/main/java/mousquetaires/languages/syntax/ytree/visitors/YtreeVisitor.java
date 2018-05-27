@@ -62,7 +62,7 @@ public interface YtreeVisitor<T> {
     T visit(YBranchingStatement node);
     T visit(YCompoundStatement node);
     T visit(YLinearStatement node);
-    T visit(YWhileLoopStatement node);
+    T visit(YLoopStatement node);
     T visit(YVariableDeclarationStatement node);
     T visit(YJumpStatement node);
 

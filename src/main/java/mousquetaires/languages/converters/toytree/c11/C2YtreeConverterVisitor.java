@@ -1682,7 +1682,7 @@ class C2YtreeConverterVisitor
                 throw new YParserException(ctx, "Missing loop expression");
             }
             YExpression expression = visitExpression(expressionContext);
-            YStatement loopStatement = new YWhileLoopStatement(origin(ctx), expression, statement);
+            YStatement loopStatement = new YLoopStatement(origin(ctx), expression, statement);
             if (isDoWhile) {
                 YBlockFILOTemp builder = new YBlockFILOTemp(origin(ctx));
                 builder.add(statement); //first iteration
