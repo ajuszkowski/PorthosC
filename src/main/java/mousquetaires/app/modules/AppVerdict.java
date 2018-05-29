@@ -2,10 +2,13 @@ package mousquetaires.app.modules;
 
 import com.google.common.collect.ImmutableMap;
 import mousquetaires.app.errors.AppError;
+import mousquetaires.app.options.AppOptions;
+import mousquetaires.languages.syntax.xgraph.XEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public abstract class AppVerdict {
@@ -34,27 +37,42 @@ public abstract class AppVerdict {
         }
     }
 
-    private final Timer mainTimer;
+    private final AppOptions options;
+    private final Timer timerMain;
     private final ImmutableMap<ProgramStage, Timer> timers;
+    private final HashMap<String, Integer> countEntities;
+    private final HashMap<String, Integer> countEntitiesUnrolled;
 
     private final List<AppError> errors;
 
-    public AppVerdict() {
-        this.mainTimer = new Timer();
+    public AppVerdict(AppOptions options) {
+        this.options = options;
+        this.timerMain = new Timer();
         HashMap<ProgramStage, Timer> timersValues = new HashMap<>();
         for (ProgramStage programStage : ProgramStage.values()) {
             timersValues.put(programStage, new Timer());
         }
         this.timers = ImmutableMap.copyOf(timersValues);
         this.errors = new ArrayList<>();
+        this.countEntities = new HashMap<>();
+        this.countEntitiesUnrolled = new HashMap<>();
+    }
+
+    public void setEntitiesNumber(boolean unrolled, Class<? extends XEntity> entityType, int number) {
+        setEntitiesNumber(unrolled, entityType.getSimpleName(), number);
+    }
+
+    public void setEntitiesNumber(boolean unrolled, String entityName, int number) {
+        Map<String, Integer> map = unrolled ? countEntitiesUnrolled : countEntities;
+        map.put(entityName, number);
     }
 
     public void startAll() {
-        mainTimer.start();
+        timerMain.start();
     }
 
     public void onStart(ProgramStage stage) {
-        String currentTime = String.format("%.3f: ", ((System.currentTimeMillis() - mainTimer.getStartTime()) / 1000));
+        String currentTime = String.format("%.3f: ", ((System.currentTimeMillis() - timerMain.getStartTime()) / 1000));
         System.out.println( currentTime + stage.separatedByCapitals() + "...");
         timers.get(stage).start();
     }
@@ -64,7 +82,7 @@ public abstract class AppVerdict {
     }
 
     public void finishAll() {
-        mainTimer.finish();
+        timerMain.finish();
     }
 
 

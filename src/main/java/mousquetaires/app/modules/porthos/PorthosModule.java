@@ -39,12 +39,12 @@ public class PorthosModule extends AppModule {
     @Override
     public PorthosVerdict run() {
 
-        PorthosVerdict verdict = new PorthosVerdict();
+        PorthosVerdict verdict = new PorthosVerdict(options);
         verdict.startAll();
 
         try {
-//todo: solving timeout!
-            int unrollBound = 27; // TODO: get from options
+            //todo: solving timeout!
+            int unrollBound = options.unrollingBound;
 
             MemoryModel.Kind source = options.sourceModel;
             MemoryModel.Kind target = options.targetModel;

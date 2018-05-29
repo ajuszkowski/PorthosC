@@ -4,6 +4,7 @@ package mousquetaires.app.options;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import com.beust.jcommander.converters.IntegerConverter;
 import mousquetaires.app.AppBase;
 import mousquetaires.app.options.converters.LogLevelConverter;
 import mousquetaires.app.options.validators.LogLevelValidator;
@@ -13,15 +14,19 @@ import mousquetaires.utils.logging.LogLevel;
 @Parameters(separators = " =")
 public abstract class AppOptions {
 
+    @Parameter(names = {"-b", "--bound"},
+            converter = IntegerConverter.class)
+    public int unrollingBound = 20;
+
     @Parameter(names = {"-log", "--log"},
             converter = LogLevelConverter.class,
             validateValueWith = LogLevelValidator.class)
-    public LogLevel logLevel;
+    public transient LogLevel logLevel;
 
     @Parameter(names = {"-h", "-?", "--help"},
             descriptionKey = "Print help message",
             help = true)
-    public boolean help;
+    public transient boolean help;
 
     //@YFunctionParameter(names = {"-m", "--module"},
     //        required = true,

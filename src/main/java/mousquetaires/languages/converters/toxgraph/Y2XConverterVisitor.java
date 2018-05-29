@@ -397,7 +397,8 @@ public class Y2XConverterVisitor implements YtreeVisitor<XEntity> {
         program.startBlockDefinition(XInterpreter.BlockKind.Branching);
 
         program.startBlockConditionDefinition();
-        XComputationEvent condition = program.tryEvaluateComputation(node.getCondition().accept(this));
+        XEntity conditionEntity = node.getCondition().accept(this);
+        XComputationEvent condition = program.tryEvaluateComputation(conditionEntity);
         program.finishBlockConditionDefinition(condition);
 
         program.startBlockBranchDefinition(XInterpreter.BranchKind.Then);

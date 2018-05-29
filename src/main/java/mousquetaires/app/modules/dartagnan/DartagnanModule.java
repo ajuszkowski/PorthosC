@@ -13,6 +13,12 @@ import mousquetaires.languages.InputLanguage;
 import mousquetaires.languages.converters.toxgraph.Y2XConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.converters.tozformula.XProgram2ZformulaEncoder;
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
+import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XLocalMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
 import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
@@ -37,12 +43,12 @@ public class DartagnanModule extends AppModule {
     @Override
     public DartagnanVerdict run() {
 
-        DartagnanVerdict verdict = new DartagnanVerdict();
+        DartagnanVerdict verdict = new DartagnanVerdict(options);
         verdict.startAll();
 
         try {
             //todo: solving timeout!
-            int unrollBound = 27; //75;// // TODO: get from options
+            int unrollBound = options.unrollingBound; //27;//75;
 
             MemoryModel.Kind memoryModelKind = options.sourceModel;
             //MemoryModel memoryModel = memoryModelKind.createModel();
@@ -58,6 +64,16 @@ public class DartagnanModule extends AppModule {
             XCyclicProgram program = yConverter.convert(yTree);
             verdict.onFinish(AppVerdict.ProgramStage.Interpretation);
 
+            verdict.setEntitiesNumber(false, XEvent.class, program.getAllEvents().size());
+            verdict.setEntitiesNumber(false, XMemoryEvent.class, program.getMemoryEvents().size());
+            verdict.setEntitiesNumber(false, XLocalMemoryEvent.class, program.getLocalMemoryEvents().size());
+            verdict.setEntitiesNumber(false, XSharedMemoryEvent.class, program.getSharedMemoryEvents().size());
+            verdict.setEntitiesNumber(false, XComputationEvent.class, program.getComputationEvents().size());
+            verdict.setEntitiesNumber(false, XBarrierEvent.class, program.getBarrierEvents().size());
+            verdict.setEntitiesNumber(false, XBarrierEvent.class, program.getBarrierEvents().size());
+            verdict.setEntitiesNumber(false, "_XEdgePrimary", program.getEdgesCount(true));
+            verdict.setEntitiesNumber(false, "_XEdgeAlternative", program.getEdgesCount(false));
+
             //for (XCyclicProcess process : program.getProcesses()) {
             //    GraphDumper.tryDumpToFile(process, "build/graphs/paper", process.getId().getValue());
             //}
@@ -66,11 +82,18 @@ public class DartagnanModule extends AppModule {
             XProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
             verdict.onFinish(AppVerdict.ProgramStage.Unrolling);
 
+            verdict.setEntitiesNumber(true, XEvent.class, unrolledProgram.getAllEvents().size());
+            verdict.setEntitiesNumber(true, XMemoryEvent.class, unrolledProgram.getMemoryEvents().size());
+            verdict.setEntitiesNumber(true, XLocalMemoryEvent.class, unrolledProgram.getLocalMemoryEvents().size());
+            verdict.setEntitiesNumber(true, XSharedMemoryEvent.class, unrolledProgram.getSharedMemoryEvents().size());
+            verdict.setEntitiesNumber(true, XComputationEvent.class, unrolledProgram.getComputationEvents().size());
+            verdict.setEntitiesNumber(true, XBarrierEvent.class, unrolledProgram.getBarrierEvents().size());
+            verdict.setEntitiesNumber(true, "_XEdgePrimary", unrolledProgram.getEdgesCount(true));
+            verdict.setEntitiesNumber(true, "_XEdgeAlternative", unrolledProgram.getEdgesCount(false));
+
             //for (XProcess process : unrolledProgram.getProcesses()) {
             //    GraphDumper.tryDumpToFile(process, "build/graphs/paper", process.getId().getValue()+"_unrolled");
             //}
-
-            //System.exit(1);
 
             //verdict.onStartProgramEncoding();
 

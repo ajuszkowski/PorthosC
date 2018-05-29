@@ -77,7 +77,7 @@ public class XProgram2ZformulaEncoder {
         ImmutableSet<XBarrierEvent> barriers = program.getBarrierEvents();
         ImmutableSet<XMemoryEvent> eventsL = program.getMemoryEvents(); //(o1, o2) -> o1.toString().compareTo(o2.toString())
 
-        System.out.println(String.format("#=%d (%d)", eventsL.size(), mEvents.size()));
+        //System.out.println(String.format("#=%d (%d)", eventsL.size(), mEvents.size()));
 
         for(XMemoryEvent e : eventsL) {
             enc = ctx.mkAnd(enc, ctx.mkNot(Utils.edge("ii", e, e, ctx)));

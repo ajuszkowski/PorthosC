@@ -1,6 +1,7 @@
 package mousquetaires.app.modules.porthos;
 
 import mousquetaires.app.modules.AppVerdict;
+import mousquetaires.app.options.AppOptions;
 
 
 public class PorthosVerdict extends AppVerdict {
@@ -15,4 +16,8 @@ public class PorthosVerdict extends AppVerdict {
     public PorthosVerdict.Status result;
 
     public int iterations;
+
+    public PorthosVerdict(AppOptions options) {
+        super(options);
+    }
 }

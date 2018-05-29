@@ -6,9 +6,11 @@ import mousquetaires.languages.common.graph.FlowGraph;
 import mousquetaires.languages.common.graph.FlowTree;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XEntryEvent;
 import mousquetaires.languages.syntax.xgraph.events.fake.XExitEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.*;
+import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
 import mousquetaires.languages.syntax.xgraph.process.XProcess;
 import mousquetaires.languages.syntax.xgraph.process.XProcessId;
 
@@ -29,6 +31,7 @@ public abstract class XProgramBase <P extends FlowGraph<XEvent>>
             private ImmutableSet<XLoadMemoryEvent> loadMemoryEvents;
             private ImmutableSet<XStoreMemoryEvent> storeMemoryEvents;
     private ImmutableSet<XBarrierEvent> barrierEvents;
+    private ImmutableSet<XComputationEvent> computationEvents;
 
 
     XProgramBase(ImmutableList<P> processes) {
@@ -99,10 +102,24 @@ public abstract class XProgramBase <P extends FlowGraph<XEvent>>
                 : (storeMemoryEvents = getAllNodesExceptSource(XStoreMemoryEvent.class));
     }
 
+    public ImmutableSet<XComputationEvent> getComputationEvents() {
+        return computationEvents != null
+                ? computationEvents
+                : (computationEvents = getAllNodesExceptSource(XComputationEvent.class));
+    }
+
     public ImmutableSet<XBarrierEvent> getBarrierEvents() {
         return barrierEvents != null
                 ? barrierEvents
                 : (barrierEvents = getAllNodesExceptSource(XBarrierEvent.class));
+    }
+
+    public int getEdgesCount(boolean sign) {
+        int result = 0;
+        for (P process : getProcesses()) {
+            result += process.getEdges(sign).size();
+        }
+        return result;
     }
 
     public int size() {

@@ -22,10 +22,10 @@ public class DartagnanOptions extends AppOptions {
             validateValueWith = {FileValidator.class, InputProgramExtensionValidator.class})
     public File inputProgramFile;
 
-    @Parameter(names = {"-s", "--source-model"},
+    @Parameter(names = {"-t", "--target-model"},
             required = true,
             arity = 1,
-            description = "Source weak memory model name",
+            description = "Target weak memory model name",
             // uncomment when we'll be parsing .cat-files
             //converter = FileConverter.class,
             //validateValueWith = {FileValidator.class, InputProgramExtensionValidator.class})

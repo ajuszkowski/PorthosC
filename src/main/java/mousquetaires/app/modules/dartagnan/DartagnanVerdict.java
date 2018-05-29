@@ -1,6 +1,7 @@
 package mousquetaires.app.modules.dartagnan;
 
 import mousquetaires.app.modules.AppVerdict;
+import mousquetaires.app.options.AppOptions;
 
 
 public class DartagnanVerdict extends AppVerdict {
@@ -10,4 +11,8 @@ public class DartagnanVerdict extends AppVerdict {
     }
 
     public Status result;
+
+    public DartagnanVerdict(AppOptions options) {
+        super(options);
+    }
 }

@@ -26,7 +26,6 @@ public interface XEvent extends FlowGraphNode, XProcessLocalElement, XEntity {
         return String.format("E%s", getInfo().getEventId());
     }
 
-
     default boolean isInit() {
         return getProcessId()==XProcessId.PreludeProcessId;
     }
