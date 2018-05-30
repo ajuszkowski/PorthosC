@@ -1,0 +1,1083 @@
+[
+{
+  "result": "Reachable",
+  "options": {
+    "inputProgramFile": {
+      "path": "../litmus_C11/Dekker.c"
+    },
+    "sourceModel": "TSO",
+    "unrollingBound": 10
+  },
+  "timerMain": {
+    "elapsedTimeSec": 0.778
+  },
+  "timers": {
+    "Interpretation": {
+      "elapsedTimeSec": 0.108
+    },
+    "ProgramDomainEncoding": {
+      "elapsedTimeSec": 0.268
+    },
+    "Solving": {
+      "elapsedTimeSec": 0.032
+    },
+    "Unrolling": {
+      "elapsedTimeSec": 0.018
+    },
+    "MemoryModelEncoding": {
+      "elapsedTimeSec": 0.031
+    },
+    "ProgramEncoding": {
+      "elapsedTimeSec": 0.04
+    }
+  },
+  "processStatistics": {
+    "_Prelude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 4,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 0,
+      "XEvent": 4,
+      "XMemoryEvent": 3
+    },
+    "_Postlude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 3,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 1,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 1,
+      "XEvent": 3,
+      "XMemoryEvent": 1
+    },
+    "t0": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 22,
+      "_XEdgeAlternative": 4,
+      "XLocalMemoryEvent": 6,
+      "XSharedMemoryEvent": 7,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 8,
+      "XEvent": 22,
+      "XMemoryEvent": 13
+    },
+    "t1": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 22,
+      "_XEdgeAlternative": 4,
+      "XLocalMemoryEvent": 6,
+      "XSharedMemoryEvent": 7,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 8,
+      "XEvent": 22,
+      "XMemoryEvent": 13
+    }
+  },
+  "processStatisticsUnrolled": {
+    "_Prelude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 4,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 0,
+      "XEvent": 4,
+      "XMemoryEvent": 3
+    },
+    "_Postlude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 3,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 1,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 1,
+      "XEvent": 3,
+      "XMemoryEvent": 1
+    },
+    "t0": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 16,
+      "_XEdgeAlternative": 3,
+      "XLocalMemoryEvent": 5,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 4,
+      "XEvent": 16,
+      "XMemoryEvent": 8
+    },
+    "t1": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 16,
+      "_XEdgeAlternative": 3,
+      "XLocalMemoryEvent": 5,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 4,
+      "XEvent": 16,
+      "XMemoryEvent": 8
+    }
+  },
+  "errors": []
+}
+, 
+{
+  "result": "NonReachable",
+  "options": {
+    "inputProgramFile": {
+      "path": "../litmus_C11/Dekker.c"
+    },
+    "sourceModel": "TSO",
+    "unrollingBound": 14
+  },
+  "timerMain": {
+    "elapsedTimeSec": 1.152
+  },
+  "timers": {
+    "Interpretation": {
+      "elapsedTimeSec": 0.109
+    },
+    "ProgramDomainEncoding": {
+      "elapsedTimeSec": 0.572
+    },
+    "Solving": {
+      "elapsedTimeSec": 0.017
+    },
+    "Unrolling": {
+      "elapsedTimeSec": 0.018
+    },
+    "MemoryModelEncoding": {
+      "elapsedTimeSec": 0.094
+    },
+    "ProgramEncoding": {
+      "elapsedTimeSec": 0.053
+    }
+  },
+  "processStatistics": {
+    "_Prelude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 4,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 0,
+      "XEvent": 4,
+      "XMemoryEvent": 3
+    },
+    "_Postlude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 3,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 1,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 1,
+      "XEvent": 3,
+      "XMemoryEvent": 1
+    },
+    "t0": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 22,
+      "_XEdgeAlternative": 4,
+      "XLocalMemoryEvent": 6,
+      "XSharedMemoryEvent": 7,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 8,
+      "XEvent": 22,
+      "XMemoryEvent": 13
+    },
+    "t1": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 22,
+      "_XEdgeAlternative": 4,
+      "XLocalMemoryEvent": 6,
+      "XSharedMemoryEvent": 7,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 8,
+      "XEvent": 22,
+      "XMemoryEvent": 13
+    }
+  },
+  "processStatisticsUnrolled": {
+    "_Prelude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 4,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 0,
+      "XEvent": 4,
+      "XMemoryEvent": 3
+    },
+    "_Postlude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 3,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 1,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 1,
+      "XEvent": 3,
+      "XMemoryEvent": 1
+    },
+    "t0": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 30,
+      "_XEdgeAlternative": 5,
+      "XLocalMemoryEvent": 9,
+      "XSharedMemoryEvent": 8,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 7,
+      "XEvent": 30,
+      "XMemoryEvent": 17
+    },
+    "t1": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 30,
+      "_XEdgeAlternative": 5,
+      "XLocalMemoryEvent": 9,
+      "XSharedMemoryEvent": 8,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 7,
+      "XEvent": 30,
+      "XMemoryEvent": 17
+    }
+  },
+  "errors": []
+}
+, 
+{
+  "result": "NonReachable",
+  "options": {
+    "inputProgramFile": {
+      "path": "../litmus_C11/Dekker.c"
+    },
+    "sourceModel": "TSO",
+    "unrollingBound": 18
+  },
+  "timerMain": {
+    "elapsedTimeSec": 3.05
+  },
+  "timers": {
+    "Interpretation": {
+      "elapsedTimeSec": 0.108
+    },
+    "ProgramDomainEncoding": {
+      "elapsedTimeSec": 2.08
+    },
+    "Solving": {
+      "elapsedTimeSec": 0.041
+    },
+    "Unrolling": {
+      "elapsedTimeSec": 0.024
+    },
+    "MemoryModelEncoding": {
+      "elapsedTimeSec": 0.44
+    },
+    "ProgramEncoding": {
+      "elapsedTimeSec": 0.059
+    }
+  },
+  "processStatistics": {
+    "_Prelude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 4,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 0,
+      "XEvent": 4,
+      "XMemoryEvent": 3
+    },
+    "_Postlude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 3,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 1,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 1,
+      "XEvent": 3,
+      "XMemoryEvent": 1
+    },
+    "t0": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 22,
+      "_XEdgeAlternative": 4,
+      "XLocalMemoryEvent": 6,
+      "XSharedMemoryEvent": 7,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 8,
+      "XEvent": 22,
+      "XMemoryEvent": 13
+    },
+    "t1": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 22,
+      "_XEdgeAlternative": 4,
+      "XLocalMemoryEvent": 6,
+      "XSharedMemoryEvent": 7,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 8,
+      "XEvent": 22,
+      "XMemoryEvent": 13
+    }
+  },
+  "processStatisticsUnrolled": {
+    "_Prelude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 4,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 0,
+      "XEvent": 4,
+      "XMemoryEvent": 3
+    },
+    "_Postlude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 3,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 1,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 1,
+      "XEvent": 3,
+      "XMemoryEvent": 1
+    },
+    "t0": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 58,
+      "_XEdgeAlternative": 12,
+      "XLocalMemoryEvent": 15,
+      "XSharedMemoryEvent": 17,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 14,
+      "XEvent": 58,
+      "XMemoryEvent": 32
+    },
+    "t1": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 58,
+      "_XEdgeAlternative": 12,
+      "XLocalMemoryEvent": 15,
+      "XSharedMemoryEvent": 17,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 14,
+      "XEvent": 58,
+      "XMemoryEvent": 32
+    }
+  },
+  "errors": []
+}
+, 
+{
+  "result": "NonReachable",
+  "options": {
+    "inputProgramFile": {
+      "path": "../litmus_C11/Dekker.c"
+    },
+    "sourceModel": "TSO",
+    "unrollingBound": 22
+  },
+  "timerMain": {
+    "elapsedTimeSec": 10.814
+  },
+  "timers": {
+    "Interpretation": {
+      "elapsedTimeSec": 0.109
+    },
+    "ProgramDomainEncoding": {
+      "elapsedTimeSec": 9.05
+    },
+    "Solving": {
+      "elapsedTimeSec": 0.103
+    },
+    "Unrolling": {
+      "elapsedTimeSec": 0.036
+    },
+    "MemoryModelEncoding": {
+      "elapsedTimeSec": 1.147
+    },
+    "ProgramEncoding": {
+      "elapsedTimeSec": 0.1
+    }
+  },
+  "processStatistics": {
+    "_Prelude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 4,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 0,
+      "XEvent": 4,
+      "XMemoryEvent": 3
+    },
+    "_Postlude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 3,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 1,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 1,
+      "XEvent": 3,
+      "XMemoryEvent": 1
+    },
+    "t0": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 22,
+      "_XEdgeAlternative": 4,
+      "XLocalMemoryEvent": 6,
+      "XSharedMemoryEvent": 7,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 8,
+      "XEvent": 22,
+      "XMemoryEvent": 13
+    },
+    "t1": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 22,
+      "_XEdgeAlternative": 4,
+      "XLocalMemoryEvent": 6,
+      "XSharedMemoryEvent": 7,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 8,
+      "XEvent": 22,
+      "XMemoryEvent": 13
+    }
+  },
+  "processStatisticsUnrolled": {
+    "_Prelude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 4,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 0,
+      "XEvent": 4,
+      "XMemoryEvent": 3
+    },
+    "_Postlude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 3,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 1,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 1,
+      "XEvent": 3,
+      "XMemoryEvent": 1
+    },
+    "t0": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 96,
+      "_XEdgeAlternative": 18,
+      "XLocalMemoryEvent": 26,
+      "XSharedMemoryEvent": 30,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 26,
+      "XEvent": 96,
+      "XMemoryEvent": 56
+    },
+    "t1": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 96,
+      "_XEdgeAlternative": 18,
+      "XLocalMemoryEvent": 26,
+      "XSharedMemoryEvent": 30,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 26,
+      "XEvent": 96,
+      "XMemoryEvent": 56
+    }
+  },
+  "errors": []
+}
+, 
+{
+  "result": "NonReachable",
+  "options": {
+    "inputProgramFile": {
+      "path": "../litmus_C11/Dekker.c"
+    },
+    "sourceModel": "TSO",
+    "unrollingBound": 26
+  },
+  "timerMain": {
+    "elapsedTimeSec": 27.751
+  },
+  "timers": {
+    "Interpretation": {
+      "elapsedTimeSec": 0.111
+    },
+    "ProgramDomainEncoding": {
+      "elapsedTimeSec": 24.9
+    },
+    "Solving": {
+      "elapsedTimeSec": 0.273
+    },
+    "Unrolling": {
+      "elapsedTimeSec": 0.039
+    },
+    "MemoryModelEncoding": {
+      "elapsedTimeSec": 2.044
+    },
+    "ProgramEncoding": {
+      "elapsedTimeSec": 0.1
+    }
+  },
+  "processStatistics": {
+    "_Prelude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 4,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 0,
+      "XEvent": 4,
+      "XMemoryEvent": 3
+    },
+    "_Postlude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 3,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 1,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 1,
+      "XEvent": 3,
+      "XMemoryEvent": 1
+    },
+    "t0": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 22,
+      "_XEdgeAlternative": 4,
+      "XLocalMemoryEvent": 6,
+      "XSharedMemoryEvent": 7,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 8,
+      "XEvent": 22,
+      "XMemoryEvent": 13
+    },
+    "t1": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 22,
+      "_XEdgeAlternative": 4,
+      "XLocalMemoryEvent": 6,
+      "XSharedMemoryEvent": 7,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 8,
+      "XEvent": 22,
+      "XMemoryEvent": 13
+    }
+  },
+  "processStatisticsUnrolled": {
+    "_Prelude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 4,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 0,
+      "XEvent": 4,
+      "XMemoryEvent": 3
+    },
+    "_Postlude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 3,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 1,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 1,
+      "XEvent": 3,
+      "XMemoryEvent": 1
+    },
+    "t0": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 149,
+      "_XEdgeAlternative": 30,
+      "XLocalMemoryEvent": 39,
+      "XSharedMemoryEvent": 46,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 41,
+      "XEvent": 149,
+      "XMemoryEvent": 85
+    },
+    "t1": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 149,
+      "_XEdgeAlternative": 30,
+      "XLocalMemoryEvent": 39,
+      "XSharedMemoryEvent": 46,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 41,
+      "XEvent": 149,
+      "XMemoryEvent": 85
+    }
+  },
+  "errors": []
+}
+, 
+{
+  "result": "NonReachable",
+  "options": {
+    "inputProgramFile": {
+      "path": "../litmus_C11/Dekker.c"
+    },
+    "sourceModel": "TSO",
+    "unrollingBound": 30
+  },
+  "timerMain": {
+    "elapsedTimeSec": 84.569
+  },
+  "timers": {
+    "Interpretation": {
+      "elapsedTimeSec": 0.108
+    },
+    "ProgramDomainEncoding": {
+      "elapsedTimeSec": 78.193
+    },
+    "Solving": {
+      "elapsedTimeSec": 0.858
+    },
+    "Unrolling": {
+      "elapsedTimeSec": 0.048
+    },
+    "MemoryModelEncoding": {
+      "elapsedTimeSec": 4.94
+    },
+    "ProgramEncoding": {
+      "elapsedTimeSec": 0.123
+    }
+  },
+  "processStatistics": {
+    "_Prelude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 4,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 0,
+      "XEvent": 4,
+      "XMemoryEvent": 3
+    },
+    "_Postlude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 3,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 1,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 1,
+      "XEvent": 3,
+      "XMemoryEvent": 1
+    },
+    "t0": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 22,
+      "_XEdgeAlternative": 4,
+      "XLocalMemoryEvent": 6,
+      "XSharedMemoryEvent": 7,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 8,
+      "XEvent": 22,
+      "XMemoryEvent": 13
+    },
+    "t1": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 22,
+      "_XEdgeAlternative": 4,
+      "XLocalMemoryEvent": 6,
+      "XSharedMemoryEvent": 7,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 8,
+      "XEvent": 22,
+      "XMemoryEvent": 13
+    }
+  },
+  "processStatisticsUnrolled": {
+    "_Prelude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 4,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 0,
+      "XEvent": 4,
+      "XMemoryEvent": 3
+    },
+    "_Postlude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 3,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 1,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 1,
+      "XEvent": 3,
+      "XMemoryEvent": 1
+    },
+    "t0": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 220,
+      "_XEdgeAlternative": 44,
+      "XLocalMemoryEvent": 58,
+      "XSharedMemoryEvent": 69,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 64,
+      "XEvent": 220,
+      "XMemoryEvent": 127
+    },
+    "t1": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 220,
+      "_XEdgeAlternative": 44,
+      "XLocalMemoryEvent": 58,
+      "XSharedMemoryEvent": 69,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 64,
+      "XEvent": 220,
+      "XMemoryEvent": 127
+    }
+  },
+  "errors": []
+}
+, 
+{
+  "result": "NonReachable",
+  "options": {
+    "inputProgramFile": {
+      "path": "../litmus_C11/Dekker.c"
+    },
+    "sourceModel": "TSO",
+    "unrollingBound": 34
+  },
+  "timerMain": {
+    "elapsedTimeSec": 186.508
+  },
+  "timers": {
+    "Interpretation": {
+      "elapsedTimeSec": 0.108
+    },
+    "ProgramDomainEncoding": {
+      "elapsedTimeSec": 174.994
+    },
+    "Solving": {
+      "elapsedTimeSec": 1.509
+    },
+    "Unrolling": {
+      "elapsedTimeSec": 0.056
+    },
+    "MemoryModelEncoding": {
+      "elapsedTimeSec": 9.371
+    },
+    "ProgramEncoding": {
+      "elapsedTimeSec": 0.169
+    }
+  },
+  "processStatistics": {
+    "_Prelude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 4,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 0,
+      "XEvent": 4,
+      "XMemoryEvent": 3
+    },
+    "_Postlude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 3,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 1,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 1,
+      "XEvent": 3,
+      "XMemoryEvent": 1
+    },
+    "t0": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 22,
+      "_XEdgeAlternative": 4,
+      "XLocalMemoryEvent": 6,
+      "XSharedMemoryEvent": 7,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 8,
+      "XEvent": 22,
+      "XMemoryEvent": 13
+    },
+    "t1": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 22,
+      "_XEdgeAlternative": 4,
+      "XLocalMemoryEvent": 6,
+      "XSharedMemoryEvent": 7,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 8,
+      "XEvent": 22,
+      "XMemoryEvent": 13
+    }
+  },
+  "processStatisticsUnrolled": {
+    "_Prelude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 4,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 0,
+      "XEvent": 4,
+      "XMemoryEvent": 3
+    },
+    "_Postlude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 3,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 1,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 1,
+      "XEvent": 3,
+      "XMemoryEvent": 1
+    },
+    "t0": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 303,
+      "_XEdgeAlternative": 60,
+      "XLocalMemoryEvent": 81,
+      "XSharedMemoryEvent": 97,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 90,
+      "XEvent": 303,
+      "XMemoryEvent": 178
+    },
+    "t1": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 303,
+      "_XEdgeAlternative": 60,
+      "XLocalMemoryEvent": 81,
+      "XSharedMemoryEvent": 97,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 90,
+      "XEvent": 303,
+      "XMemoryEvent": 178
+    }
+  },
+  "errors": []
+}
+, 
+{
+  "result": "NonReachable",
+  "options": {
+    "inputProgramFile": {
+      "path": "../litmus_C11/Dekker.c"
+    },
+    "sourceModel": "TSO",
+    "unrollingBound": 38
+  },
+  "timerMain": {
+    "elapsedTimeSec": 363.244
+  },
+  "timers": {
+    "Interpretation": {
+      "elapsedTimeSec": 0.109
+    },
+    "ProgramDomainEncoding": {
+      "elapsedTimeSec": 345.67
+    },
+    "Solving": {
+      "elapsedTimeSec": 2.736
+    },
+    "Unrolling": {
+      "elapsedTimeSec": 0.064
+    },
+    "MemoryModelEncoding": {
+      "elapsedTimeSec": 14.175
+    },
+    "ProgramEncoding": {
+      "elapsedTimeSec": 0.202
+    }
+  },
+  "processStatistics": {
+    "_Prelude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 4,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 0,
+      "XEvent": 4,
+      "XMemoryEvent": 3
+    },
+    "_Postlude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 3,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 1,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 1,
+      "XEvent": 3,
+      "XMemoryEvent": 1
+    },
+    "t0": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 22,
+      "_XEdgeAlternative": 4,
+      "XLocalMemoryEvent": 6,
+      "XSharedMemoryEvent": 7,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 8,
+      "XEvent": 22,
+      "XMemoryEvent": 13
+    },
+    "t1": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 22,
+      "_XEdgeAlternative": 4,
+      "XLocalMemoryEvent": 6,
+      "XSharedMemoryEvent": 7,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 8,
+      "XEvent": 22,
+      "XMemoryEvent": 13
+    }
+  },
+  "processStatisticsUnrolled": {
+    "_Prelude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 4,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 3,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 0,
+      "XEvent": 4,
+      "XMemoryEvent": 3
+    },
+    "_Postlude_": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 3,
+      "_XEdgeAlternative": 0,
+      "XLocalMemoryEvent": 0,
+      "XSharedMemoryEvent": 1,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 1,
+      "XEvent": 3,
+      "XMemoryEvent": 1
+    },
+    "t0": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 387,
+      "_XEdgeAlternative": 76,
+      "XLocalMemoryEvent": 105,
+      "XSharedMemoryEvent": 125,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 118,
+      "XEvent": 387,
+      "XMemoryEvent": 230
+    },
+    "t1": {
+      "XBarrierEvent": 0,
+      "XNopEvent": 0,
+      "_XEdgePrimary": 387,
+      "_XEdgeAlternative": 76,
+      "XLocalMemoryEvent": 105,
+      "XSharedMemoryEvent": 125,
+      "XControlFlowEvent": 0,
+      "XComputationEvent": 118,
+      "XEvent": 387,
+      "XMemoryEvent": 230
+    }
+  },
+  "errors": []
+}
+, 
+{}
+]

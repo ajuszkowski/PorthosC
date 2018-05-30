@@ -40,4 +40,4 @@ void t1() {
     }
 }
 
-//exists (turn == 10)
+exists (turn == 10)

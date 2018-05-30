@@ -1,0 +1,31 @@
+import re
+import matplotlib as mpl
+from matplotlib import pyplot as plt
+
+log = '/run/media/ael/Projects/mousquetaires/bench-copy.log'
+key = 'ProgramDomainEncoding": {\n?\s+"elapsedTimeSec"'
+
+X = [x for x in range(10, 41)]
+
+
+with open(log, 'r') as f:
+    ll = re.findall(key + r':\s*([^,}\n]+)', f.read(), re.DOTALL)
+    turn = False
+    vals = []
+    for x in ll:
+        if True or turn:
+            vals.append(float(x))
+        turn = not turn
+
+print(vals)
+assert len(X) == len(vals) , '{}, {}'.format(len(X), len(vals))
+
+red="#cd0c18"
+
+
+plt.plot(X, vals, 'go-', linewidth=1, markersize=3, color=red)
+plt.grid(True)
+red_patch = mpl.patches.Patch(color=red, label='PorthosC')
+plt.legend(handles=[red_patch])
+plt.show()
+
