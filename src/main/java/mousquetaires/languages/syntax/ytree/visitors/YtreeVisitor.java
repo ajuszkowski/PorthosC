@@ -16,8 +16,8 @@ import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryOperat
 import mousquetaires.languages.syntax.ytree.expressions.ternary.YTernaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryOperator;
-import mousquetaires.languages.syntax.ytree.litmus.YPostludeStatement;
-import mousquetaires.languages.syntax.ytree.litmus.YPreludeStatement;
+import mousquetaires.languages.syntax.ytree.litmus.YPostludeDefinition;
+import mousquetaires.languages.syntax.ytree.litmus.YPreludeDefinition;
 import mousquetaires.languages.syntax.ytree.litmus.YProcessDefinition;
 import mousquetaires.languages.syntax.ytree.statements.*;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
@@ -30,9 +30,9 @@ public interface YtreeVisitor<T> {
 
     // -- Litmus-litmus elements: ------------------------------------------------------------------------------------
 
-    T visit(YPreludeStatement node);
+    T visit(YPreludeDefinition node);
     T visit(YProcessDefinition node);
-    T visit(YPostludeStatement node);
+    T visit(YPostludeDefinition node);
 
     // -- END OF Litmus-litmus elements ------------------------------------------------------------------------------
 

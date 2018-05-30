@@ -16,8 +16,8 @@ import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentE
 import mousquetaires.languages.syntax.ytree.expressions.atomics.*;
 import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryOperator;
 import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryOperator;
-import mousquetaires.languages.syntax.ytree.litmus.YPostludeStatement;
-import mousquetaires.languages.syntax.ytree.litmus.YPreludeStatement;
+import mousquetaires.languages.syntax.ytree.litmus.YPostludeDefinition;
+import mousquetaires.languages.syntax.ytree.litmus.YPreludeDefinition;
 import mousquetaires.languages.syntax.ytree.litmus.YProcessDefinition;
 import mousquetaires.languages.syntax.ytree.statements.*;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpLabel;
@@ -44,6 +44,7 @@ class C2YtreeConverterVisitor
         implements C11Visitor<YEntity> {
 
     private final CitationService citationService;
+    private final JumpsResolver jumpsResolver = new JumpsResolver();
 
     C2YtreeConverterVisitor(CitationService citationService) {
         this.citationService = citationService;
@@ -62,7 +63,7 @@ class C2YtreeConverterVisitor
         if (compilationUnitContext != null) {
             ImmutableList<YEntity> rootStatements = visitCompilationUnit(compilationUnitContext).buildValues();
             roots.addAll(rootStatements);
-            return new YSyntaxTree(origin(ctx), roots.build());
+            return new YSyntaxTree(origin(ctx), jumpsResolver, roots.build());
         }
         throw new YParserException(ctx, "Missing compilation unit");
     }
@@ -1527,7 +1528,17 @@ class C2YtreeConverterVisitor
      */
     @Override
     public YStatement visitLabeledStatement(C11Parser.LabeledStatementContext ctx) {
-        // TODO
+        TerminalNode identifierContext = ctx.Identifier();
+        if (identifierContext != null) {
+            YJumpLabel label = new YJumpLabel(identifierContext.getText());
+            C11Parser.StatementContext statementContext = ctx.statement();
+            if (statementContext == null) {
+                throw new YParserException(ctx, "Missing the statement in labelled-statement statement");
+            }
+            YStatement statement = visitStatement(statementContext);
+            jumpsResolver.registerStatement(label.getValue(), statement);
+            return statement;
+        }
         throw new YParserNotImplementedException(ctx);
     }
 
@@ -1879,11 +1890,11 @@ class C2YtreeConverterVisitor
      *  ;
      */
     @Override
-    public YPostludeStatement visitLitmusAssertion(C11Parser.LitmusAssertionContext ctx) {
+    public YPostludeDefinition visitLitmusAssertion(C11Parser.LitmusAssertionContext ctx) {
         C11Parser.LogicalOrExpressionContext logicalOrExpressionContext = ctx.logicalOrExpression();
         if (logicalOrExpressionContext != null) {
             YExpression assertion = visitLogicalOrExpression(logicalOrExpressionContext);
-            return new YPostludeStatement(origin(ctx), assertion);
+            return new YPostludeDefinition(origin(ctx), assertion);
         }
         throw new YParserException(ctx);
     }
@@ -1894,7 +1905,7 @@ class C2YtreeConverterVisitor
      *  ;
      */
     @Override
-    public YPreludeStatement visitLitmusInitialisation(C11Parser.LitmusInitialisationContext ctx) {
+    public YPreludeDefinition visitLitmusInitialisation(C11Parser.LitmusInitialisationContext ctx) {
         List<C11Parser.DeclarationContext> declarationContextList = ctx.declaration();
         if (declarationContextList != null && declarationContextList.size() > 0) {
             YQueueTemp<YStatement> statements = new YQueueFILOTemp<>();
@@ -1902,7 +1913,7 @@ class C2YtreeConverterVisitor
                 List<YStatement> declarations = visitDeclaration(declarationContext).getValues();
                 statements.addAll(declarations);
             }
-            return new YPreludeStatement(origin(ctx), statements.buildValues());
+            return new YPreludeDefinition(origin(ctx), statements.buildValues());
         }
         throw new YParserException(ctx);
     }

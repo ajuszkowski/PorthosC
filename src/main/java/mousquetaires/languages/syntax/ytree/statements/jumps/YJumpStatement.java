@@ -34,11 +34,7 @@ public class YJumpStatement extends YStatement {
     private final YJumpLabel jumpLabel; // label of statement to which we jump
 
     private YJumpStatement(Origin origin, Kind kind, YJumpLabel jumpLabel) {
-        this(origin, null, kind, jumpLabel);
-    }
-
-    private YJumpStatement(Origin origin, String selfLabel, Kind kind, YJumpLabel jumpLabel) {
-        super(origin, selfLabel);
+        super(origin);
         this.kind = kind;
         this.jumpLabel = jumpLabel;
     }
@@ -51,14 +47,6 @@ public class YJumpStatement extends YStatement {
         return jumpLabel;
     }
 
-
-    /**
-     * NOTE: this method changes self label, NOT the label to jump to
-     */
-    @Override
-    public YStatement withLabel(String newLabel) {
-        return new YJumpStatement(origin(), newLabel, getKind(), getJumpLabel());
-    }
 
     @Override
     public <T> T accept(YtreeVisitor<T> visitor) {

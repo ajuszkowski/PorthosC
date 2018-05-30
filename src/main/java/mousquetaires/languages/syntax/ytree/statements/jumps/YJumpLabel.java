@@ -4,6 +4,7 @@ import java.util.Objects;
 
 
 public class YJumpLabel {
+
     private final String value;
 
     public YJumpLabel(String value) {
@@ -21,8 +22,8 @@ public class YJumpLabel {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof YJumpLabel)) return false;
+        if (this == o) { return true; }
+        if (!(o instanceof YJumpLabel)) { return false; }
         YJumpLabel that = (YJumpLabel) o;
         return Objects.equals(getValue(), that.getValue());
     }

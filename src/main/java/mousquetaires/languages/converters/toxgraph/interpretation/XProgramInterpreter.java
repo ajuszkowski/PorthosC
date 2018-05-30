@@ -124,6 +124,16 @@ public class XProgramInterpreter extends BuilderBase<XCyclicProgram> implements 
     }
 
     @Override
+    public XJumpEvent emitJumpEvent(String label) {
+        return currentProcess().emitJumpEvent(label);
+    }
+
+    @Override
+    public void markNextEventLabel(String label) {
+        currentProcess().markNextEventLabel(label);
+    }
+
+    @Override
     public XNopEvent emitNopEvent() {
         return currentProcess().emitNopEvent();
     }

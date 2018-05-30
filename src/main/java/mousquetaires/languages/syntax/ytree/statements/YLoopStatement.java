@@ -13,13 +13,8 @@ public class YLoopStatement extends YStatement {
     private final YExpression condition;
     private final YStatement body;
 
-
     public YLoopStatement(Origin origin, YExpression condition, YStatement body) {
-        this(origin, null, condition, body);
-    }
-
-    private YLoopStatement(Origin origin, String label, YExpression condition, YStatement body) {
-        super(origin, label);
+        super(origin);
         this.condition = condition;
         this.body = body;
     }
@@ -30,11 +25,6 @@ public class YLoopStatement extends YStatement {
 
     public YStatement getBody() {
         return body;
-    }
-
-    @Override
-    public YLoopStatement withLabel(String newLabel) {
-        return new YLoopStatement(origin(), newLabel, getCondition(), getBody());
     }
 
     @Override

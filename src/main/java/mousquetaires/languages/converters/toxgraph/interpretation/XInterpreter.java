@@ -2,6 +2,7 @@ package mousquetaires.languages.converters.toxgraph.interpretation;
 
 import com.sun.istack.internal.NotNull;
 import mousquetaires.languages.syntax.xgraph.XEntity;
+import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.*;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
@@ -33,7 +34,8 @@ public interface XInterpreter {
 
     enum JumpKind {
         Break,
-        Continue,;
+        Continue,
+        ;
     }
 
     @NotNull
@@ -60,6 +62,10 @@ public interface XInterpreter {
     XBarrierEvent emitBarrierEvent(XBarrierEvent.Kind kind);
 
     XJumpEvent emitJumpEvent();
+
+    XJumpEvent emitJumpEvent(String label);
+
+    void markNextEventLabel(String label);
 
     XNopEvent emitNopEvent();
 

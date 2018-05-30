@@ -4,6 +4,8 @@ import mousquetaires.languages.common.XType;
 import mousquetaires.languages.syntax.xgraph.XEntity;
 import mousquetaires.languages.syntax.xgraph.events.XEvent;
 import mousquetaires.languages.syntax.xgraph.events.barrier.XBarrierEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XAssertionEvent;
+import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEvent;
 import mousquetaires.languages.syntax.xgraph.events.controlflow.XJumpEvent;
 import mousquetaires.languages.syntax.xgraph.memories.*;
@@ -45,6 +47,21 @@ public abstract class XLudeInterpreterBase extends XInterpreterBase {
     @Override
     public XJumpEvent emitJumpEvent() {
         throw new XInterpretationError(getIllegalOperationMessage());
+    }
+
+    @Override
+    public XJumpEvent emitJumpEvent(String label) {
+        throw new XInterpretationError(getIllegalOperationMessage());
+    }
+
+    @Override
+    public void markNextEventLabel(String label) {
+        throw new XInterpretationError(getIllegalOperationMessage());
+    }
+
+    @Override
+    public XAssertionEvent emitAssertionEvent(XBinaryComputationEvent assertion) {
+        return null;
     }
 
     @Override

@@ -22,11 +22,7 @@ public class YCompoundStatement extends YStatement {
     }
 
     public YCompoundStatement(Origin origin, boolean hasBraces, ImmutableList<YStatement> statements) {
-        this(origin, "", hasBraces, statements);
-    }
-
-    private YCompoundStatement(Origin origin, String label, boolean hasBraces, ImmutableList<YStatement> statements) {
-        super(origin, label);
+        super(origin);
         this.statements = statements;
         this.hasBraces = hasBraces;
     }
@@ -37,11 +33,6 @@ public class YCompoundStatement extends YStatement {
 
     public boolean hasBraces() {
         return hasBraces;
-    }
-
-    @Override
-    public YCompoundStatement withLabel(String newLabel) {
-        return new YCompoundStatement(origin(), newLabel, hasBraces, statements);
     }
 
     @Override

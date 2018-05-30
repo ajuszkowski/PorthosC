@@ -12,22 +12,17 @@ public class YLinearStatement extends YStatement {
     private final YExpression expression;
 
     public YLinearStatement(YExpression expression) {
-        this(expression.origin(), null, expression);
+        this(expression.origin(), expression);
     }
 
-    private YLinearStatement(Origin origin, String label, YExpression expression) {
-        super(origin, label);
+    private YLinearStatement(Origin origin, YExpression expression) {
+        super(origin);
         assert expression != null;//TODO: add non-null asserts everywhere
         this.expression = expression;
     }
 
     public YExpression getExpression() {
         return expression;
-    }
-
-    @Override
-    public YLinearStatement withLabel(String newLabel) {
-        return new YLinearStatement(origin(), newLabel, getExpression());
     }
 
     @Override

@@ -20,7 +20,7 @@ public class Y2XConverter {
     public XCyclicProgram convert(YSyntaxTree internalSyntaxTree) {
         XMemoryManager sharedMemoryManager = new XMemoryManagerImpl();//dataModel
         XProgramInterpreter programInterpreter = new XProgramInterpreter(sharedMemoryManager, memoryModel);
-        Y2XConverterVisitor visitor = new Y2XConverterVisitor(programInterpreter);
+        Y2XConverterVisitor visitor = new Y2XConverterVisitor(programInterpreter, internalSyntaxTree.getJumpsResolver());
         internalSyntaxTree.accept(visitor);
         return visitor.getProgram();
     }

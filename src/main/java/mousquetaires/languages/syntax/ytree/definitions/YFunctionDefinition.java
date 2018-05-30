@@ -9,13 +9,12 @@ import java.util.Objects;
 
 
 
-public class YFunctionDefinition implements YDefinition {
-    private final Origin origin;
+public class YFunctionDefinition extends YDefinition {
     private final YFunctionSignature signature;
     private final YCompoundStatement body;
 
     public YFunctionDefinition(Origin origin, YFunctionSignature signature, YCompoundStatement body) {
-        this.origin = origin;
+        super(origin);
         this.signature = signature;
         this.body = body;
     }
@@ -26,11 +25,6 @@ public class YFunctionDefinition implements YDefinition {
 
     public YCompoundStatement getBody() {
         return body;
-    }
-
-    @Override
-    public Origin origin() {
-        return origin;
     }
 
     @Override

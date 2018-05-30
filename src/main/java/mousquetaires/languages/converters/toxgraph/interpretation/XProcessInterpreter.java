@@ -1,5 +1,6 @@
 package mousquetaires.languages.converters.toxgraph.interpretation;
 
+import mousquetaires.languages.common.graph.render.GraphvizNodeEncoder;
 import mousquetaires.languages.converters.toxgraph.hooks.XHookManager;
 import mousquetaires.languages.converters.toxgraph.hooks.XInvocationHookAction;
 import mousquetaires.languages.syntax.xgraph.XEntity;
@@ -30,6 +31,10 @@ class XProcessInterpreter extends XInterpreterBase {
     private final Deque<XBlockContext> almostReadyContexts;
     private final Deque<XBlockContext> readyContexts;
 
+    private String nextEventLabel;
+    private final Map<String, XEvent> jumpMap = new HashMap<>();
+    private final Map<String, XJumpEvent> pendingJumpEvents = new HashMap<>();
+
     XProcessInterpreter(XProcessId processId, XMemoryManager memoryManager, XHookManager hookManager) {
         super(processId, memoryManager); //todo: non-uniqueness case
         contextStack = new Stack<>();
@@ -52,6 +57,7 @@ class XProcessInterpreter extends XInterpreterBase {
         assert contextStack.size() == 1 : contextStack.size(); //linear entry context only
         assert readyContexts.isEmpty() : readyContexts.size();
         assert almostReadyContexts.isEmpty() : almostReadyContexts.size();
+        assert pendingJumpEvents.size() == 0 : pendingJumpEvents;
     }
 
     @Override
@@ -68,6 +74,43 @@ class XProcessInterpreter extends XInterpreterBase {
         XJumpEvent event = new XJumpEvent(createEventInfo());
         processNextEvent(event);
         return event;
+    }
+
+    @Override
+    public XJumpEvent emitJumpEvent(String gotoLabel) {
+        XJumpEvent jumpEvent = emitJumpEvent();
+        if (jumpMap.containsKey(gotoLabel)) {
+            XEvent gotoEvent = jumpMap.get(gotoLabel);
+            graphBuilder.addEdge(true, jumpEvent, gotoEvent);
+        }
+        else {
+            pendingJumpEvents.put(gotoLabel, jumpEvent);
+        }
+        return jumpEvent;
+    }
+
+    @Override
+    public void markNextEventLabel(String label) {
+        nextEventLabel = label;
+    }
+
+    @Override
+    protected void preProcessEvent(XEvent nextEvent) {
+        super.preProcessEvent(nextEvent);
+        if (nextEventLabel != null) {
+            jumpMap.put(nextEventLabel, nextEvent);
+
+            for (Map.Entry<String, XJumpEvent> entry : pendingJumpEvents.entrySet()) {
+                String pendingLabel = entry.getKey();
+                if (pendingLabel.equals(nextEventLabel)) {
+                    XJumpEvent jumpEvent = entry.getValue();
+                    graphBuilder.addEdge(true, jumpEvent, nextEvent);
+                    pendingJumpEvents.remove(pendingLabel);
+                    break;
+                }
+            }
+            nextEventLabel = null;
+        }
     }
 
     @Override

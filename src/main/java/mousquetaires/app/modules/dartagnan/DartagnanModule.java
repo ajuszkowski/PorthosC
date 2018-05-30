@@ -10,6 +10,7 @@ import mousquetaires.app.modules.AppModule;
 import mousquetaires.app.modules.AppVerdict;
 import mousquetaires.languages.InputExtensions;
 import mousquetaires.languages.InputLanguage;
+import mousquetaires.languages.common.graph.render.GraphDumper;
 import mousquetaires.languages.converters.toxgraph.Y2XConverter;
 import mousquetaires.languages.converters.toytree.YtreeParser;
 import mousquetaires.languages.converters.tozformula.XProgram2ZformulaEncoder;
@@ -19,6 +20,7 @@ import mousquetaires.languages.syntax.xgraph.events.computation.XComputationEven
 import mousquetaires.languages.syntax.xgraph.events.memory.XLocalMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import mousquetaires.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
+import mousquetaires.languages.syntax.xgraph.process.XCyclicProcess;
 import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
 import mousquetaires.languages.syntax.xgraph.program.XProgram;
 import mousquetaires.languages.syntax.ytree.YSyntaxTree;
@@ -74,9 +76,9 @@ public class DartagnanModule extends AppModule {
             verdict.setEntitiesNumber(false, "_XEdgePrimary", program.getEdgesCount(true));
             verdict.setEntitiesNumber(false, "_XEdgeAlternative", program.getEdgesCount(false));
 
-            //for (XCyclicProcess process : program.getProcesses()) {
-            //    GraphDumper.tryDumpToFile(process, "build/graphs/paper", process.getId().getValue());
-            //}
+            for (XCyclicProcess process : program.getProcesses()) {
+                GraphDumper.tryDumpToFile(process, "build/graphs/paper/test", process.getId().getValue());
+            }
 
             verdict.onStart(AppVerdict.ProgramStage.Unrolling);
             XProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);

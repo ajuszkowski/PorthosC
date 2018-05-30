@@ -3,7 +3,7 @@ package mousquetaires.tests.unit.languages.converters.toytree.c11.statements;
 import mousquetaires.languages.syntax.ytree.YEntity;
 import mousquetaires.languages.syntax.ytree.expressions.assignments.YAssignmentExpression;
 import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryOperator;
-import mousquetaires.languages.syntax.ytree.litmus.YPostludeStatement;
+import mousquetaires.languages.syntax.ytree.litmus.YPostludeDefinition;
 import mousquetaires.languages.syntax.ytree.litmus.YProcessDefinition;
 import mousquetaires.languages.syntax.ytree.statements.YCompoundStatement;
 import mousquetaires.languages.syntax.ytree.statements.YLinearStatement;
@@ -29,7 +29,7 @@ public class C2Ytree_ProcessStatement_UnitTest extends C2Ytree_Statement_UnitTes
                                                              true,
                                                              new YVariableDeclarationStatement(origin, typeInt, variableA),
                                                              new YLinearStatement(new YAssignmentExpression(origin, variableA, constant1)))),
-                new YPostludeStatement(origin, YBinaryOperator.Equals.createExpression(origin, variableA, constant2)));
+                new YPostludeDefinition(origin, YBinaryOperator.Equals.createExpression(origin, variableA, constant2)));
 
         run(UnitTestPaths.c11StatementsDirectory + "processStatement.c", expected);
     }

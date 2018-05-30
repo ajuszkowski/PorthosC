@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import mousquetaires.languages.common.XType;
 import mousquetaires.languages.converters.toxgraph.interpretation.XInterpreter;
 import mousquetaires.languages.converters.toxgraph.interpretation.XProgramInterpreter;
+import mousquetaires.languages.converters.toytree.c11.JumpsResolver;
 import mousquetaires.languages.syntax.xgraph.events.computation.XBinaryComputationEvent;
 import mousquetaires.languages.syntax.xgraph.program.XCyclicProgram;
 import mousquetaires.languages.syntax.xgraph.XEntity;
@@ -33,10 +34,11 @@ import mousquetaires.languages.syntax.ytree.expressions.operations.YBinaryOperat
 import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryExpression;
 import mousquetaires.languages.syntax.ytree.expressions.operations.YUnaryOperator;
 import mousquetaires.languages.syntax.ytree.expressions.ternary.YTernaryExpression;
-import mousquetaires.languages.syntax.ytree.litmus.YPostludeStatement;
-import mousquetaires.languages.syntax.ytree.litmus.YPreludeStatement;
+import mousquetaires.languages.syntax.ytree.litmus.YPostludeDefinition;
+import mousquetaires.languages.syntax.ytree.litmus.YPreludeDefinition;
 import mousquetaires.languages.syntax.ytree.litmus.YProcessDefinition;
 import mousquetaires.languages.syntax.ytree.statements.*;
+import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpLabel;
 import mousquetaires.languages.syntax.ytree.statements.jumps.YJumpStatement;
 import mousquetaires.languages.syntax.ytree.types.YFunctionSignature;
 import mousquetaires.languages.syntax.ytree.types.YType;
@@ -54,9 +56,16 @@ import static mousquetaires.utils.StringUtils.wrap;
 public class Y2XConverterVisitor implements YtreeVisitor<XEntity> {
 
     private final XProgramInterpreter program;
+    private final JumpsResolver jumpsResolver;
 
-    public Y2XConverterVisitor(XProgramInterpreter program) {
+    // уже в начале визита знаем, какие стейтменты are labelled.
+    // на preProcessStatement проверять, если он есть в таблице меток
+    // если есть, нужно как-то запомнить следующий первый ивент --
+    // сказать комп-ру замаппить след-й ивент (на что? на лейбл!)
+
+    public Y2XConverterVisitor(XProgramInterpreter program, JumpsResolver jumpsResolver) {
         this.program = program;
+        this.jumpsResolver = jumpsResolver;
     }
 
     public XCyclicProgram getProgram() {
@@ -74,7 +83,7 @@ public class Y2XConverterVisitor implements YtreeVisitor<XEntity> {
     // start of Litmus-litmus visits:
 
     @Override
-    public XEvent visit(YPreludeStatement node) {
+    public XEvent visit(YPreludeDefinition node) {
         program.startProcessDefinition(XProcessKind.Prelude, XProcessId.PreludeProcessId);
         for (YStatement statement : node.getInitialWrites()) {
             statement.accept(this);
@@ -105,7 +114,7 @@ public class Y2XConverterVisitor implements YtreeVisitor<XEntity> {
     }
 
     @Override
-    public XEntity visit(YPostludeStatement node) {
+    public XEntity visit(YPostludeDefinition node) {
         program.startProcessDefinition(XProcessKind.Postlude, XProcessId.PostludeProcessId);
         XEntity expression = node.getExpression().accept(this);
         if (!(expression instanceof XBinaryComputationEvent)) {
@@ -121,6 +130,7 @@ public class Y2XConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XEvent visit(YCompoundStatement node) {
+        preProcessStatement(node);
         for (YStatement statement : node.getStatements()) {
             statement.accept(this);
         }
@@ -384,6 +394,7 @@ public class Y2XConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XEvent visit(YLinearStatement node) {
+        preProcessStatement(node);
         YExpression yExpression = node.getExpression();
         XEntity visited = yExpression.accept(this);
         if (!(visited instanceof XEvent)) {
@@ -394,6 +405,7 @@ public class Y2XConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XEvent visit(YBranchingStatement node) {
+        preProcessStatement(node);
         program.startBlockDefinition(XInterpreter.BlockKind.Branching);
 
         program.startBlockConditionDefinition();
@@ -423,6 +435,7 @@ public class Y2XConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XEvent visit(YLoopStatement node) {
+        preProcessStatement(node);
         program.startBlockDefinition(XInterpreter.BlockKind.Loop);
 
         program.startBlockConditionDefinition();
@@ -444,10 +457,16 @@ public class Y2XConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XEvent visit(YJumpStatement node) {
+        preProcessStatement(node);
         switch (node.getKind()) {
             case Goto:
-                throw new NotImplementedException();
-                //break;
+                String labelText = node.getJumpLabel().getValue();
+                YStatement resolvedStatement = jumpsResolver.tryGetStatementOrNull(labelText);
+                if (resolvedStatement == null) {
+                    throw new XInterpretationError("Could not resolve jump to the label: " + wrap(labelText));
+                }
+                return program.emitJumpEvent(labelText);
+
             case Return:
                 throw new NotImplementedException();
                 //break;
@@ -468,6 +487,7 @@ public class Y2XConverterVisitor implements YtreeVisitor<XEntity> {
 
     @Override
     public XLvalueMemoryUnit visit(YVariableDeclarationStatement node) {
+        preProcessStatement(node);
         YVariableRef variable = node.getVariable();
         String name = variable.getName();
         XType type = Y2XTypeConverter.convert(node.getType());
@@ -536,6 +556,13 @@ public class Y2XConverterVisitor implements YtreeVisitor<XEntity> {
             throw new XInterpreterUsageError("Could not convert expression " + wrap(expression) + " to a local memory unit");
         }
         return converted;
+    }
+
+    private void preProcessStatement(YStatement statement) {
+        String label = jumpsResolver.tryGetLabelOrNull(statement);
+        if (label != null) {
+            program.markNextEventLabel(label);
+        }
     }
 
     private static <T> String getUnexpectedOperandTypeErrorMessage(T operand) {
