@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import mousquetaires.app.errors.AppError;
 import mousquetaires.app.options.AppOptions;
 import mousquetaires.languages.syntax.xgraph.XEntity;
+import mousquetaires.languages.syntax.xgraph.process.XProcessId;
+import sun.security.x509.URIName;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,8 +42,9 @@ public abstract class AppVerdict {
     private final AppOptions options;
     private final Timer timerMain;
     private final ImmutableMap<ProgramStage, Timer> timers;
-    private final HashMap<String, Integer> countEntities;
-    private final HashMap<String, Integer> countEntitiesUnrolled;
+
+    private final HashMap<String, HashMap<String, Integer>> processStatistics;
+    private final HashMap<String, HashMap<String, Integer>> processStatisticsUnrolled;
 
     private final List<AppError> errors;
 
@@ -54,17 +57,21 @@ public abstract class AppVerdict {
         }
         this.timers = ImmutableMap.copyOf(timersValues);
         this.errors = new ArrayList<>();
-        this.countEntities = new HashMap<>();
-        this.countEntitiesUnrolled = new HashMap<>();
+        this.processStatistics = new HashMap<>();
+        this.processStatisticsUnrolled = new HashMap<>();
     }
 
-    public void setEntitiesNumber(boolean unrolled, Class<? extends XEntity> entityType, int number) {
-        setEntitiesNumber(unrolled, entityType.getSimpleName(), number);
+    public void setEntitiesNumber(XProcessId processId, boolean unrolled, Class<? extends XEntity> entityType, int number) {
+        setEntitiesNumber(processId, unrolled, entityType.getSimpleName(), number);
     }
 
-    public void setEntitiesNumber(boolean unrolled, String entityName, int number) {
-        Map<String, Integer> map = unrolled ? countEntitiesUnrolled : countEntities;
-        map.put(entityName, number);
+    public void setEntitiesNumber(XProcessId processId, boolean unrolled, String entityName, int number) {
+        HashMap<String, HashMap<String, Integer>> proc = unrolled ? processStatisticsUnrolled : processStatistics;
+        String pid = processId.getValue();
+        if (!proc.containsKey(pid)) {
+            proc.put(pid, new HashMap<>());
+        }
+        proc.get(pid).put(entityName, number);
     }
 
     public void startAll() {
@@ -74,7 +81,7 @@ public abstract class AppVerdict {
     public void onStart(ProgramStage stage) {
         String currentTime = String.format("%.3f: ", ((System.currentTimeMillis() - timerMain.getStartTime()) / 1000));
         System.out.println( currentTime + stage.separatedByCapitals() + "...");
-        timers.get(stage).start();
+        timers.get  (stage).start();
     }
 
     public void onFinish(ProgramStage stage) {

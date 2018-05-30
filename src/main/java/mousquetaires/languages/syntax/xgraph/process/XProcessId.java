@@ -24,6 +24,7 @@ public class XProcessId {
     }
 
     @Override
+
     public boolean equals(Object o) {
         if (this == o) { return true; }
         if (!(o instanceof XProcessId)) { return false; }
@@ -33,6 +34,7 @@ public class XProcessId {
 
     @Override
     public int hashCode() {
+
         return Objects.hash(getValue());
     }
 }
