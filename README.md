@@ -1,6 +1,6 @@
 # PORTHOS: _One_ Tool _for all_ Models
 
-![alt text](https://github.com/hernanponcedeleon/PORTHOS/blob/master/dartagnan/extras/porthos_small.jpg)
+![alt text](https://github.com/hernanponcedeleon/PORTHOS/blob/master/old.dartagnan/extras/porthos_small.jpg)
 
 Requirements
 ======
@@ -10,17 +10,17 @@ Usage
 ======
 For checking execution inclusion:
 ```
-//java porthos/Porthos -s <source> -t <target> -i <input>
+//java old.porthos/Porthos -s <source> -t <target> -i <input>
 gradle runPorthos -Pargs="-s <source> -t <target> -i <input>"
 ```
 For checking state inclusion:
 ```
-//java porthos/Porthos -s <source> -t <target> -i <input> -state
+//java old.porthos/Porthos -s <source> -t <target> -i <input> -state
 gradle runPorthos -Pargs="-s <source> -t <target> -i <input> -state"
 ```
 For checking reachability:
 ```
-//java dartagnan/Dartagnan -t <target> -i <input>
+//java old.dartagnan/Dartagnan -t <target> -i <input>
 gradle runDartagnan -Pargs="-t <target> -i <input>"
 ```
 
@@ -33,7 +33,7 @@ where \<input> must be a .pts program (see below) and \<source>, \<target> must 
 - power
 - arm
 
-More memory models can be defined using the CAT language. See /src/dartagnan/wmm/
+More memory models can be defined using the CAT language. See /src/old.dartagnan/wmm/
 
 The .pts format
 ======

@@ -86,7 +86,7 @@ mainClassName = "porthosc.app.App"
 
 task runDartagnan(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    main = 'dartagnan.Dartagnan'
+    main = 'old.dartagnan.Dartagnan'
     if(project.hasProperty('args')){
         args project.args.split('\\s+')
     }
@@ -94,7 +94,7 @@ task runDartagnan(type: JavaExec) {
 
 task runPorthos(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    main = 'porthos.Porthos'
+    main = 'old.porthos.Porthos'
     if(project.hasProperty('args')){
         args project.args.split('\\s+')
     }

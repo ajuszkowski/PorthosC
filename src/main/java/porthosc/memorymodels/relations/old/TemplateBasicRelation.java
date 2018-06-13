@@ -1,12 +1,12 @@
 package porthosc.memorymodels.relations.old;
 
-import aramis.ListOfRels;
+import old.aramis.ListOfRels;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Z3Exception;
-import dartagnan.program.Event;
-import dartagnan.program.Program;
+import old.dartagnan.program.Event;
+import old.dartagnan.program.Program;
 import porthosc.utils.Utils;
 import java.util.Set;
 

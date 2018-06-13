@@ -8,16 +8,16 @@ import java.util.stream.Collectors;
 
 import com.microsoft.z3.*;
 
-import dartagnan.program.Event;
-import dartagnan.program.If;
-import dartagnan.program.InitEvent;
-import dartagnan.program.LoadEvent;
-import dartagnan.program.LocalEvent;
-import dartagnan.program.Location;
-import dartagnan.program.SharedMemEvent;
-import dartagnan.program.Program;
-import dartagnan.program.Register;
-import dartagnan.program.StoreEvent;
+import old.dartagnan.program.Event;
+import old.dartagnan.program.If;
+import old.dartagnan.program.InitEvent;
+import old.dartagnan.program.LoadEvent;
+import old.dartagnan.program.LocalEvent;
+import old.dartagnan.program.Location;
+import old.dartagnan.program.SharedMemEvent;
+import old.dartagnan.program.Program;
+import old.dartagnan.program.Register;
+import old.dartagnan.program.StoreEvent;
 import porthosc.languages.syntax.xgraph.events.XEvent;
 import porthosc.languages.syntax.xgraph.memories.*;
 
@@ -32,7 +32,7 @@ public class Utils {
 
         gv.addln("subgraph cluster_Source { rank=sink; fontsize=20; label = \"Program Compiled to Source Architecture\"; color=red; shape=box;");
         int tid = 0;
-        for(dartagnan.program.Thread t : pSource.getThreads()) {
+        for(old.dartagnan.program.Thread t : pSource.getThreads()) {
             tid++;
             if(!(t instanceof InitEvent)) {
                 gv.addln("  subgraph cluster_Thread_Source" + t.getTId() + " { rank=sink; fontsize=15; label = \"Thread " + tid + "\"; color=magenta; shape=box;");
@@ -115,7 +115,7 @@ public class Utils {
 
         gv.addln("subgraph cluster_Target { rank=sink; fontsize=20; label = \"Program Compiled to Target Architecture\"; color=red; shape=box;");
         tid = 0;
-        for(dartagnan.program.Thread t : pTarget.getThreads()) {
+        for(old.dartagnan.program.Thread t : pTarget.getThreads()) {
             tid++;
             if(!(t instanceof InitEvent)) {
                 gv.addln("  subgraph cluster_Thread_Target" + t.getTId() + " { rank=sink; fontsize=15; label = \"Thread " + tid + "\"; color=magenta; shape=box;");

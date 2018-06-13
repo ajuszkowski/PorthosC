@@ -7,15 +7,15 @@ import java.util.stream.IntStream;
 
 import com.microsoft.z3.*;
 
-import dartagnan.program.Event;
-import dartagnan.program.InitEvent;
-import dartagnan.program.LoadEvent;
-import dartagnan.program.LocalEvent;
-import dartagnan.program.Location;
-import dartagnan.program.SharedMemEvent;
-import dartagnan.program.Program;
-import dartagnan.program.Register;
-import dartagnan.program.StoreEvent;
+import old.dartagnan.program.Event;
+import old.dartagnan.program.InitEvent;
+import old.dartagnan.program.LoadEvent;
+import old.dartagnan.program.LocalEvent;
+import old.dartagnan.program.Location;
+import old.dartagnan.program.SharedMemEvent;
+import old.dartagnan.program.Program;
+import old.dartagnan.program.Register;
+import old.dartagnan.program.StoreEvent;
 import porthosc.memorymodels.relations.ZRelation;
 import porthosc.utils.Utils;
 import static porthosc.utils.Utils.lastValueLoc;

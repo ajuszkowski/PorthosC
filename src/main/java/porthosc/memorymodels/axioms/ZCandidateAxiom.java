@@ -7,13 +7,13 @@ public class ZCandidateAxiom extends ZAcyclicAxiom {
 
     //denotes whether the axiom fails a Neg test.
 
-    public ZConsistent[] pos = new ZConsistent[aramis.Aramis.posPrograms.size()];
-    public ZConsistent[] neg = new ZConsistent[aramis.Aramis.negPrograms.size()];
+    public ZConsistent[] pos = new ZConsistent[old.aramis.Aramis.posPrograms.size()];
+    public ZConsistent[] neg = new ZConsistent[old.aramis.Aramis.negPrograms.size()];
     //public HashMap<Program, Boolean> consProg = new HashMap<>();
     //Denotes whether the axiom passes all POS tests.
     public boolean consistent = false;
     public int position;
-    public ZCandidateAxiom[] next = new ZCandidateAxiom[aramis.Aramis.negPrograms.size()];
+    public ZCandidateAxiom[] next = new ZCandidateAxiom[old.aramis.Aramis.negPrograms.size()];
     public boolean relevant = false;
     /**
      * Creates an acyclic Axiom that has additional information regarding its behaviour towards the reachability src.porthosc.tests.
@@ -60,12 +60,12 @@ public class ZCandidateAxiom extends ZAcyclicAxiom {
      * @return the index of the first NEG test that passes starting at firstUncovered
      */
     public int getNextpass(int firstUncovered) {
-        for (int negprog = firstUncovered; negprog < aramis.Aramis.negPrograms.size(); negprog++) {
+        for (int negprog = firstUncovered; negprog < old.aramis.Aramis.negPrograms.size(); negprog++) {
             if (neg[negprog] != ZConsistent.CONSISTENT) {
                 return negprog;
             }
         }
-        return aramis.Aramis.negPrograms.size();
+        return old.aramis.Aramis.negPrograms.size();
     }
 
 }

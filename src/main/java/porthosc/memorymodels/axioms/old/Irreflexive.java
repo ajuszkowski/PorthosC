@@ -8,7 +8,7 @@ package porthosc.memorymodels.axioms.old;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Z3Exception;
-import dartagnan.program.Event;
+import old.dartagnan.program.Event;
 import porthosc.memorymodels.EncodingsOld;
 import porthosc.memorymodels.relations.old.Relation;
 import porthosc.utils.Utils;

@@ -29,7 +29,7 @@ public class CandidateModel extends WmmOld {
         while (true) {            
             boolean temp=true;
             CandidateAxiom axio=(CandidateAxiom) axioms.firstElement();
-            if(neg>=aramis.Aramis.negPrograms.size()) return neg;
+            if(neg>= old.aramis.Aramis.negPrograms.size()) return neg;
             for (Axiom axiom : axioms) {
                 CandidateAxiom ax=(CandidateAxiom) axiom;
                 if(ax.neg[neg]==Consistent.INCONSISTENT) temp=false;

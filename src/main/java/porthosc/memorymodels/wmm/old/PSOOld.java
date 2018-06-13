@@ -4,7 +4,7 @@ import java.util.Set;
 
 import com.microsoft.z3.*;
 
-import dartagnan.program.*;
+import old.dartagnan.program.*;
 import porthosc.memorymodels.EncodingsOld;
 
 

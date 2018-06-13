@@ -1,6 +1,6 @@
 package porthosc.memorymodels.relations;
 
-import aramis.ListOfRels;
+import old.aramis.ListOfRels;
 import com.google.common.collect.ImmutableSet;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;

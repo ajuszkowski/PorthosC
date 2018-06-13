@@ -8,11 +8,11 @@ public enum AppModuleName {
 
     public static AppModuleName parse(String value) {
         switch (value.toLowerCase()) {
-            case "porthos":
+            case "old/porthos":
                 return AppModuleName.Porthos;
-            case "dartagnan":
+            case "old/dartagnan":
                 return AppModuleName.Dartagnan;
-            case "aramis":
+            case "old/aramis":
                 return AppModuleName.Aramis;
             default:
                 return null;

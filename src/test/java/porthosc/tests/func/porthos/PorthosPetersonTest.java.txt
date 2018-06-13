@@ -1,8 +1,8 @@
-package porthosc.tests.func.porthos;
+package porthosc.tests.func.old.porthos;
 
 import com.googlecode.zohhak.api.TestWith;
 import com.googlecode.zohhak.api.runners.ZohhakRunner;
-import porthosc.app.modules.dartagnan.DartagnanVerdict;
+import porthosc.app.modules.old.dartagnan.DartagnanVerdict;
 import porthosc.models.MemoryModelName;
 import org.junit.runner.RunWith;
 

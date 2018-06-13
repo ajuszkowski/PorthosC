@@ -1,6 +1,6 @@
 package porthosc.languages.converters;
 
-import dartagnan.ModelLexer;
+import old.dartagnan.ModelLexer;
 import porthosc.languages.InputLanguage;
 import porthosc.languages.parsers.*;
 import porthosc.utils.exceptions.ytree.YParserException;

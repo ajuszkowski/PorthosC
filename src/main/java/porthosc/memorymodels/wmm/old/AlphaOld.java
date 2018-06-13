@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import com.microsoft.z3.*;
 
-import dartagnan.program.*;
+import old.dartagnan.program.*;
 import porthosc.memorymodels.EncodingsOld;
 
 
