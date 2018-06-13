@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 import com.microsoft.z3.*;
 
 import dartagnan.expression.Assert;
-import mousquetaires.memorymodels.wmm.old.*;
-import mousquetaires.utils.*;
+import porthosc.memorymodels.wmm.old.*;
+import porthosc.utils.*;
 
 
 public class Program {

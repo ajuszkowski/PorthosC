@@ -28,9 +28,9 @@ import dartagnan.PorthosLexer;
 import dartagnan.PorthosParser;
 import dartagnan.program.InitEvent;
 import dartagnan.program.Program;
-import mousquetaires.utils.Utils;
-import mousquetaires.memorymodels.DomainOld;
-import mousquetaires.memorymodels.EncodingsOld;
+import porthosc.utils.Utils;
+import porthosc.memorymodels.DomainOld;
+import porthosc.memorymodels.EncodingsOld;
 
 import org.apache.commons.cli.*;
 

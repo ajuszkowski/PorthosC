@@ -40,12 +40,12 @@ dependencies {
 ext.antlr = [
     generatedSourceDir: "src/generated/java/",
     grammarsDir: "src/main/antlr/",
-    resultPackage: "mousquetaires.languages.parsers",
+    resultPackage: "porthosc.languages.parsers",
 ]
 
 idea {
     module {
-        name = "mousquetaires"
+        name = "porthosc"
         contentRoot         =  file(".")
         outputDir           =  file("build")
         sourceDirs          = [file("src/main/java")] // + src/main/resources ?
@@ -82,7 +82,7 @@ task listJars() {
 
 // For now, gradle allows running application in dummy
 
-mainClassName = "mousquetaires.app.App"
+mainClassName = "porthosc.app.App"
 
 task runDartagnan(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath

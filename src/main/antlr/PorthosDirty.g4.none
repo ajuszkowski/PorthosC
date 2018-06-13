@@ -1,10 +1,10 @@
 grammar PorthosDirty;
 
 @header{
-import mousquetaires.programme.*;
-import mousquetaires.programme.events.old.barriers.*;
-import mousquetaires.programme.Process;
-import mousquetaires.expression.*;
+import porthosc.programme.*;
+import porthosc.programme.events.old.barriers.*;
+import porthosc.programme.Process;
+import porthosc.expression.*;
 import java.util.HashMap;
 import java.util.Map;
 }

@@ -1,7 +1,6 @@
 // Generated from Model.g4 by ANTLR 4.7.1
 
 package dartagnan;
-import mousquetaires.memorymodels.*;
 
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 

@@ -2,7 +2,7 @@ import re
 import matplotlib as mpl
 from matplotlib import pyplot as plt
 
-log = '/run/media/ael/Projects/mousquetaires/bench-copy.log'
+log = '/run/media/ael/Projects/porthosc/bench-copy.log'
 key = 'ProgramDomainEncoding": {\n?\s+"elapsedTimeSec"'
 
 X = [x for x in range(10, 41)]

@@ -8,8 +8,8 @@ import com.microsoft.z3.*;
 import dartagnan.program.Location;
 import dartagnan.program.Register;
 
-import static mousquetaires.utils.Utils.lastValueReg;
-import static mousquetaires.utils.Utils.lastValueLoc;
+import static porthosc.utils.Utils.lastValueReg;
+import static porthosc.utils.Utils.lastValueLoc;
 
 public class Assert {
 
