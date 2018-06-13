@@ -3,12 +3,11 @@ package porthosc.memorymodels.wmm;
 import com.google.common.collect.ImmutableSet;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
-import porthosc.languages.syntax.xgraph.program.XProgram;
 import porthosc.languages.syntax.xgraph.events.XEvent;
 import porthosc.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import porthosc.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
+import porthosc.languages.syntax.xgraph.program.XProgram;
 import porthosc.memorymodels.Encodings;
-import porthosc.memorymodels.relations.old.Relation;
 import porthosc.utils.Utils;
 
 import java.util.Set;
@@ -142,7 +141,8 @@ public class Power {
                                                        Utils.edge("ci;ic", e1, e2, ctx),
                                                        Utils.edge("cc;cc", e1, e2, ctx))));
 
-                if (Relation.Approx) {
+                if (true) {
+//                if (Relation.Approx) {
 //                    enc = ctx.mkAnd(enc, ctx.mkEq(Utils.edge("ii", e1, e2, ctx), ctx.mkOr(Utils.edge("ii0", e1, e2, ctx),
 //                            Utils.edge("ci", e1, e2, ctx),
 //                            Utils.edge("ic;ci", e1, e2, ctx),

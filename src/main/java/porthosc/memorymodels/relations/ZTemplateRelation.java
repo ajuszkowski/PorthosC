@@ -1,17 +1,19 @@
 package porthosc.memorymodels.relations;
 
 import com.google.common.collect.ImmutableSet;
-import com.microsoft.z3.*;
-import porthosc.languages.syntax.xgraph.program.XProgram;
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Context;
+import com.microsoft.z3.Z3Exception;
 import porthosc.languages.syntax.xgraph.events.XEvent;
 import porthosc.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
+import porthosc.languages.syntax.xgraph.program.XProgram;
 import porthosc.memorymodels.Encodings;
 import porthosc.utils.Utils;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static porthosc.memorymodels.EncodingsOld.encodeEO;
+import static porthosc.memorymodels.Encodings.encodeEO;
 
 
 public class ZTemplateRelation extends ZBinaryRelation {
@@ -60,39 +62,39 @@ public class ZTemplateRelation extends ZBinaryRelation {
         return enc;
     }
 
-    public ZRelation getSolution(Solver s, Context ctx) {
-        Model m = s.getModel();
-        ZRelation rel1, rel2;
-        if (r1 instanceof ZTemplateRelation) {
-            rel1 = ((ZTemplateRelation) r1).getSolution(s, ctx);
-        }
-        else {
-            rel1 = ((ZTemplateBasicRelation) r1).getSolution(s, ctx);
-        }
-        if (r2 instanceof ZTemplateRelation) {
-            rel2 = ((ZTemplateRelation) r2).getSolution(s, ctx);
-        }
-        else {
-            rel2 = ((ZTemplateBasicRelation) r2).getSolution(s, ctx);
-        }
-        if (m.eval(unionexp, true).isTrue()) {
-            return new ZRelUnion(rel1, rel2);
-        }
-        if (m.eval(interexp, true).isTrue()) {
-            return new ZRelInterSect(rel1, rel2);
-        }
-        if (m.eval(compexp, true).isTrue()) {
-            return new ZRelComposition(rel1, rel2);
-        }
-        if (m.eval(transrefexp, true).isTrue()) {
-            return new ZRelTransRef(rel1);
-        }
-        if (m.eval(idexp, true).isTrue()) {
-            return rel1;
-        }
-        System.err.println("could not find Solution for TemplateRelation " + name);
-        return null;
-    }
+    //public ZRelation getSolution(Solver s, Context ctx) {
+    //    Model m = s.getModel();
+    //    ZRelation rel1, rel2;
+    //    if (r1 instanceof ZTemplateRelation) {
+    //        rel1 = ((ZTemplateRelation) r1).getSolution(s, ctx);
+    //    }
+    //    else {
+    //        rel1 = ((ZTemplateBasicRelation) r1).getSolution(s, ctx);
+    //    }
+    //    if (r2 instanceof ZTemplateRelation) {
+    //        rel2 = ((ZTemplateRelation) r2).getSolution(s, ctx);
+    //    }
+    //    else {
+    //        rel2 = ((ZTemplateBasicRelation) r2).getSolution(s, ctx);
+    //    }
+    //    if (m.eval(unionexp, true).isTrue()) {
+    //        return new ZRelUnion(rel1, rel2);
+    //    }
+    //    if (m.eval(interexp, true).isTrue()) {
+    //        return new ZRelInterSect(rel1, rel2);
+    //    }
+    //    if (m.eval(compexp, true).isTrue()) {
+    //        return new ZRelComposition(rel1, rel2);
+    //    }
+    //    if (m.eval(transrefexp, true).isTrue()) {
+    //        return new ZRelTransRef(rel1);
+    //    }
+    //    if (m.eval(idexp, true).isTrue()) {
+    //        return rel1;
+    //    }
+    //    System.err.println("could not find Solution for TemplateRelation " + name);
+    //    return null;
+    //}
 
     @Override
     protected BoolExpr encodeBasic(XProgram program, Context ctx) throws Z3Exception {
@@ -136,13 +138,13 @@ public class ZTemplateRelation extends ZBinaryRelation {
         return enc;
     }
 
-    public static ZTemplateRelation getTemplateRelation(int level) {
-        if (level > 1) {
-            return new ZTemplateRelation(getTemplateRelation(level - 1), getTemplateRelation(level - 1));
-        }
-        else {
-            return new ZTemplateRelation(new ZTemplateBasicRelation(), new ZTemplateBasicRelation());
-        }
-    }
+    //public static ZTemplateRelation getTemplateRelation(int level) {
+    //    if (level > 1) {
+    //        return new ZTemplateRelation(getTemplateRelation(level - 1), getTemplateRelation(level - 1));
+    //    }
+    //    else {
+    //        return new ZTemplateRelation(new ZTemplateBasicRelation(), new ZTemplateBasicRelation());
+    //    }
+    //}
 
 }

@@ -1,6 +1,6 @@
 package porthosc.languages.conversion.toytree;
 
-import porthosc.languages.InputLanguage;
+import porthosc.languages.common.InputLanguage;
 import porthosc.languages.conversion.InputParserBase;
 
 import java.io.File;

@@ -1,7 +1,7 @@
 package porthosc.tests.unit.languages.converters.toxgraph;
 
-import porthosc.languages.InputExtensions;
-import porthosc.languages.InputLanguage;
+import porthosc.languages.common.InputExtensions;
+import porthosc.languages.common.InputLanguage;
 import porthosc.languages.conversion.InputParserBase;
 import porthosc.languages.conversion.toxgraph.Y2XConverter;
 import porthosc.languages.conversion.toytree.YtreeParser;

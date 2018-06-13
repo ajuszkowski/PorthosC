@@ -1,4 +1,4 @@
-package porthosc.languages;
+package porthosc.languages.common;
 
 import org.apache.commons.io.FilenameUtils;
 

@@ -1,4 +1,4 @@
-package porthosc.languages;
+package porthosc.languages.common;
 
 public enum InputLanguage {
     C11,

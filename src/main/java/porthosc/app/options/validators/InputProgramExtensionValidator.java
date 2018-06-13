@@ -3,8 +3,8 @@ package porthosc.app.options.validators;
 
 import com.beust.jcommander.IValueValidator;
 import com.beust.jcommander.ParameterException;
-import porthosc.languages.InputExtensions;
-import porthosc.languages.InputLanguage;
+import porthosc.languages.common.InputExtensions;
+import porthosc.languages.common.InputLanguage;
 
 import java.io.File;
 

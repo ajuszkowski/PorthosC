@@ -7,15 +7,15 @@ import porthosc.app.errors.IOError;
 import porthosc.app.errors.UnrecognisedError;
 import porthosc.app.modules.AppModule;
 import porthosc.app.modules.AppVerdict;
-import porthosc.languages.InputExtensions;
-import porthosc.languages.InputLanguage;
+import porthosc.languages.common.InputExtensions;
+import porthosc.languages.common.InputLanguage;
 import porthosc.languages.conversion.toxgraph.Y2XConverter;
 import porthosc.languages.conversion.toytree.YtreeParser;
 import porthosc.languages.conversion.tozformula.XProgram2ZformulaEncoder;
 import porthosc.languages.syntax.xgraph.program.XCyclicProgram;
 import porthosc.languages.syntax.xgraph.program.XProgram;
 import porthosc.languages.syntax.ytree.YSyntaxTree;
-import porthosc.languages.transformers.xgraph.XProgramTransformer;
+import porthosc.languages.conversion.toxgraph.unrolling.XProgramTransformer;
 import porthosc.memorymodels.Encodings;
 import porthosc.memorymodels.wmm.MemoryModel;
 

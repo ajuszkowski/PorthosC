@@ -1,6 +1,6 @@
 //package porthosc.languages.conversion.towmodel;
 //
-//import porthosc.languages.InputLanguage;
+//import porthosc.languages.common.InputLanguage;
 //import porthosc.languages.conversion.InputParserBase;
 //import porthosc.languages.syntax.wmodel.WMemoryModel;
 //

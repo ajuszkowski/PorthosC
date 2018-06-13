@@ -1,6 +1,6 @@
 package porthosc.languages.conversion;
 
-import porthosc.languages.InputLanguage;
+import porthosc.languages.common.InputLanguage;
 import porthosc.languages.common.citation.CitationService;
 import porthosc.languages.conversion.toytree.c11.C2YtreeConverter;
 

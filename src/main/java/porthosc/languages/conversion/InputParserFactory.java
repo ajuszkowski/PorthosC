@@ -1,14 +1,16 @@
 package porthosc.languages.conversion;
 
-import old.dartagnan.ModelLexer;
-import porthosc.languages.InputLanguage;
-import porthosc.languages.parsers.*;
-import porthosc.utils.exceptions.ytree.YParserException;
-import porthosc.utils.io.FileUtils;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.ParserRuleContext;
+import porthosc.languages.common.InputLanguage;
+import porthosc.languages.parsers.C11Lexer;
+import porthosc.languages.parsers.C11Parser;
+import porthosc.languages.parsers.CatLexer;
+import porthosc.languages.parsers.CatParser;
+import porthosc.utils.exceptions.ytree.YParserException;
+import porthosc.utils.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +29,7 @@ public class InputParserFactory {
                 lexer = new C11Lexer(charStream);
                 break;
             case Cat:
-                lexer = new ModelLexer(charStream);
+                lexer = new CatLexer(charStream);
                 break;
             default:
                 throw new IllegalArgumentException(language.name());

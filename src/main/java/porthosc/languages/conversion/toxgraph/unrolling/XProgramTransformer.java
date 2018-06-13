@@ -1,4 +1,4 @@
-package porthosc.languages.transformers.xgraph;
+package porthosc.languages.conversion.toxgraph.unrolling;
 
 import porthosc.languages.syntax.xgraph.program.XCyclicProgram;
 import porthosc.languages.syntax.xgraph.program.XProgram;
