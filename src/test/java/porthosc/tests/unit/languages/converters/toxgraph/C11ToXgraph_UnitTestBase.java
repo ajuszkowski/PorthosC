@@ -2,9 +2,9 @@ package porthosc.tests.unit.languages.converters.toxgraph;
 
 import porthosc.languages.InputExtensions;
 import porthosc.languages.InputLanguage;
-import porthosc.languages.converters.InputParserBase;
-import porthosc.languages.converters.toxgraph.Y2XConverter;
-import porthosc.languages.converters.toytree.YtreeParser;
+import porthosc.languages.conversion.InputParserBase;
+import porthosc.languages.conversion.toxgraph.Y2XConverter;
+import porthosc.languages.conversion.toytree.YtreeParser;
 import porthosc.languages.syntax.xgraph.process.XCyclicProcess;
 import porthosc.languages.syntax.xgraph.program.XProgramBase;
 import porthosc.languages.syntax.ytree.YSyntaxTree;

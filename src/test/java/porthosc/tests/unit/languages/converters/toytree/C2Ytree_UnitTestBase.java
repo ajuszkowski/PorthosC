@@ -2,8 +2,8 @@ package porthosc.tests.unit.languages.converters.toytree;
 
 import porthosc.languages.InputExtensions;
 import porthosc.languages.InputLanguage;
-import porthosc.languages.converters.InputParserBase;
-import porthosc.languages.converters.toytree.YtreeParser;
+import porthosc.languages.conversion.InputParserBase;
+import porthosc.languages.conversion.toytree.YtreeParser;
 import porthosc.languages.syntax.ytree.YEntity;
 import porthosc.languages.syntax.ytree.YSyntaxTree;
 import porthosc.tests.TestFailedException;

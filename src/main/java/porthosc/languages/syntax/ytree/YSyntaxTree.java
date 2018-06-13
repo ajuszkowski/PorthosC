@@ -2,7 +2,7 @@ package porthosc.languages.syntax.ytree;
 
 import com.google.common.collect.ImmutableList;
 import porthosc.languages.common.citation.Origin;
-import porthosc.languages.converters.toytree.c11.JumpsResolver;
+import porthosc.languages.conversion.toytree.c11.JumpsResolver;
 import porthosc.languages.syntax.ytree.visitors.YtreeVisitor;
 
 import java.util.Collection;
