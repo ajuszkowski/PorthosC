@@ -47,7 +47,7 @@ idea {
     module {
         name = "porthosc"
         contentRoot         =  file(".")
-        outputDir           =  file("build")
+        outputDir           =  file("out")
         sourceDirs          = [file("src/main/java")] // + src/main/resources ?
         sourceDirs          += file("src/generated/java")  // after 'generatedSourceDirs' will become not incubaging, set it here
         testSourceDirs      = [file("src/test/java")]
