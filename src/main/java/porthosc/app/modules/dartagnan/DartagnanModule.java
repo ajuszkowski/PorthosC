@@ -3,6 +3,7 @@ package porthosc.app.modules.dartagnan;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.enumerations.Z3_ast_print_mode;
+import org.apache.commons.io.FileUtils;
 import porthosc.app.errors.AppError;
 import porthosc.app.errors.IOError;
 import porthosc.app.errors.UnrecognisedError;
@@ -10,7 +11,7 @@ import porthosc.app.modules.AppModule;
 import porthosc.app.modules.AppVerdict;
 import porthosc.languages.common.InputExtensions;
 import porthosc.languages.common.InputLanguage;
-import porthosc.languages.common.graph.FlowGraph;
+import porthosc.languages.common.graph.render.GraphDumper;
 import porthosc.languages.conversion.toxgraph.Y2XConverter;
 import porthosc.languages.conversion.toytree.YtreeParser;
 import porthosc.languages.conversion.tozformula.XProgram2ZformulaEncoder;
@@ -24,18 +25,19 @@ import porthosc.languages.syntax.xgraph.events.memory.XMemoryEvent;
 import porthosc.languages.syntax.xgraph.events.memory.XSharedMemoryEvent;
 import porthosc.languages.syntax.xgraph.process.XCyclicProcess;
 import porthosc.languages.syntax.xgraph.process.XProcess;
-import porthosc.languages.syntax.xgraph.process.XProcessId;
 import porthosc.languages.syntax.xgraph.program.XCyclicProgram;
 import porthosc.languages.syntax.xgraph.program.XProgram;
 import porthosc.languages.syntax.ytree.YSyntaxTree;
 import porthosc.languages.conversion.toxgraph.unrolling.XProgramTransformer;
 import porthosc.memorymodels.wmm.MemoryModel;
+import porthosc.utils.StringUtils;
 
+import javax.sound.midi.Soundbank;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import static porthosc.languages.syntax.xgraph.process.XProcessHelper.getNodesCount;
+import static porthosc.utils.StringUtils.wrap;
 
 
 public class DartagnanModule extends AppModule {
@@ -73,44 +75,59 @@ public class DartagnanModule extends AppModule {
             verdict.onFinish(AppVerdict.ProgramStage.Interpretation);
 
             for (XCyclicProcess p : program.getProcesses()) {
-                addStatistics(verdict, false, p, p.getId(), XEvent.class);
-                addStatistics(verdict, false, p, p.getId(), XMemoryEvent.class);
-                addStatistics(verdict, false, p, p.getId(), XLocalMemoryEvent.class);
-                addStatistics(verdict, false, p, p.getId(), XSharedMemoryEvent.class);
-                addStatistics(verdict, false, p, p.getId(), XComputationEvent.class);
-                addStatistics(verdict, false, p, p.getId(), XBarrierEvent.class);
-                addStatistics(verdict, false, p, p.getId(), XControlFlowEvent.class);
-                addStatistics(verdict, false, p, p.getId(), XNopEvent.class);
+                verdict.addStatistics(false, p, p.getId(), XEvent.class);
+                verdict.addStatistics(false, p, p.getId(), XMemoryEvent.class);
+                verdict.addStatistics(false, p, p.getId(), XLocalMemoryEvent.class);
+                verdict.addStatistics(false, p, p.getId(), XSharedMemoryEvent.class);
+                verdict.addStatistics(false, p, p.getId(), XComputationEvent.class);
+                verdict.addStatistics(false, p, p.getId(), XBarrierEvent.class);
+                verdict.addStatistics(false, p, p.getId(), XControlFlowEvent.class);
+                verdict.addStatistics(false, p, p.getId(), XNopEvent.class);
                 verdict.setEntitiesNumber(p.getId(), false, "_XEdgePrimary", p.getEdges(true).size());
                 verdict.setEntitiesNumber(p.getId(), false, "_XEdgeAlternative", p.getEdges(false).size());
             }
 
-            //for (XCyclicProcess process : program.getProcesses()) {
-            //    GraphDumper.tryDumpToFile(process, "build/graphs/paper/test", process.getId().getValue());
-            //}
+            File dumpDir = options.dumpDirectory;
+            if (dumpDir != null) {
+                System.out.println("Dumping non-unrolled graphs into directory " + wrap(dumpDir.getAbsolutePath()) + "...");
+                if (dumpDir.exists()) {
+                    System.out.println("Dump directory exists, cleaning it up");
+                    FileUtils.cleanDirectory(dumpDir);
+                }
+                else if (!dumpDir.mkdirs()) {
+                    throw new RuntimeException("Could not create dump directory: " + wrap(dumpDir.getAbsolutePath()));
+                }
+                System.out.println("Dump directory created: " + wrap(dumpDir.getAbsolutePath()));
+                for (XCyclicProcess process : program.getProcesses()) {
+                    GraphDumper.tryDumpToFile(process, dumpDir.getAbsolutePath(), process.getId().getValue());
+                }
+            }
 
             verdict.onStart(AppVerdict.ProgramStage.Unrolling);
             XProgram unrolledProgram = XProgramTransformer.unroll(program, unrollBound);
             verdict.onFinish(AppVerdict.ProgramStage.Unrolling);
 
             for (XProcess p : unrolledProgram.getProcesses()) {
-                addStatistics(verdict, true, p, p.getId(), XEvent.class);
-                addStatistics(verdict, true, p, p.getId(), XMemoryEvent.class);
-                addStatistics(verdict, true, p, p.getId(), XLocalMemoryEvent.class);
-                addStatistics(verdict, true, p, p.getId(), XSharedMemoryEvent.class);
-                addStatistics(verdict, true, p, p.getId(), XComputationEvent.class);
-                addStatistics(verdict, true, p, p.getId(), XBarrierEvent.class);
-                addStatistics(verdict, true, p, p.getId(), XControlFlowEvent.class);
-                addStatistics(verdict, true, p, p.getId(), XNopEvent.class);
+                verdict.addStatistics(true, p, p.getId(), XEvent.class);
+                verdict.addStatistics(true, p, p.getId(), XMemoryEvent.class);
+                verdict.addStatistics(true, p, p.getId(), XLocalMemoryEvent.class);
+                verdict.addStatistics(true, p, p.getId(), XSharedMemoryEvent.class);
+                verdict.addStatistics(true, p, p.getId(), XComputationEvent.class);
+                verdict.addStatistics(true, p, p.getId(), XBarrierEvent.class);
+                verdict.addStatistics(true, p, p.getId(), XControlFlowEvent.class);
+                verdict.addStatistics(true, p, p.getId(), XNopEvent.class);
                 verdict.setEntitiesNumber(p.getId(), true, "_XEdgePrimary", p.getEdges(true).size());
                 verdict.setEntitiesNumber(p.getId(), true, "_XEdgeAlternative", p.getEdges(false).size());
             }
 
-            //for (XProcess process : unrolledProgram.getProcesses()) {
-            //    GraphDumper.tryDumpToFile(process, "build/graphs/paper", process.getId().getValue()+"_unrolled");
-            //}
+            if (dumpDir != null) {
+                System.out.println("Dumping unrolled graphs into directory " + wrap(dumpDir.getAbsolutePath()) + "...");
+                for (XProcess process : unrolledProgram.getProcesses()) {
+                    GraphDumper.tryDumpToFile(process, dumpDir.getAbsolutePath(),
+                                              process.getId().getValue() + "_unrolled");
+                }
+            }
 
-            //verdict.onStartProgramEncoding();
 
             Context ctx = new Context();
             Solver solver = ctx.mkSolver();
@@ -126,7 +143,6 @@ public class DartagnanModule extends AppModule {
             verdict.onFinish(AppVerdict.ProgramStage.ProgramDomainEncoding);
 
             verdict.onStart(AppVerdict.ProgramStage.MemoryModelEncoding);
-            //encoder.encodeProgram(unrolledProgram);//encodeDF, getAss().encode(), encodeCF, encodeDF_RF
             solver.add(unrolledProgram.encodeMM(ctx, memoryModelKind));
             solver.add(unrolledProgram.encodeConsistent(ctx, memoryModelKind));
             verdict.onFinish(AppVerdict.ProgramStage.MemoryModelEncoding);
@@ -156,11 +172,4 @@ public class DartagnanModule extends AppModule {
 
         return verdict;
     }
-
-    public static
-    <N extends XEvent, G extends FlowGraph<N>, S extends N>
-    void addStatistics(DartagnanVerdict verdict, boolean unrolled, G g, XProcessId pid, Class<S> type) {
-        verdict.setEntitiesNumber(pid, unrolled, type, getNodesCount(g, type));
-    }
-
 }

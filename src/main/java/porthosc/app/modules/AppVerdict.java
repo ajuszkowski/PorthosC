@@ -3,12 +3,16 @@ package porthosc.app.modules;
 import com.google.common.collect.ImmutableMap;
 import porthosc.app.errors.AppError;
 import porthosc.app.options.AppOptions;
+import porthosc.languages.common.graph.FlowGraph;
 import porthosc.languages.syntax.xgraph.XEntity;
+import porthosc.languages.syntax.xgraph.events.XEvent;
 import porthosc.languages.syntax.xgraph.process.XProcessId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static porthosc.languages.syntax.xgraph.process.XProcessHelper.getNodesCount;
 
 
 public abstract class AppVerdict {
@@ -70,6 +74,11 @@ public abstract class AppVerdict {
             proc.put(pid, new HashMap<>());
         }
         proc.get(pid).put(entityName, number);
+    }
+
+    public <N extends XEvent, G extends FlowGraph<N>, S extends N>
+    void addStatistics(boolean unrolled, G g, XProcessId pid, Class<S> type) {
+        setEntitiesNumber(pid, unrolled, type, getNodesCount(g, type));
     }
 
     public void startAll() {

@@ -30,7 +30,6 @@ public class GraphDumper {
     public static <T extends FlowGraphNode> boolean tryDumpToFile(FlowGraph<T> graph, String filePath, String fileName) {
         Graph vizGraph = graph("graph").directed();
 
-        //HashMap<Integer, Set<String>> levels = new HashMap<>();
         Map<T, String> usedLabels=  new HashMap<>();
 
         for (boolean b : FlowGraph.edgeKinds()) {
@@ -76,7 +75,6 @@ public class GraphDumper {
 
 
 
-
                 if (graph.hasChild(!b, from)) {
                     fromNode = fromNode.with(Style.FILLED).with("fillcolor", "gray87");
                 }
@@ -116,21 +114,13 @@ public class GraphDumper {
                 //}
             }
         }
-        //vizGraph = vizGraph.graphAttr().with(RankDir.TOP_TO_BOTTOM);
-        //for (Map.Entry<Integer, Set<String>> entry : levels.entrySet()) {
-        //    StringBuilder sb = new StringBuilder();
-        //    for (String node : entry.getValue()) {
-        //        sb.append(node).append("; ");
-        //    }
-        //    vizGraph = vizGraph.graphAttr().with("rank=same; ", sb.toString());
-        //}
 
         Renderer renderer = Graphviz.fromGraph(vizGraph).render(Format.PNG);
         try {
             // TODO: find out why just getParentFile() called for just `new File(filePath + ".png")` returns null
             File file = new File(Paths.get(filePath, fileName + ".png").toFile().getAbsolutePath()); //this is hack for getParentFile() not to return null
             renderer.toFile(file);
-            System.out.println("graph dumped to the file " + file.getAbsolutePath());
+            System.out.println("Graph dumped to the file " + file.getAbsolutePath());
             return true;
         }
         catch (IOException e) {
