@@ -1,6 +1,5 @@
-package porthosc.app.modules.porthos;
+package porthosc.app.modules.verdicts;
 
-import porthosc.app.modules.AppVerdict;
 import porthosc.app.options.AppOptions;
 
 

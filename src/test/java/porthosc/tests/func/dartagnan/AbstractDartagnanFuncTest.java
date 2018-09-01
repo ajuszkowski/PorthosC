@@ -2,7 +2,7 @@ package porthosc.tests.func.dartagnan;
 
 import porthosc.app.modules.dartagnan.DartagnanModule;
 import porthosc.app.modules.dartagnan.DartagnanOptions;
-import porthosc.app.modules.dartagnan.DartagnanVerdict;
+import porthosc.app.modules.verdicts.DartagnanVerdict;
 import porthosc.memorymodels.wmm.MemoryModel;
 import porthosc.tests.func.AbstractFuncTest;
 

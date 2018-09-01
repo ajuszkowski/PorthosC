@@ -2,8 +2,10 @@ package porthosc;
 
 import porthosc.app.AppBase;
 import porthosc.app.modules.AppModule;
+import porthosc.app.modules.verdicts.IAppVerdictSerializer;
 import porthosc.app.modules.dartagnan.DartagnanModule;
 import porthosc.app.modules.dartagnan.DartagnanOptions;
+import porthosc.app.modules.verdicts.VerdictSerializerFactory;
 
 
 public class DartagnanApp extends AppBase {
@@ -15,6 +17,7 @@ public class DartagnanApp extends AppBase {
         }
 
         AppModule module = new DartagnanModule(options);
-        start(module);
+        IAppVerdictSerializer serializer = VerdictSerializerFactory.getSerializer(options.outputFormat);
+        start(module, serializer);
     }
 }

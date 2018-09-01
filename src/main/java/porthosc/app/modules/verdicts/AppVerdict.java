@@ -1,7 +1,8 @@
-package porthosc.app.modules;
+package porthosc.app.modules.verdicts;
 
 import com.google.common.collect.ImmutableMap;
 import porthosc.app.errors.AppError;
+import porthosc.app.modules.AppTimer;
 import porthosc.app.options.AppOptions;
 import porthosc.languages.common.graph.FlowGraph;
 import porthosc.languages.syntax.xgraph.XEntity;
@@ -26,7 +27,7 @@ public abstract class AppVerdict {
         Solving,
         ;
 
-        private String separatedByCapitals() {
+        public String getSeparatedByCapitals() {
             String name = this.toString();
             StringBuilder res = new StringBuilder();
             res.append(name.charAt(0));
@@ -42,8 +43,8 @@ public abstract class AppVerdict {
     }
 
     private final AppOptions options;
-    private final Timer timerMain;
-    private final ImmutableMap<ProgramStage, Timer> timers;
+    private final AppTimer timerMain;
+    private final ImmutableMap<ProgramStage, AppTimer> timers;
 
     private final HashMap<String, HashMap<String, Integer>> processStatistics;
     private final HashMap<String, HashMap<String, Integer>> processStatisticsUnrolled;
@@ -52,10 +53,10 @@ public abstract class AppVerdict {
 
     public AppVerdict(AppOptions options) {
         this.options = options;
-        this.timerMain = new Timer();
-        HashMap<ProgramStage, Timer> timersValues = new HashMap<>();
+        this.timerMain = new AppTimer();
+        HashMap<ProgramStage, AppTimer> timersValues = new HashMap<>();
         for (ProgramStage programStage : ProgramStage.values()) {
-            timersValues.put(programStage, new Timer());
+            timersValues.put(programStage, new AppTimer());
         }
         this.timers = ImmutableMap.copyOf(timersValues);
         this.errors = new ArrayList<>();
@@ -86,9 +87,8 @@ public abstract class AppVerdict {
     }
 
     public void onStart(ProgramStage stage) {
-        String currentTime = String.format("%.3f: ", ((System.currentTimeMillis() - timerMain.getStartTime()) / 1000));
-        System.out.println( currentTime + stage.separatedByCapitals() + "...");
-        timers.get  (stage).start();
+        System.out.println(String.format("%.3f: %s...", timerMain.getCurrentTime(), stage.getSeparatedByCapitals()));
+        timers.get(stage).start();
     }
 
     public void onFinish(ProgramStage stage) {

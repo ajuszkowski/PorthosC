@@ -1,15 +1,19 @@
-package porthosc.app.modules;
+package porthosc.app.modules.verdicts;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 
-public class JsonVerdictStringifier implements IAppVerdictStringifier {
+public class JsonVerdictSerializer implements IAppVerdictSerializer {
     private final Gson gson;
 
-    public boolean prettyPrinting = true;
+    private boolean prettyPrinting = true;
 
-    public JsonVerdictStringifier() {
+    public void setPrettyPrinting(boolean prettyPrinting) {
+        this.prettyPrinting = prettyPrinting;
+    }
+
+    public JsonVerdictSerializer() {
         GsonBuilder builder = new GsonBuilder();
         if (prettyPrinting) {
             builder.setPrettyPrinting();

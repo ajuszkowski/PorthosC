@@ -7,9 +7,12 @@ import com.beust.jcommander.Parameters;
 import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 import porthosc.app.AppBase;
+import porthosc.app.modules.verdicts.OutputFormat;
 import porthosc.app.options.converters.LogLevelConverter;
+import porthosc.app.options.converters.OutputFormatConverter;
 import porthosc.app.options.validators.FileValidator;
 import porthosc.app.options.validators.LogLevelValidator;
+import porthosc.app.options.validators.OutputFormatValidator;
 import porthosc.utils.logging.LogLevel;
 
 import java.io.File;
@@ -36,6 +39,13 @@ public abstract class AppOptions {
             descriptionKey = "Directory for dumping graphs",
             converter = FileConverter.class)
     public transient File dumpDirectory;
+
+    @Parameter(names = {"-f", "--format"},
+            description = "Format of the output",
+            converter = OutputFormatConverter.class,
+            validateValueWith = OutputFormatValidator.class)
+    public transient OutputFormat outputFormat = OutputFormat.Json;
+
 
 
     public void parse(String[] args) {

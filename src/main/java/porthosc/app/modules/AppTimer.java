@@ -1,6 +1,6 @@
 package porthosc.app.modules;
 
-public class Timer {
+public class AppTimer {
 
     private transient double startTime;
     private double elapsedTimeSec;
@@ -10,7 +10,11 @@ public class Timer {
     }
 
     public void finish() {
-        elapsedTimeSec = (System.currentTimeMillis() - startTime) * 1.0 / 1000;
+        elapsedTimeSec = getCurrentTime();
+    }
+
+    public double getCurrentTime() {
+        return (System.currentTimeMillis() - startTime) * 1.0 / 1000;
     }
 
     public double getStartTime() {

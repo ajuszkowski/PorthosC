@@ -6,9 +6,10 @@ import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 import org.apache.commons.io.FileUtils;
 import porthosc.app.errors.AppError;
 import porthosc.app.errors.IOError;
-import porthosc.app.errors.UnrecognisedError;
+import porthosc.app.errors.UnexpectedError;
 import porthosc.app.modules.AppModule;
-import porthosc.app.modules.AppVerdict;
+import porthosc.app.modules.verdicts.AppVerdict;
+import porthosc.app.modules.verdicts.DartagnanVerdict;
 import porthosc.languages.common.InputExtensions;
 import porthosc.languages.common.InputLanguage;
 import porthosc.languages.common.graph.render.GraphDumper;
@@ -30,9 +31,7 @@ import porthosc.languages.syntax.xgraph.program.XProgram;
 import porthosc.languages.syntax.ytree.YSyntaxTree;
 import porthosc.languages.conversion.toxgraph.unrolling.XProgramTransformer;
 import porthosc.memorymodels.wmm.MemoryModel;
-import porthosc.utils.StringUtils;
 
-import javax.sound.midi.Soundbank;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -57,11 +56,9 @@ public class DartagnanModule extends AppModule {
         verdict.startAll();
 
         try {
-            //todo: solving timeout!
-            int unrollBound = options.unrollingBound; //27;//75;
+            int unrollBound = options.unrollingBound;
 
             MemoryModel.Kind memoryModelKind = options.sourceModel;
-            //MemoryModel memoryModel = memoryModelKind.createModel();
 
             File inputProgramFile = options.inputProgramFile;
             InputLanguage language = InputExtensions.parseProgramLanguage(inputProgramFile.getName());
@@ -74,6 +71,7 @@ public class DartagnanModule extends AppModule {
             XCyclicProgram program = yConverter.convert(yTree);
             verdict.onFinish(AppVerdict.ProgramStage.Interpretation);
 
+            // TODO: move to a separate method after issue #3 "Refactor X-process"
             for (XCyclicProcess p : program.getProcesses()) {
                 verdict.addStatistics(false, p, p.getId(), XEvent.class);
                 verdict.addStatistics(false, p, p.getId(), XMemoryEvent.class);
@@ -166,7 +164,7 @@ public class DartagnanModule extends AppModule {
             verdict.addError(new IOError(e));
         }
         catch (Exception e) {
-            verdict.addError(new UnrecognisedError(AppError.Severity.Critical, e));
+            verdict.addError(new UnexpectedError(AppError.Severity.Critical, e));
         }
 
 

@@ -2,7 +2,7 @@ package porthosc.tests.func.porthos;
 
 import com.googlecode.zohhak.api.TestWith;
 import porthosc.app.modules.porthos.PorthosMode;
-import porthosc.app.modules.porthos.PorthosVerdict;
+import porthosc.app.modules.verdicts.PorthosVerdict;
 import porthosc.memorymodels.wmm.MemoryModel;
 import porthosc.tests.unit.FuncTestPaths;
 
@@ -88,8 +88,8 @@ public class PorthosBakeryTest extends AbstractPorthosFuncTest {
     //        bakery_litmus_rx + ", " + "ARM,   NonStatePortable",
     //})
     //public void test_bakery_litmus_rx(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
-    //    DartagnanVerdict verdict = runTest(inputProgramFile, sourceModel);
-    //    assertEquals(expected, verdict.result);
+    //    DartagnanVerdict verdicts = runTest(inputProgramFile, sourceModel);
+    //    assertEquals(expected, verdicts.result);
     //}
     //
     //// == Sequentially consistent operations: ==
@@ -104,8 +104,8 @@ public class PorthosBakeryTest extends AbstractPorthosFuncTest {
     //        bakery_pts_sc + ", " + "ARM,   NonStatePortable",
     //})
     //public void test_bakery_pts_sc(String inputProgramFile, MemoryModelName sourceModel, DartagnanVerdict.Status expected) {
-    //    DartagnanVerdict verdict = runTest(inputProgramFile, sourceModel);
-    //    assertEquals(expected, verdict.result);
+    //    DartagnanVerdict verdicts = runTest(inputProgramFile, sourceModel);
+    //    assertEquals(expected, verdicts.result);
     //}
 
 }

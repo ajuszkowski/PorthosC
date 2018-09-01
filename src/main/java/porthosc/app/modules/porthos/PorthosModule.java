@@ -4,9 +4,10 @@ import com.microsoft.z3.*;
 import com.microsoft.z3.enumerations.Z3_ast_print_mode;
 import porthosc.app.errors.AppError;
 import porthosc.app.errors.IOError;
-import porthosc.app.errors.UnrecognisedError;
+import porthosc.app.errors.UnexpectedError;
 import porthosc.app.modules.AppModule;
-import porthosc.app.modules.AppVerdict;
+import porthosc.app.modules.verdicts.AppVerdict;
+import porthosc.app.modules.verdicts.PorthosVerdict;
 import porthosc.languages.common.InputExtensions;
 import porthosc.languages.common.InputLanguage;
 import porthosc.languages.conversion.toxgraph.Y2XConverter;
@@ -24,7 +25,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-//import porthosc.program.Init;
 
 
 @SuppressWarnings("deprecation")
@@ -43,7 +43,6 @@ public class PorthosModule extends AppModule {
         verdict.startAll();
 
         try {
-            //todo: solving timeout!
             int unrollBound = options.unrollingBound;
 
             MemoryModel.Kind source = options.sourceModel;
@@ -71,26 +70,26 @@ public class PorthosModule extends AppModule {
 
             verdict.onStart(AppVerdict.ProgramStage.ProgramEncoding);
             BoolExpr sourceEnc = sourceEncoder.encodeProgram(pSource);
+            s.add(sourceEnc);
+            s2.add(sourceEnc);
             s.add(targetEncoder.encodeProgram(pTarget));
             verdict.onFinish(AppVerdict.ProgramStage.ProgramEncoding);
 
             verdict.onStart(AppVerdict.ProgramStage.ProgramDomainEncoding);
             BoolExpr sourceDomain = sourceEncoder.Domain_encode(pSource);
+            s.add(sourceDomain);
+            s2.add(sourceDomain);
             s.add(targetEncoder.Domain_encode(pTarget));
             s.add(Encodings.encodeCommonExecutions(pTarget, pSource, ctx));
             verdict.onFinish(AppVerdict.ProgramStage.ProgramDomainEncoding);
 
             verdict.onStart(AppVerdict.ProgramStage.MemoryModelEncoding);
             BoolExpr sourceMM = pSource.encodeMM(ctx, source);
+            s.add(sourceMM);
+            s2.add(sourceMM);
             s.add(pTarget.encodeMM(ctx, target));
             s.add(pTarget.encodeConsistent(ctx, target));
-            s.add(sourceEnc);
-            s.add(sourceDomain);
-            s.add(sourceMM);
             s.add(pSource.encodeInconsistent(ctx, source));
-            s2.add(sourceEnc);
-            s2.add(sourceDomain);
-            s2.add(sourceMM);
             s2.add(pSource.encodeConsistent(ctx, source));
             verdict.onFinish(AppVerdict.ProgramStage.MemoryModelEncoding);
 
@@ -149,7 +148,7 @@ public class PorthosModule extends AppModule {
         } catch (IOException e) {
             verdict.addError(new IOError(e));
         } catch (Exception e) {
-            verdict.addError(new UnrecognisedError(AppError.Severity.Critical, e));
+            verdict.addError(new UnexpectedError(AppError.Severity.Critical, e));
         }
 
         return verdict;

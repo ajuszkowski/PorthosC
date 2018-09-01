@@ -35,6 +35,7 @@ dependencies {
     // local dependencies:
     compile name: "com.microsoft.z3"
 
+    compile group: 'org.yaml', name: 'snakeyaml', version: '1.8'
 }
 
 ext.antlr = [

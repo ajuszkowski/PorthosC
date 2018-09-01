@@ -4,6 +4,8 @@ import porthosc.app.AppBase;
 import porthosc.app.modules.AppModule;
 import porthosc.app.modules.porthos.PorthosModule;
 import porthosc.app.modules.porthos.PorthosOptions;
+import porthosc.app.modules.verdicts.IAppVerdictSerializer;
+import porthosc.app.modules.verdicts.VerdictSerializerFactory;
 
 
 public class PorthosApp extends AppBase {
@@ -15,6 +17,7 @@ public class PorthosApp extends AppBase {
         }
 
         AppModule module = new PorthosModule(options);
-        start(module);
+        IAppVerdictSerializer serializer = VerdictSerializerFactory.getSerializer(options.outputFormat);
+        start(module, serializer);
     }
 }

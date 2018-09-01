@@ -2,7 +2,7 @@ package porthosc.tests.func;
 
 import com.googlecode.zohhak.api.runners.ZohhakRunner;
 import porthosc.app.errors.AppError;
-import porthosc.app.modules.AppVerdict;
+import porthosc.app.modules.verdicts.AppVerdict;
 import porthosc.app.modules.AppModule;
 import porthosc.tests.AbstractTest;
 import porthosc.tests.TestFailedException;

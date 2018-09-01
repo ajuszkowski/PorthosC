@@ -1,7 +1,7 @@
 package porthosc.tests.func.dartagnan;
 
 import com.googlecode.zohhak.api.TestWith;
-import porthosc.app.modules.dartagnan.DartagnanVerdict;
+import porthosc.app.modules.verdicts.DartagnanVerdict;
 import porthosc.memorymodels.wmm.MemoryModel;
 import porthosc.tests.unit.FuncTestPaths;
 

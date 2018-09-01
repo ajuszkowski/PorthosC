@@ -2,10 +2,9 @@ package porthosc.app;
 
 import com.beust.jcommander.ParameterException;
 import porthosc.app.errors.AppError;
-import porthosc.app.modules.AppVerdict;
-import porthosc.app.modules.AppModule;
-import porthosc.app.modules.IAppVerdictStringifier;
-import porthosc.app.modules.JsonVerdictStringifier;
+import porthosc.app.modules.*;
+import porthosc.app.modules.verdicts.AppVerdict;
+import porthosc.app.modules.verdicts.IAppVerdictSerializer;
 import porthosc.app.options.AppOptions;
 
 
@@ -27,8 +26,7 @@ public abstract class AppBase {
         return null;
     }
 
-    protected static void start(AppModule module) {
-        IAppVerdictStringifier stringifier = new JsonVerdictStringifier();
+    protected static void start(AppModule module, IAppVerdictSerializer serializer) {
         AppVerdict verdict = module.run();
         if (verdict.hasErrors()) {
             for (AppError error : verdict.getErrors()) {
@@ -36,10 +34,10 @@ public abstract class AppBase {
                 System.out.println(error.getMessage());
                 // todo: log info:
                 System.out.println(error.getAdditionalMessage());
-                System.out.println("");
+                System.out.println();
             }
             System.exit(1);
         }
-        System.out.println(stringifier.stringify(verdict));
+        System.out.println(serializer.stringify(verdict));
     }
 }

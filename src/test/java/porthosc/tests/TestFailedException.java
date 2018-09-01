@@ -1,8 +1,8 @@
 package porthosc.tests;
 
 import porthosc.app.errors.AppError;
-import porthosc.app.errors.UnrecognisedError;
-import porthosc.app.modules.AppVerdict;
+import porthosc.app.errors.UnexpectedError;
+import porthosc.app.modules.verdicts.AppVerdict;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ public class TestFailedException extends RuntimeException {
 
     public TestFailedException(Exception e) {
         errors = new ArrayList<>(1);
-        errors.add(new UnrecognisedError(AppError.Severity.Critical, e));
+        errors.add(new UnexpectedError(AppError.Severity.Critical, e));
     }
 
     @Override
